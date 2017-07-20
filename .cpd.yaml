@@ -1,0 +1,9 @@
+languages:
+  - python
+files:
+  - "elastic_spike/**/*.py"
+exclude:
+  - "**/migrations/*"
+  - "*/**/tests/**/*"
+  - "**/settings/*"
+  

@@ -1,0 +1,21 @@
+{
+  "name": "elastic_spike",
+  "version": "1.0.0",
+  "description": "elastic_spike ===============",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint -c .eslintrc.json elastic_spike/apps/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "devDependencies": {
+    "eslint": "^3.9.1",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.3.0",
+    "eslint-plugin-standard": "^2.0.1"
+  }
+}

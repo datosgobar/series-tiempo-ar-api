@@ -1,0 +1,18 @@
+{
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "installedESLint": true,
+  "plugins": [
+    "standard",
+    "promise"
+  ],
+  "rules": {
+    "semi": "error"
+  },
+  "env": {
+    "browser": true,
+    "jquery": true
+  }
+}

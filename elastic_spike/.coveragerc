@@ -1,0 +1,10 @@
+[run]
+
+include=*/apps/*,*/libs/*
+omit=*urls.py,*/settings/*,*/migrations/*,*admin.py,*/tests/*,*/docs/*, */management/*, heroku.py
+
+
+[report]
+exclude_lines =
+    def __unicode__
+    def __ne__
