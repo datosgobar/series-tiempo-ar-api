@@ -42,9 +42,14 @@ class SearchAPI(View):
             else:
                 aggr = request.GET.get('agg', 'default')
                 aggregation = self.aggregations.get(aggr)
-                result.update(aggregation.execute(series, request.GET))
-                result['count'] = len(result['data'])
-                result['aggregation'] = aggregation.name
+                if not aggregation:
+                    result['errors'].append(
+                        {'error': 'Agregación inválida: {}'.format(aggr)}
+                    )
+                else:
+                    result.update(aggregation.execute(series, request.GET))
+                    result['count'] = len(result['data'])
+                    result['aggregation'] = aggregation.name
         else:
             result['errors'].append(
                 {'error': 'No se especificó una serie de tiempo'}
