@@ -1,17 +1,20 @@
 #! coding: utf-8
 
 from elasticsearch_dsl import Search
-from elasticsearch import Elasticsearch
+
+from elastic_spike.apps.api.aggregations.BaseAggregation import BaseAggregation
 
 
-class Average:
-    def __init__(self):
-        self.result = []
+class Average(BaseAggregation):
+    def execute(self, request_args):
+        doc_type = request_args.get('type')
+        interval = request_args.get('interval', 'year')
+        field = request_args.get('field', 'value')
 
-    def execute(self, doc_type, field, interval):
-        self.result = []
-        elastic = Elasticsearch()
-        search = Search(index="indicators", doc_type=doc_type, using=elastic)
+        self.result.clear()
+        search = Search(index="indicators",
+                        doc_type=doc_type,
+                        using=self.elastic)
         # Le decimos a Elastic que no devuelva resultados, nos interesa solo
         # el aggregation
         search = search[:0]
@@ -23,13 +26,15 @@ class Average:
                                                      'avg',
                                                      field=field)
 
-        result = search.execute()
-        for element in result.aggregations.average.buckets:
+        search_result = search.execute()
+        data = []
+        for element in search_result.aggregations.average.buckets:
             timestamp = element['key_as_string']
             average = element['average']
-            self.result.append({
+            data.append({
                 'date': timestamp,
                 'value': average.value
             })
 
+        self.result['data'] = data
         return self.result
