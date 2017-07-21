@@ -6,20 +6,24 @@ from elastic_spike.apps.api.aggregations.BaseAggregation import BaseAggregation
 
 
 class Default(BaseAggregation):
-    def execute(self, request_args):
-        doc_type = request_args.get('type')
+    name = 'valor directo'
+
+    def execute(self, series, request_args):
         field = request_args.get('field', 'value')
         search = Search(index="indicators",
-                        doc_type=doc_type,
+                        doc_type=series,
                         using=self.elastic).source(fields=[field])
 
         self.result = {
             'data': []
         }
+
+
+
         for hit in search.scan():
             element = {
                 'date': hit.meta.id,
-                field: hit.__getattr__(field)
+                field: hit[field]
             }
             self.result['data'].append(element)
         return self.result

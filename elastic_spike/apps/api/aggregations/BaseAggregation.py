@@ -4,9 +4,13 @@ from elasticsearch import Elasticsearch
 
 
 class BaseAggregation:
+    @property
+    def name(self):
+        raise NotImplementedError
+
     def __init__(self):
         self.result = {}
         self.elastic = Elasticsearch()
 
-    def execute(self, request_args):
+    def execute(self, series, request_args):
         raise NotImplementedError
