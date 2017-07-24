@@ -4,33 +4,29 @@ from elasticsearch.client import IndicesClient
 from elasticsearch_dsl import Search, MultiSearch
 from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 
+from .average import Average
+
 
 class Proportion(BaseAggregation):
     """Calcula la proporción de la serie 'series' sobre la original"""
     name = "proporción"
-    date_format = '%Y-%m-%dT%H:%M:%SZ'
+    date_format = '%Y-%m-%dT%H:%M:%S.000Z'
 
     def execute(self, series, request_args, source_data=None):
         if self.validate_args(request_args):
             other = request_args.get('series', '')
-            results = self.execute_search(series, other)
+            results = self.execute_search(series, other, request_args)
             # Voy llenando la lista values con los resultados
-            values = []
-            starting_date = datetime.strptime(results[0][0].meta.id,
+            values = results[0]
+            starting_date = datetime.strptime(results[0][0]['timestamp'],
                                               self.date_format)
-            # Primero lleno con los datos de la serie original
-            for series_result in results[0]:
-                values.append({
-                    'value': series_result.value,
-                    'timestamp': series_result.meta.id
-                })
 
             index = 0
             start_date_found = False
             for other_result in results[1]:
                 if not start_date_found:
                     new_index = self.find_starting_index(values,
-                                                         other_result.meta.id,
+                                                         other_result['timestamp'],
                                                          starting_date)
                     if not new_index:
                         continue
@@ -41,12 +37,15 @@ class Proportion(BaseAggregation):
                 if index >= len(values):
                     break
 
-                if values[index]['timestamp'] != other_result.meta.id:
-                    self.correct_index(values, index, other_result.meta.id)
+                if values[index]['timestamp'] != other_result['timestamp']:
+                    self.correct_index(values, index, other_result['timestamp'])
 
-                values[index]['value'] /= other_result.value
+                values[index]['value'] /= other_result['value']
                 index += 1
             self.result['data'] = values
+            self.result['other_series'] = other
+
+        self.result['series'] = series
         return self.result
 
     def validate_args(self, request_args):
@@ -65,24 +64,14 @@ class Proportion(BaseAggregation):
             return True
         return False
 
-    def execute_search(self, series, other):
-        series_search = Search(index="indicators",
-                               doc_type=series,
-                               using=self.elastic) \
-            .source(fields=['value']) \
-            .sort('timestamp')[:10000]
+    def execute_search(self, series, other, request_args):
+        series_data = Average().execute(series, request_args)
+        results = [series_data['data'],
+                   Average().execute(other, request_args)['data']]
 
-        other_search = Search(index="indicators",
-                              doc_type=other,
-                              using=self.elastic) \
-            .source(fields=['value']) \
-            .sort('timestamp')[:10000]
-
-        search = MultiSearch(index="indicators", using=self.elastic) \
-            .add(series_search) \
-            .add(other_search)
-
-        results = search.execute()
+        self.result['other_series'] = other
+        self.result['series'] = series
+        self.result['interval'] = series_data['interval']
         return results
 
     def find_starting_index(self, values, date_str, starting_date):

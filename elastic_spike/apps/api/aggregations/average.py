@@ -39,4 +39,5 @@ class Average(BaseAggregation):
             })
 
         self.result['data'] = data
+        self.result['interval'] = interval
         return self.result
