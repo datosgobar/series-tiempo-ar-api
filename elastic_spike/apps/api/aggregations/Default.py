@@ -18,8 +18,6 @@ class Default(BaseAggregation):
             'data': []
         }
 
-
-
         for hit in search.scan():
             element = {
                 'date': hit.meta.id,
