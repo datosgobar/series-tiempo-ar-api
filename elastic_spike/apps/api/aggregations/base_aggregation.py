@@ -12,5 +12,5 @@ class BaseAggregation:
         self.result = {'errors': []}
         self.elastic = Elasticsearch()
 
-    def execute(self, series, request_args):
+    def execute(self, series, request_args, source_data=None):
         raise NotImplementedError

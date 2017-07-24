@@ -9,7 +9,7 @@ class Average(BaseAggregation):
     """Calcula el promedio de una serie en base a el parámetro 'interval'"""
     name = "promedio"
 
-    def execute(self, series, request_args):
+    def execute(self, series, request_args, source_data=None):
         interval = request_args.get('interval', 'year')
         field = request_args.get('field', 'value')
 

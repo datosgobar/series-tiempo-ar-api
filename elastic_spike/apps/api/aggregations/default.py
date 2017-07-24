@@ -8,7 +8,7 @@ from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 class Default(BaseAggregation):
     name = 'valor directo'
 
-    def execute(self, series, request_args):
+    def execute(self, series, request_args, source_data=None):
         field = request_args.get('field', 'value')
         search = Search(index="indicators",
                         doc_type=series,

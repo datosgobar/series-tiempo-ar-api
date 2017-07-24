@@ -10,7 +10,7 @@ class Proportion(BaseAggregation):
     name = "proporción"
     date_format = '%Y-%m-%dT%H:%M:%SZ'
 
-    def execute(self, series, request_args):
+    def execute(self, series, request_args, source_data=None):
         if self.validate_args(request_args):
             other = request_args.get('series', '')
             results = self.execute_search(series, other)
@@ -42,19 +42,7 @@ class Proportion(BaseAggregation):
                     break
 
                 if values[index]['timestamp'] != other_result.meta.id:
-                    series_date = datetime.strptime(values[index]['timestamp'],
-                                                    self.date_format)
-                    other_date = datetime.strptime(other_result.meta.id,
-                                                   self.date_format)
-                    msg = "No se encontró valores de la serie original " \
-                          "para la fecha: {0} "
-                    while series_date != other_date:
-                        self.result['errors'].append(
-                            msg.format(values[index]['timestamp']))
-                        values.pop(index)
-                        series_date = datetime.strptime(
-                            values[index]['timestamp'],
-                            self.date_format)
+                    self.correct_index(values, index, other_result.meta.id)
 
                 values[index]['value'] /= other_result.value
                 index += 1
@@ -108,3 +96,18 @@ class Proportion(BaseAggregation):
                 if date_str == value['timestamp']:
                     index = values.index(value)
                     return index
+
+    def correct_index(self, values, index, current_date_str):
+        series_date = datetime.strptime(values[index]['timestamp'],
+                                        self.date_format)
+        other_date = datetime.strptime(current_date_str,
+                                       self.date_format)
+        msg = "No se encontró valores de la serie original " \
+              "para la fecha: {0} "
+        while series_date != other_date:
+            self.result['errors'].append(
+                msg.format(values[index]['timestamp']))
+            values.pop(index)
+            series_date = datetime.strptime(
+                values[index]['timestamp'],
+                self.date_format)
