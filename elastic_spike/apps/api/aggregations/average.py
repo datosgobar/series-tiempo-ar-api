@@ -2,7 +2,7 @@
 
 from elasticsearch_dsl import Search
 
-from elastic_spike.apps.api.aggregations.BaseAggregation import BaseAggregation
+from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 
 
 class Average(BaseAggregation):

@@ -7,9 +7,9 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client.indices import IndicesClient
 from elasticsearch_dsl import Search
 
-from elastic_spike.apps.api.aggregations.Default import Default
-from elastic_spike.apps.api.aggregations.Average import Average
-from elastic_spike.apps.api.aggregations.Proportion import Proportion
+from elastic_spike.apps.api.aggregations.default import Default
+from elastic_spike.apps.api.aggregations.average import Average
+from elastic_spike.apps.api.aggregations.proportion import Proportion
 
 
 class All(View):
