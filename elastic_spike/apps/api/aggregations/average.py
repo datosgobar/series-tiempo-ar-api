@@ -34,7 +34,7 @@ class Average(BaseAggregation):
             timestamp = element['key_as_string']
             average = element['average']
             data.append({
-                'date': timestamp,
+                'timestamp': timestamp,
                 'value': average.value
             })
 

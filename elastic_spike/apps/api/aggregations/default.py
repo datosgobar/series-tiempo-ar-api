@@ -20,7 +20,7 @@ class Default(BaseAggregation):
 
         for hit in search.scan():
             element = {
-                'date': hit.meta.id,
+                'timestamp': hit.meta.id,
                 'value': hit[field]
             }
             self.result['data'].append(element)
