@@ -6,6 +6,7 @@ from elastic_spike.apps.api.aggregations.BaseAggregation import BaseAggregation
 
 
 class Average(BaseAggregation):
+    """Calcula el promedio de una serie en base a el parámetro 'interval'"""
     name = "promedio"
 
     def execute(self, series, request_args):
