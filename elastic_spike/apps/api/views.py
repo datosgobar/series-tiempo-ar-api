@@ -9,6 +9,7 @@ from elasticsearch_dsl import Search
 
 from elastic_spike.apps.api.aggregations.Default import Default
 from elastic_spike.apps.api.aggregations.Average import Average
+from elastic_spike.apps.api.aggregations.Proportion import Proportion
 
 
 class All(View):
@@ -59,3 +60,4 @@ class SearchAPI(View):
     def init_aggregations(self):
         self.aggregations['average'] = Average()
         self.aggregations['default'] = Default()
+        self.aggregations['proportion'] = Proportion()

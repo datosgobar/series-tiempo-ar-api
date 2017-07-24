@@ -9,7 +9,7 @@ class BaseAggregation:
         raise NotImplementedError
 
     def __init__(self):
-        self.result = {}
+        self.result = {'errors': []}
         self.elastic = Elasticsearch()
 
     def execute(self, series, request_args):
