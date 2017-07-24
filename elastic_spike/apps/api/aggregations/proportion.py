@@ -81,14 +81,14 @@ class Proportion(BaseAggregation):
         series_search = Search(index="indicators",
                                doc_type=series,
                                using=self.elastic) \
-                            .source(fields=['value']) \
-                            .sort('timestamp')[:10000]
+            .source(fields=['value']) \
+            .sort('timestamp')[:10000]
 
         other_search = Search(index="indicators",
                               doc_type=other,
                               using=self.elastic) \
-                           .source(fields=['value']) \
-                           .sort('timestamp')[:10000]
+            .source(fields=['value']) \
+            .sort('timestamp')[:10000]
 
         search = MultiSearch(index="indicators", using=self.elastic) \
             .add(series_search) \
