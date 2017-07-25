@@ -60,6 +60,9 @@ class SearchAPI(View):
         return JsonResponse(result)
 
     def init_aggregations(self):
-        self.aggregations['average'] = Average()
+        self.aggregations['avg'] = Average()
+        self.aggregations['min'] = Average()
+        self.aggregations['max'] = Average()
+        self.aggregations['sum'] = Average()
         self.aggregations['default'] = Default()
         self.aggregations['proportion'] = Proportion()

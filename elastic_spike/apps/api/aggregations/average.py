@@ -12,7 +12,7 @@ class Average(BaseAggregation):
     def execute(self, series, request_args, source_data=None):
         interval = request_args.get('interval', 'year')
         field = request_args.get('field', 'value')
-
+        agg = request_args.get('agg')
         self.result.clear()
         search = Search(index="indicators",
                         doc_type=series,
@@ -21,18 +21,18 @@ class Average(BaseAggregation):
         # el aggregation
         search = search[:0]
 
-        search.aggs.bucket('average',
+        search.aggs.bucket('agg',
                            'date_histogram',
                            field='timestamp',
-                           interval=interval).metric('average',
-                                                     'avg',
+                           interval=interval).metric('agg',
+                                                     agg,
                                                      field=field)
 
         search_result = search.execute()
         data = []
-        for element in search_result.aggregations.average.buckets:
+        for element in search_result.aggregations.agg.buckets:
             timestamp = element['key_as_string']
-            average = element['average']
+            average = element['agg']
             data.append({
                 'timestamp': timestamp,
                 'value': average.value
