@@ -8,7 +8,7 @@ from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 class Default(BaseAggregation):
     """Calcula el promedio de una serie en base a el parámetro 'interval'"""
 
-    def execute(self, series, request_args, source_data=None):
+    def execute(self, series, request_args):
         interval = request_args.get('interval', 'year')
         field = request_args.get('field', 'value')
         agg = request_args.get('agg', 'avg')

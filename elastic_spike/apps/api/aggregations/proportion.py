@@ -10,7 +10,7 @@ class Proportion(BaseAggregation):
     """Calcula la proporción de la serie 'series' sobre la original"""
     date_format = '%Y-%m-%dT%H:%M:%S.000Z'
 
-    def execute(self, series, request_args, source_data=None):
+    def execute(self, series, request_args):
         if self.validate_args(request_args):
             other = request_args.get('series', '')
             results = self.execute_search(series, other, request_args)
