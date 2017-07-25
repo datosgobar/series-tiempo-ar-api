@@ -1,7 +1,6 @@
 #! coding: utf-8
 from datetime import datetime
 from elasticsearch.client import IndicesClient
-from elasticsearch_dsl import Search, MultiSearch
 from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 
 from .average import Average
