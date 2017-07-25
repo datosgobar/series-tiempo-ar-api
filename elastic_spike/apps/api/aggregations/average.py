@@ -17,6 +17,16 @@ class Average(BaseAggregation):
         search = Search(index="indicators",
                         doc_type=series,
                         using=self.elastic)
+
+        _from = request_args.get('from')
+        _to = request_args.get('to')
+
+        _filter = {
+            'lte': _to,
+            'gte': _from
+        }
+        search = search.filter('range', timestamp=_filter)
+
         # Le decimos a Elastic que no devuelva resultados, nos interesa solo
         # el aggregation
         search = search[:0]
