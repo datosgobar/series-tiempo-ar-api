@@ -123,6 +123,9 @@ Add Comment
 `http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&interval=year`
 - Operación de proporción entre dos series:
 `http://127.0.0.1:8000/search/oferta_global_pbi/?agg=proportion&series=demanda_global_ibif_total`
-
+- Filtro por fechas (desde, hasta)
+`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&from=2005&to=2010`
+- Filtro hasta fecha de hoy:
+`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&to=now`
 #### Agregaciones disponibles:
 `avg`, `sum`, `max`, `min`, `proportion`, `default`
