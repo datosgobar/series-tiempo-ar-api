@@ -52,7 +52,8 @@ class SearchAPI(View):
                     result.update(aggregation.execute(series,
                                                       request.GET.copy()))
                     result['count'] = len(result['data'])
-                    result['aggregation'] = aggregation.name
+                    aggr = request.GET.get('agg')
+                    result['aggregation'] = aggr if aggr else 'valor directo'
                     result['series'] = [series]
         else:
             result['errors'].append(
