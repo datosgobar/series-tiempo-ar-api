@@ -7,17 +7,8 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client.indices import IndicesClient
 from elasticsearch_dsl import Search
 
-from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.average import Average
 from elastic_spike.apps.api.aggregations.proportion import Proportion
-
-
-class All(View):
-    def get(self, request):
-        elastic = Elasticsearch()
-        search = Search(index="indicators").using(elastic)
-        query = search.execute()
-        return JsonResponse(query.to_dict(), safe=False)
 
 
 class SearchAPI(View):
@@ -66,5 +57,4 @@ class SearchAPI(View):
         self.aggregations['min'] = Average()
         self.aggregations['max'] = Average()
         self.aggregations['sum'] = Average()
-        self.aggregations['default'] = Default()
         self.aggregations['proportion'] = Proportion()
