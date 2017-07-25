@@ -3,12 +3,11 @@ from datetime import datetime
 from elasticsearch.client import IndicesClient
 from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 
-from .average import Average
+from .default import Default
 
 
 class Proportion(BaseAggregation):
     """Calcula la proporción de la serie 'series' sobre la original"""
-    name = "proporción"
     date_format = '%Y-%m-%dT%H:%M:%S.000Z'
 
     def execute(self, series, request_args, source_data=None):
@@ -65,9 +64,9 @@ class Proportion(BaseAggregation):
 
     def execute_search(self, series, other, request_args):
         request_args['agg'] = 'avg'
-        series_data = Average().execute(series, request_args)
+        series_data = Default().execute(series, request_args)
         results = [series_data['data'],
-                   Average().execute(other, request_args)['data']]
+                   Default().execute(other, request_args)['data']]
 
         self.result['other_series'] = other
         self.result['series'] = series

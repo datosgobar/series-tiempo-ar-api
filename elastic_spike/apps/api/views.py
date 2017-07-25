@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client.indices import IndicesClient
 from elasticsearch_dsl import Search
 
-from elastic_spike.apps.api.aggregations.average import Average
+from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.proportion import Proportion
 
 
@@ -43,8 +43,7 @@ class SearchAPI(View):
                     result.update(aggregation.execute(series,
                                                       request.GET.copy()))
                     result['count'] = len(result['data'])
-                    aggr = request.GET.get('agg')
-                    result['aggregation'] = aggr if aggr else 'valor directo'
+                    result['aggregation'] = aggr
                     result['series'] = [series]
         else:
             result['errors'].append(
@@ -53,8 +52,8 @@ class SearchAPI(View):
         return JsonResponse(result)
 
     def init_aggregations(self):
-        self.aggregations['avg'] = Average()
-        self.aggregations['min'] = Average()
-        self.aggregations['max'] = Average()
-        self.aggregations['sum'] = Average()
+        self.aggregations['avg'] = Default()
+        self.aggregations['min'] = Default()
+        self.aggregations['max'] = Default()
+        self.aggregations['sum'] = Default()
         self.aggregations['proportion'] = Proportion()

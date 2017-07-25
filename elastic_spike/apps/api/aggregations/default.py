@@ -5,9 +5,8 @@ from elasticsearch_dsl import Search
 from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
 
 
-class Average(BaseAggregation):
+class Default(BaseAggregation):
     """Calcula el promedio de una serie en base a el parámetro 'interval'"""
-    name = "promedio"
 
     def execute(self, series, request_args, source_data=None):
         interval = request_args.get('interval', 'year')
