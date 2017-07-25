@@ -12,7 +12,7 @@ class Average(BaseAggregation):
     def execute(self, series, request_args, source_data=None):
         interval = request_args.get('interval', 'year')
         field = request_args.get('field', 'value')
-        agg = request_args.get('agg')
+        agg = request_args.get('agg', 'avg')
         self.result.clear()
         search = Search(index="indicators",
                         doc_type=series,

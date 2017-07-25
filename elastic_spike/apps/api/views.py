@@ -41,7 +41,7 @@ class SearchAPI(View):
                     {'error': 'Serie inválida: {}'.format(series)}
                 )
             else:
-                aggr = request.GET.get('agg', 'default')
+                aggr = request.GET.get('agg', 'avg')
                 aggregation = self.aggregations.get(aggr)
                 if not aggregation:
                     result['errors'].append(
