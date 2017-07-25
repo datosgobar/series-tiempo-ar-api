@@ -65,6 +65,7 @@ class Proportion(BaseAggregation):
         return False
 
     def execute_search(self, series, other, request_args):
+        request_args['agg'] = 'avg'
         series_data = Average().execute(series, request_args)
         results = [series_data['data'],
                    Average().execute(other, request_args)['data']]

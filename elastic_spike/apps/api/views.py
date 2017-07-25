@@ -49,7 +49,8 @@ class SearchAPI(View):
                     )
                 else:
                     # Ejecución de query
-                    result.update(aggregation.execute(series, request.GET))
+                    result.update(aggregation.execute(series,
+                                                      request.GET.copy()))
                     result['count'] = len(result['data'])
                     result['aggregation'] = aggregation.name
                     result['series'] = [series]
