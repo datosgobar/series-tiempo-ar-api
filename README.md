@@ -130,10 +130,10 @@ Todas las operaciones se pueden combinar entre sí.
 - Filtro hasta fecha de hoy:
 `http://127.0.0.1:8000/search/oferta_global_pbi/?to=now`
 
-#### Agregaciones disponibles:
+#### Fields disponibles:
 `value`, `change`, `percent_change`, `change_a_year_ago`, `percent_change_a_year_ago`. Valor default: `value`
 
-#### Operaciones disponibles:
+#### Operaciones/agregaciones disponibles:
 `avg`, `sum`, `max`, `min`, `proportion`. Valor default: `avg`
 
 #### Intervalos disponibles:
