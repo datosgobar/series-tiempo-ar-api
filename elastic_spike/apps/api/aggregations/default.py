@@ -12,7 +12,10 @@ class Default(BaseAggregation):
         field = request_args.get('field', 'value')
         search = Search(index="indicators",
                         doc_type=series,
-                        using=self.elastic).source(fields=[field])
+                        using=self.elastic). \
+            source(fields=[field]). \
+            sort('timestamp'). \
+            params(preserve_order=True)
 
         self.result = {
             'data': []
