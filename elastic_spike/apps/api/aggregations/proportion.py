@@ -28,7 +28,7 @@ class Proportion(BaseAggregation):
                     new_index = self.find_starting_index(values,
                                                          other_result['timestamp'],
                                                          starting_date)
-                    if not new_index:
+                    if new_index is None:
                         continue
                     values = values[new_index:]
                     index = 0
@@ -79,8 +79,8 @@ class Proportion(BaseAggregation):
         date = datetime.strptime(date_str,
                                  self.date_format)
         if date < starting_date:
-            return False
-        elif date > starting_date:
+            return
+        elif date >= starting_date:
             for value in values:
                 if date_str == value['timestamp']:
                     index = values.index(value)
