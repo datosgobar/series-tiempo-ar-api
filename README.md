@@ -116,16 +116,25 @@ Add Comment
 
 
 ### Ejemplo de uso de la API
-
+Todas las operaciones se pueden combinar entre sí.
 - Query simple de una serie:
 `http://127.0.0.1:8000/search/oferta_global_pbi/`
-- Promedio anual:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&interval=year`
+- Cambio de agregación:
+`http://127.0.0.1:8000/search/oferta_global_pbi/?field=percent_change`
+- Cambio de intervalo (_collapse_):
+`http://127.0.0.1:8000/search/oferta_global_pbi/?interval=quarter`
 - Operación de proporción entre dos series:
 `http://127.0.0.1:8000/search/oferta_global_pbi/?agg=proportion&series=demanda_global_ibif_total`
 - Filtro por fechas (desde, hasta)
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&from=2005&to=2010`
+`http://127.0.0.1:8000/search/oferta_global_pbi/?from=2005&to=2010`
 - Filtro hasta fecha de hoy:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&to=now`
+`http://127.0.0.1:8000/search/oferta_global_pbi/?to=now`
+
 #### Agregaciones disponibles:
-`avg`, `sum`, `max`, `min`, `proportion`, `default`
+`value`, `change`, `percent_change`, `change_a_year_ago`, `percent_change_a_year_ago`. Valor default: `value`
+
+#### Operaciones disponibles:
+`avg`, `sum`, `max`, `min`, `proportion`. Valor default: `avg`
+
+#### Intervalos disponibles:
+`year`, `quarter`. Valor default: `year`
