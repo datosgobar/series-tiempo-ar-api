@@ -80,11 +80,11 @@ class Proportion(BaseAggregation):
                                  self.date_format)
         if date < starting_date:
             return
-        elif date >= starting_date:
-            for value in values:
-                if date_str == value['timestamp']:
-                    index = values.index(value)
-                    return index
+
+        for value in values:
+            if date_str == value['timestamp']:
+                index = values.index(value)
+                return index
 
     def correct_index(self, values, index, current_date_str):
         series_date = datetime.strptime(values[index]['timestamp'],
