@@ -113,3 +113,16 @@ curl -XGET "$ES_URL/indicators/oferta_global_pbi/_search?&pretty" -d '
 '
 Add Comment
 ```
+
+
+### Ejemplo de uso de la API
+
+- Query simple de una serie:
+`http://127.0.0.1:8000/search/oferta_global_pbi/`
+- Promedio anual:
+`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=avg&interval=year`
+- Operación de proporción entre dos series:
+`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=proportion&series=demanda_global_ibif_total`
+
+#### Agregaciones disponibles:
+`avg`, `sum`, `max`, `min`, `proportion`, `default`
