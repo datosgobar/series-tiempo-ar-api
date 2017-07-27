@@ -5,5 +5,5 @@ from elastic_spike.apps.api.views import SearchAPI
 
 urlpatterns = [
     url('^search/$', SearchAPI.as_view()),
-    url('^search/(?P<series>[a-z, _]+)/$', SearchAPI.as_view())
+    url('^search/(?P<series>.+)/$', SearchAPI.as_view())
 ]
