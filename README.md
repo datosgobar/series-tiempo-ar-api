@@ -137,4 +137,12 @@ Todas las operaciones se pueden combinar entre sí.
 `avg`, `sum`, `max`, `min`, `proportion`. Valor default: `avg`
 
 #### Intervalos disponibles:
-`year`, `quarter`. Valor default: `year`
+`year`, `quarter`. Valor default: `year
+
+### Generación de datos aleatorios
+Correr `./manage.py generate_data`
+
+Parámetros opcionales: 
+- `--indicators`: Cantidad de series aleatorias a generar. Default: 1
+- `--years`: Cantidad de datos a generar. Default: 100 
+- `--interval`: Granularidad de los datos a generar. Acepta `month`, `year` o `quarter`. Default: `quarter`
