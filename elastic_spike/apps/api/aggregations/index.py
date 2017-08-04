@@ -5,7 +5,6 @@ from elasticsearch_dsl.query import Match
 from .base_aggregation import BaseAggregation
 from .default import Default
 
-from decimal import Decimal
 
 class Index(BaseAggregation):
     def execute(self, series, request_args):
@@ -32,6 +31,6 @@ class Index(BaseAggregation):
         base_value = result.hits.hits[0]['_source'][field]
 
         for data in search:
-            data['value'] = Decimal(data['value']) / Decimal(base_value) * 100
+            data['value'] = data['value'] / base_value * 100
         self.result['data'] = search
         return self.result
