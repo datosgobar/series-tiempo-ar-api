@@ -7,6 +7,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.client.indices import IndicesClient
 from elasticsearch_dsl import Search
 
+from elastic_spike.apps.api.aggregations.index import Index
 from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.proportion import Proportion
 
@@ -57,3 +58,4 @@ class SearchAPI(View):
         self.aggregations['max'] = Default()
         self.aggregations['sum'] = Default()
         self.aggregations['proportion'] = Proportion()
+        self.aggregations['index'] = Index()
