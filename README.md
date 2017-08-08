@@ -129,7 +129,9 @@ Todas las operaciones se pueden combinar entre sí.
 `http://127.0.0.1:8000/search/oferta_global_pbi/?from=2005&to=2010`
 - Filtro hasta fecha de hoy:
 `http://127.0.0.1:8000/search/oferta_global_pbi/?to=now`
-
+- Operación de índice en base 100 en alguna fecha particular:
+`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=index&base=2005`
+Si no se completa la fecha, se asume que es el primer día del año especificado (en este caso, `2005-01-01`)
 #### Fields disponibles:
 `value`, `change`, `percent_change`, `change_a_year_ago`, `percent_change_a_year_ago`. Valor default: `value`
 
