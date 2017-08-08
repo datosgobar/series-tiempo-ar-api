@@ -14,9 +14,10 @@ mapping = '''{
     "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
     "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
     "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
-  }
+  },
+  "_all": {"enabled": false},
+  "dynamic": "strict"
 }'''
-
 
 ES_URL = "http://localhost:9200"
 
@@ -49,6 +50,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         indicators = options['indicators']
+
+        # Chequeo si existe el índice, si no, lo creo
+        index_url = ES_URL + '/indicators/'
+        response = requests.get(index_url)
+        if response.status_code == 404:
+            requests.put(index_url)
+
         for i in range(indicators):
             self.generate_random_series(options['years'], options['interval'])
 
@@ -58,8 +66,11 @@ class Command(BaseCommand):
         # Mapping del indicador
         indic_name = "random-" + str(self.indicators_count)
         url = ES_URL + "/indicators/_mapping/" + indic_name
-        requests.put(url, mapping)
-        self.stdout.write(indic_name)
+
+        # Chequeo si existe el mapping, si no, lo creo
+        response = requests.get(url)
+        if response.status_code == 404:
+            requests.put(url, mapping)
 
         message = ''  # Request de la API de bulk create
         current_date = self.start_date
@@ -78,9 +89,10 @@ class Command(BaseCommand):
 
             current_date = self.add_interval(current_date, interval)
 
-        url = ES_URL + "/indicators/" + indic_name + "/_bulk?pretty"
-        response = requests.post(url, message)
-        # self.stdout.write(response.text)
+        url = ES_URL + "/indicators/" + indic_name + "/_bulk"
+        requests.post(url, message)
+        self.stdout.write("Generado: " + indic_name)
+
         self.indicators_count += 1
 
     @staticmethod
