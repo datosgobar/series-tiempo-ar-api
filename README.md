@@ -14,6 +14,48 @@ Usar como credenciales elastic:changeme
 
 Ver: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 
+### Carga de datos de muestra
+Primero hay que crear el índice de indicadores (si no existe anteriormente):
+`curl -XPUT "$ES_URL/indicators/`
+
+Siguiente, se generan los mappings de las series a cargar:
+```bash
+curl -XPUT "$ES_URL/indicators/_mapping/oferta_global_pbi/?pretty" -H 'Content-Type: application/json' -d '
+{
+  "properties": {
+    "timestamp":                    {"type": "date"},
+    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
+    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
+    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
+    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
+    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
+  },
+  "_all": {"enabled": false},
+  "dynamic": "strict"
+}'
+```
+```bash
+curl -XPUT "$ES_URL/indicators/_mapping/demanda_global_ibif_total/?pretty" -H 'Content-Type: application/json' -d '
+{
+  "properties": {
+    "timestamp":                    {"type": "date"},
+    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
+    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
+    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
+    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
+    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
+  },
+  "_all": {"enabled": false},
+  "dynamic": "strict"
+}'
+```
+
+Luego, cargamos los datos a partir del archivo `sample_data.json`. Desde el directorio raíz del proyecto:
+```bash 
+curl -XPOST "$ES_URL/_bulk?pretty" -H 'Content-Type: application/json' --data-binary "@samples/sample_data.json"
+```
+
+
 ## Snippets de elastic search
 
 Todos los scripts siguientes son versiones "In progress" para validar el funcionamiento de las herramientas.
@@ -54,9 +96,7 @@ curl -XPUT "$ES_URL/indicators?pretty" -H 'Content-Type: application/json' -d'
 }
 '
 ```
-### Carga de datos de muestra
-Desde el directorio raíz del proyecto:
-`curl -XPOST "$ES_URL/_bulk?pretty" -H 'Content-Type: application/json' --data-binary "@samples/sample_data.json"`
+
 ### Ejemplo de average usando date histogram
 
 Agrupa por año y devuelve el promedio del campo `value`.
@@ -117,7 +157,7 @@ Add Comment
 ```
 
 
-### Ejemplo de uso de la API
+## Ejemplo de uso de la API
 Todas las operaciones se pueden combinar entre sí.
 - Query simple de una serie:
 `http://127.0.0.1:8000/search/oferta_global_pbi/`
