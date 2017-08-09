@@ -54,7 +54,9 @@ curl -XPUT "$ES_URL/indicators?pretty" -H 'Content-Type: application/json' -d'
 }
 '
 ```
-
+### Carga de datos de muestra
+Desde el directorio raíz del proyecto:
+`curl -XPOST "$ES_URL/_bulk?pretty" -H 'Content-Type: application/json' --data-binary "@samples/sample_data.json"`
 ### Ejemplo de average usando date histogram
 
 Agrupa por año y devuelve el promedio del campo `value`.
