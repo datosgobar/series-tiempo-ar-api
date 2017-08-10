@@ -2,8 +2,8 @@
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import Match
 
+from .value import Value
 from .base_aggregation import BaseAggregation
-from .default import Default
 
 
 class Index(BaseAggregation):
@@ -14,8 +14,7 @@ class Index(BaseAggregation):
             self.result['errors'].append("Base no especificada")
             return self.result
 
-        request_args['agg'] = 'avg'
-        search = Default().execute(series, request_args)
+        search = Value().execute(series, request_args)
         search_data = search.get('data')
         if not search_data:
             self.result['errors'].extend(search.get('errors', []))

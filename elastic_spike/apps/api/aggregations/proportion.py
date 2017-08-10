@@ -2,6 +2,7 @@
 from datetime import datetime
 from elasticsearch.client import IndicesClient
 from elastic_spike.apps.api.aggregations.base_aggregation import BaseAggregation
+from elastic_spike.apps.api.aggregations.value import Value
 
 from .default import Default
 
@@ -65,9 +66,8 @@ class Proportion(BaseAggregation):
         return False
 
     def execute_search(self, series, other, request_args):
-        request_args['agg'] = 'avg'
-        series_data = Default().execute(series, request_args)
-        other_data = Default().execute(other, request_args)
+        series_data = Value().execute(series, request_args)
+        other_data = Value().execute(other, request_args)
         if series_data['errors'] or other_data['errors']:
             self.result['errors'].extend(series_data['errors'])
             return []

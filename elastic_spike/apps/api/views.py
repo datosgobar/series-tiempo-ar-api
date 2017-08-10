@@ -10,6 +10,7 @@ from elasticsearch_dsl import Search
 from elastic_spike.apps.api.aggregations.index import Index
 from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.proportion import Proportion
+from elastic_spike.apps.api.aggregations.value import Value
 
 
 class SearchAPI(View):
@@ -33,7 +34,7 @@ class SearchAPI(View):
                     {'error': 'Serie inválida: {}'.format(series)}
                 )
             else:
-                aggr = request.GET.get('agg', 'avg')
+                aggr = request.GET.get('agg', 'value')
                 aggregation = self.aggregations.get(aggr)
                 if not aggregation:
                     result['errors'].append(
@@ -53,6 +54,7 @@ class SearchAPI(View):
         return JsonResponse(result)
 
     def init_aggregations(self):
+        self.aggregations['value'] = Value()
         self.aggregations['avg'] = Default()
         self.aggregations['min'] = Default()
         self.aggregations['max'] = Default()
