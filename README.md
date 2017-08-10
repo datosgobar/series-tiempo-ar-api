@@ -197,4 +197,4 @@ Durante el desarrollo del spike pudimos comenzar a pensar en la arquitectura que
 
 ![Arquitectura](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/imgs/APIs%20y%20TS%20-%20Arquitectura.png)
 
-![Procesamiento de Requests](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/img/APIs%20y%20TS%20-%20Procesamiento de Request.png)
+![Procesamiento de Requests](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/imgs/APIs%20y%20TS%20-%20Procesamiento%20de%20Request.png)
