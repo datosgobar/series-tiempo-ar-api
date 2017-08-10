@@ -1,12 +1,13 @@
 #! coding: utf-8
 import json
-import requests
 from random import random
 from datetime import datetime
+
+import requests
 from dateutil.relativedelta import relativedelta
 from django.core.management import BaseCommand
 
-mapping = '''{
+MAPPING = '''{
   "properties": {
     "timestamp":                    {"type": "date"},
     "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
@@ -57,7 +58,7 @@ class Command(BaseCommand):
         if response.status_code == 404:
             requests.put(index_url)
 
-        for i in range(indicators):
+        for _ in range(indicators):
             self.generate_random_series(options['years'], options['interval'])
 
     def generate_random_series(self, years, interval):
@@ -70,7 +71,7 @@ class Command(BaseCommand):
         # Chequeo si existe el mapping, si no, lo creo
         response = requests.get(url)
         if response.status_code == 404:
-            requests.put(url, mapping)
+            requests.put(url, MAPPING)
 
         message = ''  # Request de la API de bulk create
         current_date = self.start_date
