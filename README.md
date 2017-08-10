@@ -195,6 +195,6 @@ Parámetros opcionales:
 
 Durante el desarrollo del spike pudimos comenzar a pensar en la arquitectura que tendrá la API basada en datos temporalizados y en evaluar tecnologías que nos permitirán atacar las funcionalidades a implementar.
 
-![Arquitectura](./docs/img/APIs y TS - Arquitectura.png)
+![Arquitectura](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/imgs/APIs%20y%20TS%20-%20Arquitectura.png)
 
-![Procesamiento de Requests](./docs/img/APIs y TS - Procesamiento de Request.png)
+![Procesamiento de Requests](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/img/APIs%20y%20TS%20-%20Procesamiento de Request.png)
