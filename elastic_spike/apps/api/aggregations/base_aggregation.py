@@ -4,6 +4,8 @@ from elasticsearch import Elasticsearch
 
 
 class BaseAggregation:
+    date_format = '%Y-%m-%dT%H:%M:%S.000Z'
+
     def __init__(self):
         self.result = {'errors': []}
         self.elastic = Elasticsearch()

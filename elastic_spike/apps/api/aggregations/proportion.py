@@ -8,12 +8,14 @@ from .default import Default
 
 class Proportion(BaseAggregation):
     """Calcula la proporción de la serie 'series' sobre la original"""
-    date_format = '%Y-%m-%dT%H:%M:%S.000Z'
 
     def execute(self, series, request_args):
         if self.validate_args(request_args):
             other = request_args.get('series', '')
             results = self.execute_search(series, other, request_args)
+            if not results:
+                return self.result
+
             # Voy llenando la lista values con los resultados
             values = results[0]
             starting_date = datetime.strptime(results[0][0]['timestamp'],
@@ -65,8 +67,12 @@ class Proportion(BaseAggregation):
     def execute_search(self, series, other, request_args):
         request_args['agg'] = 'avg'
         series_data = Default().execute(series, request_args)
+        other_data = Default().execute(other, request_args)
+        if series_data['errors'] or other_data['errors']:
+            self.result['errors'].extend(series_data['errors'])
+            return []
         results = [series_data['data'],
-                   Default().execute(other, request_args)['data']]
+                   other_data['data']]
 
         self.result['other_series'] = other
         self.result['series'] = series
