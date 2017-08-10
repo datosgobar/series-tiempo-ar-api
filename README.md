@@ -190,3 +190,11 @@ Parámetros opcionales:
 - `--indicators`: Cantidad de series aleatorias a generar. Default: 1
 - `--years`: Cantidad de datos a generar. Default: 100 
 - `--interval`: Granularidad de los datos a generar. Acepta `month`, `year` o `quarter`. Default: `quarter`
+
+## Arquitectura propuesta
+
+Durante el desarrollo del spike pudimos comenzar a pensar en la arquitectura que tendrá la API basada en datos temporalizados y en evaluar tecnologías que nos permitirán atacar las funcionalidades a implementar.
+
+![Arquitectura](./docs/img/APIs y TS - Arquitectura.png)
+
+![Procesamiento de Requests](./docs/img/APIs y TS - Procesamiento de Request.png)
