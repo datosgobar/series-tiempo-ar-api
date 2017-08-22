@@ -18,13 +18,6 @@ class Default(BaseAggregation):
                         doc_type=series,
                         using=self.elastic)
 
-        try:
-            search = self.interval_filter(request_args.get('from'),
-                                          request_args.get('to'),
-                                          search)
-        except ValueError:
-            return self.result
-
         # Le decimos a Elastic que no devuelva resultados, nos interesa solo
         # el aggregation
         search = search[:0]
