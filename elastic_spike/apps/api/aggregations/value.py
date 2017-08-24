@@ -42,3 +42,35 @@ class Value(BaseAggregation):
         # second_date = datetime.strptime(second_date, self.date_format)
         #
         self.result['interval'] = "month"
+
+
+class Index(BaseAggregation):
+    def execute(self, series, request_args):
+        base = request_args.get('base')
+        field = request_args.get('field', 'value')
+        if not base:
+            self.result['errors'].append("Base no especificada")
+            return self.result
+
+        search = Value().execute(series, request_args)
+        search_data = search.get('data')
+        if not search_data:
+            self.result['errors'].extend(search.get('errors', []))
+        else:
+            search_base = Search(index="indicators",
+                                 doc_type=series,
+                                 using=self.elastic).filter()
+
+            search_base.query = Match(timestamp=base)
+            result = search_base.execute()
+            if not len(result.hits.hits):
+                self.result['errors'].append("Base errónea")
+                return self.result
+
+            self.result['base'] = result.hits.hits[0]['_id']
+            base_value = result.hits.hits[0]['_source'][field]
+
+            for data in search_data:
+                data['value'] = data['value'] / base_value * 100
+            self.result['data'] = search_data
+        return self.result
