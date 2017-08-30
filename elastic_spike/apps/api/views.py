@@ -11,6 +11,7 @@ from elastic_spike.apps.api.aggregations.index import Index
 from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.proportion import Proportion
 from elastic_spike.apps.api.aggregations.value import Value
+from elastic_spike.apps.api.query import Query
 
 
 class SearchAPI(View):
@@ -61,3 +62,8 @@ class SearchAPI(View):
         self.aggregations['sum'] = Default()
         self.aggregations['proportion'] = Proportion()
         self.aggregations['index'] = Index()
+
+
+def query_view(request, series=None):
+    q = Query(series, request.GET.copy())
+    return JsonResponse(q.result)
