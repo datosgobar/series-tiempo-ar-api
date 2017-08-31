@@ -64,6 +64,6 @@ class SearchAPI(View):
         self.aggregations['index'] = Index()
 
 
-def query_view(request, series=None):
-    q = Query(series, request.GET.copy())
+def query_view(request):
+    q = Query(request.GET.copy())
     return JsonResponse(q.result)

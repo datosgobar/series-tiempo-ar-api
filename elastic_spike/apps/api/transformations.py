@@ -1,11 +1,7 @@
 #! coding: utf-8
 
-import re
-from datetime import datetime
 from elasticsearch import Elasticsearch
-from elasticsearch.client import IndicesClient
 from elasticsearch_dsl import Search, MultiSearch
-from elasticsearch_dsl.query import Match
 
 
 class BaseAggregation:
@@ -23,80 +19,32 @@ class BaseAggregation:
         raise NotImplementedError
 
 
-class Default(BaseAggregation):
-    """Calcula el promedio de una serie en base a el parámetro 'interval'"""
-
-    def execute(self):
-        interval = self.args.get('interval', 'year')
-        field = self.args.get('field', 'value')
-        agg = self.args.get('agg', 'avg')
-
-        search = Search(index="indicators",
-                        doc_type=self.series,
-                        using=self.elastic)
-
-        # Le decimos a Elastic que no devuelva resultados, nos interesa solo
-        # el aggregation
-        search = search[:0]
-
-        search.aggs.bucket('agg',
-                           'date_histogram',
-                           field='timestamp',
-                           interval=interval).metric('agg',
-                                                     agg,
-                                                     field=field)
-
-        search_result = search.execute()
-        data = []
-        for element in search_result.aggregations.agg.buckets:
-            timestamp = element['key_as_string']
-            average = element['agg']
-            if average.value is None:
-                self.errors.append("Valores no encontrados para el intervalo "
-                                   "pedido. Pruebe con una granularidad mayor")
-                break
-            data.append({
-                'timestamp': timestamp,
-                'value': average.value
-            })
-
-        if not self.errors:
-            self.data = data
-
-
 class Value(BaseAggregation):
 
     def execute(self):
-        search = self.generate_search()
-
         ms = MultiSearch(index="indicators", using=self.elastic)
-        ms = ms.add(search)
+        for serie in self.series:
+            search = self.generate_search(serie)
+            ms = ms.add(search)
+
         responses = ms.execute()
 
-        data = []
+        self.format_response(responses)
+
+    def format_response(self, responses):
         for response in responses:
-            for hit in response:
-                if hit.value is None:
-                    self.errors.append("Valores no encontrados para el intervalo pedido. Pruebe con una granularidad mayor")
-                    break
-                data.append({
-                    'timestamp': hit.timestamp,
-                    'value': hit.value
-                })
+            self.populate_data(response, responses.index(response))
 
-        if not self.errors:
-            self.data = data
-
-    def generate_search(self):
-        """Crea el objeto search para pegarle a Elastic a partir de
-        los parámetros pasados, de existir. Se especifica:
+    def generate_search(self, serie):
+        """Crea el objeto search de una serie para pegarle a Elastic
+        a partir de los parámetros pasados, de existir. Se especifica:
             * Intervalo de tiempo
             * Ordenamiento de resultados
             * Paginación de resultados
         """
 
         search = Search(index="indicators",
-                        doc_type=self.series,
+                        doc_type=serie['name'],
                         using=self.elastic)
 
         # Si 'to' o 'from' son None, Elastic lo ignora
@@ -111,8 +59,18 @@ class Value(BaseAggregation):
         search = search.sort('timestamp')
 
         # Paginación
-        start = self.args.get('start', 0)
-        rows = self.args.get('rows', 100)
-        search = search[start:rows]
+        start = int(self.args.get('start', 0))
+        limit = int(self.args.get('limit', 100))
+        search = search[start:limit]
 
         return search
+
+    def populate_data(self, response, response_index):
+        rep_mode = self.series[response_index]['rep_mode']
+        for i in range(len(response)):
+            hit = response[i]
+            if i == len(self.data):
+                data_row = [hit.timestamp]
+                self.data.append(data_row)
+
+            self.data[i].append(hit[rep_mode])

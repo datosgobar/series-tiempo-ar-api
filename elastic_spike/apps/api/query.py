@@ -10,7 +10,7 @@ from elastic_spike.apps.api.transformations import Value
 class Query:
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
-    def __init__(self, series, query_args):
+    def __init__(self, query_args):
         """
         Instancia una nueva query
         
@@ -18,7 +18,7 @@ class Query:
             series (str):  Nombre de una serie
             parameters (dict): Opciones de la query
         """
-        self.series = series
+        self.series = []
         self.args = query_args
         self.elastic = Elasticsearch()
         self.result = {}
@@ -29,6 +29,8 @@ class Query:
 
     def run(self):
         search = Value(self.series, self.args)
+        pass
+
         result = {
             'data': search.data,
             'errors': search.errors,
@@ -38,20 +40,40 @@ class Query:
 
     def validate_args(self):
         """Valida los parámetros recibidos"""
-        if not self.series:
+
+        series = self.args.get('series')
+        if not series:
             self.append_error('No se especificó una serie de tiempo')
             return False
 
-        indices = IndicesClient(client=self.elastic)
-        if not indices.exists_type(index="indicators", doc_type=self.series):
-            self.append_error('Serie inválida: {}'.format(self.series))
-            return False
+        for serie in series.split(','):
+            if not self.split_single_series(serie):
+                return False
 
         _from = self.args.get('from')
         _to = self.args.get('to')
         if not self.validate_from_to_dates(_from, _to):
             return False
 
+        return True
+
+    def split_single_series(self, serie):
+        name, rep_mode = None, 'value'
+        colon_index = serie.find(':')
+        if colon_index < 0:
+            name = serie
+        else:
+            name, rep_mode = serie.split(':')
+
+        self.series.append({
+            'name': name,
+            'rep_mode': rep_mode
+        })
+
+        indices = IndicesClient(client=self.elastic)
+        if not indices.exists_type(index="indicators", doc_type=name):
+            self.append_error('Serie inválida: {}'.format(name))
+            return False
         return True
 
     def append_error(self, msg):
@@ -63,8 +85,10 @@ class Query:
         })
 
     def validate_from_to_dates(self, _from, _to):
-        """Devuelve un booleano que indica si el intervalo (_to, _from) es
-        válido. Actualiza la lista de errores de ser necesario"""
+        """Devuelve un booleano que indica si el intervalo
+        (_to, _from) es válido. Actualiza la lista de errores de ser
+        necesario.
+        """
         parsed_from, parsed_to = None, None
         if _from:
             try:
@@ -80,7 +104,8 @@ class Query:
 
         if parsed_from and parsed_to:
             if parsed_from > parsed_to:
-                self.append_error("Filtro por rango temporal inválido (from > to)")
+                error = "Filtro por rango temporal inválido (from > to)"
+                self.append_error(error)
                 return False
         return True
 
