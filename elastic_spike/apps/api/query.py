@@ -21,17 +21,20 @@ class Query:
         self.series = series
         self.args = query_args
         self.elastic = Elasticsearch()
-        self.result = {
-            'errors': []
-        }
+        self.result = {}
         if not self.validate_args():
             return
 
         self.run()
 
     def run(self):
-        self.result.update(Value().execute(self.series, self.args))
-        return self.result
+        search = Value(self.series, self.args)
+        result = {
+            'data': search.data,
+            'errors': search.errors,
+            'length': len(search.data)
+        }
+        self.result.update(result)
 
     def validate_args(self):
         """Valida los parámetros recibidos"""
@@ -52,6 +55,9 @@ class Query:
         return True
 
     def append_error(self, msg):
+        if self.result.get('errors') is None:
+            self.result['errors'] = []
+
         self.result['errors'].append({
             'error': msg
         })
@@ -84,12 +90,12 @@ class Query:
         year_only = r'\d{4}'
 
         if re.fullmatch(full_date, interval):
-            result = datetime.strptime(interval, '%Y-%m-%d')
+            parsed_date = datetime.strptime(interval, '%Y-%m-%d')
         elif re.fullmatch(year_and_month, interval):
-            result = datetime.strptime(interval, "%Y-%m")
+            parsed_date = datetime.strptime(interval, "%Y-%m")
         elif re.fullmatch(year_only, interval):
-            result = datetime.strptime(interval, "%Y")
+            parsed_date = datetime.strptime(interval, "%Y")
         else:
             self.append_error('Formato de rango temporal inválido')
             raise ValueError
-        return result
+        return parsed_date
