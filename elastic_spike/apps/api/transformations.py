@@ -60,7 +60,7 @@ class Value(BaseAggregation):
 
         # Paginación
         start = int(self.args.get('start', 0))
-        limit = int(self.args.get('limit', 100))
+        limit = start + int(self.args.get('limit', 100))
         search = search[start:limit]
 
         return search
