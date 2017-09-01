@@ -40,23 +40,42 @@ class Query:
         self.result.update(result)
 
     def validate_args(self):
-        """Valida los parámetros recibidos"""
+        """Valida los parámetros recibidos. Si encuentra errores va
+        agregandolos a los resultados. Los argumentos serán válidos
+        si luego de todas las validaciones no se encontró ningún
+        error. En ese caso devuelve True, de haber errores, False
+        """
 
         series = self.args.get('series')
         if not series:
             self.append_error('No se especificó una serie de tiempo')
-            return False
 
         for serie in series.split(','):
-            if not self.split_single_series(serie):
-                return False
+            self.split_single_series(serie)
 
-        _from = self.args.get('from')
-        _to = self.args.get('to')
-        if not self.validate_from_to_dates(_from, _to):
-            return False
+        self.validate_from_to_dates()
+        self.validate_pagination()
 
-        return True
+        return len(self.result['errors']) == 0
+
+    def validate_pagination(self):
+        limit = self.args.get('limit')
+        try:
+            parsed_limit = int(limit)
+        except ValueError:
+            parsed_limit = -1
+
+        if limit and parsed_limit <= 0:  # limit == 0 da query vacía
+            self.append_error("Parámetro 'limit' inválido: {}".format(limit))
+
+        start = self.args.get('start')
+        try:
+            parsed_start = int(self.args.get('start'))
+        except ValueError:
+            parsed_start = -1
+
+        if start and parsed_start < 0:
+            self.append_error("Parámetro 'start' inválido: {}".format(start))
 
     def split_single_series(self, serie):
         name, rep_mode = None, 'value'
@@ -89,23 +108,25 @@ class Query:
             'error': msg
         })
 
-    def validate_from_to_dates(self, _from, _to):
+    def validate_from_to_dates(self):
         """Devuelve un booleano que indica si el intervalo
         (_to, _from) es válido. Actualiza la lista de errores de ser
         necesario.
         """
+        _from = self.args.get('from')
+        _to = self.args.get('to')
         parsed_from, parsed_to = None, None
         if _from:
             try:
                 parsed_from = self.parse_interval_date(_from)
             except ValueError:
-                return False
+                pass
 
         if _to:
             try:
                 parsed_to = self.parse_interval_date(_to)
             except ValueError:
-                return False
+                pass
 
         if parsed_from and parsed_to:
             if parsed_from > parsed_to:
@@ -126,6 +147,7 @@ class Query:
         elif re.fullmatch(year_only, interval):
             parsed_date = datetime.strptime(interval, "%Y")
         else:
-            self.append_error('Formato de rango temporal inválido')
+            error = 'Formato de rango temporal inválido: {}'.format(interval)
+            self.append_error(error)
             raise ValueError
         return parsed_date
