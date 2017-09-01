@@ -53,11 +53,11 @@ class Query:
             for serie in series.split(','):
                 self.split_single_series(serie)
 
-        self.validate_from_to_dates()
+        self.validate_start_end_dates()
         self.validate_pagination('limit')
         self.validate_pagination('start')
 
-        return len(self.result['errors']) == 0
+        return self.result.get('errors') is None
 
     def validate_pagination(self, arg):
         """Valida la conversión de parámetros que deberían
@@ -108,46 +108,44 @@ class Query:
             'error': msg
         })
 
-    def validate_from_to_dates(self):
+    def validate_start_end_dates(self):
         """Devuelve un booleano que indica si el intervalo
-        (_to, _from) es válido. Actualiza la lista de errores de ser
+        (end, start) es válido. Actualiza la lista de errores de ser
         necesario.
         """
-        _from = self.args.get('from')
-        _to = self.args.get('to')
-        parsed_from, parsed_to = None, None
-        if _from:
+        start = self.args.get('start')
+        end = self.args.get('end')
+        parsed_start, parsed_end = None, None
+        if start:
             try:
-                parsed_from = self.parse_interval_date(_from)
+                parsed_start = self.validate_date(start)
             except ValueError:
                 pass
 
-        if _to:
+        if end:
             try:
-                parsed_to = self.parse_interval_date(_to)
+                parsed_end = self.validate_date(end)
             except ValueError:
                 pass
 
-        if parsed_from and parsed_to:
-            if parsed_from > parsed_to:
-                error = "Filtro por rango temporal inválido (from > to)"
+        if parsed_start and parsed_end:
+            if parsed_start > parsed_end:
+                error = "Filtro por rango temporal inválido (start > end)"
                 self.append_error(error)
-                return False
-        return True
 
-    def parse_interval_date(self, interval):
+    def validate_date(self, date):
         full_date = r'\d{4}-\d{2}-\d{2}'
         year_and_month = r'\d{4}-\d{2}'
         year_only = r'\d{4}'
 
-        if re.fullmatch(full_date, interval):
-            parsed_date = datetime.strptime(interval, '%Y-%m-%d')
-        elif re.fullmatch(year_and_month, interval):
-            parsed_date = datetime.strptime(interval, "%Y-%m")
-        elif re.fullmatch(year_only, interval):
-            parsed_date = datetime.strptime(interval, "%Y")
+        if re.fullmatch(full_date, date):
+            parsed_date = datetime.strptime(date, '%Y-%m-%d')
+        elif re.fullmatch(year_and_month, date):
+            parsed_date = datetime.strptime(date, "%Y-%m")
+        elif re.fullmatch(year_only, date):
+            parsed_date = datetime.strptime(date, "%Y")
         else:
-            error = 'Formato de rango temporal inválido: {}'.format(interval)
+            error = 'Formato de rango temporal inválido: {}'.format(date)
             self.append_error(error)
             raise ValueError
         return parsed_date
