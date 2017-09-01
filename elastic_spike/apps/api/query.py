@@ -77,6 +77,10 @@ class Query:
             self.append_error("Parámetro 'limit' inválido: {}".format(arg))
 
     def split_single_series(self, serie):
+        if not serie:
+            self.append_error("Formato de series a seleccionar inválido")
+            return
+
         rep_mode = settings.API_DEFAULT_VALUES['rep_mode']
         colon_index = serie.find(':')
         if colon_index < 0:
