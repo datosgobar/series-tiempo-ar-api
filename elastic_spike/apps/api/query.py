@@ -1,7 +1,8 @@
 #! coding: utf-8
 import re
-
 from datetime import datetime
+
+from django.conf import settings
 from elasticsearch.client import IndicesClient, Elasticsearch
 
 from elastic_spike.apps.api.transformations import Value
@@ -64,6 +65,10 @@ class Query:
             name = serie
         else:
             name, rep_mode = serie.split(':')
+            if rep_mode not in settings.REP_MODES:
+                error = "Modo de representación inválido: {}".format(rep_mode)
+                self.append_error(error)
+                return False
 
         self.series.append({
             'name': name,
