@@ -121,7 +121,7 @@ class Command(BaseCommand):
 
         if len(self.prev_values):
             # Calculos relacionados al valor anterior
-            change = self.prev_values[-1]['value'] - properties['value']
+            change = properties['value'] - self.prev_values[-1]['value']
             properties['change'] = change
             pct_change = properties['value'] / self.prev_values[-1]['value'] - 1
             properties['percent_change'] = pct_change
@@ -133,7 +133,7 @@ class Command(BaseCommand):
 
                 if date - relativedelta(years=1) == prev_date:
                     # Cálculos relacionados al valor del año pasado
-                    change = prev_value['value'] - properties['value']
+                    change = properties['value'] - prev_value['value']
                     properties['change_a_year_ago'] = change
 
                     pct_change = properties['value'] / prev_value['value'] - 1
