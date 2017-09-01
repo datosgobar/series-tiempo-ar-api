@@ -46,9 +46,9 @@ class Query:
         error. En ese caso devuelve True, de haber errores, False
         """
 
-        self.validate_start_end_dates()
         self.validate_pagination('limit')
         self.validate_pagination('start')
+        self.validate_start_end_dates()
 
         series = self.args.get('series')
         if not series:
@@ -56,6 +56,7 @@ class Query:
         else:
             for serie in series.split(','):
                 self.split_single_series(serie)
+
         return self.result.get('errors') is None
 
     def validate_pagination(self, arg):
@@ -75,45 +76,6 @@ class Query:
             self.append_error("Parámetro 'limit' inválido: {}".format(arg))
         elif arg == 'limit' and parsed_arg < 1:
             self.append_error("Parámetro 'limit' inválido: {}".format(arg))
-
-    def split_single_series(self, serie):
-        if not serie:
-            self.append_error("Formato de series a seleccionar inválido")
-            return
-
-        rep_mode = settings.API_DEFAULT_VALUES['rep_mode']
-        colon_index = serie.find(':')
-        if colon_index < 0:
-            name = serie
-        else:
-            try:
-                name, rep_mode = serie.split(':')
-            except ValueError:
-                self.append_error("Formato de series a seleccionar inválido")
-                return
-
-            if rep_mode not in settings.REP_MODES:
-                error = "Modo de representación inválido: {}".format(rep_mode)
-                self.append_error(error)
-
-        self.series.append({
-            'name': name,
-            'rep_mode': rep_mode
-        })
-
-        indices = IndicesClient(client=self.elastic)
-        if not indices.exists_type(index="indicators", doc_type=name):
-            self.append_error('Serie inválida: {}'.format(name))
-            return False
-        return True
-
-    def append_error(self, msg):
-        if self.result.get('errors') is None:
-            self.result['errors'] = []
-
-        self.result['errors'].append({
-            'error': msg
-        })
 
     def validate_start_end_dates(self):
         """Devuelve un booleano que indica si el intervalo
@@ -156,3 +118,53 @@ class Query:
             self.append_error(error)
             raise ValueError
         return parsed_date
+
+    def validate_rep_mode(self):
+        rep_mode = self.args.get('representation-mode')
+        if rep_mode not in settings.REP_MODES:
+            error = "Modo de representación global inválido: {}".format(rep_mode)
+            self.append_error(error)
+
+    def split_single_series(self, serie):
+        if not serie:
+            self.append_error("Formato de series a seleccionar inválido")
+            return
+
+        # rep_mode 'default', para todas las series, overrideado
+        # si la serie individual especifica alguno
+        rep_mode = self.args.get('representation-mode')
+        if rep_mode is None:
+            rep_mode = settings.API_DEFAULT_VALUES['rep_mode']
+
+        colon_index = serie.find(':')
+        if colon_index < 0:
+            name = serie
+        else:
+            try:
+                name, rep_mode = serie.split(':')
+            except ValueError:
+                self.append_error("Formato de series a seleccionar inválido")
+                return
+
+            if rep_mode not in settings.REP_MODES:
+                error = "Modo de representación inválido: {}".format(rep_mode)
+                self.append_error(error)
+
+        self.series.append({
+            'name': name,
+            'rep_mode': rep_mode
+        })
+
+        indices = IndicesClient(client=self.elastic)
+        if not indices.exists_type(index="indicators", doc_type=name):
+            self.append_error('Serie inválida: {}'.format(name))
+            return False
+        return True
+
+    def append_error(self, msg):
+        if self.result.get('errors') is None:
+            self.result['errors'] = []
+
+        self.result['errors'].append({
+            'error': msg
+        })
