@@ -1,5 +1,6 @@
 #! coding: utf-8
 
+from django.conf import settings
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, MultiSearch
 
@@ -59,8 +60,9 @@ class Value(BaseAggregation):
         search = search.sort('timestamp')
 
         # Paginación
-        start = int(self.args.get('start', 0))
-        limit = start + int(self.args.get('limit', 100))
+        start = int(self.args.get('start', settings.API_DEFAULT_VALUES['start']))
+        default_limit = settings.API_DEFAULT_VALUES['limit']
+        limit = start + int(self.args.get('limit', default_limit))
         search = search[start:limit]
 
         return search

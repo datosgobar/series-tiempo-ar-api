@@ -49,36 +49,36 @@ class Query:
         series = self.args.get('series')
         if not series:
             self.append_error('No se especificó una serie de tiempo')
-
-        for serie in series.split(','):
-            self.split_single_series(serie)
+        else:
+            for serie in series.split(','):
+                self.split_single_series(serie)
 
         self.validate_from_to_dates()
-        self.validate_pagination()
+        self.validate_pagination('limit')
+        self.validate_pagination('start')
 
         return len(self.result['errors']) == 0
 
-    def validate_pagination(self):
-        limit = self.args.get('limit')
+    def validate_pagination(self, arg):
+        """Valida la conversión de parámetros que deberían
+        interpretarse como valores numéricos
+        """
+        arg = self.args.get(arg)
+        if not arg:
+            return
+
         try:
-            parsed_limit = int(limit)
+            parsed_arg = int(arg)
         except ValueError:
-            parsed_limit = -1
+            parsed_arg = None
 
-        if limit and parsed_limit <= 0:  # limit == 0 da query vacía
-            self.append_error("Parámetro 'limit' inválido: {}".format(limit))
-
-        start = self.args.get('start')
-        try:
-            parsed_start = int(self.args.get('start'))
-        except ValueError:
-            parsed_start = -1
-
-        if start and parsed_start < 0:
-            self.append_error("Parámetro 'start' inválido: {}".format(start))
+        if parsed_arg is None or parsed_arg < 0:
+            self.append_error("Parámetro 'limit' inválido: {}".format(arg))
+        elif arg == 'limit' and parsed_arg < 1:
+            self.append_error("Parámetro 'limit' inválido: {}".format(arg))
 
     def split_single_series(self, serie):
-        name, rep_mode = None, 'value'
+        rep_mode = settings.API_DEFAULT_VALUES['rep_mode']
         colon_index = serie.find(':')
         if colon_index < 0:
             name = serie
