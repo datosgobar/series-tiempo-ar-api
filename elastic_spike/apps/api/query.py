@@ -46,17 +46,16 @@ class Query:
         error. En ese caso devuelve True, de haber errores, False
         """
 
+        self.validate_start_end_dates()
+        self.validate_pagination('limit')
+        self.validate_pagination('start')
+
         series = self.args.get('series')
         if not series:
             self.append_error('No se especificó una serie de tiempo')
         else:
             for serie in series.split(','):
                 self.split_single_series(serie)
-
-        self.validate_start_end_dates()
-        self.validate_pagination('limit')
-        self.validate_pagination('start')
-
         return self.result.get('errors') is None
 
     def validate_pagination(self, arg):
@@ -83,11 +82,15 @@ class Query:
         if colon_index < 0:
             name = serie
         else:
-            name, rep_mode = serie.split(':')
+            try:
+                name, rep_mode = serie.split(':')
+            except ValueError:
+                self.append_error("Formato de series a seleccionar inválido")
+                return
+
             if rep_mode not in settings.REP_MODES:
                 error = "Modo de representación inválido: {}".format(rep_mode)
                 self.append_error(error)
-                return False
 
         self.series.append({
             'name': name,
