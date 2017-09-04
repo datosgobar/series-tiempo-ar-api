@@ -5,7 +5,7 @@ from datetime import datetime
 from django.conf import settings
 from elasticsearch.client import IndicesClient, Elasticsearch
 
-from elastic_spike.apps.api.transformations import Value
+from elastic_spike.apps.api.transformations import Value, Collapse
 
 
 class Query:
@@ -29,7 +29,10 @@ class Query:
         self.run()
 
     def run(self):
-        search = Value(self.series, self.args)
+        if 'collapse' in self.args:
+            search = Collapse(self.series, self.args)
+        else:
+            search = Value(self.series, self.args)
 
         result = {
             'data': search.data,
