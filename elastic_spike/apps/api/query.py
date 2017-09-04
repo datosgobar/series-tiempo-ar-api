@@ -14,7 +14,7 @@ class Query:
     def __init__(self, query_args):
         """
         Instancia una nueva query
-        
+
         args:
             series (str):  Nombre de una serie
             parameters (dict): Opciones de la query
@@ -30,7 +30,6 @@ class Query:
 
     def run(self):
         search = Value(self.series, self.args)
-        pass
 
         result = {
             'data': search.data,

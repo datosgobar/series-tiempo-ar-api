@@ -23,12 +23,12 @@ class BaseAggregation:
 class Value(BaseAggregation):
 
     def execute(self):
-        ms = MultiSearch(index="indicators", using=self.elastic)
+        multi_search = MultiSearch(index="indicators", using=self.elastic)
         for serie in self.series:
             search = self.generate_search(serie)
-            ms = ms.add(search)
+            multi_search = multi_search.add(search)
 
-        responses = ms.execute()
+        responses = multi_search.execute()
 
         self.format_response(responses)
 
@@ -60,7 +60,8 @@ class Value(BaseAggregation):
         search = search.sort('timestamp')
 
         # Paginación
-        start = int(self.args.get('start', settings.API_DEFAULT_VALUES['start']))
+        default_start = settings.API_DEFAULT_VALUES['start']
+        start = int(self.args.get('start', default_start))
         default_limit = settings.API_DEFAULT_VALUES['limit']
         limit = start + int(self.args.get('limit', default_limit))
         search = search[start:limit]

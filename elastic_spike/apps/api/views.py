@@ -65,5 +65,5 @@ class SearchAPI(View):
 
 
 def query_view(request):
-    q = Query(request.GET.copy())
-    return JsonResponse(q.result)
+    query = Query(request.GET.copy())
+    return JsonResponse(query.result)
