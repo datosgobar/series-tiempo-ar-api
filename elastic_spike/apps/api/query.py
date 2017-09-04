@@ -81,8 +81,8 @@ class Query:
         (end, start) es válido. Actualiza la lista de errores de ser
         necesario.
         """
-        start = self.args.get('start')
-        end = self.args.get('end')
+        start = self.args.get('start_date')
+        end = self.args.get('end_date')
         parsed_start, parsed_end = None, None
         if start:
             try:

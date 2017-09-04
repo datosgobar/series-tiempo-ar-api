@@ -49,11 +49,11 @@ class Value(BaseAggregation):
                         using=self.elastic)
 
         # Si 'to' o 'from' son None, Elastic lo ignora
-        _to = self.args.get('to')
-        _from = self.args.get('from')
+        start_date = self.args.get('start_date')
+        end_date = self.args.get('end_date')
         _filter = {
-            'lte': _to,
-            'gte': _from
+            'lte': end_date,
+            'gte': start_date
         }
         search = search.filter('range', timestamp=_filter)
 
