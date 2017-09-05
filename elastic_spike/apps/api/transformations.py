@@ -33,8 +33,9 @@ class Value(BaseAggregation):
         self.format_response(responses)
 
     def format_response(self, responses):
-        for response in responses:
-            self.populate_data(response, responses.index(response))
+        for i, response in enumerate(responses):
+            rep_mode = self.series[i]['rep_mode']
+            self.populate_data(response, rep_mode)
 
     def generate_search(self, serie):
         """Crea el objeto search de una serie para pegarle a Elastic
@@ -68,10 +69,8 @@ class Value(BaseAggregation):
 
         return search
 
-    def populate_data(self, response, response_index):
-        rep_mode = self.series[response_index]['rep_mode']
-        for i in range(len(response)):
-            hit = response[i]
+    def populate_data(self, response, rep_mode):
+        for i, hit in enumerate(response):
             if i == len(self.data):
                 data_row = [hit.timestamp]
                 self.data.append(data_row)
