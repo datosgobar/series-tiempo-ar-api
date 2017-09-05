@@ -75,7 +75,6 @@ class Value(BaseAggregation):
             if i == len(self.data):
                 data_row = [hit.timestamp]
                 self.data.append(data_row)
-
             self.data[i].append(hit[rep_mode])
 
 
@@ -134,12 +133,16 @@ class Collapse(BaseAggregation):
         return search
 
     def populate_data(self, response):
+        default_start = settings.API_DEFAULT_VALUES['start']
+        start = int(self.args.get('start'), default_start)
         default_limit = settings.API_DEFAULT_VALUES['limit']
         limit = int(self.args.get('limit', default_limit))
-        for i in range(len(response.aggregations.agg.buckets)):
-            if i >= limit:
+
+        hits = response.aggregations.agg.buckets
+        for i in range(len(hits)):
+            if i >= limit or i + start > len(hits):
                 break
-            hit = response.aggregations.agg.buckets[i]
+            hit = hits[i + start]
             if i == len(self.data):
                 data_row = [hit['key_as_string']]
                 self.data.append(data_row)
