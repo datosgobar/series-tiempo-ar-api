@@ -14,15 +14,43 @@ class BaseAggregation:
         self.elastic = Elasticsearch()
         self.series = series
         self.args = request_args
-        self.execute()
+        self.run()
 
-    def execute(self):
+    def run(self):
+        multi_search = MultiSearch(index="indicators", using=self.elastic)
+        for serie in self.series:
+            search = self.generate_search(serie)
+            multi_search = multi_search.add(search)
+
+        responses = multi_search.execute()
+
+        self.format_response(responses)
+
+    def generate_search(self, serie):
+        search = Search(index="indicators",
+                        doc_type=serie['name'],
+                        using=self.elastic)
+
+        # Si 'to' o 'from' son None, Elastic lo ignora
+        start_date = self.args.get('start_date')
+        end_date = self.args.get('end_date')
+        _filter = {
+            'lte': end_date,
+            'gte': start_date
+        }
+        search = search.filter('range', timestamp=_filter)
+
+        search = search.sort('timestamp')
+
+        return search
+
+    def format_response(self, responses):
         raise NotImplementedError
 
 
 class Value(BaseAggregation):
 
-    def execute(self):
+    def run(self):
         multi_search = MultiSearch(index="indicators", using=self.elastic)
         for serie in self.series:
             search = self.generate_search(serie)
@@ -44,21 +72,7 @@ class Value(BaseAggregation):
             * Ordenamiento de resultados
             * Paginación de resultados
         """
-
-        search = Search(index="indicators",
-                        doc_type=serie['name'],
-                        using=self.elastic)
-
-        # Si 'to' o 'from' son None, Elastic lo ignora
-        start_date = self.args.get('start_date')
-        end_date = self.args.get('end_date')
-        _filter = {
-            'lte': end_date,
-            'gte': start_date
-        }
-        search = search.filter('range', timestamp=_filter)
-
-        search = search.sort('timestamp')
+        search = BaseAggregation.generate_search(self, serie)
 
         # Paginación
         default_start = settings.API_DEFAULT_VALUES['start']
@@ -78,8 +92,10 @@ class Value(BaseAggregation):
 
 
 class Collapse(BaseAggregation):
-    """Calcula el promedio de una serie en base a el parámetro 'interval'"""
-    def execute(self):
+    """Calcula el promedio de una serie en base a una bucket
+    aggregation
+    """
+    def run(self):
         multi_search = MultiSearch(index="indicators", using=self.elastic)
         for serie in self.series:
             search = self.generate_search(serie)
@@ -90,8 +106,22 @@ class Collapse(BaseAggregation):
         self.format_response(responses)
 
     def format_response(self, responses):
+        default_start = settings.API_DEFAULT_VALUES['start']
+        start = int(self.args.get('start', default_start))
+        default_limit = settings.API_DEFAULT_VALUES['limit']
+        limit = int(self.args.get('limit', default_limit))
+
         for response in responses:
-            self.populate_data(response)
+            hits = response.aggregations.agg.buckets
+            for i in range(len(hits)):
+                if i >= limit or i + start > len(hits):
+                    break
+                hit = hits[i + start]
+                if i == len(self.data):
+                    data_row = [hit['key_as_string']]
+                    self.data.append(data_row)
+
+                self.data[i].append(hit['agg'].value)
 
     def generate_search(self, serie):
         """Crea el objeto search de una serie para pegarle a Elastic
@@ -101,21 +131,7 @@ class Collapse(BaseAggregation):
             * Paginación de resultados
         """
 
-        search = Search(index="indicators",
-                        doc_type=serie['name'],
-                        using=self.elastic)
-
-        # Si 'to' o 'from' son None, Elastic lo ignora
-        start_date = self.args.get('start_date')
-        end_date = self.args.get('end_date')
-        _filter = {
-            'lte': end_date,
-            'gte': start_date
-        }
-        search = search.filter('range', timestamp=_filter)
-
-        search = search.sort('timestamp')
-
+        search = BaseAggregation.generate_search(self, serie)
         # Le decimos a Elastic que no devuelva resultados, nos interesa solo
         # el aggregation
         search = search[:0]
@@ -130,20 +146,3 @@ class Collapse(BaseAggregation):
                                                      field=serie['rep_mode'])
 
         return search
-
-    def populate_data(self, response):
-        default_start = settings.API_DEFAULT_VALUES['start']
-        start = int(self.args.get('start'), default_start)
-        default_limit = settings.API_DEFAULT_VALUES['limit']
-        limit = int(self.args.get('limit', default_limit))
-
-        hits = response.aggregations.agg.buckets
-        for i in range(len(hits)):
-            if i >= limit or i + start > len(hits):
-                break
-            hit = hits[i + start]
-            if i == len(self.data):
-                data_row = [hit['key_as_string']]
-                self.data.append(data_row)
-
-            self.data[i].append(hit['agg'].value)
