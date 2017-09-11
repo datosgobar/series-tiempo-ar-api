@@ -1,9 +1,11 @@
 #! coding: utf-8
 import re
+from abc import abstractmethod
 from datetime import datetime
 
 from django.conf import settings
 from elasticsearch.client import IndicesClient, Elasticsearch
+from elasticsearch_dsl import Search
 
 from elastic_spike.apps.api.transformations import Value, Collapse
 
@@ -170,3 +172,175 @@ class Query:
         self.result['errors'].append({
             'error': msg
         })
+
+
+class BaseSearch:
+    """Crea un objeto Search con parámetros comunes a todas las queries
+    posibles
+    """
+
+    def __init__(self):
+        self.elastic = Elasticsearch()
+
+    def get(self):
+        return Search(using=self.elastic,
+                      index=settings.TS_INDEX)
+
+
+class BasePipeline:
+
+    def __init__(self):
+        self.errors = []
+
+    @abstractmethod
+    def run(self, series):
+        """Ejecuta la operación del pipeline sobre el parámetro series
+        
+        Args:
+            series (dict): diccionario que represente a una serie, con
+            claves 'search' (elasticsearch-dsl.Search) y 'rep_mode'
+        Returns:
+            dict: nuevo objeto series, modificado
+        """
+        raise NotImplementedError
+
+    def append_error(self, msg):
+        self.errors.append({
+            'error': msg
+        })
+
+
+class Pagination(BasePipeline):
+    """Agrega paginación de resultados a una búsqueda"""
+    def __init__(self, start, limit):
+        super().__init__()
+        if not start:
+            start = settings.API_DEFAULT_VALUES['start']
+
+        if not limit:
+            limit = settings.API_DEFAULT_VALUES['limit']
+
+        self.start = start
+        self.limit = limit
+
+    def run(self, series):
+        self.validate_arg(self.start)
+        self.validate_arg(self.limit, min_value=1)
+        if self.errors:
+            raise ValueError
+
+        start = int(self.start)
+        limit = self.start + int(self.limit)
+        series = series.copy()
+        series['search'] = series['search'][start:limit]
+        return series
+
+    def validate_arg(self, arg, min_value=0):
+        try:
+            parsed_arg = int(arg)
+        except ValueError:
+            parsed_arg = None
+
+        if parsed_arg is None or parsed_arg < min_value:
+            self.append_error("Parámetro 'limit' inválido: {}".format(arg))
+
+
+class DateFilter(BasePipeline):
+
+    def __init__(self, start_date=None, end_date=None):
+        super().__init__()
+        self.start = start_date
+        self.end = end_date
+
+    def run(self, series):
+        self.validate_start_end_dates()
+        if self.errors:
+            raise ValueError
+
+        _filter = {
+            'lte': self.end,
+            'gte': self.start
+        }
+        series = series.copy()
+        series['search'] = series['search'].filter('range', timestamp=_filter)
+        return series
+
+    def validate_start_end_dates(self):
+        """Valida el intervalo de fechas (start, end). Actualiza la
+        lista de errores de ser necesario.
+        """
+
+        parsed_start, parsed_end = None, None
+        if self.start:
+            try:
+                parsed_start = self.validate_date(self.start)
+            except ValueError:
+                pass
+
+        if self.end:
+            try:
+                parsed_end = self.validate_date(self.end)
+            except ValueError:
+                pass
+
+        if parsed_start and parsed_end:
+            if parsed_start > parsed_end:
+                error = "Filtro por rango temporal inválido (start > end)"
+                self.append_error(error)
+
+    def validate_date(self, date):
+        full_date = r'\d{4}-\d{2}-\d{2}'
+        year_and_month = r'\d{4}-\d{2}'
+        year_only = r'\d{4}'
+
+        if re.fullmatch(full_date, date):
+            parsed_date = datetime.strptime(date, '%Y-%m-%d')
+        elif re.fullmatch(year_and_month, date):
+            parsed_date = datetime.strptime(date, "%Y-%m")
+        elif re.fullmatch(year_only, date):
+            parsed_date = datetime.strptime(date, "%Y")
+        else:
+            error = 'Formato de rango temporal inválido: {}'.format(date)
+            self.append_error(error)
+            raise ValueError
+        return parsed_date
+
+
+class DocType(BasePipeline):
+    """Asigna el doc_type a la búsqueda: es el identificador de cada
+    serie de tiempo individual
+    """
+    def __init__(self, doc_type):
+        super().__init__()
+        self.elastic = Elasticsearch()
+        self.doc_type = doc_type
+
+    def run(self, series):
+        self.validate()
+        if self.errors:
+            raise ValueError
+
+        series = series.copy()
+        series['search'] = series['search'].doc_type(self.doc_type)
+        return series
+
+    def validate(self):
+        indices = IndicesClient(client=self.elastic)
+        if not indices.exists_type(index="indicators",
+                                   doc_type=self.doc_type):
+            self.append_error('Serie inválida: {}'.format(self.doc_type))
+
+
+class RepMode(BasePipeline):
+    def __init__(self, rep_mode):
+        super().__init__()
+        self.rep_mode = rep_mode
+
+    def run(self, series):
+        if self.rep_mode not in settings.REP_MODES:
+            error = "Modo de representación inválido: {}".format(self.rep_mode)
+            self.append_error(error)
+
+        series = series.copy()
+        series['rep_mode'] = self.rep_mode
+        return series

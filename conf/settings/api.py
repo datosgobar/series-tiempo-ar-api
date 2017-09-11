@@ -1,3 +1,8 @@
+# Único índice asignado a las series de tiempo
+TS_INDEX = 'indicators'
+
+# Modos de representación de las series, calculados y guardados
+# en el proceso de indexación
 REP_MODES = [
     'value',
     'change',
