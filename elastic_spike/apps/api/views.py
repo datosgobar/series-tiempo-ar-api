@@ -11,7 +11,7 @@ from elastic_spike.apps.api.aggregations.index import Index
 from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.proportion import Proportion
 from elastic_spike.apps.api.aggregations.value import Value
-from elastic_spike.apps.api.query import Query
+from elastic_spike.apps.api.query import QueryPipeline
 
 
 class SearchAPI(View):
@@ -65,5 +65,5 @@ class SearchAPI(View):
 
 
 def query_view(request):
-    query = Query(request.GET.copy())
+    query = QueryPipeline(request.GET.copy())
     return JsonResponse(query.result)
