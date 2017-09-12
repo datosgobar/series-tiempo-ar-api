@@ -5,13 +5,12 @@ from django.views.generic import View
 
 from elasticsearch import Elasticsearch
 from elasticsearch.client.indices import IndicesClient
-from elasticsearch_dsl import Search
 
 from elastic_spike.apps.api.aggregations.index import Index
 from elastic_spike.apps.api.aggregations.default import Default
 from elastic_spike.apps.api.aggregations.proportion import Proportion
 from elastic_spike.apps.api.aggregations.value import Value
-from elastic_spike.apps.api.query import QueryPipeline
+from elastic_spike.apps.api.pipeline import QueryPipeline
 
 
 class SearchAPI(View):
