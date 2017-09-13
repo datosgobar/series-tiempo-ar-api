@@ -94,12 +94,11 @@ class CollapseQuery(Query):
                               start + settings.API_DEFAULT_VALUES['limit'])
         for response in responses:
             hits = response.aggregations.agg.buckets
-            for i in range(len(hits)):
-                if i >= limit or i + start > len(hits):  # No hay más datos
+            for i, hit in enumerate(hits, start):
+                if i >= limit or i >= len(hits):  # No hay más datos
                     break
-                hit = hits[i + start]
-                if i == len(self.data):  # No hay row, inicializo
+                if i - start == len(self.data):  # No hay row, inicializo
                     data_row = [hit['key_as_string']]
                     self.data.append(data_row)
 
-                self.data[i].append(hit['agg'].value)
+                self.data[i - start].append(hit['agg'].value)
