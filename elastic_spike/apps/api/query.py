@@ -18,8 +18,8 @@ class Query:
         """
         self.series = []
         self.elastic = Elasticsearch()
-        self.result = {}
         self.data = []
+        self.args = {}
 
     def add_pagination(self, start, limit):
         if not len(self.series):
@@ -27,6 +27,10 @@ class Query:
 
         for serie in self.series:
             serie['search'] = serie['search'][start:limit]
+
+        # Guardo estos parámetros, necesarios en el evento de hacer un collapse
+        self.args['start'] = start
+        self.args['limit'] = limit
 
     def add_filter(self, start, end):
         if not len(self.series):
@@ -72,3 +76,30 @@ class Query:
                 data_row = [hit.timestamp]
                 self.data.append(data_row)
             self.data[i].append(hit[rep_mode])
+
+
+class CollapseQuery(Query):
+    """Calcula el promedio de una serie en base a una bucket
+    aggregation
+    """
+    def __init__(self, other):
+        super().__init__()
+        self.series = other.series.copy()
+        self.args = other.args.copy()
+
+    def format_response(self, responses):
+
+        start = self.args.get('start', settings.API_DEFAULT_VALUES['start'])
+        limit = self.args.get('limit',
+                              start + settings.API_DEFAULT_VALUES['limit'])
+        for response in responses:
+            hits = response.aggregations.agg.buckets
+            for i in range(len(hits)):
+                if i >= limit or i + start > len(hits):  # No hay más datos
+                    break
+                hit = hits[i + start]
+                if i == len(self.data):  # No hay row, inicializo
+                    data_row = [hit['key_as_string']]
+                    self.data.append(data_row)
+
+                self.data[i].append(hit['agg'].value)

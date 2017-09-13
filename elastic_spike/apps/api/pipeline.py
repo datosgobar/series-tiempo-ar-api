@@ -7,12 +7,20 @@ from django.conf import settings
 from elasticsearch import Elasticsearch
 from elasticsearch.client import IndicesClient
 
-from elastic_spike.apps.api.query import Query
+from elastic_spike.apps.api.query import Query, CollapseQuery
 
 
 class QueryPipeline:
-    def __init__(self, query_args):
-        self.args = query_args
+    """Pipeline del proceso de queries de la serie de tiempo. Ejecuta
+    varias operaciones o comandos sobre un objeto query, usando los
+    parámetros pasados por el request"""
+    def __init__(self, request_args):
+        """
+        Args:
+            request_args (dict): dict con los parámetros del GET
+                request
+        """
+        self.args = request_args
         self.result = {}
         self.elastic = Elasticsearch()
         self.commands = self.init_commands()
@@ -22,7 +30,7 @@ class QueryPipeline:
         query = Query()
         for cmd in self.commands:
             cmd_instance = cmd()
-            cmd_instance.run(query, self.args)
+            query = cmd_instance.run(query, self.args)
             if cmd_instance.errors:
                 self.result['errors'] = cmd_instance.errors.copy()
                 return
@@ -36,6 +44,7 @@ class QueryPipeline:
             NameAndRepMode,
             DateFilter,
             Pagination,
+            Collapse,
             Execute
         ]
 
@@ -49,11 +58,10 @@ class BaseOperation:
         """Ejecuta la operación del pipeline sobre el parámetro series
 
         Args:
-            query (dict): diccionario que represente a una serie, con
-            por lo menos 'search' (de tipo elasticsearch-dsl.Search)
-            args: parámetros del comando a ejecutar
+            query (Query)
         Returns:
-            dict: nuevo objeto series, modificado
+            Query: nuevo objeto query, el original con la operación
+                pertinente aplicada
         """
         raise NotImplementedError
 
@@ -77,6 +85,7 @@ class Pagination(BaseOperation):
         start = int(start)
         limit = start + int(limit)
         query.add_pagination(start, limit)
+        return query
 
     def validate_arg(self, arg, min_value=0):
         try:
@@ -103,6 +112,7 @@ class DateFilter(BaseOperation):
             raise ValueError
 
         query.add_filter(self.start, self.end)
+        return query
 
     def validate_start_end_dates(self):
         """Valida el intervalo de fechas (start, end). Actualiza la
@@ -147,7 +157,9 @@ class DateFilter(BaseOperation):
 
 class NameAndRepMode(BaseOperation):
     """Asigna el doc_type a la búsqueda, el identificador de cada
-    serie de tiempo individual, y rep_mode, el modo de representación
+    serie de tiempo individual, y rep_mode, el modo de representación,
+    a base de el parseo el parámetro 'ids', que contiene datos de
+    varias series a la vez
     """
 
     def __init__(self):
@@ -165,6 +177,7 @@ class NameAndRepMode(BaseOperation):
         self.validate(name, rep_mode)
 
         query.add_series(name, rep_mode)
+        return query
 
     def validate(self, doc_type, rep_mode):
         indices = IndicesClient(client=self.elastic)
@@ -203,6 +216,33 @@ class NameAndRepMode(BaseOperation):
         return name, rep_mode
 
 
+class Collapse(BaseOperation):
+    """Maneja las distintas agregaciones (suma, promedio)"""
+    def run(self, query, args):
+        collapse = args.get('collapse')
+        if not collapse:
+            return query
+
+        agg = args.get('collapse_aggregation',
+                       settings.API_DEFAULT_VALUES['collapse_aggregation'])
+        global_rep_mode = args.get('representation_mode',
+                                   settings.API_DEFAULT_VALUES['rep_mode'])
+        for serie in query.series:
+            search = serie['search']
+            rep_mode = serie.get('rep_mode', global_rep_mode)
+            search = search[:0]
+            search.aggs.bucket('agg',
+                               'date_histogram',
+                               field='timestamp',
+                               interval=collapse).metric('agg',
+                                                         agg,
+                                                         field=rep_mode)
+            serie['search'] = search
+
+        return CollapseQuery(query)
+
+
 class Execute(BaseOperation):
     def run(self, query, args):
         query.run()
+        return query
