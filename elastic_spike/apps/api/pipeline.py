@@ -59,6 +59,7 @@ class BaseOperation:
 
         Args:
             query (Query)
+            args (dict): parámetros del request
         Returns:
             Query: nuevo objeto query, el original con la operación
                 pertinente aplicada
