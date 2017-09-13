@@ -55,7 +55,7 @@ class BaseOperation:
 
     @abstractmethod
     def run(self, query, args):
-        """Ejecuta la operación del pipeline sobre el parámetro series
+        """Ejecuta la operación del pipeline sobre el parámetro query
 
         Args:
             query (Query)
@@ -66,7 +66,7 @@ class BaseOperation:
         """
         raise NotImplementedError
 
-    def append_error(self, msg):
+    def _append_error(self, msg):
         self.errors.append({
             'error': msg
         })
@@ -95,7 +95,7 @@ class Pagination(BaseOperation):
             parsed_arg = None
 
         if parsed_arg is None or parsed_arg < min_value:
-            self.append_error("Parámetro 'limit' inválido: {}".format(arg))
+            self._append_error("Parámetro 'limit' inválido: {}".format(arg))
 
 
 class DateFilter(BaseOperation):
@@ -136,7 +136,7 @@ class DateFilter(BaseOperation):
         if parsed_start and parsed_end:
             if parsed_start > parsed_end:
                 error = "Filtro por rango temporal inválido (start > end)"
-                self.append_error(error)
+                self._append_error(error)
 
     def validate_date(self, date):
         full_date = r'\d{4}-\d{2}-\d{2}'
@@ -151,7 +151,7 @@ class DateFilter(BaseOperation):
             parsed_date = datetime.strptime(date, "%Y")
         else:
             error = 'Formato de rango temporal inválido: {}'.format(date)
-            self.append_error(error)
+            self._append_error(error)
             raise ValueError
         return parsed_date
 
@@ -171,7 +171,7 @@ class NameAndRepMode(BaseOperation):
     def run(self, query, args):
         self.ids = args.get('ids')
         if not self.ids:
-            self.append_error('No se especificó una serie de tiempo.')
+            self._append_error('No se especificó una serie de tiempo.')
             return
 
         name, rep_mode = self.parse_series(self.ids, args)
@@ -184,11 +184,11 @@ class NameAndRepMode(BaseOperation):
         indices = IndicesClient(client=self.elastic)
         if not indices.exists_type(index="indicators",
                                    doc_type=doc_type):
-            self.append_error('Serie inválida: {}'.format(self.ids))
+            self._append_error('Serie inválida: {}'.format(self.ids))
 
         if rep_mode not in settings.REP_MODES:
             error = "Modo de representación inválido: {}".format(rep_mode)
-            self.append_error(error)
+            self._append_error(error)
 
     def parse_series(self, serie, args):
         """Parsea una serie invididual. Actualiza la lista de errores
@@ -212,7 +212,7 @@ class NameAndRepMode(BaseOperation):
             try:
                 name, rep_mode = serie.split(':')
             except ValueError:
-                self.append_error("Formato de series a seleccionar inválido")
+                self._append_error("Formato de series a seleccionar inválido")
                 return
         return name, rep_mode
 
