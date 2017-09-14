@@ -44,7 +44,8 @@ class Query:
             serie['search'] = serie['search'].filter('range',
                                                      timestamp=_filter)
 
-    def add_series(self, series_id, rep_mode):
+    def add_series(self, series_id,
+                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         if len(self.series) == 1:
             search = self.series[0]['search'].doc_type(series_id)
         else:
