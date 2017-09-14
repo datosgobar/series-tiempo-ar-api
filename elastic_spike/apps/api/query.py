@@ -94,8 +94,15 @@ class CollapseQuery(Query):
                               start + settings.API_DEFAULT_VALUES['limit'])
         for response in responses:
             hits = response.aggregations.agg.buckets
-            for i, hit in enumerate(hits, start):
-                if i >= limit or i >= len(hits):  # No hay más datos
+
+            # Este loop DEBE ser de esta forma: 'hits' no es una lista común
+            # Entonces declarar el offset en enumerate no tiene el resultado
+            # esperado de saltearse los primeros 'start' índices
+            for i, hit in enumerate(hits):
+                if i < start:
+                    continue
+
+                if i - start >= limit or i >= len(hits):  # No hay más datos
                     break
                 if i - start == len(self.data):  # No hay row, inicializo
                     data_row = [hit['key_as_string']]
