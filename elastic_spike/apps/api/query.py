@@ -46,7 +46,7 @@ class Query:
 
     def add_series(self, series_id, rep_mode):
         if len(self.series) == 1:
-            search = self.series[0]['search'].doc_type(id)
+            search = self.series[0]['search'].doc_type(series_id)
         else:
             search = Search(doc_type=series_id)
 
@@ -63,14 +63,15 @@ class Query:
             multi_search = multi_search.add(serie['search'])
 
         responses = multi_search.execute()
-        self.format_response(responses)
+        self._format_response(responses)
 
-    def format_response(self, responses):
+    def _format_response(self, responses):
         for i, response in enumerate(responses):
-            rep_mode = self.series[i]['rep_mode']
-            self.populate_data(response, rep_mode)
+            rep_mode = self.series[i].get('rep_mode',
+                                          settings.API_DEFAULT_VALUES['rep_mode'])
+            self._populate_data(response, rep_mode)
 
-    def populate_data(self, response, rep_mode):
+    def _populate_data(self, response, rep_mode):
         for i, hit in enumerate(response):
             if i == len(self.data):
                 data_row = [hit.timestamp]
@@ -87,7 +88,7 @@ class CollapseQuery(Query):
         self.series = other.series.copy()
         self.args = other.args.copy()
 
-    def format_response(self, responses):
+    def _format_response(self, responses):
 
         start = self.args.get('start', settings.API_DEFAULT_VALUES['start'])
         limit = self.args.get('limit',
