@@ -1,11 +1,10 @@
 #! coding: utf-8
-import re
 from abc import abstractmethod
 
-from datetime import datetime
 from django.conf import settings
 from elasticsearch import Elasticsearch
 from elasticsearch.client import IndicesClient
+import isodate
 
 from elastic_spike.apps.api.query import Query, CollapseQuery
 
@@ -139,17 +138,21 @@ class DateFilter(BaseOperation):
                 self._append_error(error)
 
     def validate_date(self, date):
-        full_date = r'\d{4}-\d{2}-\d{2}'
-        year_and_month = r'\d{4}-\d{2}'
-        year_only = r'\d{4}'
+        """Valida y parsea la fecha pasada.
 
-        if re.fullmatch(full_date, date):
-            parsed_date = datetime.strptime(date, '%Y-%m-%d')
-        elif re.fullmatch(year_and_month, date):
-            parsed_date = datetime.strptime(date, "%Y-%m")
-        elif re.fullmatch(year_only, date):
-            parsed_date = datetime.strptime(date, "%Y")
-        else:
+        Args:
+            date (str): date string, ISO 8601
+
+        Returns:
+            date con la fecha parseada
+
+        Raises:
+            ValueError: si el formato no es válido
+        """
+
+        try:
+            parsed_date = isodate.parse_date(date)
+        except isodate.ISO8601Error:
             error = 'Formato de rango temporal inválido: {}'.format(date)
             self._append_error(error)
             raise ValueError

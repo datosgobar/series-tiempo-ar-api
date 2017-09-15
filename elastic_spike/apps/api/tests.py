@@ -1,3 +1,4 @@
+import isodate
 from django.test import TestCase
 from django.conf import settings
 from elastic_spike.apps.api.query import Query
@@ -10,8 +11,8 @@ class QueryTest(TestCase):
     default_limit = 10
     max_limit = 1000
 
-    start_date = 2010
-    end_date = 2015
+    start_date = '2010-01-01T03:00:00Z'
+    end_date = '2015-01-01T03:00:00Z'
 
     def setUp(self):
         self.query = Query()
@@ -40,17 +41,16 @@ class QueryTest(TestCase):
         self.query.add_pagination(self.start, self.max_limit)
         self.query.run()
         self.assertEqual(len(self.query.data), self.max_limit - self.start)
-    #
-    # def test_time_filter(self):
-    #     self.query.add_filter(self.start_date, self.end_date)
-    #     self.query.add_series('random-0', 'value')
-    #     self.query.run()
-    #     for row in self.query.data:
-    #         date = row[0]
-    #         self.assertGreaterEqual(datetime.strptime(str(date), '%Y'),
-    #                                 datetime.strptime(str(self.start_date), '%Y'))
-    #         self.assertLessEqual(datetime.strptime(str(date), '%Y'),
-    #                              datetime.strptime(str(self.end_date), '%Y'))
+
+    def test_time_filter(self):
+        self.query.add_filter(self.start_date, self.end_date)
+        self.query.run()
+        for row in self.query.data:
+            date = isodate.parse_datetime(row[0])
+            self.assertGreaterEqual(date,
+                                    isodate.parse_datetime(self.start_date))
+            self.assertLessEqual(date,
+                                 isodate.parse_datetime(self.end_date))
 
     def test_execute_single_series(self):
         self.query.run()

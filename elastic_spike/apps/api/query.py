@@ -48,7 +48,7 @@ class Query:
         if len(self.series) == 1:
             search = self.series[0]['search'].doc_type(series_id)
         else:
-            search = Search(doc_type=series_id)
+            search = Search(doc_type=series_id).sort('timestamp')
 
         self.series.append({
             'search': search,
@@ -83,7 +83,7 @@ class Query:
 
     def _init_series(self):
         self.series.append({
-            'search': Search(using=self.elastic),
+            'search': Search(using=self.elastic).sort('timestamp'),
             'rep_mode': settings.API_DEFAULT_VALUES['rep_mode']
         })
 
