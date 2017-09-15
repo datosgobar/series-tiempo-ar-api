@@ -223,27 +223,17 @@ class NameAndRepMode(BaseOperation):
 class Collapse(BaseOperation):
     """Maneja las distintas agregaciones (suma, promedio)"""
     def run(self, query, args):
+        query = CollapseQuery(query)
         collapse = args.get('collapse')
         if not collapse:
             return query
 
-        agg = args.get('collapse_aggregation',
+        agg = args.get('collapse-aggregation',
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
-        global_rep_mode = args.get('representation_mode',
-                                   settings.API_DEFAULT_VALUES['rep_mode'])
-        for serie in query.series:
-            search = serie['search']
-            rep_mode = serie.get('rep_mode', global_rep_mode)
-            search = search[:0]
-            search.aggs.bucket('agg',
-                               'date_histogram',
-                               field='timestamp',
-                               interval=collapse).metric('agg',
-                                                         agg,
-                                                         field=rep_mode)
-            serie['search'] = search
-
-        return CollapseQuery(query)
+        rep_mode = args.get('representation_mode',
+                            settings.API_DEFAULT_VALUES['rep_mode'])
+        query.add_collapse(agg, collapse, rep_mode)
+        return query
 
 
 class Execute(BaseOperation):

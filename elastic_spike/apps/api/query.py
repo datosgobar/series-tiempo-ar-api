@@ -114,6 +114,19 @@ class CollapseQuery(Query):
                     field=rep_mode)
         serie['search'] = search
 
+    def add_collapse(self, agg, interval, global_rep_mode):
+        for serie in self.series:
+            search = serie['search']
+            rep_mode = serie.get('rep_mode', global_rep_mode)
+            search = search[:0]
+            search.aggs.bucket('agg',
+                               'date_histogram',
+                               field='timestamp',
+                               interval=interval).metric('agg',
+                                                         agg,
+                                                         field=rep_mode)
+            serie['search'] = search
+
     def _format_response(self, responses):
 
         start = self.args.get('start', settings.API_DEFAULT_VALUES['start'])
