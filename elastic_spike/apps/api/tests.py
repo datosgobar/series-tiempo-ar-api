@@ -61,3 +61,20 @@ class QueryTest(TestCase):
         self.query.run()
 
         self.assertEqual(len(self.query.data), self.default_limit)
+
+    def test_add_series(self):
+        self.query.add_series('random-0', 'value')
+        self.query.run()
+
+        self.assertTrue(self.query.data)
+        # Expected: rows de 2 datos: timestamp, valor de la serie
+        self.assertTrue(len(self.query.data[0]) == 2)
+
+    def test_add_two_series(self):
+        self.query.add_series('random-0', 'value')
+        self.query.add_series('random-0', 'percent_change')
+        self.query.run()
+
+        self.assertTrue(self.query.data)
+        # Expected: rows de 3 datos: timestamp, serie 1, serie 2
+        self.assertTrue(len(self.query.data[0]) == 3)
