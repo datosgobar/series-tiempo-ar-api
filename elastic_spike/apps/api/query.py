@@ -23,7 +23,7 @@ class Query:
 
     def add_pagination(self, start, limit):
         if not len(self.series):
-            self.series.append({'search': Search(using=self.elastic)})
+            self._init_series()
 
         for serie in self.series:
             serie['search'] = serie['search'][start:limit]
@@ -34,7 +34,7 @@ class Query:
 
     def add_filter(self, start, end):
         if not len(self.series):
-            self.series.append({'search': Search(using=self.elastic)})
+            self._init_series()
 
         _filter = {
             'lte': end,
@@ -44,8 +44,7 @@ class Query:
             serie['search'] = serie['search'].filter('range',
                                                      timestamp=_filter)
 
-    def add_series(self, series_id,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+    def add_series(self, series_id, rep_mode):
         if len(self.series) == 1:
             search = self.series[0]['search'].doc_type(series_id)
         else:
@@ -57,19 +56,22 @@ class Query:
         })
 
     def run(self):
+        if not self.series:
+            self._init_series()
+
         multi_search = MultiSearch(index=settings.TS_INDEX,
                                    using=self.elastic)
 
         for serie in self.series:
-            multi_search = multi_search.add(serie['search'])
+            search = serie.get('search')
+            multi_search = multi_search.add(search)
 
         responses = multi_search.execute()
         self._format_response(responses)
 
     def _format_response(self, responses):
         for i, response in enumerate(responses):
-            rep_mode = self.series[i].get('rep_mode',
-                                          settings.API_DEFAULT_VALUES['rep_mode'])
+            rep_mode = self.series[i]['rep_mode']
             self._populate_data(response, rep_mode)
 
     def _populate_data(self, response, rep_mode):
@@ -78,6 +80,12 @@ class Query:
                 data_row = [hit.timestamp]
                 self.data.append(data_row)
             self.data[i].append(hit[rep_mode])
+
+    def _init_series(self):
+        self.series.append({
+            'search': Search(using=self.elastic),
+            'rep_mode': settings.API_DEFAULT_VALUES['rep_mode']
+        })
 
 
 class CollapseQuery(Query):
@@ -91,9 +99,9 @@ class CollapseQuery(Query):
 
     def _format_response(self, responses):
 
-        start = self.args.get('start', settings.API_DEFAULT_VALUES['start'])
+        start = self.args.get('start', 0)
         limit = self.args.get('limit',
-                              start + settings.API_DEFAULT_VALUES['limit'])
+                              start + 10)
         for response in responses:
             hits = response.aggregations.agg.buckets
 

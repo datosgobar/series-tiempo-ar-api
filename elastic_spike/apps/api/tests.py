@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.test import TestCase
 from django.conf import settings
 from elastic_spike.apps.api.query import Query
@@ -7,6 +6,8 @@ from elastic_spike.apps.api.query import Query
 class QueryTest(TestCase):
     start = settings.API_DEFAULT_VALUES['start']
     limit = settings.API_DEFAULT_VALUES['limit']
+
+    default_limit = 10
     max_limit = 1000
 
     start_date = 2010
@@ -31,7 +32,6 @@ class QueryTest(TestCase):
 
     def test_pagination(self):
         self.query.add_pagination(self.start, self.limit)
-        self.query.add_series('random-0', 'value')
         self.query.run()
 
         self.assertEqual(len(self.query.data), self.limit - self.start)
@@ -53,18 +53,11 @@ class QueryTest(TestCase):
     #                              datetime.strptime(str(self.end_date), '%Y'))
 
     def test_execute_single_series(self):
-        self.query.add_series('random-0', 'value')
         self.query.run()
 
         self.assertTrue(self.query.data)
 
     def test_default_return_limits(self):
-        self.query.add_series('random-0', 'value')
         self.query.run()
 
-        self.assertEqual(len(self.query.data),
-                         settings.API_DEFAULT_VALUES['limit'],
-                         len(self.query.data))
-
-
-
+        self.assertEqual(len(self.query.data), self.default_limit)
