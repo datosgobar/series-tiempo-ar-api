@@ -223,11 +223,11 @@ class NameAndRepMode(BaseOperation):
 class Collapse(BaseOperation):
     """Maneja las distintas agregaciones (suma, promedio)"""
     def run(self, query, args):
-        query = CollapseQuery(query)
         collapse = args.get('collapse')
         if not collapse:
             return query
 
+        query = CollapseQuery(query)
         agg = args.get('collapse-aggregation',
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
         rep_mode = args.get('representation_mode',
