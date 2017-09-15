@@ -92,17 +92,37 @@ class CollapseQuery(Query):
     """Calcula el promedio de una serie en base a una bucket
     aggregation
     """
-    def __init__(self, other):
+    def __init__(self, other=None):
         super().__init__()
-        self.series = other.series.copy()
-        self.args = other.args.copy()
+
+        if other:
+            self.series = other.series.copy()
+            self.args = other.args.copy()
+
+    def add_series(self, series_id, rep_mode):
+        super(CollapseQuery, self).add_series(series_id, rep_mode)
+        serie = self.series[-1]
+        search = serie['search']
+        search = search[:0]
+        search.aggs \
+            .bucket('agg',
+                    'date_histogram',
+                    field='timestamp',
+                    interval=settings.API_DEFAULT_VALUES['collapse']) \
+            .metric('agg',
+                    settings.API_DEFAULT_VALUES['collapse_aggregation'],
+                    field=rep_mode)
+        serie['search'] = search
 
     def _format_response(self, responses):
 
-        start = self.args.get('start', 0)
+        start = self.args.get('start', settings.API_DEFAULT_VALUES['start'])
         limit = self.args.get('limit',
-                              start + 10)
+                              start + settings.API_DEFAULT_VALUES['limit'])
         for response in responses:
+            if not response.aggregations:
+                continue
+
             hits = response.aggregations.agg.buckets
 
             # Este loop DEBE ser de esta forma: 'hits' no es una lista común

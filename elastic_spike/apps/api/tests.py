@@ -1,7 +1,7 @@
 import isodate
 from django.test import TestCase
 from django.conf import settings
-from elastic_spike.apps.api.query import Query
+from elastic_spike.apps.api.query import Query, CollapseQuery
 
 
 class QueryTest(TestCase):
@@ -78,3 +78,30 @@ class QueryTest(TestCase):
         self.assertTrue(self.query.data)
         # Expected: rows de 3 datos: timestamp, serie 1, serie 2
         self.assertTrue(len(self.query.data[0]) == 3)
+
+
+class CollapseQueryTests(TestCase):
+
+    start = 10
+    limit = 15
+
+    def setUp(self):
+        self.query = CollapseQuery()
+
+    def test_execute_empty(self):
+        self.query.run()
+
+        self.assertFalse(self.query.data)
+
+    def test_execute_single(self):
+        self.query.add_series('random-0', 'value')
+
+        self.query.run()
+        self.assertTrue(self.query.data)
+
+    def test_start_limit(self):
+        self.query.add_series('random-0', 'value')
+        self.query.add_pagination(self.start, self.limit)
+        self.query.run()
+
+        self.assertEqual(len(self.query.data), self.limit)

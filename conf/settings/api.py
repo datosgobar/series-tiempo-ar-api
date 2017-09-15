@@ -14,6 +14,7 @@ REP_MODES = [
 API_DEFAULT_VALUES = {
     'rep_mode': 'value',
     'collapse_aggregation': 'avg',
+    'collapse': 'year',
     'start': 0,
     'limit': 100
 }
