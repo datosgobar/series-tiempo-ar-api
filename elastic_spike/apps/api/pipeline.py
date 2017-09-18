@@ -228,7 +228,7 @@ class Collapse(BaseOperation):
             return query
 
         query = CollapseQuery(query)
-        agg = args.get('collapse-aggregation',
+        agg = args.get('collapse_aggregation',
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
         rep_mode = args.get('representation_mode',
                             settings.API_DEFAULT_VALUES['rep_mode'])
