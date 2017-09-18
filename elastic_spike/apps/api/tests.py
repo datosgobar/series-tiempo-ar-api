@@ -1,4 +1,5 @@
 import isodate
+from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django.conf import settings
 from elastic_spike.apps.api.query import Query, CollapseQuery
@@ -105,3 +106,42 @@ class CollapseQueryTests(TestCase):
         self.query.run()
 
         self.assertEqual(len(self.query.data), self.limit)
+
+    def test_init_from_other(self):
+        other_query = Query()
+        other_query.add_series('random-0', 'value')
+        self.query = CollapseQuery(other_query)
+        self.query.run()
+
+    def test_add_collapse(self):
+        """Testea que luego de agregar un collapse default, los
+        resultados sean anuales, es decir cada uno a un año de
+        diferencia con su anterior"""
+        self.query.add_series('random-0', 'value')
+        self.query.add_collapse()
+        self.query.run()
+        prev_timestamp = None
+        for row in self.query.data:
+            timestamp = row[0]
+            parsed_timestamp = isodate.parse_datetime(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.years == 1, timestamp)
+            prev_timestamp = parsed_timestamp
+
+    def test_collapse_custom_params(self):
+        self.query.add_series('random-0', 'value')
+        self.query.add_collapse(agg='sum', interval='quarter')
+        self.query.run()
+        prev_timestamp = None
+        for row in self.query.data:
+            timestamp = row[0]
+            parsed_timestamp = isodate.parse_datetime(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.months == 3, timestamp)
+            prev_timestamp = parsed_timestamp

@@ -95,37 +95,46 @@ class CollapseQuery(Query):
     def __init__(self, other=None):
         super().__init__()
 
+        # Datos guardados en la instancia para asegurar conmutabilidad
+        # de operaciones
+        self.collapse_aggregation = \
+            settings.API_DEFAULT_VALUES['collapse_aggregation']
+        self.collapse = settings.API_DEFAULT_VALUES['collapse']
+
         if other:
             self.series = other.series.copy()
             self.args = other.args.copy()
 
     def add_series(self, series_id, rep_mode):
         super(CollapseQuery, self).add_series(series_id, rep_mode)
+        # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie['search']
+        serie['search'] = self._add_aggregation(search, rep_mode)
+
+    def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
+        if agg:
+            self.collapse_aggregation = agg
+        if interval:
+            self.collapse = interval
+
+        for serie in self.series:
+            rep_mode = serie.get('rep_mode', global_rep_mode)
+            search = serie['search']
+            serie['search'] = self._add_aggregation(search, rep_mode)
+
+    def _add_aggregation(self, search, rep_mode):
         search = search[:0]
         search.aggs \
             .bucket('agg',
                     'date_histogram',
                     field='timestamp',
-                    interval=settings.API_DEFAULT_VALUES['collapse']) \
+                    interval=self.collapse) \
             .metric('agg',
-                    settings.API_DEFAULT_VALUES['collapse_aggregation'],
+                    self.collapse_aggregation,
                     field=rep_mode)
-        serie['search'] = search
 
-    def add_collapse(self, agg, interval, global_rep_mode):
-        for serie in self.series:
-            search = serie['search']
-            rep_mode = serie.get('rep_mode', global_rep_mode)
-            search = search[:0]
-            search.aggs.bucket('agg',
-                               'date_histogram',
-                               field='timestamp',
-                               interval=interval).metric('agg',
-                                                         agg,
-                                                         field=rep_mode)
-            serie['search'] = search
+        return search
 
     def _format_response(self, responses):
 
