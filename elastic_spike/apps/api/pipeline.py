@@ -38,7 +38,10 @@ class QueryPipeline:
 
     @staticmethod
     def init_commands():
-        """Lista con las operaciones a ejecutar"""
+        """Lista con las operaciones a ejecutar. La lista de comandos
+        tiene un orden arbitrario y no debería importar, excepto el
+        comando que ejecute la búsqueda, que debería estar al final
+        """
         return [
             NameAndRepMode,
             DateFilter,
@@ -177,13 +180,17 @@ class NameAndRepMode(BaseOperation):
             self._append_error('No se especificó una serie de tiempo.')
             return
 
-        name, rep_mode = self.parse_series(self.ids, args)
-        self.validate(name, rep_mode)
+        name, rep_mode = self._parse_series(self.ids, args)
+        self._validate(name, rep_mode)
 
         query.add_series(name, rep_mode)
         return query
 
-    def validate(self, doc_type, rep_mode):
+    def _validate(self, doc_type, rep_mode):
+        """Valida si el 'doc_type' es válido, es decir, si la serie
+        pedida es un ID contenido en la base de datos. De no
+        encontrarse, llena la lista de errores según corresponda.
+        """
         indices = IndicesClient(client=self.elastic)
         if not indices.exists_type(index="indicators",
                                    doc_type=doc_type):
@@ -193,7 +200,7 @@ class NameAndRepMode(BaseOperation):
             error = "Modo de representación inválido: {}".format(rep_mode)
             self._append_error(error)
 
-    def parse_series(self, serie, args):
+    def _parse_series(self, serie, args):
         """Parsea una serie invididual. Actualiza la lista de errores
             en caso de encontrar alguno
         Args:
