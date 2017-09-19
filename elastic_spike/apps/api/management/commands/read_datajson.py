@@ -1,7 +1,7 @@
 #! coding: utf-8
 import requests
 
-from requests.exceptions import MissingSchema, ConnectionError
+from requests.exceptions import RequestException
 from django.core.management import BaseCommand, CommandError
 
 
@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
         try:
             response = requests.get(catalog_url)
-        except (MissingSchema, ConnectionError):
+        except RequestException:
             raise CommandError("URL inválida")
 
         if response.status_code != 200:
