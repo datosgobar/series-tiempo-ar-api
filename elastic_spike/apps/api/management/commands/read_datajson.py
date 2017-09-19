@@ -4,10 +4,12 @@ import requests
 from requests.exceptions import RequestException
 from django.core.management import BaseCommand, CommandError
 
+from elastic_spike.apps.api.catalog_reader import ReaderPipeline
+
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('catalog', type=str)
+        parser.add_argument('catalog')
 
     def handle(self, *args, **options):
         catalog_url = options['catalog']
@@ -24,3 +26,4 @@ class Command(BaseCommand):
         if response.json():
             print("Leído bien")
             print("Dataset len: " + str(len(response.json()['dataset'])))
+            ReaderPipeline(response.json())
