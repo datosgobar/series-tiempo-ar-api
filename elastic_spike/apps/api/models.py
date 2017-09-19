@@ -19,4 +19,3 @@ class Distribution(models.Model):
 class Field(models.Model):
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
-
