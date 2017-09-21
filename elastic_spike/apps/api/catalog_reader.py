@@ -16,6 +16,7 @@ class ReaderPipeline:
     def run(self):
         scrapper = DistributionScrapper()
         scrapper.run(self.args)
+        Validator().run(self.args)
         DatabaseLoader().run(self.args)
 
 
@@ -120,3 +121,48 @@ class DatabaseLoader:
             )
             field_model.metadata = json.dumps(field)
             field_model.save()
+
+
+class Validator:
+
+    def run(self, args):
+        catalog = args.get('catalog', [])
+
+        for dataset in catalog.get('dataset', []):
+            distributions = dataset.get('distribution', [])
+            for distribution in distributions[:]:
+                if not self._validate_distribution(distribution):
+                    distributions.remove(distribution)
+                    continue
+
+    def _validate_distribution(self, distribution):
+        """Validaciones mínimas necesarias para que una distribución
+        se estime como contenedora de series de tiempo. Devuelve un
+        booleano dictando si se parseará su contenido o no
+        """
+        fields = distribution.get('field')
+        time_index_found = False
+        for field in fields[:]:
+            if field.get('specialType') == 'time_index':
+                if time_index_found:  # time_index duplicado!
+                    return False
+
+                periodicity = field.get('specialTypeDetail')
+                if not self._validate_periodicity(periodicity):
+                    return False
+                time_index_found = True
+        return True
+
+    @staticmethod
+    def _validate_periodicity(periodicity):
+        if not periodicity:
+            return False
+        return True
+
+    @staticmethod
+    def _validate_fields(fields):
+        for field in fields[:]:
+            if field.get('type') not in ('number', 'integer'):
+                fields.remove(field)
+                # todo: logging de desestimación de un field
+                continue
