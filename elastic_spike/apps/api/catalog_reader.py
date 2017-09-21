@@ -35,40 +35,31 @@ class DistributionScrapper:
             return
 
         catalog_model = self._catalog_model(catalog)
-        dataset_models = []
         for dataset in datasets:
             distributions = dataset.pop('distribution', None)
             if not distributions:
                 continue
 
             title = dataset.pop('title', None)
-            dataset_model = Dataset.objects.filter(title=title)
-            if not dataset_model:
-                dataset_model = Dataset(title=title)
-                dataset_models.append(dataset_model)
-            else:
-                dataset_model = dataset_model[0]
+            dataset_model, _ = Dataset.objects.get_or_create(
+                title=title,
+                catalog=catalog_model
+            )
             dataset_model.metadata = json.dumps(dataset)
-            dataset_model.catalog = catalog_model
-
+            dataset_model.save()
             for distribution in distributions:
                 fields = distribution.pop('field', None)
 
                 if fields and fields[0]['specialType'] == 'time_index':
                     self.save(dataset_model, distribution, fields)
 
-        Dataset.objects.bulk_create(dataset_models)
-        Distribution.objects.bulk_create(self.distributions)
-        Field.objects.bulk_create(self.fields)
-
     @staticmethod
     def _catalog_model(catalog):
+        """Crea o actualiza el catalog model con el título pedido a partir
+        de el diccionario de metadatos de un catálogo
+        """
         title = catalog.pop('title', None)
-        catalog_model = Catalog.objects.filter(title=title)
-        if not catalog_model:
-            catalog_model = Catalog(title=title)
-        else:
-            catalog_model = catalog_model[0]
+        catalog_model, _ = Catalog.objects.get_or_create(title=title)
         catalog_model.metadata = json.dumps(catalog)
         catalog_model.save()
         return catalog_model
@@ -79,14 +70,20 @@ class DistributionScrapper:
         if not url:
             return
 
-        distribution_model = Distribution(metadata=json.dumps(distribution),
-                                          title=title,
-                                          dataset=dataset_model,
-                                          download_url=url)
+        distribution_model, _ = Distribution.objects.get_or_create(
+            title=title,
+            dataset=dataset_model
+        )
+        distribution_model.metadata = json.dumps(distribution)
+        distribution_model.save()
+
         self.distributions.append(distribution_model)
         for field in fields:
             series_id = field.pop('id')
-            field = Field(metadata=json.dumps(field),
-                          distribution=distribution_model,
-                          series_id=series_id)
-            self.fields.append(field)
+            field_model, _ = Field.objects.get_or_create(
+                series_id=series_id,
+                distribution=distribution_model
+            )
+            field_model.metadata = json.dumps(field)
+
+            self.fields.append(field_model)
