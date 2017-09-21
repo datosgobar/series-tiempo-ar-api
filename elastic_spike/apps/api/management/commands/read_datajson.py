@@ -24,6 +24,4 @@ class Command(BaseCommand):
             raise CommandError(error.format(response.status_code))
 
         if response.json():
-            print("Leído bien")
-            print("Dataset len: " + str(len(response.json()['dataset'])))
             ReaderPipeline(response.json())
