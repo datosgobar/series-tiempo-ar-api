@@ -7,51 +7,80 @@ from .models import Catalog, Dataset, Distribution, Field
 class ReaderPipeline:
 
     def __init__(self, catalog):
-        self.catalog = catalog
-        self.commands = self.init_commands()
+        self.args = {
+            'catalog': catalog
+        }
+        self.catalog = None
         self.run()
 
     def run(self):
-        for cmd in self.commands:
-            cmd().run(self.catalog)
-
-    @staticmethod
-    def init_commands():
-        cmds = [
-            DistributionScrapper
-        ]
-        return cmds
+        scrapper = DistributionScrapper()
+        scrapper.run(self.args)
+        DatabaseLoader().run(self.args)
 
 
 class DistributionScrapper:
-
+    """Lee un catálogo y guarda las distribuciones de series de
+    tiempo
+    """
     def __init__(self):
         self.distributions = []
-        self.fields = []
 
-    def run(self, catalog):
+    def run(self, args):
+        catalog = args['catalog']
+
+        datasets = catalog.get('dataset', [])
+        for dataset in datasets[:]:
+            distributions = dataset.get('distribution', [])
+
+            dataset_has_ts = False
+            for distribution in distributions[:]:
+                is_ts = self._distribution_check_if_time_series(distribution)
+                if not is_ts:
+                    distributions.remove(distribution)
+
+                dataset_has_ts = True
+            if not dataset_has_ts:
+                datasets.remove(dataset)
+
+        return catalog
+
+    def _distribution_check_if_time_series(self, distribution):
+        for field in distribution.get('field', []):
+            if field.get('specialType') == 'time_index':
+                self.distributions.append(distribution)
+                return True
+
+        return False
+
+
+class DatabaseLoader:
+
+    def run(self, args):
+        catalog = args.get('catalog').copy()
         datasets = catalog.pop('dataset', None)
-        if not datasets:
-            return
 
         catalog_model = self._catalog_model(catalog)
         for dataset in datasets:
             distributions = dataset.pop('distribution', None)
-            if not distributions:
-                continue
 
-            title = dataset.pop('title', None)
-            dataset_model, _ = Dataset.objects.get_or_create(
-                title=title,
-                catalog=catalog_model
-            )
-            dataset_model.metadata = json.dumps(dataset)
-            dataset_model.save()
+            dataset_model = self._dataset_model(catalog_model, dataset)
             for distribution in distributions:
                 fields = distribution.pop('field', None)
+                distribution_model = self._distribution_model(dataset_model,
+                                                              distribution)
+                self._save_fields(distribution_model, fields)
 
-                if fields and fields[0]['specialType'] == 'time_index':
-                    self.save(dataset_model, distribution, fields)
+    @staticmethod
+    def _dataset_model(catalog_model, dataset):
+        title = dataset.pop('title', None)
+        dataset_model, _ = Dataset.objects.get_or_create(
+            title=title,
+            catalog=catalog_model
+        )
+        dataset_model.metadata = json.dumps(dataset)
+        dataset_model.save()
+        return dataset_model
 
     @staticmethod
     def _catalog_model(catalog):
@@ -64,26 +93,30 @@ class DistributionScrapper:
         catalog_model.save()
         return catalog_model
 
-    def save(self, dataset_model, distribution, fields):
+    @staticmethod
+    def _distribution_model(dataset_model, distribution):
         title = distribution.pop('title', None)
         url = distribution.pop('downloadURL', None)
-        if not url:
-            return
 
         distribution_model, _ = Distribution.objects.get_or_create(
             title=title,
             dataset=dataset_model
         )
         distribution_model.metadata = json.dumps(distribution)
+        distribution_model.download_url = url
         distribution_model.save()
+        return distribution_model
 
-        self.distributions.append(distribution_model)
+    @staticmethod
+    def _save_fields(distribution_model, fields):
         for field in fields:
+            if field.get('specialType') == 'time_index':
+                continue
+
             series_id = field.pop('id')
             field_model, _ = Field.objects.get_or_create(
                 series_id=series_id,
                 distribution=distribution_model
             )
             field_model.metadata = json.dumps(field)
-
-            self.fields.append(field_model)
+            field_model.save()
