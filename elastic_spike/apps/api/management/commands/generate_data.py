@@ -28,9 +28,9 @@ class Command(BaseCommand):
     date_format = '%Y-%m-%dT03:00:00Z'
 
     def __init__(self):
+        BaseCommand.__init__(self)
         self.indicators_count = 0
         self.prev_values = []
-        super().__init__()
 
     def add_arguments(self, parser):
         parser.add_argument('--indicators',
@@ -62,7 +62,7 @@ class Command(BaseCommand):
             self.generate_random_series(options['years'], options['interval'])
 
     def generate_random_series(self, years, interval):
-        self.prev_values.clear()
+        self.prev_values = []
 
         # Mapping del indicador
         indic_name = "random-" + str(self.indicators_count)

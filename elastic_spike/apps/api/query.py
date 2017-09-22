@@ -93,8 +93,7 @@ class CollapseQuery(Query):
     aggregation
     """
     def __init__(self, other=None):
-        super().__init__()
-
+        Query.__init__(self)
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
         self.collapse_aggregation = \
@@ -102,11 +101,11 @@ class CollapseQuery(Query):
         self.collapse = settings.API_DEFAULT_VALUES['collapse']
 
         if other:
-            self.series = other.series.copy()
+            self.series = list(other.series)
             self.args = other.args.copy()
 
     def add_series(self, series_id, rep_mode):
-        super(CollapseQuery, self).add_series(series_id, rep_mode)
+        Query.add_series(self, series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie['search']

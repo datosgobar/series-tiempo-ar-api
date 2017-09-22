@@ -31,7 +31,7 @@ class QueryPipeline:
             cmd_instance = cmd()
             query = cmd_instance.run(query, self.args)
             if cmd_instance.errors:
-                self.result['errors'] = cmd_instance.errors.copy()
+                self.result['errors'] = list(cmd_instance.errors)
                 return
 
         self.result['data'] = query.data
@@ -102,7 +102,7 @@ class Pagination(BaseOperation):
 
 class DateFilter(BaseOperation):
     def __init__(self):
-        super().__init__()
+        BaseOperation.__init__(self)
         self.start = None
         self.end = None
 
@@ -170,7 +170,7 @@ class NameAndRepMode(BaseOperation):
     """
 
     def __init__(self):
-        super().__init__()
+        BaseOperation.__init__(self)
         self.elastic = Elasticsearch()
         self.ids = None
 

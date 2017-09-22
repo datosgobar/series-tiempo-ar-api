@@ -1,3 +1,4 @@
+# coding=utf-8
 import isodate
 from dateutil.relativedelta import relativedelta
 from django.test import TestCase

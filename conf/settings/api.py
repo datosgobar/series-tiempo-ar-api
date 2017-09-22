@@ -1,3 +1,5 @@
+#! coding: utf-8
+
 # Único índice asignado a las series de tiempo
 TS_INDEX = 'indicators'
 
