@@ -9,7 +9,7 @@ import isodate
 from elastic_spike.apps.api.query import Query, CollapseQuery
 
 
-class QueryPipeline:
+class QueryPipeline(object):
     """Pipeline del proceso de queries de la serie de tiempo. Ejecuta
     varias operaciones o comandos sobre un objeto query, usando los
     parámetros pasados por el request"""
@@ -51,7 +51,7 @@ class QueryPipeline:
         ]
 
 
-class BaseOperation:
+class BaseOperation(object):
     def __init__(self):
         self.errors = []
 

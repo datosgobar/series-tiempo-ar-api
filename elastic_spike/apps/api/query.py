@@ -5,7 +5,7 @@ from elasticsearch.client import Elasticsearch
 from elasticsearch_dsl import Search, MultiSearch
 
 
-class Query:
+class Query(object):
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
     def __init__(self):

@@ -4,7 +4,7 @@ import json
 from .models import Catalog, Dataset, Distribution, Field
 
 
-class ReaderPipeline:
+class ReaderPipeline(object):
 
     def __init__(self, catalog):
         self.args = {
@@ -20,7 +20,7 @@ class ReaderPipeline:
         DatabaseLoader().run(self.args)
 
 
-class DistributionScrapper:
+class DistributionScrapper(object):
     """Lee un catálogo y guarda las distribuciones de series de
     tiempo
     """
@@ -55,7 +55,7 @@ class DistributionScrapper:
         return False
 
 
-class DatabaseLoader:
+class DatabaseLoader(object):
 
     def run(self, args):
         catalog = args.get('catalog').copy()
@@ -123,7 +123,7 @@ class DatabaseLoader:
             field_model.save()
 
 
-class Validator:
+class Validator(object):
 
     def run(self, args):
         catalog = args.get('catalog', [])
