@@ -18,6 +18,7 @@ class Distribution(models.Model):
     metadata = models.TextField()
     dataset = models.ForeignKey(to=Dataset, on_delete=models.CASCADE)
     download_url = models.URLField()
+    data_file = models.FileField(upload_to='distribution_raw/', blank=True)
 
 
 class Field(models.Model):

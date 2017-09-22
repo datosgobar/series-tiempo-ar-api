@@ -15,7 +15,7 @@ class Command(BaseCommand):
         catalog_url = options['catalog']
 
         try:
-            response = requests.get(catalog_url)
+            response = requests.head(catalog_url)
         except RequestException:
             raise CommandError("URL inválida")
 
@@ -23,5 +23,4 @@ class Command(BaseCommand):
             error = "Catálogo no leído. Status code: {}"
             raise CommandError(error.format(response.status_code))
 
-        if response.json():
-            ReaderPipeline(response.json())
+        ReaderPipeline(catalog_url)

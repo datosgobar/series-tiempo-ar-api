@@ -1,80 +1,53 @@
 #! coding: utf-8
 import json
 
+from pydatajson.search import get_distributions, get_distribution, get_dataset, \
+    get_catalog_metadata
+from pydatajson.readers import read_catalog
 from .models import Catalog, Dataset, Distribution, Field
 
 
 class ReaderPipeline(object):
 
     def __init__(self, catalog):
-        self.args = {
-            'catalog': catalog
-        }
-        self.catalog = None
+        self.catalog = read_catalog(catalog)
         self.run()
 
     def run(self):
-        scrapper = DistributionScrapper()
-        scrapper.run(self.args)
-        Validator().run(self.args)
-        DatabaseLoader().run(self.args)
-
-
-class DistributionScrapper(object):
-    """Lee un catálogo y guarda las distribuciones de series de
-    tiempo
-    """
-    def __init__(self):
-        self.distributions = []
-
-    def run(self, args):
-        catalog = args['catalog']
-
-        datasets = catalog.get('dataset', [])
-        for dataset in datasets[:]:
-            distributions = dataset.get('distribution', [])
-
-            dataset_has_ts = False
-            for distribution in distributions[:]:
-                is_ts = self._distribution_check_if_time_series(distribution)
-                if not is_ts:
-                    distributions.remove(distribution)
-
-                dataset_has_ts = True
-            if not dataset_has_ts:
-                datasets.remove(dataset)
-
-        return catalog
-
-    def _distribution_check_if_time_series(self, distribution):
-        for field in distribution.get('field', []):
-            if field.get('specialType') == 'time_index':
-                self.distributions.append(distribution)
-                return True
-
-        return False
+        scrapper = Scrapper()
+        scrapper.run(self.catalog)
+        DatabaseLoader().run(self.catalog, scrapper.fields)
 
 
 class DatabaseLoader(object):
 
-    def run(self, args):
-        catalog = args.get('catalog').copy()
-        datasets = catalog.pop('dataset', None)
+    def run(self, catalog, fields):
+        for field in fields:
+            if field.get('specialType') == 'time_index':
+                continue
 
-        catalog_model = self._catalog_model(catalog)
-        for dataset in datasets:
-            distributions = dataset.pop('distribution', None)
+            series_id = field.pop('id')
+            distribution_identifier = field.get('distribution_identifier')
+            if not distribution_identifier:
+                continue
+            distribution = get_distribution(
+                catalog,
+                identifier=distribution_identifier
+            )
+            distribution.pop('field')
+            distribution_model = self._distribution_model(catalog, distribution)
 
-            dataset_model = self._dataset_model(catalog_model, dataset)
-            for distribution in distributions:
-                fields = distribution.pop('field', None)
-                distribution_model = self._distribution_model(dataset_model,
-                                                              distribution)
-                self._save_fields(distribution_model, fields)
+            field_model, _ = Field.objects.get_or_create(
+                series_id=series_id,
+                distribution=distribution_model
+            )
+            field_model.metadata = json.dumps(field)
+            field_model.save()
 
-    @staticmethod
-    def _dataset_model(catalog_model, dataset):
+    def _dataset_model(self, catalog, dataset):
         title = dataset.pop('title', None)
+        catalog_meta = get_catalog_metadata(catalog)
+        catalog_model = self._catalog_model(catalog_meta)
         dataset_model, _ = Dataset.objects.get_or_create(
             title=title,
             catalog=catalog_model
@@ -94,11 +67,15 @@ class DatabaseLoader(object):
         catalog_model.save()
         return catalog_model
 
-    @staticmethod
-    def _distribution_model(dataset_model, distribution):
+    def _distribution_model(self, catalog, distribution):
         title = distribution.pop('title', None)
         url = distribution.pop('downloadURL', None)
 
+        dataset = get_dataset(catalog,
+                              identifier=distribution.get('dataset_identifier'))
+
+        dataset.pop('distribution')
+        dataset_model = self._dataset_model(catalog, dataset)
         distribution_model, _ = Distribution.objects.get_or_create(
             title=title,
             dataset=dataset_model
@@ -123,17 +100,25 @@ class DatabaseLoader(object):
             field_model.save()
 
 
-class Validator(object):
+class Scrapper(object):
 
-    def run(self, args):
-        catalog = args.get('catalog', [])
+    def __init__(self):
+        self.distributions = []
+        self.fields = []
 
-        for dataset in catalog.get('dataset', []):
-            distributions = dataset.get('distribution', [])
-            for distribution in distributions[:]:
-                if not self._validate_distribution(distribution):
-                    distributions.remove(distribution)
-                    continue
+    def run(self, catalog):
+        distributions = list(filter(self._validate_distribution,
+                                    get_distributions(catalog)))
+        for distribution in distributions:
+            fields = distribution['field']
+            distribution['field'] = list(filter(
+                lambda x: x.get('type') in ('number', 'integer'),
+                fields
+            ))
+
+            if len(distribution['field']):
+                self.distributions.append(distribution)
+                self.fields.extend(distribution['field'])
 
     def _validate_distribution(self, distribution):
         """Validaciones mínimas necesarias para que una distribución
@@ -141,6 +126,9 @@ class Validator(object):
         booleano dictando si se parseará su contenido o no
         """
         fields = distribution.get('field')
+        if not fields:
+            return False
+
         time_index_found = False
         for field in fields[:]:
             if field.get('specialType') == 'time_index':
@@ -165,4 +153,8 @@ class Validator(object):
             if field.get('type') not in ('number', 'integer'):
                 fields.remove(field)
                 # todo: logging de desestimación de un field
+                continue
+
+            if not field.get('distribution_identifier'):
+                fields.remove(field)
                 continue
