@@ -1,10 +1,14 @@
 #! coding: utf-8
 import json
 
-from pydatajson.search import get_distributions, get_distribution, get_dataset, \
+from pydatajson import DataJson
+from pydatajson_ts.validations import validate_distribution
+from pydatajson_ts.search import get_time_series_distributions
+from pydatajson.search import get_distribution, get_dataset, \
     get_catalog_metadata
 from pydatajson.readers import read_catalog
 from .models import Catalog, Dataset, Distribution, Field
+import pandas as pd
 
 
 class ReaderPipeline(object):
@@ -107,54 +111,26 @@ class Scrapper(object):
         self.fields = []
 
     def run(self, catalog):
-        distributions = list(filter(self._validate_distribution,
-                                    get_distributions(catalog)))
-        for distribution in distributions:
-            fields = distribution['field']
-            distribution['field'] = list(filter(
-                lambda x: x.get('type') in ('number', 'integer'),
-                fields
-            ))
-
-            if len(distribution['field']):
-                self.distributions.append(distribution)
-                self.fields.extend(distribution['field'])
-
-    def _validate_distribution(self, distribution):
-        """Validaciones mínimas necesarias para que una distribución
-        se estime como contenedora de series de tiempo. Devuelve un
-        booleano dictando si se parseará su contenido o no
+        """Valida las distribuciones de series de tiempo de un catálogo 
+        entero a partir de su URL, o archivo fuente
         """
-        fields = distribution.get('field')
-        if not fields:
-            return False
-
-        time_index_found = False
-        for field in fields[:]:
-            if field.get('specialType') == 'time_index':
-                if time_index_found:  # time_index duplicado!
-                    return False
-
-                periodicity = field.get('specialTypeDetail')
-                if not self._validate_periodicity(periodicity):
-                    return False
-                time_index_found = True
-        return True
-
-    @staticmethod
-    def _validate_periodicity(periodicity):
-        if not periodicity:
-            return False
-        return True
-
-    @staticmethod
-    def _validate_fields(fields):
-        for field in fields[:]:
-            if field.get('type') not in ('number', 'integer'):
-                fields.remove(field)
-                # todo: logging de desestimación de un field
+        catalog = DataJson(catalog)
+        distributions = get_time_series_distributions(catalog)
+        for distribution in distributions[:]:
+            distribution_id = distribution['identifier']
+            url = distribution.get('downloadURL')
+            if not url:
                 continue
+            dataset = catalog.get_dataset(distribution['dataset_identifier'])
+            df = pd.read_csv(url, parse_dates=['indice_tiempo'])
+            df = df.set_index('indice_tiempo')
+            try:
+                validate_distribution(df,
+                                      catalog,
+                                      dataset,
+                                      distribution,
+                                      distribution_id)
+            except ValueError:
+                distributions.remove(distribution)
 
-            if not field.get('distribution_identifier'):
-                fields.remove(field)
-                continue
+        self.distributions = distributions
