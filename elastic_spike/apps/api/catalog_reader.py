@@ -4,9 +4,7 @@ import json
 from pydatajson import DataJson
 from pydatajson_ts.validations import validate_distribution
 from pydatajson_ts.search import get_time_series_distributions
-from pydatajson.search import get_distribution, get_dataset, \
-    get_catalog_metadata
-from pydatajson.readers import read_catalog
+from pydatajson.search import get_dataset
 from .models import Catalog, Dataset, Distribution, Field
 import pandas as pd
 
@@ -14,50 +12,54 @@ import pandas as pd
 class ReaderPipeline(object):
 
     def __init__(self, catalog):
-        self.catalog = read_catalog(catalog)
+        self.catalog = DataJson(catalog)
         self.run()
 
     def run(self):
         scrapper = Scrapper()
         scrapper.run(self.catalog)
-        DatabaseLoader().run(self.catalog, scrapper.fields)
+        DatabaseLoader().run(self.catalog, scrapper.distributions)
 
 
 class DatabaseLoader(object):
+    """Carga la base de datos. No hace validaciones"""
 
-    def run(self, catalog, fields):
-        for field in fields:
-            if field.get('specialType') == 'time_index':
-                continue
+    def __init__(self):
+        self.dataset_cache = {}
+        self.catalog_model = None
 
-            series_id = field.pop('id')
-            distribution_identifier = field.get('distribution_identifier')
-            if not distribution_identifier:
-                continue
-            distribution = get_distribution(
-                catalog,
-                identifier=distribution_identifier
-            )
-            distribution.pop('field')
-            distribution_model = self._distribution_model(catalog, distribution)
+    def run(self, catalog, distributions):
+        """Guarda las distribuciones de la lista 'distributions',
+        asociadas al catálogo 'catalog, en la base de datos, junto con
+        todos los metadatos de distinto nivel (catalog, dataset)
+        
+        Args:
+            catalog (DataJson)
+            distributions (list)
+        """
+        self.catalog_model = self._catalog_model(catalog)
+        for distribution in distributions:
+            distribution_model = self._distribution_model(catalog,
+                                                          distribution)
 
-            field_model, _ = Field.objects.get_or_create(
-                series_id=series_id,
-                distribution=distribution_model
-            )
-            field_model.metadata = json.dumps(field)
-            field_model.save()
+            fields = distribution['field']
+            self._save_fields(distribution_model, fields)
 
-    def _dataset_model(self, catalog, dataset):
+    def _dataset_model(self, dataset):
+        if dataset['identifier'] in self.dataset_cache:
+            return self.dataset_cache[dataset['identifier']]
+
+        dataset = dataset.copy()
+        dataset.pop('distribution', None)
         title = dataset.pop('title', None)
-        catalog_meta = get_catalog_metadata(catalog)
-        catalog_model = self._catalog_model(catalog_meta)
         dataset_model, _ = Dataset.objects.get_or_create(
             title=title,
-            catalog=catalog_model
+            catalog=self.catalog_model
         )
         dataset_model.metadata = json.dumps(dataset)
         dataset_model.save()
+
+        self.dataset_cache[dataset['identifier']] = dataset_model
         return dataset_model
 
     @staticmethod
@@ -65,6 +67,8 @@ class DatabaseLoader(object):
         """Crea o actualiza el catalog model con el título pedido a partir
         de el diccionario de metadatos de un catálogo
         """
+        catalog = catalog.copy()
+        catalog.pop('dataset', None)
         title = catalog.pop('title', None)
         catalog_model, _ = Catalog.objects.get_or_create(title=title)
         catalog_model.metadata = json.dumps(catalog)
@@ -72,14 +76,16 @@ class DatabaseLoader(object):
         return catalog_model
 
     def _distribution_model(self, catalog, distribution):
+        distribution = distribution.copy()
+        distribution.pop('field')
         title = distribution.pop('title', None)
         url = distribution.pop('downloadURL', None)
 
         dataset = get_dataset(catalog,
                               identifier=distribution.get('dataset_identifier'))
 
-        dataset.pop('distribution')
-        dataset_model = self._dataset_model(catalog, dataset)
+        dataset.pop('distribution', None)
+        dataset_model = self._dataset_model(dataset)
         distribution_model, _ = Distribution.objects.get_or_create(
             title=title,
             dataset=dataset_model
