@@ -27,3 +27,7 @@ npm-debug.log
 node_modules/
 .python-version
 .env
+
+# Archivos fuente de las distribuciones
+media/distribution_raw
+
