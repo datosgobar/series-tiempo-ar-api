@@ -14,6 +14,9 @@ class Dataset(models.Model):
 
 
 def filepath(instance, _):
+    """Método para asignar el nombre al archivo fuente del FileField
+    del modelo Distribution
+    """
     return u'distribution_raw/{}.csv'.format(instance.title)
 
 
