@@ -49,10 +49,14 @@ class DatabaseLoader(object):
             self._save_fields(distribution_model, fields)
 
     def _dataset_model(self, dataset):
+        """Crea o actualiza el modelo del dataset a partir de un
+        diccionario que lo representa
+        """
         if dataset['identifier'] in self.dataset_cache:
             return self.dataset_cache[dataset['identifier']]
 
         dataset = dataset.copy()
+        # Borro las distribuciones, de existir. Solo guardo metadatos
         dataset.pop('distribution', None)
         title = dataset.pop('title', None)
         dataset_model, _ = Dataset.objects.get_or_create(
@@ -71,6 +75,7 @@ class DatabaseLoader(object):
         de el diccionario de metadatos de un catálogo
         """
         catalog = catalog.copy()
+        # Borro el dataset, de existir. Solo guardo metadatos
         catalog.pop('dataset', None)
         title = catalog.pop('title', None)
         catalog_model, _ = Catalog.objects.get_or_create(title=title)
@@ -79,8 +84,12 @@ class DatabaseLoader(object):
         return catalog_model
 
     def _distribution_model(self, catalog, distribution):
+        """Crea o actualiza el modelo de la distribución a partir de
+        un diccionario que lo representa
+        """
         distribution = distribution.copy()
-        distribution.pop('field')
+        # Borro los fields, de existir. Sólo guardo metadatos
+        distribution.pop('field', None)
         title = distribution.pop('title', None)
         url = distribution.pop('downloadURL', None)
 
