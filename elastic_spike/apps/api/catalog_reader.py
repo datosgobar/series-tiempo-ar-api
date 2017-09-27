@@ -1,6 +1,9 @@
 #! coding: utf-8
 import json
+from tempfile import NamedTemporaryFile
 
+import requests
+from django.core.files import File
 from pydatajson import DataJson
 from pydatajson_ts.validations import validate_distribution
 from pydatajson_ts.search import get_time_series_distributions
@@ -92,8 +95,34 @@ class DatabaseLoader(object):
         )
         distribution_model.metadata = json.dumps(distribution)
         distribution_model.download_url = url
+        self._read_file(url, distribution_model)
         distribution_model.save()
         return distribution_model
+
+    @staticmethod
+    def _read_file(file_url, distribution_model):
+        """Descarga y lee el archivo de la distribución. Por razones
+        de performance, NO hace un save() a la base de datos.
+        
+        Args:
+            file_url (str)
+            distribution_model (Distribution)
+        """
+        request = requests.get(file_url, stream=True)
+
+        if request.status_code != 200:
+            return False
+
+        lf = NamedTemporaryFile()
+
+        for block in request.iter_content(1024*8):
+            if not block:
+                break
+
+            lf.write(block)
+
+        distribution_model.data_file = File(lf)
+        distribution_model.save()
 
     @staticmethod
     def _save_fields(distribution_model, fields):
@@ -107,7 +136,6 @@ class DatabaseLoader(object):
                 distribution=distribution_model
             )
             field_model.metadata = json.dumps(field)
-            field_model.save()
 
 
 class Scrapper(object):
