@@ -13,12 +13,21 @@ class Dataset(models.Model):
     catalog = models.ForeignKey(to=Catalog, on_delete=models.CASCADE)
 
 
+def filepath(instance, _):
+    return u'distribution_raw/{}.csv'.format(instance.title)
+
+
 class Distribution(models.Model):
     title = models.CharField(max_length=2000)
     metadata = models.TextField()
     dataset = models.ForeignKey(to=Dataset, on_delete=models.CASCADE)
     download_url = models.URLField()
-    data_file = models.FileField(upload_to='distribution_raw/', blank=True)
+
+    data_file = models.FileField(
+        max_length=2000,
+        upload_to=filepath,
+        blank=True
+    )
 
 
 class Field(models.Model):
