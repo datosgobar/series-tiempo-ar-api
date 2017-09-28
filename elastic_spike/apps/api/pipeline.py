@@ -83,7 +83,7 @@ class Pagination(BaseOperation):
         self.validate_arg(start)
         self.validate_arg(limit, min_value=1)
         if self.errors:
-            raise ValueError
+            return query
 
         start = int(start)
         limit = start + int(limit)
@@ -112,7 +112,7 @@ class DateFilter(BaseOperation):
 
         self.validate_start_end_dates()
         if self.errors:
-            raise ValueError
+            return query
 
         query.add_filter(self.start, self.end)
         return query
