@@ -3,31 +3,37 @@ import json
 from tempfile import NamedTemporaryFile
 
 import requests
+import pandas as pd
 from django.core.files import File
 from pydatajson import DataJson
 from pydatajson_ts.validations import validate_distribution
 from pydatajson_ts.search import get_time_series_distributions
 from pydatajson.search import get_dataset
 from .models import Catalog, Dataset, Distribution, Field
-import pandas as pd
 
 
 class ReaderPipeline(object):
 
-    def __init__(self, catalog):
+    def __init__(self, catalog, index_only):
         self.catalog = DataJson(catalog)
+        self.index_only = index_only
         self.run()
 
     def run(self):
-        scrapper = Scrapper()
-        scrapper.run(self.catalog)
-        DatabaseLoader().run(self.catalog, scrapper.distributions)
+        distributions = None
+        if not self.index_only:
+            scrapper = Scrapper()
+            scrapper.run(self.catalog)
+            distributions = scrapper.distributions
+            DatabaseLoader().run(self.catalog, distributions)
+        Indexer().run(distributions)
 
 
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
 
     def __init__(self):
+        self.distribution_models = []
         self.dataset_cache = {}
         self.catalog_model = None
 
@@ -106,6 +112,7 @@ class DatabaseLoader(object):
         distribution_model.download_url = url
         self._read_file(url, distribution_model)
         distribution_model.save()
+        self.distribution_models.append(distribution_model)
         return distribution_model
 
     @staticmethod
@@ -140,11 +147,14 @@ class DatabaseLoader(object):
                 continue
 
             series_id = field.pop('id')
+            title = field.pop('title')
             field_model, _ = Field.objects.get_or_create(
                 series_id=series_id,
                 distribution=distribution_model
             )
+            field_model.title = title
             field_model.metadata = json.dumps(field)
+            field_model.save()
 
 
 class Scrapper(object):
@@ -177,3 +187,31 @@ class Scrapper(object):
                 distributions.remove(distribution)
 
         self.distributions = distributions
+
+
+class Indexer(object):
+
+    def run(self, distributions=None):
+        """Indexa en Elasticsearch todos los datos de las
+        distribuciones guardadas en la base de datos, o las
+        especificadas por el iterable 'distributions'
+        """
+
+        if not distributions:
+            distributions = Distribution.objects.exclude(data_file='')
+
+        for distribution in distributions:
+            fields = distribution.field_set.all()
+            df = pd.read_csv(distribution.data_file)
+            valid = True
+            for field in fields:
+                if field.title not in df:
+                    # Error fatal, no es válido el csv
+                    valid = False
+                    break
+
+            if valid:
+                self._index(df)
+
+    def _index(self, df):
+        pass
