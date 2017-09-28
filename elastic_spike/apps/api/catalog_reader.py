@@ -5,10 +5,13 @@ from tempfile import NamedTemporaryFile
 import requests
 import pandas as pd
 from django.core.files import File
+from django.conf import settings
 from pydatajson import DataJson
 from pydatajson_ts.validations import validate_distribution
 from pydatajson_ts.search import get_time_series_distributions
 from pydatajson.search import get_dataset
+from elasticsearch import Elasticsearch
+
 from .models import Catalog, Dataset, Distribution, Field
 
 
@@ -190,6 +193,13 @@ class Scrapper(object):
 
 
 class Indexer(object):
+    """Lee distribuciones y las indexa a través de un bulk create en
+    Elasticsearch
+    """
+
+    def __init__(self):
+        self.elastic = Elasticsearch()
+        self.bulk_body = ''
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -202,7 +212,9 @@ class Indexer(object):
 
         for distribution in distributions:
             fields = distribution.field_set.all()
-            df = pd.read_csv(distribution.data_file)
+            df = pd.read_csv(distribution.data_file,
+                             parse_dates=['indice_tiempo'])
+            df = df.set_index('indice_tiempo')
             valid = True
             for field in fields:
                 if field.title not in df:
@@ -211,7 +223,62 @@ class Indexer(object):
                     break
 
             if valid:
-                self._index(df)
+                self._index(df, fields)
 
-    def _index(self, df):
-        pass
+    def _index(self, df, fields):
+        year_ago_shift = 4  # todo: calcular según periodicidad
+
+        for field in fields:
+            # Mapping del indicador
+            if not self.elastic.indices.exists_type(index=settings.TS_INDEX,
+                                                    doc_type=field.series_id):
+                self.elastic.indices.put_mapping(index=settings.TS_INDEX,
+                                                 doc_type=field.series_id,
+                                                 body=settings.MAPPING)
+
+            self.generate_properties(df[field.title],
+                                     field.series_id,
+                                     year_ago_shift)
+            self.elastic.bulk(index=settings.TS_INDEX,
+                              doc_type=field.series_id,
+                              body=self.bulk_body)
+
+    def generate_properties(self, serie, serie_id, shift):
+        """Genera el cuerpo del bulk create request a elasticsearch.
+        Este cuerpo son varios JSON delimitados por newlines, con los
+        valores de los campos a indexar de cada serie. Ver:
+        https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+        """
+        result = ''
+        properties_template = {
+            'timestamp': None,
+            'value': 0,
+            'change': 0,
+            'percent_change': 0,
+            'change_a_year_ago': 0,
+            'percent_change_a_year_ago': 0
+        }
+        change = serie.diff(1)
+        change_a_year_ago = serie.diff(shift)
+        percent_change = serie.pct_change(1)
+        pct_change_a_year_ago = serie.pct_change(shift)
+        for index, value in serie.iteritems():
+            properties = properties_template.copy()
+
+            timestamp = str(index.to_pydatetime().date())
+            properties['timestamp'] = timestamp
+            properties['value'] = value
+            properties['change'] = change[timestamp]
+            properties['percent_change'] = percent_change[timestamp]
+            properties['change_a_year_ago'] = change_a_year_ago[timestamp]
+            properties['percent_change_a_year_ago'] = \
+                pct_change_a_year_ago[timestamp]
+
+            index_data = {
+                "index": {"_id": timestamp, "_type": serie_id}
+            }
+
+            result += json.dumps(index_data) + '\n'
+            result += json.dumps(properties) + '\n'
+
+        self.bulk_body += result
