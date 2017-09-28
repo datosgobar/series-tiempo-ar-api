@@ -14,11 +14,11 @@ from elastic_spike.apps.api.pipeline import QueryPipeline
 
 
 class SearchAPI(View):
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.aggregations = {}
         self.init_aggregations()
         self.elastic = Elasticsearch()
-        super().__init__(**kwargs)
+        super(View, self).__init__()
 
     def get(self, request, series=None):
         result = {
