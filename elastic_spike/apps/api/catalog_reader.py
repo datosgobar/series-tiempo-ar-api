@@ -225,6 +225,9 @@ class Indexer(object):
             if valid:
                 self._index(df, fields)
 
+        self.elastic.bulk(index=settings.TS_INDEX,
+                          body=self.bulk_body)
+
     def _index(self, df, fields):
         year_ago_shift = 4  # todo: calcular según periodicidad
 
@@ -239,9 +242,6 @@ class Indexer(object):
             self.generate_properties(df[field.title],
                                      field.series_id,
                                      year_ago_shift)
-            self.elastic.bulk(index=settings.TS_INDEX,
-                              doc_type=field.series_id,
-                              body=self.bulk_body)
 
     def generate_properties(self, serie, serie_id, shift):
         """Genera el cuerpo del bulk create request a elasticsearch.
