@@ -10,7 +10,7 @@ from pydatajson import DataJson
 from pydatajson_ts.validations import validate_distribution
 from pydatajson_ts.search import get_time_series_distributions
 from pydatajson.search import get_dataset
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, ConnectionTimeout
 
 from .models import Catalog, Dataset, Distribution, Field
 
@@ -23,13 +23,15 @@ class ReaderPipeline(object):
         self.run()
 
     def run(self):
-        distributions = None
+        distribution_models = None
         if not self.index_only:
             scrapper = Scrapper()
             scrapper.run(self.catalog)
             distributions = scrapper.distributions
-            DatabaseLoader().run(self.catalog, distributions)
-        Indexer().run(distributions)
+            loader = DatabaseLoader()
+            loader.run(self.catalog, distributions)
+            distribution_models = loader.distribution_models
+        Indexer().run(distribution_models)
 
 
 class DatabaseLoader(object):
@@ -196,10 +198,12 @@ class Indexer(object):
     """Lee distribuciones y las indexa a través de un bulk create en
     Elasticsearch
     """
+    block_size = 8 * 1024 * 1024
 
     def __init__(self):
         self.elastic = Elasticsearch()
         self.bulk_body = ''
+        self.mapping_body = {}
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -225,25 +229,35 @@ class Indexer(object):
             if valid:
                 self._index(df, fields)
 
+            if len(self.bulk_body) > self.block_size:
+                retry = 3
+                while retry:
+                    try:
+                        retry -= 1
+                        self._put_data()
+                        break
+                    except ConnectionTimeout:
+                        continue
+
+                self.bulk_body = ''
+                self.mapping_body.clear()
+
+    def _put_data(self):
+        mappings = {
+            'mappings': self.mapping_body
+        }
+        requests.put(settings.ES_URL + 'indicators/', mappings)
         self.elastic.bulk(index=settings.TS_INDEX,
                           body=self.bulk_body)
 
     def _index(self, df, fields):
-        year_ago_shift = 4  # todo: calcular según periodicidad
-
         for field in fields:
-            # Mapping del indicador
-            if not self.elastic.indices.exists_type(index=settings.TS_INDEX,
-                                                    doc_type=field.series_id):
-                self.elastic.indices.put_mapping(index=settings.TS_INDEX,
-                                                 doc_type=field.series_id,
-                                                 body=settings.MAPPING)
+            self.mapping_body[field.series_id] = settings.MAPPING
 
-            self.generate_properties(df[field.title],
-                                     field.series_id,
-                                     year_ago_shift)
+        fields = {field.title: field.series_id for field in fields}
+        self.generate_properties(df, fields)
 
-    def generate_properties(self, serie, serie_id, shift):
+    def generate_properties(self, df, fields):
         """Genera el cuerpo del bulk create request a elasticsearch.
         Este cuerpo son varios JSON delimitados por newlines, con los
         valores de los campos a indexar de cada serie. Ver:
@@ -258,27 +272,34 @@ class Indexer(object):
             'change_a_year_ago': 0,
             'percent_change_a_year_ago': 0
         }
-        change = serie.diff(1)
-        change_a_year_ago = serie.diff(shift)
-        percent_change = serie.pct_change(1)
-        pct_change_a_year_ago = serie.pct_change(shift)
-        for index, value in serie.iteritems():
+
+        # Es mucho más eficiente iterar el dataframe fila por fila. Calculo
+        # todas las diferencias absolutas y porcentuales previamente
+        shift = 1  # todo: calcular según periodicidad
+        change = df.diff(1)
+        change_a_year_ago = df.diff(shift)
+        percent_change = df.pct_change(1)
+        pct_change_a_year_ago = df.pct_change(shift)
+
+        for index, values in df.iterrows():
             properties = properties_template.copy()
 
-            timestamp = str(index.to_pydatetime().date())
-            properties['timestamp'] = timestamp
-            properties['value'] = value
-            properties['change'] = change[timestamp]
-            properties['percent_change'] = percent_change[timestamp]
-            properties['change_a_year_ago'] = change_a_year_ago[timestamp]
-            properties['percent_change_a_year_ago'] = \
-                pct_change_a_year_ago[timestamp]
+            timestamp = str(index.date())
+            for column, value in values.iteritems():
+                properties['timestamp'] = timestamp
+                properties['value'] = value
+                properties['change'] = change[column][index]
+                properties['percent_change'] = percent_change[column][index]
+                properties['change_a_year_ago'] = \
+                    change_a_year_ago[column][index]
+                properties['percent_change_a_year_ago'] = \
+                    pct_change_a_year_ago[column][index]
 
-            index_data = {
-                "index": {"_id": timestamp, "_type": serie_id}
-            }
+                index_data = {
+                    "index": {"_id": timestamp, "_type": fields[column]}
+                }
 
-            result += json.dumps(index_data) + '\n'
-            result += json.dumps(properties) + '\n'
+                result += json.dumps(index_data) + '\n'
+                result += json.dumps(properties) + '\n'
 
         self.bulk_body += result
