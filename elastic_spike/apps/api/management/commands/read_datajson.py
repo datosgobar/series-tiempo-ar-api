@@ -1,10 +1,9 @@
 #! coding: utf-8
 import requests
-
-from requests.exceptions import RequestException
 from django.core.management import BaseCommand, CommandError
+from requests.exceptions import RequestException
 
-from elastic_spike.apps.api.catalog_reader import ReaderPipeline
+from elastic_spike.apps.query.catalog_reader import ReaderPipeline
 
 
 class Command(BaseCommand):

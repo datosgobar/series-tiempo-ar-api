@@ -1,8 +1,9 @@
 #! coding: utf-8
 
 from django.conf import settings
-from elasticsearch.client import Elasticsearch
 from elasticsearch_dsl import Search, MultiSearch
+
+from elastic_spike.apps.query.elastic import ElasticInstance
 
 
 class Query(object):
@@ -18,7 +19,7 @@ class Query(object):
             parameters (dict): Opciones de la query
         """
         self.series = []
-        self.elastic = Elasticsearch()
+        self.elastic = ElasticInstance.get()
         self.data = []
         self.args = {}
 

@@ -1,9 +1,10 @@
 # coding=utf-8
 import isodate
 from dateutil.relativedelta import relativedelta
-from django.test import TestCase
 from django.conf import settings
-from elastic_spike.apps.api.query import Query, CollapseQuery
+from django.test import TestCase
+
+from elastic_spike.apps.query.query import Query, CollapseQuery
 
 
 class QueryTest(TestCase):

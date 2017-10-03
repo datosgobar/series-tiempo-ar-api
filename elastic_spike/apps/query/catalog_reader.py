@@ -11,9 +11,10 @@ from pydatajson import DataJson
 from pydatajson_ts.validations import validate_distribution
 from pydatajson_ts.search import get_time_series_distributions
 from pydatajson.search import get_dataset
-from elasticsearch import Elasticsearch, ConnectionTimeout
+from elasticsearch import ConnectionTimeout
 
-from .models import Catalog, Dataset, Distribution, Field
+from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
+from elastic_spike.apps.query.elastic import ElasticInstance
 
 
 class ReaderPipeline(object):
@@ -202,7 +203,7 @@ class Indexer(object):
     block_size = 1e6
 
     def __init__(self):
-        self.elastic = Elasticsearch()
+        self.elastic = ElasticInstance.get()
         self.bulk_body = ''
 
     def run(self, distributions=None):

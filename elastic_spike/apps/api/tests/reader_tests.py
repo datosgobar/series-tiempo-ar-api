@@ -2,7 +2,8 @@
 import os
 
 from django.test import TestCase
-from ..catalog_reader import Scrapper
+
+from elastic_spike.apps.query.catalog_reader import Scrapper
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
