@@ -3,10 +3,10 @@ from abc import abstractmethod
 
 from django.conf import settings
 from elasticsearch import Elasticsearch
-from elasticsearch.client import IndicesClient
 import isodate
 
 from elastic_spike.apps.api.query import Query, CollapseQuery
+from elastic_spike.apps.api.models import Field
 
 
 class QueryPipeline(object):
@@ -191,9 +191,7 @@ class NameAndRepMode(BaseOperation):
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        indices = IndicesClient(client=self.elastic)
-        if not indices.exists_type(index="indicators",
-                                   doc_type=doc_type):
+        if not Field.objects.filter(series_id=doc_type):
             self._append_error('Serie inválida: {}'.format(self.ids))
 
         if rep_mode not in settings.REP_MODES:

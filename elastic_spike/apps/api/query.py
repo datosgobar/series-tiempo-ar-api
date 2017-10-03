@@ -46,9 +46,12 @@ class Query(object):
 
     def add_series(self, series_id, rep_mode):
         if len(self.series) == 1:
-            search = self.series[0]['search'].doc_type(series_id)
+                search = self.series[0]['search'].filter('match',
+                                                         series_id=series_id)
         else:
-            search = Search(doc_type=series_id).sort('timestamp')
+            search = Search()\
+                .filter('match', series_id=series_id)\
+                .sort('timestamp')
 
         self.series.append({
             'search': search,

@@ -5,22 +5,8 @@ from datetime import datetime
 
 import requests
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.core.management import BaseCommand
-
-MAPPING = '''{
-  "properties": {
-    "timestamp":                    {"type": "date"},
-    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
-    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
-    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
-  },
-  "_all": {"enabled": false},
-  "dynamic": "strict"
-}'''
-
-ES_URL = "http://localhost:9200"
 
 
 class Command(BaseCommand):
@@ -31,6 +17,7 @@ class Command(BaseCommand):
         BaseCommand.__init__(self)
         self.indicators_count = 0
         self.prev_values = []
+        self.ES_URL = settings.ES_URL
 
     def add_arguments(self, parser):
         parser.add_argument('--indicators',
@@ -53,25 +40,24 @@ class Command(BaseCommand):
         indicators = options['indicators']
 
         # Chequeo si existe el índice, si no, lo creo
-        index_url = ES_URL + '/indicators/'
+        index_url = self.ES_URL + settings.TS_INDEX
         response = requests.get(index_url)
         if response.status_code == 404:
             requests.put(index_url)
+
+        # Mapping del indicador
+        url = index_url + "/_mapping/" + settings.TS_DOC_TYPE
+
+        # Chequeo si existe el mapping, si no, lo creo
+        response = requests.get(url)
+        if response.status_code == 404:
+            requests.put(url, json.dumps(settings.MAPPING))
 
         for _ in range(indicators):
             self.generate_random_series(options['years'], options['interval'])
 
     def generate_random_series(self, years, interval):
         self.prev_values = []
-
-        # Mapping del indicador
-        indic_name = "random-" + str(self.indicators_count)
-        url = ES_URL + "/indicators/_mapping/" + indic_name
-
-        # Chequeo si existe el mapping, si no, lo creo
-        response = requests.get(url)
-        if response.status_code == 404:
-            requests.put(url, MAPPING)
 
         message = ''  # Request de la API de bulk create
         current_date = self.start_date
@@ -81,7 +67,7 @@ class Command(BaseCommand):
             date_str = current_date.strftime(self.date_format)
 
             index_data = {
-                "index": {"_id": date_str}
+                "index": {"_id": date_str, "_type": settings.TS_DOC_TYPE}
             }
             message += json.dumps(index_data) + '\n'
 
@@ -89,10 +75,12 @@ class Command(BaseCommand):
             message += json.dumps(properties) + '\n'
 
             current_date = self.add_interval(current_date, interval)
+        indic_name = "random-" + str(self.indicators_count)
 
-        url = ES_URL + "/indicators/" + indic_name + "/_bulk"
-        requests.post(url, message)
-        self.stdout.write("Generado: " + indic_name)
+        url = self.ES_URL + settings.TS_INDEX + "/_bulk"
+        resp = requests.post(url, message)
+        if resp.status_code in (200, 201):
+            self.stdout.write("Generado: " + indic_name)
 
         self.indicators_count += 1
 
@@ -116,7 +104,8 @@ class Command(BaseCommand):
             'change': 1,
             'percent_change': 1,
             'change_a_year_ago': 1,
-            'percent_change_a_year_ago': 1
+            'percent_change_a_year_ago': 1,
+            'series_id': "random-" + str(self.indicators_count)
         }
 
         if len(self.prev_values):

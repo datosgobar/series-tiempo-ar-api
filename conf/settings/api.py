@@ -2,7 +2,7 @@
 
 ES_URL = "http://localhost:9200/"
 
-# JSON string del mapping de los índices de series de tiempo
+# JSON del mapping de series de tiempo
 MAPPING = {
   "properties": {
     "timestamp":                    {"type": "date"},
@@ -10,7 +10,8 @@ MAPPING = {
     "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
     "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
     "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
+    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000},
+    "series_id":                    {"type": "keyword"}
   },
   "_all": {"enabled": False},
   "dynamic": "strict"
@@ -18,6 +19,9 @@ MAPPING = {
 
 # Único índice asignado a las series de tiempo
 TS_INDEX = 'indicators'
+
+# Único tipo asignado a las series de tiempo
+TS_DOC_TYPE = "doc"
 
 # Actualización de datos en segundos
 TS_REFRESH_INTERVAL = "30s"
