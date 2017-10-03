@@ -2,7 +2,6 @@
 from abc import abstractmethod
 
 from django.conf import settings
-from elasticsearch import Elasticsearch
 import isodate
 
 from elastic_spike.apps.api.query import Query, CollapseQuery
@@ -21,7 +20,6 @@ class QueryPipeline(object):
         """
         self.args = request_args
         self.result = {}
-        self.elastic = Elasticsearch()
         self.commands = self.init_commands()
         self.run()
 
@@ -171,7 +169,6 @@ class NameAndRepMode(BaseOperation):
 
     def __init__(self):
         BaseOperation.__init__(self)
-        self.elastic = Elasticsearch()
         self.ids = None
 
     def run(self, query, args):
