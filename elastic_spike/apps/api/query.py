@@ -8,6 +8,7 @@ from elasticsearch_dsl import Search, MultiSearch
 class Query(object):
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
+
     def __init__(self):
         """
         Instancia una nueva query
@@ -46,23 +47,19 @@ class Query(object):
 
     def add_series(self, series_id, rep_mode):
         if len(self.series) == 1:
-                search = self.series[0]['search'].filter('match',
-                                                         series_id=series_id)
-        else:
-            search = Search()\
-                .filter('match', series_id=series_id)\
-                .sort('timestamp')
+            search = self.series[0]['search'].filter('match',
+                                                     series_id=series_id)
 
-        self.series.append({
-            'search': search,
-            'rep_mode': rep_mode
-        })
+            self.series.append({'search': search, 'rep_mode': rep_mode})
+        else:
+            self._init_series(series_id, rep_mode)
 
     def run(self):
         if not self.series:
             self._init_series()
 
         multi_search = MultiSearch(index=settings.TS_INDEX,
+                                   doc_type=settings.TS_DOC_TYPE,
                                    using=self.elastic)
 
         for serie in self.series:
@@ -84,10 +81,16 @@ class Query(object):
                 self.data.append(data_row)
             self.data[i].append(hit[rep_mode])
 
-    def _init_series(self):
+    def _init_series(self, series_id=None,
+                     rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+
+        search = Search(using=self.elastic).sort('timestamp')
+        if series_id:
+            search = search.filter('match', series_id=series_id)
+
         self.series.append({
-            'search': Search(using=self.elastic).sort('timestamp'),
-            'rep_mode': settings.API_DEFAULT_VALUES['rep_mode']
+            'search': search,
+            'rep_mode': rep_mode
         })
 
 
@@ -95,6 +98,7 @@ class CollapseQuery(Query):
     """Calcula el promedio de una serie en base a una bucket
     aggregation
     """
+
     def __init__(self, other=None):
         Query.__init__(self)
         # Datos guardados en la instancia para asegurar conmutabilidad

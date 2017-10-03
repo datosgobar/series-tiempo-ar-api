@@ -204,7 +204,6 @@ class Indexer(object):
     def __init__(self):
         self.elastic = Elasticsearch()
         self.bulk_body = ''
-        self.mapping_body = {}
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -250,7 +249,6 @@ class Indexer(object):
                         continue
 
                 self.bulk_body = ''
-                self.mapping_body.clear()
 
         # Reactivo el proceso de replicado una vez finalizado
         self.elastic.indices.put_settings(
@@ -274,12 +272,10 @@ class Indexer(object):
                 ))
 
     def _index(self, df, fields):
-        for field in fields:
-            self.mapping_body[field.series_id] = settings.MAPPING
+        fields = {field.title: field.series_id for field in fields}
+        self.generate_properties(df, fields)
 
-        self.generate_properties(df)
-
-    def generate_properties(self, df):
+    def generate_properties(self, df, fields):
         """Genera el cuerpo del bulk create request a elasticsearch.
         Este cuerpo son varios JSON delimitados por newlines, con los
         valores de los campos a indexar de cada serie. Ver:
@@ -312,8 +308,11 @@ class Indexer(object):
                 if not np.isfinite(value):
                     continue
 
+                if column not in fields:
+                    continue
+
                 properties['timestamp'] = timestamp
-                properties['series_id'] = column
+                properties['series_id'] = fields[column]
                 properties['value'] = value
                 # Evito cargar NaN, defaulteo a 0
                 properties['change'] = \
@@ -333,7 +332,10 @@ class Indexer(object):
                     pct_change_a_year_ago[column][index]
 
                 index_data = {
-                    "index": {"_id": timestamp, "_type": settings.TS_DOC_TYPE}
+                    "index": {
+                        "_id": column + '-' + timestamp,
+                        "_type": settings.TS_DOC_TYPE
+                    }
                 }
 
                 result += json.dumps(index_data) + '\n'

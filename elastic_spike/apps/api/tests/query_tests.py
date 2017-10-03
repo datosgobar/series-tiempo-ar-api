@@ -48,11 +48,18 @@ class QueryTest(TestCase):
         self.query.add_filter(self.start_date, self.end_date)
         self.query.run()
         for row in self.query.data:
-            date = isodate.parse_datetime(row[0])
-            self.assertGreaterEqual(date,
-                                    isodate.parse_datetime(self.start_date))
-            self.assertLessEqual(date,
-                                 isodate.parse_datetime(self.end_date))
+            if 'T' in row[0]:
+                date = isodate.parse_datetime(row[0])
+                start_date = isodate.parse_datetime(self.start_date)
+                end_date = isodate.parse_datetime(self.end_date)
+            else:
+                date = isodate.parse_date(row[0])
+                start_date = isodate.parse_date(
+                    self.start_date[:self.start_date.find('T')])
+                end_date = isodate.parse_date(
+                    self.end_date[:self.end_date.find('T')])
+            self.assertGreaterEqual(date, start_date)
+            self.assertLessEqual(date, end_date)
 
     def test_execute_single_series(self):
         self.query.run()

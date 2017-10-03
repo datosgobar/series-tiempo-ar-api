@@ -62,12 +62,15 @@ class Command(BaseCommand):
         message = ''  # Request de la API de bulk create
         current_date = self.start_date
         end_date = self.start_date + relativedelta(years=years)
+        indic_name = "random-" + str(self.indicators_count)
 
         while current_date < end_date:
             date_str = current_date.strftime(self.date_format)
 
             index_data = {
-                "index": {"_id": date_str, "_type": settings.TS_DOC_TYPE}
+                "index": {"_id": indic_name + '-' + date_str,
+                          "_type": settings.TS_DOC_TYPE
+                          }
             }
             message += json.dumps(index_data) + '\n'
 
@@ -75,7 +78,6 @@ class Command(BaseCommand):
             message += json.dumps(properties) + '\n'
 
             current_date = self.add_interval(current_date, interval)
-        indic_name = "random-" + str(self.indicators_count)
 
         url = self.ES_URL + settings.TS_INDEX + "/_bulk"
         resp = requests.post(url, message)
