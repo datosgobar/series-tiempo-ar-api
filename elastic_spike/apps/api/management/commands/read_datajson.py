@@ -3,7 +3,7 @@ import requests
 from django.core.management import BaseCommand, CommandError
 from requests.exceptions import RequestException
 
-from elastic_spike.apps.query.catalog_reader import ReaderPipeline
+from elastic_spike.apps.api.query.catalog_reader import ReaderPipeline
 
 
 class Command(BaseCommand):

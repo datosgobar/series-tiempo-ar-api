@@ -5,7 +5,7 @@ import isodate
 from django.conf import settings
 
 from elastic_spike.apps.api.models import Field
-from elastic_spike.apps.query.query import Query, CollapseQuery
+from elastic_spike.apps.api.query.query import Query, CollapseQuery
 
 
 class QueryPipeline(object):

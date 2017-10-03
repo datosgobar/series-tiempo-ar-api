@@ -3,7 +3,7 @@
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
-from elastic_spike.apps.query.elastic import ElasticInstance
+from elastic_spike.apps.api.query.elastic import ElasticInstance
 
 
 class Query(object):

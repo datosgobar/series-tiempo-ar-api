@@ -2,19 +2,19 @@
 import json
 from tempfile import NamedTemporaryFile
 
-import requests
-import pandas as pd
 import numpy as np
-from django.core.files import File
+import pandas as pd
+import requests
 from django.conf import settings
-from pydatajson import DataJson
-from pydatajson_ts.validations import validate_distribution
-from pydatajson_ts.search import get_time_series_distributions
-from pydatajson.search import get_dataset
+from django.core.files import File
 from elasticsearch import ConnectionTimeout
+from pydatajson import DataJson
+from pydatajson.search import get_dataset
+from pydatajson_ts.search import get_time_series_distributions
+from pydatajson_ts.validations import validate_distribution
 
 from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
-from elastic_spike.apps.query.elastic import ElasticInstance
+from elastic_spike.apps.api.query.elastic import ElasticInstance
 
 
 class ReaderPipeline(object):

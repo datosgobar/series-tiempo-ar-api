@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
 from elastic_spike.apps.api.pipeline import NameAndRepMode
-from elastic_spike.apps.query.query import Query
+from elastic_spike.apps.api.query.query import Query
 
 
 class NameAndRepModeTest(TestCase):
