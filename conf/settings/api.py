@@ -19,6 +19,9 @@ MAPPING = {
 # Único índice asignado a las series de tiempo
 TS_INDEX = 'indicators'
 
+# Actualización de datos en segundos
+TS_REFRESH_INTERVAL = "30s"
+
 # Modos de representación de las series, calculados y guardados
 # en el proceso de indexación
 REP_MODES = [

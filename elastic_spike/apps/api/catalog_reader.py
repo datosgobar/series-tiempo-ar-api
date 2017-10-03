@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 
 import requests
 import pandas as pd
+import numpy as np
 from django.core.files import File
 from django.conf import settings
 from pydatajson import DataJson
@@ -198,7 +199,7 @@ class Indexer(object):
     """Lee distribuciones y las indexa a través de un bulk create en
     Elasticsearch
     """
-    block_size = 8 * 1024 * 1024
+    block_size = 1e6
 
     def __init__(self):
         self.elastic = Elasticsearch()
@@ -211,6 +212,7 @@ class Indexer(object):
         especificadas por el iterable 'distributions'
         """
 
+        replicas = self._disable_replicas()
         if not distributions:
             distributions = Distribution.objects.exclude(data_file='')
 
@@ -242,13 +244,54 @@ class Indexer(object):
                 self.bulk_body = ''
                 self.mapping_body.clear()
 
+        # Reactivo el proceso de replicado una vez finalizado
+        self.elastic.indices.put_settings(
+            index=settings.TS_INDEX,
+            body={
+                'index': {
+                    'number_of_replicas': replicas,
+                    'refresh_interval': settings.TS_REFRESH_INTERVAL
+                }
+            }
+        )
+
+    def _disable_replicas(self):
+        """Desactiva la replicación de datos del índice de indicadores, y la 
+        actualización de las mismas. Ver
+        https://www.elastic.co/guide/en/elasticsearch/guide/current/indexing-performance.html#_other
+        """
+
+        # API devuelve algo del estilo
+        # {u'indicators': {u'settings': {u'index': {u'number_of_replicas': u'1'}}}}
+        replicas = self.elastic.indices.get_settings(
+            index=settings.TS_INDEX,
+            name='index.number_of_replicas'
+        )['indicators']['settings']['index']['number_of_replicas']
+
+        self.elastic.indices.put_settings(
+            index=settings.TS_INDEX,
+            body={'index': {
+                'number_of_replicas': 0,
+                'refresh_interval': -1
+            }}
+        )
+
+        return replicas
+
     def _put_data(self):
         mappings = {
             'mappings': self.mapping_body
         }
         requests.put(settings.ES_URL + 'indicators/', mappings)
-        self.elastic.bulk(index=settings.TS_INDEX,
-                          body=self.bulk_body)
+        response = self.elastic.bulk(index=settings.TS_INDEX,
+                                     body=self.bulk_body,
+                                     timeout="30s")
+
+        for item in response['items']:
+            if item['index']['status'] not in (200, 201):
+                print("Debug: No se creó bien el item {} de {}. Status code {}".format(
+                    item['index']['_id'], item['index']['_type'], item['index']['status']
+                ))
 
     def _index(self, df, fields):
         for field in fields:
@@ -286,13 +329,26 @@ class Indexer(object):
 
             timestamp = str(index.date())
             for column, value in values.iteritems():
+                if not np.isfinite(value):
+                    continue
+
                 properties['timestamp'] = timestamp
                 properties['value'] = value
-                properties['change'] = change[column][index]
-                properties['percent_change'] = percent_change[column][index]
+                # Evito cargar NaN, defaulteo a 0
+                properties['change'] = \
+                    0 if not np.isfinite(change[column][index]) else \
+                    change[column][index]
+
+                properties['percent_change'] = \
+                    0 if not np.isfinite(percent_change[column][index]) else \
+                    percent_change[column][index]
+
                 properties['change_a_year_ago'] = \
+                    0 if not np.isfinite(change_a_year_ago[column][index]) else \
                     change_a_year_ago[column][index]
+
                 properties['percent_change_a_year_ago'] = \
+                    0 if not np.isfinite(pct_change_a_year_ago[column][index]) else \
                     pct_change_a_year_ago[column][index]
 
                 index_data = {
