@@ -211,8 +211,16 @@ class Indexer(object):
         distribuciones guardadas en la base de datos, o las
         especificadas por el iterable 'distributions'
         """
+        self.init_index()
 
-        replicas = self._disable_replicas()
+        # Optimización: Desactivo el refresh de los datos mientras indexo
+        self.elastic.indices.put_settings(
+            index=settings.TS_INDEX,
+            body={'index': {
+                'refresh_interval': -1
+            }}
+        )
+
         if not distributions:
             distributions = Distribution.objects.exclude(data_file='')
 
@@ -249,40 +257,12 @@ class Indexer(object):
             index=settings.TS_INDEX,
             body={
                 'index': {
-                    'number_of_replicas': replicas,
                     'refresh_interval': settings.TS_REFRESH_INTERVAL
                 }
             }
         )
 
-    def _disable_replicas(self):
-        """Desactiva la replicación de datos del índice de indicadores, y la 
-        actualización de las mismas. Ver
-        https://www.elastic.co/guide/en/elasticsearch/guide/current/indexing-performance.html#_other
-        """
-
-        # API devuelve algo del estilo
-        # {u'indicators': {u'settings': {u'index': {u'number_of_replicas': u'1'}}}}
-        replicas = self.elastic.indices.get_settings(
-            index=settings.TS_INDEX,
-            name='index.number_of_replicas'
-        )['indicators']['settings']['index']['number_of_replicas']
-
-        self.elastic.indices.put_settings(
-            index=settings.TS_INDEX,
-            body={'index': {
-                'number_of_replicas': 0,
-                'refresh_interval': -1
-            }}
-        )
-
-        return replicas
-
     def _put_data(self):
-        mappings = {
-            'mappings': self.mapping_body
-        }
-        requests.put(settings.ES_URL + 'indicators/', mappings)
         response = self.elastic.bulk(index=settings.TS_INDEX,
                                      body=self.bulk_body,
                                      timeout="30s")
@@ -297,10 +277,9 @@ class Indexer(object):
         for field in fields:
             self.mapping_body[field.series_id] = settings.MAPPING
 
-        fields = {field.title: field.series_id for field in fields}
-        self.generate_properties(df, fields)
+        self.generate_properties(df)
 
-    def generate_properties(self, df, fields):
+    def generate_properties(self, df):
         """Genera el cuerpo del bulk create request a elasticsearch.
         Este cuerpo son varios JSON delimitados por newlines, con los
         valores de los campos a indexar de cada serie. Ver:
@@ -313,7 +292,8 @@ class Indexer(object):
             'change': 0,
             'percent_change': 0,
             'change_a_year_ago': 0,
-            'percent_change_a_year_ago': 0
+            'percent_change_a_year_ago': 0,
+            'series_id': ''
         }
 
         # Es mucho más eficiente iterar el dataframe fila por fila. Calculo
@@ -333,6 +313,7 @@ class Indexer(object):
                     continue
 
                 properties['timestamp'] = timestamp
+                properties['series_id'] = column
                 properties['value'] = value
                 # Evito cargar NaN, defaulteo a 0
                 properties['change'] = \
@@ -352,10 +333,15 @@ class Indexer(object):
                     pct_change_a_year_ago[column][index]
 
                 index_data = {
-                    "index": {"_id": timestamp, "_type": fields[column]}
+                    "index": {"_id": timestamp, "_type": settings.TS_DOC_TYPE}
                 }
 
                 result += json.dumps(index_data) + '\n'
                 result += json.dumps(properties) + '\n'
 
         self.bulk_body += result
+
+    def init_index(self):
+        if not self.elastic.indices.exists(settings.TS_INDEX):
+            self.elastic.indices.create(settings.TS_INDEX,
+                                        body=settings.INDEX_CREATION_BODY)

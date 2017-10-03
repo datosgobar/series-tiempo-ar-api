@@ -23,6 +23,12 @@ TS_INDEX = 'indicators'
 # Único tipo asignado a las series de tiempo
 TS_DOC_TYPE = "doc"
 
+INDEX_CREATION_BODY = {
+    'mappings': {
+        TS_DOC_TYPE: MAPPING
+    }
+}
+
 # Actualización de datos en segundos
 TS_REFRESH_INTERVAL = "30s"
 
