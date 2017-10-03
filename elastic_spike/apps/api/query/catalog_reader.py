@@ -55,11 +55,21 @@ class DatabaseLoader(object):
         """
         self.catalog_model = self._catalog_model(catalog)
         for distribution in distributions:
-            distribution_model = self._distribution_model(catalog,
-                                                          distribution)
-
             fields = distribution['field']
-            self._save_fields(distribution_model, fields)
+            time_distribution = False
+            periodicity = None
+            for field in fields:
+                if field.get('specialType') == 'time_index':
+                    periodicity = field.get('specialTypeDetail')
+                    time_distribution = True
+                    break
+
+            if time_distribution:
+                distribution_model = self._distribution_model(catalog,
+                                                              distribution,
+                                                              periodicity)
+
+                self._save_fields(distribution_model, fields)
 
     def _dataset_model(self, dataset):
         """Crea o actualiza el modelo del dataset a partir de un
@@ -96,7 +106,7 @@ class DatabaseLoader(object):
         catalog_model.save()
         return catalog_model
 
-    def _distribution_model(self, catalog, distribution):
+    def _distribution_model(self, catalog, distribution, periodicity):
         """Crea o actualiza el modelo de la distribución a partir de
         un diccionario que lo representa
         """
@@ -117,6 +127,7 @@ class DatabaseLoader(object):
         )
         distribution_model.metadata = json.dumps(distribution)
         distribution_model.download_url = url
+        distribution_model.periodicity = periodicity
         self._read_file(url, distribution_model)
         distribution_model.save()
         self.distribution_models.append(distribution_model)
@@ -145,7 +156,6 @@ class DatabaseLoader(object):
             lf.write(block)
 
         distribution_model.data_file = File(lf)
-        distribution_model.save()
 
     @staticmethod
     def _save_fields(distribution_model, fields):
