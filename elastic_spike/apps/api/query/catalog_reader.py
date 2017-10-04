@@ -213,7 +213,7 @@ class Indexer(object):
     block_size = 1e6
 
     def __init__(self):
-        self.elastic = ElasticInstance.get()
+        self.elastic = ElasticInstance()
         self.bulk_body = ''
 
     def run(self, distributions=None):

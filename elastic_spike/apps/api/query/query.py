@@ -19,7 +19,7 @@ class Query(object):
             parameters (dict): Opciones de la query
         """
         self.series = []
-        self.elastic = ElasticInstance.get()
+        self.elastic = ElasticInstance()
         self.data = []
         self.args = {}
 

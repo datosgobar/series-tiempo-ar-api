@@ -143,7 +143,7 @@ VENDOR_APPS = (
 )
 
 APPS = (
-    'elastic_spike.apps.api',
+    'elastic_spike.apps.api.apps.ApiConfig',
 )
 
 INSTALLED_APPS = DJANGO_BASE_APPS + VENDOR_APPS + APPS
