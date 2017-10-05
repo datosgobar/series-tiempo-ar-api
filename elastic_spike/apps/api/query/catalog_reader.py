@@ -12,9 +12,11 @@ from pydatajson import DataJson
 from pydatajson.search import get_dataset
 from pydatajson_ts.search import get_time_series_distributions
 from pydatajson_ts.validations import validate_distribution
+from pydatajson_ts.helpers import freq_iso_to_pandas
 
 from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
 from elastic_spike.apps.api.query.elastic import ElasticInstance
+import logging
 
 
 class ReaderPipeline(object):
@@ -27,7 +29,7 @@ class ReaderPipeline(object):
     def run(self):
         distribution_models = None
         if not self.index_only:
-            scrapper = Scrapper()
+            scrapper = Scraper()
             scrapper.run(self.catalog)
             distributions = scrapper.distributions
             loader = DatabaseLoader()
@@ -174,7 +176,9 @@ class DatabaseLoader(object):
             field_model.save()
 
 
-class Scrapper(object):
+class Scraper(object):
+
+    logger = logging.getLogger(__name__)
 
     def __init__(self):
         self.distributions = []
@@ -190,17 +194,25 @@ class Scrapper(object):
             distribution_id = distribution['identifier']
             url = distribution.get('downloadURL')
             if not url:
+                msg = u'URL inválida en distribución {}'.format(distribution_id)
+                self.logger.info(msg)
                 continue
             dataset = catalog.get_dataset(distribution['dataset_identifier'])
             df = pd.read_csv(url, parse_dates=['indice_tiempo'])
             df = df.set_index('indice_tiempo')
+
             try:
                 validate_distribution(df,
                                       catalog,
                                       dataset,
                                       distribution,
                                       distribution_id)
-            except ValueError:
+            except ValueError as e:
+                msg = u'Desestimada la distribución {}. Razón: {}'.format(
+                    distribution_id,
+                    e.message
+                )
+                self.logger.info(msg)
                 distributions.remove(distribution)
 
         self.distributions = distributions
@@ -236,18 +248,10 @@ class Indexer(object):
 
         for distribution in distributions:
             fields = distribution.field_set.all()
-            df = pd.read_csv(distribution.data_file,
-                             parse_dates=['indice_tiempo'])
-            df = df.set_index('indice_tiempo')
-            valid = True
-            for field in fields:
-                if field.title not in df:
-                    # Error fatal, no es válido el csv
-                    valid = False
-                    break
+            df = self.init_df(distribution)
 
-            if valid:
-                self._index(df, fields)
+            fields = {field.title: field.series_id for field in fields}
+            self.generate_properties(df, fields)
 
             if len(self.bulk_body) > self.block_size:
                 retry = 3
@@ -271,20 +275,22 @@ class Indexer(object):
             }
         )
 
-    def _put_data(self):
-        response = self.elastic.bulk(index=settings.TS_INDEX,
-                                     body=self.bulk_body,
-                                     timeout="30s")
+    @staticmethod
+    def init_df(distribution):
+        df = pd.read_csv(distribution.data_file,
+                         parse_dates=['indice_tiempo'])
+        df = df.set_index('indice_tiempo')
+        freq = freq_iso_to_pandas(distribution.periodicity)
+        new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
+        columns = df.columns
+        data = np.array(df)
+        df = pd.DataFrame(index=new_index, data=data, columns=columns)
+        return df
 
-        for item in response['items']:
-            if item['index']['status'] not in (200, 201):
-                print("Debug: No se creó bien el item {} de {}. Status code {}".format(
-                    item['index']['_id'], item['index']['_type'], item['index']['status']
-                ))
-
-    def _index(self, df, fields):
-        fields = {field.title: field.series_id for field in fields}
-        self.generate_properties(df, fields)
+    def init_index(self):
+        if not self.elastic.indices.exists(settings.TS_INDEX):
+            self.elastic.indices.create(settings.TS_INDEX,
+                                        body=settings.INDEX_CREATION_BODY)
 
     def generate_properties(self, df, fields):
         """Genera el cuerpo del bulk create request a elasticsearch.
@@ -354,7 +360,17 @@ class Indexer(object):
 
         self.bulk_body += result
 
-    def init_index(self):
-        if not self.elastic.indices.exists(settings.TS_INDEX):
-            self.elastic.indices.create(settings.TS_INDEX,
-                                        body=settings.INDEX_CREATION_BODY)
+    def _put_data(self):
+        """Envía los datos a la instancia de Elasticsearch y valida
+        resultados
+        """
+
+        response = self.elastic.bulk(index=settings.TS_INDEX,
+                                     body=self.bulk_body,
+                                     timeout="30s")
+
+        for item in response['items']:
+            if item['index']['status'] not in (200, 201):
+                print("Debug: No se creó bien el item {} de {}. Status code {}".format(
+                    item['index']['_id'], item['index']['_type'], item['index']['status']
+                ))

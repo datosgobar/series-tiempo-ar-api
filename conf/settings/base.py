@@ -1,6 +1,7 @@
 #! coding: utf-8
 from __future__ import absolute_import, unicode_literals
 
+import os
 from os.path import dirname
 
 import environ
@@ -172,7 +173,10 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
     },
     'loggers': {
         'django.security.DisallowedHost': {
@@ -183,6 +187,11 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'elastic_spike': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False
         }
     }
 }
