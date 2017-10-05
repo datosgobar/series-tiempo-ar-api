@@ -5,6 +5,7 @@ from tempfile import NamedTemporaryFile
 import numpy as np
 import pandas as pd
 import requests
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.files import File
 from elasticsearch import ConnectionTimeout
@@ -36,6 +37,49 @@ class ReaderPipeline(object):
             loader.run(self.catalog, distributions)
             distribution_models = loader.distribution_models
         Indexer().run(distribution_models)
+
+
+class Scraper(object):
+
+    logger = logging.getLogger(__name__)
+
+    def __init__(self):
+        self.distributions = []
+        self.fields = []
+
+    def run(self, catalog):
+        """Valida las distribuciones de series de tiempo de un catálogo 
+        entero a partir de su URL, o archivo fuente
+        """
+        catalog = DataJson(catalog)
+        distributions = get_time_series_distributions(catalog)
+        for distribution in distributions[:]:
+            distribution_id = distribution['identifier']
+            url = distribution.get('downloadURL')
+            if not url:
+                msg = u'URL inválida en distribución {}'.format(distribution_id)
+                self.logger.info(msg)
+                distributions.remove(distribution)
+                continue
+            dataset = catalog.get_dataset(distribution['dataset_identifier'])
+            df = pd.read_csv(url, parse_dates=['indice_tiempo'])
+            df = df.set_index('indice_tiempo')
+
+            try:
+                validate_distribution(df,
+                                      catalog,
+                                      dataset,
+                                      distribution,
+                                      distribution_id)
+            except ValueError as e:
+                msg = u'Desestimada la distribución {}. Razón: {}'.format(
+                    distribution_id,
+                    e.message
+                )
+                self.logger.info(msg)
+                distributions.remove(distribution)
+
+        self.distributions = distributions
 
 
 class DatabaseLoader(object):
@@ -176,48 +220,6 @@ class DatabaseLoader(object):
             field_model.save()
 
 
-class Scraper(object):
-
-    logger = logging.getLogger(__name__)
-
-    def __init__(self):
-        self.distributions = []
-        self.fields = []
-
-    def run(self, catalog):
-        """Valida las distribuciones de series de tiempo de un catálogo 
-        entero a partir de su URL, o archivo fuente
-        """
-        catalog = DataJson(catalog)
-        distributions = get_time_series_distributions(catalog)
-        for distribution in distributions[:]:
-            distribution_id = distribution['identifier']
-            url = distribution.get('downloadURL')
-            if not url:
-                msg = u'URL inválida en distribución {}'.format(distribution_id)
-                self.logger.info(msg)
-                continue
-            dataset = catalog.get_dataset(distribution['dataset_identifier'])
-            df = pd.read_csv(url, parse_dates=['indice_tiempo'])
-            df = df.set_index('indice_tiempo')
-
-            try:
-                validate_distribution(df,
-                                      catalog,
-                                      dataset,
-                                      distribution,
-                                      distribution_id)
-            except ValueError as e:
-                msg = u'Desestimada la distribución {}. Razón: {}'.format(
-                    distribution_id,
-                    e.message
-                )
-                self.logger.info(msg)
-                distributions.remove(distribution)
-
-        self.distributions = distributions
-
-
 class Indexer(object):
     """Lee distribuciones y las indexa a través de un bulk create en
     Elasticsearch
@@ -282,6 +284,10 @@ class Indexer(object):
         df = df.set_index('indice_tiempo')
         freq = freq_iso_to_pandas(distribution.periodicity)
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
+
+        if freq == 'D' and new_index.size > df.index.size:
+            new_index = pd.date_range(df.index[0], df.index[-1], freq='B')
+
         columns = df.columns
         data = np.array(df)
         df = pd.DataFrame(index=new_index, data=data, columns=columns)
@@ -311,11 +317,10 @@ class Indexer(object):
 
         # Es mucho más eficiente iterar el dataframe fila por fila. Calculo
         # todas las diferencias absolutas y porcentuales previamente
-        shift = 1  # todo: calcular según periodicidad
         change = df.diff(1)
-        change_a_year_ago = df.diff(shift)
+        change_a_year_ago = self._year_ago_operation(df, self._change)
         percent_change = df.pct_change(1)
-        pct_change_a_year_ago = df.pct_change(shift)
+        pct_change_a_year_ago = self._year_ago_operation(df, self._pct_change)
 
         for index, values in df.iterrows():
             properties = properties_template.copy()
@@ -374,3 +379,56 @@ class Indexer(object):
                 print("Debug: No se creó bien el item {} de {}. Status code {}".format(
                     item['index']['_id'], item['index']['_type'], item['index']['status']
                 ))
+
+    def _year_ago_operation(self, df, operation):
+        """Ejecuta operation entre cada valor de df y el valor del
+        mismo dato el año pasado.
+        Args:
+            df (pd.DataFrame)
+            operation (callable): Función con parámetros x e y a aplicar
+            
+        Returns:
+            pd.DataFrame
+        """
+        # Array de datos del nuevo DataFrame, inicialmente vacío
+        array = np.ndarray(df.shape)
+        freq = df.index.freq.freqstr
+        y = 0
+        for col, vals in df.iteritems():
+            x = 0
+            validate = True
+            for idx, val in vals.iteritems():
+                value = self._get_value_a_year_ago(df, idx, col, validate)
+                if not np.isnan(value):
+                    if freq != 'B':
+                        validate = False
+
+                    value = operation(val, value)
+
+                array[x][y] = value
+                x += 1
+            y += 1
+
+        return pd.DataFrame(index=df.index, data=array, columns=df.columns)
+
+    @staticmethod
+    def _get_value_a_year_ago(df, idx, col, validate=False):
+        value = np.nan
+        year_ago_idx = idx.date() - relativedelta(years=1)
+        if not validate:
+            value = df[col][year_ago_idx]
+        else:
+            if year_ago_idx in df[col]:
+                value = df[col][year_ago_idx]
+
+        return value
+
+    @staticmethod
+    def _pct_change(x, y):
+        if x == 0:
+            return np.nan
+        return float(x - y / x)
+
+    @staticmethod
+    def _change(x, y):
+        return x - y
