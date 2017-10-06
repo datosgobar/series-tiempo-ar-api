@@ -190,7 +190,7 @@ LOGGING = {
         },
         'elastic_spike': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': False
         }
     }

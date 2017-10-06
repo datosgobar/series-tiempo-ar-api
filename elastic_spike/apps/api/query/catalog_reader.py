@@ -196,9 +196,6 @@ class DatabaseLoader(object):
         lf = NamedTemporaryFile()
 
         for block in request.iter_content(1024*8):
-            if not block:
-                break
-
             lf.write(block)
 
         distribution_model.data_file = File(lf)
@@ -329,15 +326,15 @@ class Indexer(object):
 
             timestamp = str(index.date())
             for column, value in values.iteritems():
-                if not np.isfinite(value):
-                    continue
-
                 if column not in fields:
+                    msg = 'columna {} encontrada pero no estaba registrada en' \
+                        'los metadatos. Ignorada'.format(column)
+                    self.logger.warn(msg)
                     continue
 
                 properties['timestamp'] = timestamp
                 properties['series_id'] = fields[column]
-                properties['value'] = value
+                properties['value'] = value if not np.isnan(value) else None
                 properties['change'] = self._get_value(change, column, index)
 
                 properties['percent_change'] = \
@@ -364,9 +361,9 @@ class Indexer(object):
     @staticmethod
     def _get_value(df, col, index):
         """Devuelve el valor del df[col][index] o nan si no es válido.
-        Evita Cargar Infinity en Elasticsearch
+        Evita Cargar Infinity y NaN en Elasticsearch
         """
-        return df[col][index] if not np.isinf(df[col][index]) else np.nan
+        return df[col][index] if not np.isfinite(df[col][index]) else None
 
     def _put_data(self):
         """Envía los datos a la instancia de Elasticsearch y valida
