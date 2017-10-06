@@ -227,6 +227,7 @@ class Indexer(object):
 
     def __init__(self):
         self.elastic = ElasticInstance()
+        self.indexed_fields_count = 0
         self.bulk_body = ''
 
     def run(self, distributions=None):
@@ -246,6 +247,12 @@ class Indexer(object):
 
         if not distributions:
             distributions = Distribution.objects.exclude(data_file='')
+
+        fields_count = 0
+        for distribution in distributions:
+            fields_count += distribution.field_set.count()
+        msg = u'Inicio de la indexación. Cantidad de fields a indexar: {}'
+        self.logger.info(msg.format(fields_count))
 
         for distribution in distributions:
             fields = distribution.field_set.all()
@@ -275,6 +282,8 @@ class Indexer(object):
                 }
             }
         )
+        msg = u'Fin de la indexación. {} series indexadas.'
+        self.logger.info(msg.format(self.indexed_fields_count))
 
     @staticmethod
     def init_df(distribution):
@@ -355,6 +364,7 @@ class Indexer(object):
 
                 result += json.dumps(index_data) + '\n'
                 result += json.dumps(properties) + '\n'
+                self.indexed_fields_count += 1
 
         self.bulk_body += result
 

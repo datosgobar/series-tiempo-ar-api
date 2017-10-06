@@ -188,9 +188,9 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'elastic_spike': {
+        'elastic_spike.apps.api.query.catalog_reader': {
             'handlers': ['console'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': False
         }
     }
