@@ -32,6 +32,10 @@ INDEX_CREATION_BODY = {
 # Actualización de datos en segundos
 TS_REFRESH_INTERVAL = "30s"
 
+
+# Nombre de la columna de índice de tiempo en las distribuciones
+INDEX_COLUMN = 'indice_tiempo'
+
 # Modos de representación de las series, calculados y guardados
 # en el proceso de indexación
 REP_MODES = [

@@ -62,8 +62,8 @@ class Scraper(object):
                 distributions.remove(distribution)
                 continue
             dataset = catalog.get_dataset(distribution['dataset_identifier'])
-            df = pd.read_csv(url, parse_dates=['indice_tiempo'])
-            df = df.set_index('indice_tiempo')
+            df = pd.read_csv(url, parse_dates=[settings.INDEX_COLUMN])
+            df = df.set_index(settings.INDEX_COLUMN)
 
             try:
                 validate_distribution(df,
@@ -226,6 +226,8 @@ class Indexer(object):
     """
     block_size = 1e6
 
+    logger = logging.Logger(__name__)
+
     def __init__(self):
         self.elastic = ElasticInstance()
         self.bulk_body = ''
@@ -280,8 +282,8 @@ class Indexer(object):
     @staticmethod
     def init_df(distribution):
         df = pd.read_csv(distribution.data_file,
-                         parse_dates=['indice_tiempo'])
-        df = df.set_index('indice_tiempo')
+                         parse_dates=[settings.INDEX_COLUMN])
+        df = df.set_index(settings.INDEX_COLUMN)
         freq = freq_iso_to_pandas(distribution.periodicity)
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
 
@@ -336,22 +338,16 @@ class Indexer(object):
                 properties['timestamp'] = timestamp
                 properties['series_id'] = fields[column]
                 properties['value'] = value
-                # Evito cargar NaN, defaulteo a 0
-                properties['change'] = \
-                    0 if not np.isfinite(change[column][index]) else \
-                    change[column][index]
+                properties['change'] = self._get_value(change, column, index)
 
                 properties['percent_change'] = \
-                    0 if not np.isfinite(percent_change[column][index]) else \
-                    percent_change[column][index]
+                    self._get_value(percent_change, column, index)
 
                 properties['change_a_year_ago'] = \
-                    0 if not np.isfinite(change_a_year_ago[column][index]) else \
-                    change_a_year_ago[column][index]
+                    self._get_value(change_a_year_ago, column, index)
 
                 properties['percent_change_a_year_ago'] = \
-                    0 if not np.isfinite(pct_change_a_year_ago[column][index]) else \
-                    pct_change_a_year_ago[column][index]
+                    self._get_value(pct_change_a_year_ago, column, index)
 
                 index_data = {
                     "index": {
@@ -365,6 +361,13 @@ class Indexer(object):
 
         self.bulk_body += result
 
+    @staticmethod
+    def _get_value(df, col, index):
+        """Devuelve el valor del df[col][index] o nan si no es válido.
+        Evita Cargar Infinity en Elasticsearch
+        """
+        return df[col][index] if not np.isinf(df[col][index]) else np.nan
+
     def _put_data(self):
         """Envía los datos a la instancia de Elasticsearch y valida
         resultados
@@ -376,9 +379,12 @@ class Indexer(object):
 
         for item in response['items']:
             if item['index']['status'] not in (200, 201):
-                print("Debug: No se creó bien el item {} de {}. Status code {}".format(
-                    item['index']['_id'], item['index']['_type'], item['index']['status']
-                ))
+                msg = "Debug: No se creó bien el item {} de {}. " \
+                      "Status code {}".format(
+                        item['index']['_id'],
+                        item['index']['_type'],
+                        item['index']['status'])
+                self.logger.warn(msg)
 
     def _year_ago_operation(self, df, operation):
         """Ejecuta operation entre cada valor de df y el valor del
