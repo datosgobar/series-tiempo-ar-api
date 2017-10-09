@@ -11,9 +11,9 @@ from django.core.files import File
 from elasticsearch import ConnectionTimeout
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
-from pydatajson_ts.search import get_time_series_distributions
-from pydatajson_ts.validations import validate_distribution
-from pydatajson_ts.helpers import freq_iso_to_pandas
+from series_tiempo_ar.search import get_time_series_distributions
+from series_tiempo_ar.validations import validate_distribution
+from series_tiempo_ar.helpers import freq_iso_to_pandas
 
 from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
 from elastic_spike.apps.api.query.elastic import ElasticInstance
