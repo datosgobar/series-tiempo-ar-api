@@ -380,7 +380,7 @@ class Indexer(object):
         """Devuelve el valor del df[col][index] o nan si no es válido.
         Evita Cargar Infinity y NaN en Elasticsearch
         """
-        return df[col][index] if not np.isfinite(df[col][index]) else \
+        return df[col][index] if np.isfinite(df[col][index]) else \
             self.default_value
 
     def _put_data(self):
