@@ -53,3 +53,9 @@ API_DEFAULT_VALUES = {
     'start': 0,
     'limit': 100
 }
+
+
+VALID_STATUS_CODES = (
+    200,
+    201
+)

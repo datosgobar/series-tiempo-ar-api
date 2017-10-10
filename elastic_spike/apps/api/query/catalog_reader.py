@@ -393,7 +393,7 @@ class Indexer(object):
                                      timeout="30s")
 
         for item in response['items']:
-            if item['index']['status'] not in (200, 201):
+            if item['index']['status'] not in settings.VALID_STATUS_CODES:
                 msg = "Debug: No se creó bien el item {} de {}. " \
                       "Status code {}".format(
                         item['index']['_id'],
