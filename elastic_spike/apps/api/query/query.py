@@ -80,7 +80,11 @@ class Query(object):
             if i == len(self.data):
                 data_row = [hit.timestamp]
                 self.data.append(data_row)
-            self.data[i].append(hit[rep_mode])
+
+            if rep_mode in hit:
+                self.data[i].append(hit[rep_mode])
+            else:
+                self.data[i].append(None)
 
     def _init_series(self, series_id=None,
                      rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
