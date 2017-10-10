@@ -176,6 +176,7 @@ LOGGING = {
         },
         'console': {
             'class': 'logging.StreamHandler',
+            'level': 'INFO'
         },
     },
     'loggers': {
@@ -191,7 +192,7 @@ LOGGING = {
         'elastic_spike.apps.api.query.catalog_reader': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': False
+            'propagate': True
         }
     }
 }

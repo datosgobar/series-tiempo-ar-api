@@ -19,11 +19,22 @@ from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
 from elastic_spike.apps.api.query.elastic import ElasticInstance
 import logging
 
+logger = logging.Logger(__name__)
+logger.addHandler(logging.StreamHandler())
+
 
 class ReaderPipeline(object):
 
-    def __init__(self, catalog, index_only):
-        self.catalog = DataJson(catalog)
+    def __init__(self, catalog, index_only=False):
+        """Ejecuta el pipeline de lectura, guardado e indexado de datos
+        y metadatos sobre el catálogo especificado
+        
+        Args:
+            catalog (DataJson): DataJson del catálogo a parsear
+            index_only (bool): Correr sólo la indexación o no
+        """
+
+        self.catalog = catalog
         self.index_only = index_only
         self.run()
 
@@ -41,8 +52,6 @@ class ReaderPipeline(object):
 
 class Scraper(object):
 
-    logger = logging.getLogger(__name__)
-
     def __init__(self):
         self.distributions = []
         self.fields = []
@@ -56,9 +65,9 @@ class Scraper(object):
         for distribution in distributions[:]:
             distribution_id = distribution['identifier']
             url = distribution.get('downloadURL')
-            if not url:
+            if not url or requests.head(url).status_code != 200:
                 msg = u'URL inválida en distribución {}'.format(distribution_id)
-                self.logger.info(msg)
+                logger.info(msg)
                 distributions.remove(distribution)
                 continue
             dataset = catalog.get_dataset(distribution['dataset_identifier'])
@@ -69,14 +78,13 @@ class Scraper(object):
                 validate_distribution(df,
                                       catalog,
                                       dataset,
-                                      distribution,
-                                      distribution_id)
+                                      distribution)
             except ValueError as e:
                 msg = u'Desestimada la distribución {}. Razón: {}'.format(
                     distribution_id,
                     e.message
                 )
-                self.logger.info(msg)
+                logger.info(msg)
                 distributions.remove(distribution)
 
         self.distributions = distributions
@@ -223,11 +231,11 @@ class Indexer(object):
     """
     block_size = 1e6
 
-    logger = logging.Logger(__name__)
+    default_value = 0
 
     def __init__(self):
         self.elastic = ElasticInstance()
-        self.indexed_fields_count = 0
+        self.indexed_fields = set()
         self.bulk_body = ''
 
     def run(self, distributions=None):
@@ -252,13 +260,13 @@ class Indexer(object):
         for distribution in distributions:
             fields_count += distribution.field_set.count()
         msg = u'Inicio de la indexación. Cantidad de fields a indexar: {}'
-        self.logger.info(msg.format(fields_count))
+        logger.info(msg.format(fields_count))
 
         for distribution in distributions:
             fields = distribution.field_set.all()
-            df = self.init_df(distribution)
-
             fields = {field.title: field.series_id for field in fields}
+            df = self.init_df(distribution, fields)
+
             self.generate_properties(df, fields)
 
             if len(self.bulk_body) > self.block_size:
@@ -283,21 +291,31 @@ class Indexer(object):
             }
         )
         msg = u'Fin de la indexación. {} series indexadas.'
-        self.logger.info(msg.format(self.indexed_fields_count))
+        logger.info(msg.format(len(self.indexed_fields)))
 
     @staticmethod
-    def init_df(distribution):
+    def init_df(distribution, fields):
+        """Inicializa el DataFrame del CSV de la distribución pasada,
+        seteando el índice de tiempo correcto y validando las columnas
+        dentro de los datos
+        """
+
         df = pd.read_csv(distribution.data_file,
                          parse_dates=[settings.INDEX_COLUMN])
         df = df.set_index(settings.INDEX_COLUMN)
+
+        # Borro las columnas que no figuren en los metadatos
+        for column in df.columns:
+            if column not in fields:
+                df.drop(column, axis=1, inplace=True)
+        columns = df.columns
+
+        data = np.array(df)
         freq = freq_iso_to_pandas(distribution.periodicity)
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
 
         if freq == 'D' and new_index.size > df.index.size:
             new_index = pd.date_range(df.index[0], df.index[-1], freq='B')
-
-        columns = df.columns
-        data = np.array(df)
         df = pd.DataFrame(index=new_index, data=data, columns=columns)
         return df
 
@@ -313,67 +331,57 @@ class Indexer(object):
         https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
         """
         result = ''
-        properties_template = {
-            'timestamp': None,
-            'value': 0,
-            'change': 0,
-            'percent_change': 0,
-            'change_a_year_ago': 0,
-            'percent_change_a_year_ago': 0,
-            'series_id': ''
-        }
 
         # Es mucho más eficiente iterar el dataframe fila por fila. Calculo
         # todas las diferencias absolutas y porcentuales previamente
-        change = df.diff(1)
-        change_a_year_ago = self._year_ago_operation(df, self._change)
-        percent_change = df.pct_change(1)
-        pct_change_a_year_ago = self._year_ago_operation(df, self._pct_change)
+        data = {
+            'change': df.diff(1),
+            'change_a_year_ago': self._year_ago_operation(df, self._change),
+            'percent_change': df.pct_change(1),
+            'percent_change_a_year_ago':
+                self._year_ago_operation(df, self._pct_change)
+        }
 
         for index, values in df.iterrows():
-            properties = properties_template.copy()
 
             timestamp = str(index.date())
             for column, value in values.iteritems():
-                if column not in fields:
-                    msg = 'columna {} encontrada pero no estaba registrada en' \
-                        'los metadatos. Ignorada'.format(column)
-                    self.logger.warn(msg)
-                    continue
+                properties = {
+                    'timestamp': timestamp,
+                    'series_id': fields[column]
+                }
 
-                properties['timestamp'] = timestamp
-                properties['series_id'] = fields[column]
-                properties['value'] = value if not np.isnan(value) else None
-                properties['change'] = self._get_value(change, column, index)
+                if np.isfinite(value):
+                    properties['value'] = value
 
-                properties['percent_change'] = \
-                    self._get_value(percent_change, column, index)
-
-                properties['change_a_year_ago'] = \
-                    self._get_value(change_a_year_ago, column, index)
-
-                properties['percent_change_a_year_ago'] = \
-                    self._get_value(pct_change_a_year_ago, column, index)
+                for prop_name, df in data.iteritems():
+                    value = self._get_value(df, column, index)
+                    if np.isfinite(value):
+                        properties[prop_name] = value
 
                 index_data = {
                     "index": {
-                        "_id": column + '-' + timestamp,
+                        "_id": fields[column] + '-' + timestamp,
                         "_type": settings.TS_DOC_TYPE
                     }
                 }
 
                 result += json.dumps(index_data) + '\n'
                 result += json.dumps(properties) + '\n'
-                self.indexed_fields_count += 1
+                self.indexed_fields.add(fields[column])
 
         self.bulk_body += result
 
-    @staticmethod
-    def _get_value(df, col, index):
+        for series_id in fields.values():
+            if series_id not in self.indexed_fields:
+                logger.info('Serie {} no encontrada en su dataframe'.format(series_id))
+
+    def _get_value(self, df, col, index):
         """Devuelve el valor del df[col][index] o nan si no es válido.
         Evita Cargar Infinity y NaN en Elasticsearch
         """
-        return df[col][index] if not np.isfinite(df[col][index]) else None
+        return df[col][index] if not np.isfinite(df[col][index]) else \
+            self.default_value
 
     def _put_data(self):
         """Envía los datos a la instancia de Elasticsearch y valida
@@ -391,7 +399,7 @@ class Indexer(object):
                         item['index']['_id'],
                         item['index']['_type'],
                         item['index']['status'])
-                self.logger.warn(msg)
+                logger.warn(msg)
 
     def _year_ago_operation(self, df, operation):
         """Ejecuta operation entre cada valor de df y el valor del
@@ -405,6 +413,7 @@ class Indexer(object):
         """
         # Array de datos del nuevo DataFrame, inicialmente vacío
         array = np.ndarray(df.shape)
+
         freq = df.index.freq.freqstr
         y = 0
         for col, vals in df.iteritems():
@@ -412,7 +421,7 @@ class Indexer(object):
             validate = True
             for idx, val in vals.iteritems():
                 value = self._get_value_a_year_ago(df, idx, col, validate)
-                if not np.isnan(value):
+                if value != self.default_value:
                     if freq != 'B':
                         validate = False
 
@@ -424,9 +433,13 @@ class Indexer(object):
 
         return pd.DataFrame(index=df.index, data=array, columns=df.columns)
 
-    @staticmethod
-    def _get_value_a_year_ago(df, idx, col, validate=False):
-        value = np.nan
+    def _get_value_a_year_ago(self, df, idx, col, validate=False):
+        """Devuelve el valor de la serie determinada por df[col] un
+        año antes del índice de tiempo 'idx'. Hace validación de si
+        existe el índice o no según 'validate' (operación costosa)
+        """
+
+        value = self.default_value
         year_ago_idx = idx.date() - relativedelta(years=1)
         if not validate:
             value = df[col][year_ago_idx]
@@ -436,10 +449,9 @@ class Indexer(object):
 
         return value
 
-    @staticmethod
-    def _pct_change(x, y):
+    def _pct_change(self, x, y):
         if x == 0:
-            return np.nan
+            return self.default_value
         return float(x - y / x)
 
     @staticmethod
