@@ -168,7 +168,7 @@ class DatabaseLoader(object):
         # Borro los fields, de existir. Sólo guardo metadatos
         distribution.pop('field', None)
         title = distribution.pop('title', None)
-        url = distribution.pop('downloadURL', None)
+        url = distribution.get('downloadURL')
 
         dataset = get_dataset(catalog,
                               identifier=distribution.get('dataset_identifier'))
@@ -214,8 +214,8 @@ class DatabaseLoader(object):
             if field.get('specialType') == 'time_index':
                 continue
 
-            series_id = field.pop('id')
-            title = field.pop('title')
+            series_id = field.get('id')
+            title = field.get('title')
             field_model, _ = Field.objects.get_or_create(
                 series_id=series_id,
                 distribution=distribution_model

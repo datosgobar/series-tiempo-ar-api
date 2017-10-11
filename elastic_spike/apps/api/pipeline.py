@@ -33,6 +33,7 @@ class QueryPipeline(object):
                 return
 
         self.result['data'] = query.data
+        self.result['meta'] = query.get_metadata()
 
     @staticmethod
     def init_commands():

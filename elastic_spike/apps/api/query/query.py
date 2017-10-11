@@ -1,9 +1,11 @@
 #! coding: utf-8
 
+import json
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
 from elastic_spike.apps.api.query.elastic import ElasticInstance
+from elastic_spike.apps.api.models import Field
 
 
 class Query(object):
@@ -51,7 +53,9 @@ class Query(object):
             search = self.series[0]['search'].filter('match',
                                                      series_id=series_id)
 
-            self.series.append({'search': search, 'rep_mode': rep_mode})
+            self.series.append(Series(series_id=series_id,
+                                      rep_mode=rep_mode,
+                                      search=search))
         else:
             self._init_series(series_id, rep_mode)
 
@@ -93,10 +97,16 @@ class Query(object):
         if series_id:
             search = search.filter('match', series_id=series_id)
 
-        self.series.append({
-            'search': search,
-            'rep_mode': rep_mode
-        })
+        self.series.append(Series(series_id=series_id,
+                                  rep_mode=rep_mode,
+                                  search=search))
+
+    def get_metadata(self):
+        meta = [None]  # 1er row vacío para el indice de tiempo
+        for serie in self.series:
+            meta.append(serie.get_metadata())
+
+        return meta
 
 
 class CollapseQuery(Query):
@@ -172,3 +182,54 @@ class CollapseQuery(Query):
                     self.data.append(data_row)
 
                 self.data[i - start].append(hit['agg'].value)
+
+
+class Series(object):
+
+    def __init__(self, series_id=None, rep_mode=None, search=None):
+        self.series_id = series_id
+        self.rep_mode = rep_mode
+        self.search = search or Search()
+
+    def __getitem__(self, item):
+        return self.__getattribute__(item)
+
+    def __setitem__(self, key, value):
+        return self.__setattr__(key, value)
+
+    def get(self, item, default=None):
+        return getattr(self, item, default)
+
+    def get_metadata(self):
+        """Devuelve un diccionario (data.json-like) de los metadatos
+        de la serie:
+        
+        {
+            <catalog_meta>
+            "dataset": [
+                <dataset_meta>
+                "distribution": [
+                    <distribution_meta>
+                    "field": [
+                        <field_meta>
+                    ]
+                ]
+            ]
+        }
+
+        """
+        field = Field.objects.get(series_id=self.series_id)
+        distribution = field.distribution
+        dataset = distribution.dataset
+        catalog = dataset.catalog
+
+        metadata = json.loads(catalog.metadata)
+        dataset_meta = json.loads(dataset.metadata)
+        distribution_meta = json.loads(distribution.metadata)
+        field_meta = json.loads(field.metadata)
+
+        distribution_meta['field'] = [field_meta]
+        dataset_meta['distribution'] = [distribution_meta]
+        metadata['dataset'] = [dataset_meta]
+
+        return metadata
