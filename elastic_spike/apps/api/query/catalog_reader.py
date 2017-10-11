@@ -41,9 +41,9 @@ class ReaderPipeline(object):
     def run(self):
         distribution_models = None
         if not self.index_only:
-            scrapper = Scraper()
-            scrapper.run(self.catalog)
-            distributions = scrapper.distributions
+            scraper = Scraper()
+            scraper.run(self.catalog)
+            distributions = scraper.distributions
             loader = DatabaseLoader()
             loader.run(self.catalog, distributions)
             distribution_models = loader.distribution_models
