@@ -135,9 +135,9 @@ class DatabaseLoader(object):
         dataset = dataset.copy()
         # Borro las distribuciones, de existir. Solo guardo metadatos
         dataset.pop('distribution', None)
-        title = dataset.pop('title', None)
+        identifier = dataset['identifier']
         dataset_model, _ = Dataset.objects.get_or_create(
-            title=title,
+            identifier=identifier,
             catalog=self.catalog_model
         )
         dataset_model.metadata = json.dumps(dataset)
@@ -154,7 +154,7 @@ class DatabaseLoader(object):
         catalog = catalog.copy()
         # Borro el dataset, de existir. Solo guardo metadatos
         catalog.pop('dataset', None)
-        title = catalog.pop('title', None)
+        title = catalog.get('title')
         catalog_model, _ = Catalog.objects.get_or_create(title=title)
         catalog_model.metadata = json.dumps(catalog)
         catalog_model.save()
@@ -167,7 +167,7 @@ class DatabaseLoader(object):
         distribution = distribution.copy()
         # Borro los fields, de existir. Sólo guardo metadatos
         distribution.pop('field', None)
-        title = distribution.pop('title', None)
+        identifier = distribution['identifier']
         url = distribution.get('downloadURL')
 
         dataset = get_dataset(catalog,
@@ -176,7 +176,7 @@ class DatabaseLoader(object):
         dataset.pop('distribution', None)
         dataset_model = self._dataset_model(dataset)
         distribution_model, _ = Distribution.objects.get_or_create(
-            title=title,
+            identifier=identifier,
             dataset=dataset_model
         )
         distribution_model.metadata = json.dumps(distribution)
@@ -218,9 +218,9 @@ class DatabaseLoader(object):
             title = field.get('title')
             field_model, _ = Field.objects.get_or_create(
                 series_id=series_id,
+                title=title,
                 distribution=distribution_model
             )
-            field_model.title = title
             field_model.metadata = json.dumps(field)
             field_model.save()
 

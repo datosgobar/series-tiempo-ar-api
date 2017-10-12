@@ -8,7 +8,7 @@ class Catalog(models.Model):
 
 
 class Dataset(models.Model):
-    title = models.CharField(max_length=2000)
+    identifier = models.CharField(max_length=200)
     metadata = models.TextField()
     catalog = models.ForeignKey(to=Catalog, on_delete=models.CASCADE)
 
@@ -17,11 +17,11 @@ def filepath(instance, _):
     """Método para asignar el nombre al archivo fuente del FileField
     del modelo Distribution
     """
-    return u'distribution_raw/{}.csv'.format(instance.title)
+    return u'distribution_raw/{}.csv'.format(instance.identifier)
 
 
 class Distribution(models.Model):
-    title = models.CharField(max_length=2000)
+    identifier = models.CharField(max_length=200)
     metadata = models.TextField()
     dataset = models.ForeignKey(to=Dataset, on_delete=models.CASCADE)
     download_url = models.URLField()
@@ -36,6 +36,6 @@ class Distribution(models.Model):
 
 class Field(models.Model):
     series_id = models.CharField(max_length=200)
-    title = models.CharField(max_length=200, default='')
+    title = models.CharField(max_length=200)
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
