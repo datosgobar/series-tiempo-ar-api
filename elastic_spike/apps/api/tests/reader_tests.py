@@ -20,7 +20,7 @@ class ScrapperTests(TestCase):
         self.assertTrue(len(self.scrapper.distributions))
 
     def test_remote_datajson(self):
-        url = 'http://181.209.63.31:8082/catalog/sspm/data.json'
+        url = 'http://infra.datos.gob.ar/catalog/sspm/data.json'
 
         self.scrapper.run(url)
 
