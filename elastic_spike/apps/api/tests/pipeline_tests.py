@@ -17,11 +17,11 @@ class NameAndRepModeTest(TestCase):
     @classmethod
     def setUpClass(cls):
         catalog = Catalog.objects.create(title='test_catalog', metadata='{}')
-        dataset = Dataset.objects.create(title='dataset',
+        dataset = Dataset.objects.create(identifier="132",
                                          metadata={},
                                          catalog=catalog)
 
-        distrib = Distribution.objects.create(title='distribution',
+        distrib = Distribution.objects.create(identifier='132.1',
                                               metadata='{}',
                                               download_url="invalid_url",
                                               dataset=dataset)
