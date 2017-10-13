@@ -53,6 +53,12 @@ AGGREGATIONS = [
     'sum'
 ]
 
+COLLAPSE_INTERVALS = [
+    'month',
+    'quarter',
+    'year'
+]
+
 API_DEFAULT_VALUES = {
     'rep_mode': 'value',
     'collapse_aggregation': 'avg',

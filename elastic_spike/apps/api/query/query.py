@@ -36,7 +36,7 @@ class Query(object):
         self.args['start'] = start
         self.args['limit'] = limit
 
-    def add_filter(self, start, end):
+    def add_filter(self, start=None, end=None):
         if not len(self.series):
             self._init_series()
 

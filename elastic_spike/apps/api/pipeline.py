@@ -79,8 +79,8 @@ class Pagination(BaseOperation):
     def run(self, query, args):
         start = args.get('start', settings.API_DEFAULT_VALUES['start'])
         limit = args.get('limit', settings.API_DEFAULT_VALUES['limit'])
-        self.validate_arg(start)
-        self.validate_arg(limit, min_value=1)
+        self.validate_arg(start, name='start')
+        self.validate_arg(limit, min_value=1, name='limit')
         if self.errors:
             return query
 
@@ -89,14 +89,14 @@ class Pagination(BaseOperation):
         query.add_pagination(start, limit)
         return query
 
-    def validate_arg(self, arg, min_value=0):
+    def validate_arg(self, arg, min_value=0, name='limit'):
         try:
             parsed_arg = int(arg)
         except ValueError:
             parsed_arg = None
 
         if parsed_arg is None or parsed_arg < min_value:
-            self._append_error("Parámetro 'limit' inválido: {}".format(arg))
+            self._append_error("Parámetro '{}' inválido: {}".format(name, arg))
 
 
 class DateFilter(BaseOperation):
@@ -112,6 +112,12 @@ class DateFilter(BaseOperation):
         self.validate_start_end_dates()
         if self.errors:
             return query
+
+        if self.start:
+            self.start = str(isodate.parse_date(self.start))
+
+        if self.end:
+            self.end = str(isodate.parse_date(self.end))
 
         query.add_filter(self.start, self.end)
         return query
@@ -228,6 +234,11 @@ class Collapse(BaseOperation):
     def run(self, query, args):
         collapse = args.get('collapse')
         if not collapse:
+            return query
+
+        if collapse not in settings.COLLAPSE_INTERVALS:
+            msg = 'Intervalo de agregación inválido: {}'
+            self._append_error(msg.format(collapse))
             return query
 
         query = CollapseQuery(query)
