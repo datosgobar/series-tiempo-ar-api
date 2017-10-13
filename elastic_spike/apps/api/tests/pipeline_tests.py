@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
-from elastic_spike.apps.api.pipeline import NameAndRepMode
+from elastic_spike.apps.api.pipeline import NameAndRepMode, Collapse
 from elastic_spike.apps.api.query.query import Query
 
 
@@ -45,3 +45,23 @@ class NameAndRepModeTest(TestCase):
     def test_valid_series(self):
         self.cmd.run(self.query, {'ids': self.single_series})
         self.assertFalse(self.cmd.errors)
+
+
+class CollapseTest(TestCase):
+    single_series = 'random-0'
+
+    def setUp(self):
+        self.query = Query()
+        self.cmd = Collapse()
+
+    def test_valid_aggregation(self):
+        self.cmd.run(self.query, {'ids': self.single_series,
+                                  'collapse:': 'year',
+                                  'collapse_aggregation': 'sum'})
+        self.assertFalse(self.cmd.errors)
+
+    def test_invalid_aggregation(self):
+        self.cmd.run(self.query, {'ids': self.single_series,
+                                  'collapse': 'year',
+                                  'collapse_aggregation': 'INVALID'})
+        self.assertTrue(self.cmd.errors)

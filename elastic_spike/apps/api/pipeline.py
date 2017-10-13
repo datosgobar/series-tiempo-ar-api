@@ -235,7 +235,11 @@ class Collapse(BaseOperation):
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
         rep_mode = args.get('representation_mode',
                             settings.API_DEFAULT_VALUES['rep_mode'])
-        query.add_collapse(agg, collapse, rep_mode)
+
+        if agg not in settings.AGGREGATIONS:
+            self._append_error("Modo de agregación inválido: {}".format(agg))
+        else:
+            query.add_collapse(agg, collapse, rep_mode)
         return query
 
 

@@ -46,6 +46,13 @@ REP_MODES = [
     'percent_change_a_year_ago'
 ]
 
+AGGREGATIONS = [
+    'avg',
+    'min',
+    'max',
+    'sum'
+]
+
 API_DEFAULT_VALUES = {
     'rep_mode': 'value',
     'collapse_aggregation': 'avg',
