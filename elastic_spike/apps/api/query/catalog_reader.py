@@ -290,6 +290,10 @@ class Indexer(object):
                 }
             }
         )
+        segments = settings.FORCE_MERGE_SEGMENTS
+        self.elastic.indices.forcemerge(index=settings.TS_INDEX,
+                                        max_num_segments=segments)
+
         msg = u'Fin de la indexación. {} series indexadas.'
         logger.info(msg.format(len(self.indexed_fields)))
 
