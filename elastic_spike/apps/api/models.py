@@ -24,7 +24,7 @@ class Distribution(models.Model):
     identifier = models.CharField(max_length=200)
     metadata = models.TextField()
     dataset = models.ForeignKey(to=Dataset, on_delete=models.CASCADE)
-    download_url = models.URLField()
+    download_url = models.URLField(max_length=1024)
     periodicity = models.CharField(max_length=200)
 
     data_file = models.FileField(
