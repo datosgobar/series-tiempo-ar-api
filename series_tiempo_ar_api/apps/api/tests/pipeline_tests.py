@@ -1,13 +1,14 @@
 #! coding: utf-8
 from django.test import TestCase
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, \
+    Distribution, Field
 from series_tiempo_ar_api.apps.api.pipeline import NameAndRepMode, Collapse
 from series_tiempo_ar_api.apps.api.query.query import Query
 
 
 class NameAndRepModeTest(TestCase):
-    """Testea el comando que se encarga del parámetro 'ids' de la 
+    """Testea el comando que se encarga del parámetro 'ids' de la
     query: el parseo de IDs de series y modos de representación de las
     mismas.
     """

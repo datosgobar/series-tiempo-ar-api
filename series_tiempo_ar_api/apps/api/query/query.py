@@ -203,7 +203,7 @@ class Series(object):
     def get_metadata(self):
         """Devuelve un diccionario (data.json-like) de los metadatos
         de la serie:
-        
+
         {
             <catalog_meta>
             "dataset": [

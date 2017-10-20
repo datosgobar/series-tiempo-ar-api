@@ -11,10 +11,10 @@ class ElasticInstance(object):
         """Devuelve la instancia del cliente de Elasticsearch. Si se
         espeficica el parámetro 'urls', inicializa un cliente nuevo con
         conexión a las instancias en esas direcciones.
-        
+
         Args:
             urls (list): Lista de URLs a conectarse
-            
+
         Returns:
             Elasticsearch
         """

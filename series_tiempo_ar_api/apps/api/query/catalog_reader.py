@@ -29,7 +29,7 @@ class ReaderPipeline(object):
     def __init__(self, catalog, index_only=False):
         """Ejecuta el pipeline de lectura, guardado e indexado de datos
         y metadatos sobre el catálogo especificado
-        
+
         Args:
             catalog (DataJson): DataJson del catálogo a parsear
             index_only (bool): Correr sólo la indexación o no
@@ -59,7 +59,7 @@ class Scraper(object):
         self.read_local = read_local
 
     def run(self, catalog):
-        """Valida las distribuciones de series de tiempo de un catálogo 
+        """Valida las distribuciones de series de tiempo de un catálogo
         entero a partir de su URL, o archivo fuente
         """
         catalog = DataJson(catalog)
@@ -115,7 +115,7 @@ class DatabaseLoader(object):
         """Guarda las distribuciones de la lista 'distributions',
         asociadas al catálogo 'catalog, en la base de datos, junto con
         todos los metadatos de distinto nivel (catalog, dataset)
-        
+
         Args:
             catalog (DataJson)
             distributions (list)
@@ -204,7 +204,7 @@ class DatabaseLoader(object):
     def _read_file(self, file_url, distribution_model):
         """Descarga y lee el archivo de la distribución. Por razones
         de performance, NO hace un save() a la base de datos.
-        
+
         Args:
             file_url (str)
             distribution_model (Distribution)
@@ -220,7 +220,8 @@ class DatabaseLoader(object):
 
         lf = NamedTemporaryFile()
 
-        for block in request.iter_content(1024*8):
+        block_size = 1024 * 8
+        for block in request.iter_content(block_size):
             lf.write(block)
 
         if distribution_model.data_file:
@@ -427,9 +428,9 @@ class Indexer(object):
             if item['index']['status'] not in settings.VALID_STATUS_CODES:
                 msg = "Debug: No se creó bien el item {} de {}. " \
                       "Status code {}".format(
-                        item['index']['_id'],
-                        item['index']['_type'],
-                        item['index']['status'])
+                          item['index']['_id'],
+                          item['index']['_type'],
+                          item['index']['status'])
                 logger.warn(msg)
 
     def _year_ago_operation(self, df, operation):
@@ -438,7 +439,7 @@ class Indexer(object):
         Args:
             df (pd.DataFrame)
             operation (callable): Función con parámetros x e y a aplicar
-            
+
         Returns:
             pd.DataFrame
         """
