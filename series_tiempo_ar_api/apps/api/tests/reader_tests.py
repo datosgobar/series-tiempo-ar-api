@@ -1,15 +1,14 @@
 #! coding: utf-8
 import os
 
-import time
 from django.test import TestCase
 from series_tiempo_ar.search import get_time_series_distributions
 from elasticsearch_dsl import Search
 
 from series_tiempo_ar_api.apps.api.models import Distribution
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-from series_tiempo_ar_api.apps.api.query.catalog_reader import Scraper, Indexer, \
-    DatabaseLoader
+from series_tiempo_ar_api.apps.api.query.catalog_reader import \
+    Scraper, Indexer, DatabaseLoader
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
