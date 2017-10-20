@@ -52,9 +52,10 @@ class ReaderPipeline(object):
 
 class Scraper(object):
 
-    def __init__(self):
+    def __init__(self, read_local=False):
         self.distributions = []
         self.fields = []
+        self.read_local = read_local
 
     def run(self, catalog):
         """Valida las distribuciones de series de tiempo de un catálogo 
@@ -64,12 +65,12 @@ class Scraper(object):
         distributions = get_time_series_distributions(catalog)
         for distribution in distributions[:]:
             distribution_id = distribution['identifier']
-            url = distribution.get('downloadURL')
-            if not url or requests.head(url).status_code != 200:
-                msg = u'URL inválida en distribución {}'.format(distribution_id)
-                logger.info(msg)
-                distributions.remove(distribution)
-                continue
+            if not self.read_local:
+                if not self._validate_url(distribution):
+                    distributions.remove(distribution)
+                    continue
+
+            url = distribution['downloadURL']
             dataset = catalog.get_dataset(distribution['dataset_identifier'])
             df = pd.read_csv(url, parse_dates=[settings.INDEX_COLUMN])
             df = df.set_index(settings.INDEX_COLUMN)
@@ -89,14 +90,25 @@ class Scraper(object):
 
         self.distributions = distributions
 
+    @staticmethod
+    def _validate_url(distribution):
+        distribution_id = distribution['identifier']
+        url = distribution.get('downloadURL')
+        if not url or requests.head(url).status_code != 200:
+            msg = u'URL inválida en distribución {}'.format(distribution_id)
+            logger.info(msg)
+            return False
+        return True
+
 
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
 
-    def __init__(self):
+    def __init__(self, read_local=False):
         self.distribution_models = []
         self.dataset_cache = {}
         self.catalog_model = None
+        self.read_local = read_local
 
     def run(self, catalog, distributions):
         """Guarda las distribuciones de la lista 'distributions',
@@ -107,6 +119,7 @@ class DatabaseLoader(object):
             catalog (DataJson)
             distributions (list)
         """
+        catalog = DataJson(catalog)
         self.catalog_model = self._catalog_model(catalog)
         for distribution in distributions:
             fields = distribution['field']
@@ -187,8 +200,7 @@ class DatabaseLoader(object):
         self.distribution_models.append(distribution_model)
         return distribution_model
 
-    @staticmethod
-    def _read_file(file_url, distribution_model):
+    def _read_file(self, file_url, distribution_model):
         """Descarga y lee el archivo de la distribución. Por razones
         de performance, NO hace un save() a la base de datos.
         
@@ -196,6 +208,10 @@ class DatabaseLoader(object):
             file_url (str)
             distribution_model (Distribution)
         """
+        if self.read_local:  # Usado en debug y testing
+            distribution_model.data_file = File(open(file_url))
+            return
+
         request = requests.get(file_url, stream=True)
 
         if request.status_code != 200:
@@ -233,10 +249,10 @@ class Indexer(object):
 
     default_value = 0
 
-    def __init__(self):
+    def __init__(self, index=settings.TS_INDEX):
         self.elastic = ElasticInstance()
+        self.index = index
         self.indexed_fields = set()
-        self.bulk_body = ''
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -247,7 +263,7 @@ class Indexer(object):
 
         # Optimización: Desactivo el refresh de los datos mientras indexo
         self.elastic.indices.put_settings(
-            index=settings.TS_INDEX,
+            index=self.index,
             body={'index': {
                 'refresh_interval': -1
             }}
@@ -262,28 +278,31 @@ class Indexer(object):
         msg = u'Inicio de la indexación. Cantidad de fields a indexar: {}'
         logger.info(msg.format(fields_count))
 
+        bulk_body = ''
         for distribution in distributions:
             fields = distribution.field_set.all()
             fields = {field.title: field.series_id for field in fields}
             df = self.init_df(distribution, fields)
 
-            self.generate_properties(df, fields)
+            bulk_body += self.generate_properties(df, fields)
 
-            if len(self.bulk_body) > self.block_size:
+            if len(bulk_body) > self.block_size:
                 retry = 3
                 while retry:
                     try:
                         retry -= 1
-                        self._put_data()
+                        self._put_data(bulk_body)
                         break
                     except ConnectionTimeout:
                         continue
+                bulk_body = ''
 
-                self.bulk_body = ''
+        if bulk_body:
+            self._put_data(bulk_body)
 
         # Reactivo el proceso de replicado una vez finalizado
         self.elastic.indices.put_settings(
-            index=settings.TS_INDEX,
+            index=self.index,
             body={
                 'index': {
                     'refresh_interval': settings.TS_REFRESH_INTERVAL
@@ -291,7 +310,7 @@ class Indexer(object):
             }
         )
         segments = settings.FORCE_MERGE_SEGMENTS
-        self.elastic.indices.forcemerge(index=settings.TS_INDEX,
+        self.elastic.indices.forcemerge(index=self.index,
                                         max_num_segments=segments)
 
         msg = u'Fin de la indexación. {} series indexadas.'
@@ -302,9 +321,13 @@ class Indexer(object):
         """Inicializa el DataFrame del CSV de la distribución pasada,
         seteando el índice de tiempo correcto y validando las columnas
         dentro de los datos
+
+        Args:
+            distribution (Distribution): modelo de distribución válido
+            fields (dict): diccionario con estructura titulo: serie_id
         """
 
-        df = pd.read_csv(distribution.data_file,
+        df = pd.read_csv(distribution.data_file.file,
                          parse_dates=[settings.INDEX_COLUMN])
         df = df.set_index(settings.INDEX_COLUMN)
 
@@ -324,8 +347,8 @@ class Indexer(object):
         return df
 
     def init_index(self):
-        if not self.elastic.indices.exists(settings.TS_INDEX):
-            self.elastic.indices.create(settings.TS_INDEX,
+        if not self.elastic.indices.exists(self.index):
+            self.elastic.indices.create(self.index,
                                         body=settings.INDEX_CREATION_BODY)
 
     def generate_properties(self, df, fields):
@@ -334,7 +357,6 @@ class Indexer(object):
         valores de los campos a indexar de cada serie. Ver:
         https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
         """
-        result = ''
 
         # Es mucho más eficiente iterar el dataframe fila por fila. Calculo
         # todas las diferencias absolutas y porcentuales previamente
@@ -345,7 +367,7 @@ class Indexer(object):
             'percent_change_a_year_ago':
                 self._year_ago_operation(df, self._pct_change)
         }
-
+        result = ''
         for index, values in df.iterrows():
 
             timestamp = str(index.date())
@@ -374,11 +396,12 @@ class Indexer(object):
                 result += json.dumps(properties) + '\n'
                 self.indexed_fields.add(fields[column])
 
-        self.bulk_body += result
-
         for series_id in fields.values():
             if series_id not in self.indexed_fields:
-                logger.info('Serie {} no encontrada en su dataframe'.format(series_id))
+                msg = 'Serie {} no encontrada en su dataframe'
+                logger.info(msg.format(series_id))
+
+        return result
 
     def _get_value(self, df, col, index):
         """Devuelve el valor del df[col][index] o nan si no es válido.
@@ -387,13 +410,13 @@ class Indexer(object):
         return df[col][index] if np.isfinite(df[col][index]) else \
             self.default_value
 
-    def _put_data(self):
+    def _put_data(self, data):
         """Envía los datos a la instancia de Elasticsearch y valida
         resultados
         """
 
-        response = self.elastic.bulk(index=settings.TS_INDEX,
-                                     body=self.bulk_body,
+        response = self.elastic.bulk(index=self.index,
+                                     body=data,
                                      timeout="30s")
 
         for item in response['items']:

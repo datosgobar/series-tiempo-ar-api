@@ -93,7 +93,7 @@
                     "title": "Producto Interno Bruto Servicios Comunales, Sociales y Personales Millones de pesos constantes. Base 1960. Valores trimestrales",
                     "modified": "2017-09-28T00:00:00",
                     "fileName": "pib-servicios-comunales-sociales-personales-millones-pesos-1960-trimestral.csv",
-                    "downloadURL": "http://181.209.63.31:8082/catalog/sspm/dataset/212/distribution/212.1/download/producto-interno-bruto-servicios-comunales-sociales-personales-millones-pesos-constantes-base-1960-valores-trimestrales.csv",
+                    "downloadURL": "elastic_spike/apps/api/tests/samples/one_distribution_data.csv",
                     "field": [
                         {
                             "title": "indice_tiempo",
