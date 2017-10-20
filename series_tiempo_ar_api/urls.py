@@ -9,5 +9,5 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [url(r'^admin/', include(admin.site.urls)),
-               url(r'', include('elastic_spike.apps.api.urls', namespace="api"))] + static(
+               url(r'', include('series_tiempo_ar_api.apps.api.urls', namespace="api"))] + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

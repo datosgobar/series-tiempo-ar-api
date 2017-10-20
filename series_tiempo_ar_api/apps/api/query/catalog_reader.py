@@ -15,8 +15,8 @@ from series_tiempo_ar.search import get_time_series_distributions
 from series_tiempo_ar.validations import validate_distribution
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
-from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
-from elastic_spike.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
+from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 import logging
 
 logger = logging.Logger(__name__)

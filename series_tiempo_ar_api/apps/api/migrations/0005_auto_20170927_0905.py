@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import elastic_spike.apps.api.models
+import series_tiempo_ar_api.apps.api.models
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='distribution',
             name='data_file',
-            field=models.FileField(blank=True, max_length=2000, upload_to=elastic_spike.apps.api.models.filepath),
+            field=models.FileField(blank=True, max_length=2000, upload_to=series_tiempo_ar_api.apps.api.models.filepath),
         ),
     ]

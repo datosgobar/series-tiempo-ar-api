@@ -4,8 +4,8 @@ from abc import abstractmethod
 import isodate
 from django.conf import settings
 
-from elastic_spike.apps.api.models import Field
-from elastic_spike.apps.api.query.query import Query, CollapseQuery
+from series_tiempo_ar_api.apps.api.models import Field
+from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery
 
 
 class QueryPipeline(object):

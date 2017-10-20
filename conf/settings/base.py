@@ -69,7 +69,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    str(ROOT_DIR.path('elastic_spike/static')),
+    str(ROOT_DIR.path('series_tiempo_ar_api/static')),
 )
 
 # List of finder classes that know how to find static files in
@@ -97,7 +97,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-ROOT_URLCONF = 'elastic_spike.urls'
+ROOT_URLCONF = 'series_tiempo_ar_api.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'conf.wsgi.application'
@@ -144,7 +144,7 @@ VENDOR_APPS = (
 )
 
 APPS = (
-    'elastic_spike.apps.api.apps.ApiConfig',
+    'series_tiempo_ar_api.apps.api.apps.ApiConfig',
 )
 
 INSTALLED_APPS = DJANGO_BASE_APPS + VENDOR_APPS + APPS
@@ -189,7 +189,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'elastic_spike.apps.api.query.catalog_reader': {
+        'series_tiempo_ar_api.apps.api.query.catalog_reader': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': True

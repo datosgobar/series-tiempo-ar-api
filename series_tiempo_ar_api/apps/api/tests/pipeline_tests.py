@@ -1,9 +1,9 @@
 #! coding: utf-8
 from django.test import TestCase
 
-from elastic_spike.apps.api.models import Catalog, Dataset, Distribution, Field
-from elastic_spike.apps.api.pipeline import NameAndRepMode, Collapse
-from elastic_spike.apps.api.query.query import Query
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
+from series_tiempo_ar_api.apps.api.pipeline import NameAndRepMode, Collapse
+from series_tiempo_ar_api.apps.api.query.query import Query
 
 
 class NameAndRepModeTest(TestCase):

@@ -4,8 +4,8 @@ import json
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
-from elastic_spike.apps.api.query.elastic import ElasticInstance
-from elastic_spike.apps.api.models import Field
+from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.api.models import Field
 
 
 class Query(object):

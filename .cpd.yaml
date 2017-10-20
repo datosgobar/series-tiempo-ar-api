@@ -1,7 +1,7 @@
 languages:
   - python
 files:
-  - "elastic_spike/**/*.py"
+  - "series_tiempo_ar_api/**/*.py"
 exclude:
   - "**/migrations/*"
   - "*/**/tests/**/*"

@@ -5,7 +5,7 @@ from .query.elastic import ElasticInstance
 
 
 class ApiConfig(AppConfig):
-    name = 'elastic_spike.apps.api'
+    name = 'series_tiempo_ar_api.apps.api'
 
     def ready(self):
         ElasticInstance.init(settings.ES_URL)

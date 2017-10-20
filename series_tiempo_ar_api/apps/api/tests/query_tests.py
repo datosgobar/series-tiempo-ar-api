@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
 
-from elastic_spike.apps.api.query.query import Query, CollapseQuery
+from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery
 
 
 class QueryTest(TestCase):
