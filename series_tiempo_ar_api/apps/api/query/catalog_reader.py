@@ -15,7 +15,8 @@ from series_tiempo_ar.search import get_time_series_distributions
 from series_tiempo_ar.validations import validate_distribution
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, \
+    Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 import logging
 
@@ -221,6 +222,9 @@ class DatabaseLoader(object):
 
         for block in request.iter_content(1024*8):
             lf.write(block)
+
+        if distribution_model.data_file:
+            distribution_model.data_file.delete()
 
         distribution_model.data_file = File(lf)
 
