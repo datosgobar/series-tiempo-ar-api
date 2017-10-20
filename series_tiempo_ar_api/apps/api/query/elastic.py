@@ -31,7 +31,7 @@ class ElasticInstance(object):
 
         return cls.elastic
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         return cls.get()
 
 

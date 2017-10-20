@@ -68,9 +68,10 @@ class Command(BaseCommand):
             date_str = current_date.strftime(self.date_format)
 
             index_data = {
-                "index": {"_id": indic_name + '-' + date_str,
-                          "_type": settings.TS_DOC_TYPE
-                          }
+                "index": {
+                    "_id": indic_name + '-' + date_str,
+                    "_type": settings.TS_DOC_TYPE
+                }
             }
             message += json.dumps(index_data) + '\n'
 

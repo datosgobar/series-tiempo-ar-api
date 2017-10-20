@@ -1,5 +1,6 @@
 #! coding: utf-8
 import json
+import logging
 from tempfile import NamedTemporaryFile
 
 import numpy as np
@@ -18,7 +19,6 @@ from series_tiempo_ar.helpers import freq_iso_to_pandas
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, \
     Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-import logging
 
 logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -280,8 +280,8 @@ class Indexer(object):
         fields_count = 0
         for distribution in distributions:
             fields_count += distribution.field_set.count()
-        msg = u'Inicio de la indexación. Cantidad de fields a indexar: {}'
-        logger.info(msg.format(fields_count))
+        msg = u'Inicio de la indexación. Cantidad de fields a indexar: %d'
+        logger.info(msg, fields_count)
 
         bulk_body = ''
         for distribution in distributions:
@@ -318,8 +318,8 @@ class Indexer(object):
         self.elastic.indices.forcemerge(index=self.index,
                                         max_num_segments=segments)
 
-        msg = u'Fin de la indexación. {} series indexadas.'
-        logger.info(msg.format(len(self.indexed_fields)))
+        msg = u'Fin de la indexación. %d series indexadas.'
+        logger.info(msg, len(self.indexed_fields))
 
     @staticmethod
     def init_df(distribution, fields):
@@ -347,9 +347,9 @@ class Indexer(object):
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
 
         if freq == 'D' and new_index.size > df.index.size:
-            new_index = pd.date_range(df.index[0], df.index[-1], freq='B')
-        df = pd.DataFrame(index=new_index, data=data, columns=columns)
-        return df
+            new_index = pd.date_range(df.index[0], df.index[-1], freq='B')\
+
+        return pd.DataFrame(index=new_index, data=data, columns=columns)
 
     def init_index(self):
         if not self.elastic.indices.exists(self.index):
@@ -403,8 +403,8 @@ class Indexer(object):
 
         for series_id in fields.values():
             if series_id not in self.indexed_fields:
-                msg = 'Serie {} no encontrada en su dataframe'
-                logger.info(msg.format(series_id))
+                msg = 'Serie %s no encontrada en su dataframe'
+                logger.info(msg, series_id)
 
         return result
 
