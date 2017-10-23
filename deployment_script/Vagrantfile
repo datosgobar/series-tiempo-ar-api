@@ -1,0 +1,42 @@
+VAGRANTFILE_API_VERSION = "2"
+
+SSH_KEYS = [ '~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
+
+
+application_name = "django_project"
+checkout_branch = "indexing"
+database_user = "django_db_user"
+database_password = "abcdef123456789"
+
+repo_url = ENV['REPO_URL']
+
+raise "must define REPO_URL" unless repo_url
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "bento/ubuntu-16.04"
+  config.ssh.private_key_path = SSH_KEYS
+  config.ssh.forward_agent = true
+  config.ssh.insert_key = false
+  config.vm.define "webserver" do |web|
+      web.ssh.private_key_path = SSH_KEYS
+      web.ssh.forward_agent = true
+      web.ssh.insert_key = false
+#      web.vm.network "private_network", ip: "192.168.33.10"
+      config.vm.network "forwarded_port", guest: 80, host: 8000
+  end
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "site.yml"
+    ansible.groups = {
+        "webservers" => ["webserver"]
+    }
+    ansible.verbose = "vvv"
+#    ansible.tags = ["elastic"]
+    ansible.extra_vars = {
+        "application_clone_url" => repo_url,
+        "postgresql_user" => database_user,
+        "postgresql_password" => database_password,
+        "checkout_branch" => checkout_branch,
+        "ansible_ssh_user" => "vagrant",
+    }
+  end
+end

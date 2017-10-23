@@ -1,0 +1,1 @@
+{{ postgresql_host }}:{{ postgresql_port }}:{{ postgresql_database_name }}:{{ postgresql_user }}:{{ postgresql_password }}

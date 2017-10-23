@@ -1,0 +1,5 @@
+---
+
+elastic_jvm_xmx: "2g"
+elastic_jvm_xms: "2g"
+elastic_cluster_name: "series-tiempo-ar-api-dev"

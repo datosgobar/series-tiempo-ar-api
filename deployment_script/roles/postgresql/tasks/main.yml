@@ -1,0 +1,55 @@
+---
+
+# Dependencies
+- name: Install Postgresql database
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2 # For ansible postgresql module
+
+- name: Allow md5 for local connections
+  replace:
+    path: /etc/postgresql/9.5/main/pg_hba.conf
+    regexp: '^local(.+)all(.+)all(.+)peer$'
+    replace: 'local   all             all                                     md5'
+    backup: yes
+
+# File structures
+- name: Create postgresql directories
+  file:
+    path: "{{ item }}postgresql"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "postgres"
+    mode: u=rwx,g=rwx
+  with_items:
+    - "{{ sockets_dir }}"
+    - "{{ logs_dir }}"
+    - "{{ config_dir }}"
+    - "{{ bins_dir }}"
+    - "{{ backups_dir }}"
+
+- name: Create .pgpass file in app user home
+  template:
+    src: conf/pgpass
+    dest: ~/.pgpass
+    mode: 0600
+  become_user: "{{ application_user }}"
+
+- include: backups.yml
+- include: ensure_database.yml
+
+- name: Backup database
+  shell: "{{ psql_backup_bin }}"
+  become_user: "{{ application_user }}"
+  tags: quickly
+
+# Systemd unit
+- name: Enable postgresql systemd unit
+  service: 
+    state: restarted
+    name: postgresql.service
+    enabled: yes

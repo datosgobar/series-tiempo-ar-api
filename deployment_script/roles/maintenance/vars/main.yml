@@ -1,0 +1,9 @@
+---
+
+# Maintenance
+
+maintenance_dir: "{{ application_base_dir }}maintenance/"
+maintenance_conf_file: "{{ nginx_conf_dir }}001-maintenance.conf"
+maintenance_enabled_site: /etc/nginx/sites-enabled/001-maintenance
+maintenance_game_dir: "{{ maintenance_dir }}game/"
+maintenance_files_dir: "{{ maintenance_dir }}files/"

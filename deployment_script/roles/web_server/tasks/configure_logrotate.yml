@@ -1,0 +1,9 @@
+---
+
+- name: "Add logrotate file for {{ item }}"
+  template:
+    src: "logrotate/{{ item }}"
+    dest: "/etc/logrotate.d/{{ item }}-{{ application_name }}"
+  with_items:
+    - nginx
+    - gunicorn

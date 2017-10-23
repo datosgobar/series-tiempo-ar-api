@@ -1,0 +1,17 @@
+---
+
+- name: Migrate
+  django_manage:
+    command: migrate
+    app_path: "{{ application_dir }}"
+    virtualenv: "{{ application_virtualenv_dir }}"
+  environment: "{{ django_environment }}"
+  tags: quickly
+
+- name: Collect static
+  django_manage:
+    command: collectstatic
+    app_path: "{{ application_dir }}"
+    virtualenv: "{{ application_virtualenv_dir }}"
+  environment: "{{ django_environment }}"
+  tags: quickly

@@ -1,0 +1,14 @@
+---
+
+- name: Create application group
+  group:
+    name: "{{ application_group }}"
+    state: present
+
+- name: Create application user
+  user:
+    name: "{{ application_user }}"
+    comment: "Devartis Application user"
+    append: yes
+    groups: "{{ application_group }}"
+    home: "{{ application_user_home }}"

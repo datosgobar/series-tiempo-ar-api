@@ -1,0 +1,13 @@
+#Taken from: http://docs.gunicorn.org/en/stable/deploy.html
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+SocketUser={{ application_user }}
+SocketGroup={{ application_user }}
+ListenStream={{ gunicorn_socket }}
+ListenStream=0.0.0.0:9000
+ListenStream=[::]:8000
+
+[Install]
+WantedBy=sockets.target
