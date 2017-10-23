@@ -1,0 +1,39 @@
+---
+
+
+- name: Create application directory
+  file: 
+    path: "{{ application_base_dir }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: u=rwx,g=rwx
+
+- name: Create logs, sockets, config and bins directories
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: u=rwx,g=rwx
+  with_items:
+    - "{{ sockets_dir }}"
+    - "{{ logs_dir }}"
+    - "{{ config_dir }}"
+    - "{{ bins_dir }}"
+    - "{{ backups_dir }}"
+
+- name: Create app, nginx and gunicorn directories
+  file:
+    path: "{{ item[0] }}{{ item[1].dirname }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ item[1].dirgroup }}"
+    mode: u=rwx,g=rwx
+  with_nested:
+    - [ "{{ sockets_dir }}", "{{ logs_dir }}", "{{ config_dir }}", "{{ bins_dir }}" ]
+    - [
+        {dirname: "nginx", dirgroup: "www-data"},
+        {dirname: "gunicorn", dirgroup: "{{ application_group }}"},
+        {dirname: "app", dirgroup: "{{ application_group }}"},
+      ]

@@ -1,0 +1,89 @@
+---
+
+# Start host depending variables
+
+- name: Check key certificate file
+  stat: path={{ nginx_ssl_key_path }}
+  register: ssl_key_file
+  become_user: root
+
+- name: Check crt certificate file
+  stat: path={{ nginx_ssl_crt_path }}
+  register: ssl_crt_file
+  become_user: root
+
+- name: Check domain
+  stat: path={{ nginx_domain_file_path }}
+  register: domain_file
+  become_user: root
+
+- name: Enable HTTPS
+  set_fact: use_https=True
+  when: ssl_key_file.stat.exists and ssl_crt_file.stat.exists and domain_file.stat.exists
+
+- name: Get application domain
+  shell: "cat {{ nginx_domain_file_path }}"
+  register: application_domain_stat
+  when: use_https is defined
+
+- name: Set application domain
+  set_fact: 
+    application_domain: "{{ application_domain_stat.stdout }}"
+    application_domain_www: "www.{{ application_domain_stat.stdout }}"
+  when: use_https is defined
+
+- name: Check http auth file
+  stat: path={{ nginx_http_auth_file }}
+  register: http_auth_file
+
+# End host depending variables
+# Start tasks
+
+- name: Create the nginx HTTP config file
+  template: src=nginx_http_config.j2
+            dest={{ nginx_conf_file }}
+            mode=0770
+            backup=yes
+            owner="{{ application_user }}"
+            group="www-data"
+  when: use_https is not defined
+
+- name: Create the nginx HTTPS config file
+  template: src=nginx_https_config.j2
+            dest={{ nginx_conf_file }}
+            mode=0770
+            backup=yes
+            owner="{{ application_user }}"
+            group="www-data"
+  when: use_https is defined
+
+- name: Set up http auth
+  blockinfile:
+    dest: "{{ nginx_conf_file }}"
+    insertafter: "{{ nginx_http_auth_mark }}"
+    content: |
+      auth_basic "Restricted"; # For Basic Auth
+      auth_basic_user_file {{ nginx_http_auth_file }}; # For Basic Auth
+  when: http_auth_file.stat.exists == True
+
+
+- name: Remove default nginx sites
+  file: 
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: Add site to sites availables
+  file:
+    src: "{{ nginx_conf_file }}"
+    dest: "/etc/nginx/sites-available/000-default"
+    owner: "{{ application_user }}"
+    group: "www-data"
+    state: link
+
+- name: Enable site
+  file:
+    src: "/etc/nginx/sites-available/000-default"
+    dest: "{{ nginx_enabled_site }}"
+    owner: "{{ application_user }}"
+    group: "www-data"
+    state: link

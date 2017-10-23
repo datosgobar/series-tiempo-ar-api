@@ -1,0 +1,26 @@
+---
+
+- name: create systemd unit files
+  template: src=services/gunicorn.service.j2
+            dest=/etc/systemd/system/gunicorn.service
+            mode=0664
+            backup=no
+
+- name: create systemd socket files
+  template: src=services/gunicorn.socket.j2
+            dest=/etc/systemd/system/gunicorn.socket
+            mode=0664
+            backup=no
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable web server systemd units
+  service: 
+    state: restarted
+    name: "{{ item }}"
+    enabled: yes
+  tags: quickly
+  with_items:
+    - gunicorn.socket
+    - nginx.service

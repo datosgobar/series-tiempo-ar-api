@@ -1,0 +1,16 @@
+---
+- name: Create the Gunicorn config file
+  template:
+    src: gunicorn/gunicorn_config.j2
+    dest: "{{ gunicorn_conf }}"
+    mode: 0774
+    backup: yes
+
+- name: Create gunicorn run file
+  template: 
+    src: gunicorn/run_gunicorn.j2
+    dest: "{{ run_gunicorn_bin }}"
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: 0770
+    backup: yes

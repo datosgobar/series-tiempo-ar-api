@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup psql database periodically
+
+[Timer]
+OnBootSec=5s
+OnCalendar=weekly
+Persistent=true
+Unit=psql_backup.service
+
+[Install]
+WantedBy=default.target

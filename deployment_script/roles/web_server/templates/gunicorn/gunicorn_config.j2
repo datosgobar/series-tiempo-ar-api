@@ -1,0 +1,14 @@
+proc_name = "{{ application_name }}"
+workers = {{ gunicorn_num_workers }}
+max_requests = {{ gunicorn_max_requests }}
+timeout = {{ gunicorn_timeout_seconds }}
+loglevel = "info"
+bind = "unix:{{ gunicorn_socket }}"
+accesslog = "{{ gunicorn_access_log }}"
+errorlog = "{{ gunicorn_error_log }}"
+pidfile = "{{ gunicorn_pid }}"
+
+chdir = "{{ application_dir }}"
+raw_env = [
+    'DJANGO_SETTINGS_MODULE={{ application_settings_module }}'
+]

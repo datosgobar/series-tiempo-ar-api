@@ -1,0 +1,7 @@
+---
+
+- include: configure_firewall.yml
+- include: dependencies.yml
+- include: python2.yml
+- include: users_and_group.yml
+- include: file_structures.yml

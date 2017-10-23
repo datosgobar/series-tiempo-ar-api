@@ -1,0 +1,92 @@
+---
+
+- name: Install dependencies
+  apt: 
+    name: nginx 
+    state: present
+
+- name: Create directories
+  file:
+    path: "{{ maintenance_dir }}{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: www-data
+    mode: u=rwx,g=rwx
+  with_items:
+    - files
+
+- name: Create index
+  template:
+    src: index.html
+    dest: "{{ maintenance_files_dir }}index.html"
+    force: no
+  become_user: "{{ application_user }}"
+
+- name: Update permissions
+  file:
+    path: "{{ maintenance_files_dir }}"
+    recurse: yes
+    owner: "{{ application_user }}"
+    group: www-data
+
+- name: Create nginx maintencance conf
+  template:
+    src: maintenance.conf
+    dest: "{{ maintenance_conf_file }}"
+    owner: "{{ application_user }}"
+    group: "www-data"
+    mode: 0770
+
+- name: Remove default nginx sites
+  file: 
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: Add maintenance site to sites availables
+  file:
+    src: "{{ maintenance_conf_file }}"
+    dest: "/etc/nginx/sites-available/001-maintenance"
+    owner: "{{ application_user }}"
+    group: "www-data"
+    state: link
+
+- name: Disable default site
+  file:
+    path: "{{ nginx_enabled_site }}"
+    state: absent
+  when: maintenance_on is defined
+  tags: quickly
+
+- name: Enable maintenance site
+  file:
+    src: "/etc/nginx/sites-available/001-maintenance"
+    dest: "{{ maintenance_enabled_site }}"
+    owner: "{{ application_user }}"
+    group: "www-data"
+    state: link
+  when: maintenance_on is defined
+  tags: quickly
+
+- name: Enable maintenance site
+  file:
+    src: "/etc/nginx/sites-available/000-default"
+    dest: "{{ nginx_enabled_site }}"
+    owner: "{{ application_user }}"
+    group: "www-data"
+    state: link
+  when: maintenance_off is defined
+  tags: quickly
+
+- name: Disable maintenance site
+  file:
+    path: "{{ maintenance_enabled_site }}"
+    state: absent
+  when: maintenance_off is defined
+  tags: quickly
+
+- name: Restart nginx
+  service: 
+    state: restarted
+    name: "nginx.service"
+    enabled: yes
+  tags: quickly

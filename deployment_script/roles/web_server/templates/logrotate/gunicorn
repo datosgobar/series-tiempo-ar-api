@@ -1,0 +1,11 @@
+{{ gunicorn_log_dir }}*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    notifempty
+    create 640 {{ application_user }} {{ application_group }}
+    postrotate
+        kill -USR1 `cat {{ gunicorn_pid }}`
+    endscript
+}

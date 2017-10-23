@@ -1,0 +1,40 @@
+---
+
+## Per application variables
+
+application_name: "django_application"
+# git@example.com:user/repo
+application_clone_url:
+# XXXXXXXXXXXXXXXXXXXXXXXXXXX
+django_secret_key:
+postgresql_user:
+postgresql_password:
+
+# Application user and group
+application_user: devartis
+application_group: devartis
+
+# Application
+application_user_home: "/home/{{ application_user }}/"
+application_base_dir: "{{ application_user_home }}webapp/"
+base_dir: "{{ application_base_dir }}"
+
+sockets_dir: "{{ base_dir }}sockets/"
+logs_dir: "{{ base_dir }}logs/"
+config_dir: "{{ base_dir }}config/"
+bins_dir: "{{ base_dir }}bin/"
+backups_dir: "{{ base_dir }}backups/"
+
+application_dir: "{{ application_base_dir }}app/"
+application_virtualenv_dir: "{{ application_base_dir }}.venv/"
+
+application_settings_module: conf.settings.production
+
+# NGINX
+nginx_conf_dir: "{{ config_dir }}nginx/"
+
+nginx_media_dir: "{{ base_dir }}media/"
+nginx_static_dir: "{{ base_dir }}static/"
+nginx_enabled_site: /etc/nginx/sites-enabled/000-default
+
+postgresql_database_name: "{{ application_name }}_database"

@@ -31,7 +31,7 @@ ignore=settings, utils, admin_utils, tests, admin.py, urls.py, migrations, test
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=W0611,C0111,E1101,R0201,C0304,W0232,R0922,E1002,W0212,R0904,RP0402,W0511,W0142,I0011,W0703,C1001,R0401
+disable=W0611,C0111,E1101,R0201,C0304,W0232,R0922,E1002,W0212,R0904,RP0402,W0511,W0142,I0011,W0703,C1001,R0401,C0103,R0204
 
 
 [REPORTS]

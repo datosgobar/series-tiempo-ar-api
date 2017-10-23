@@ -1,11 +1,11 @@
 {
-  "name": "elastic_spike",
+  "name": "series_tiempo_ar_api",
   "version": "1.0.0",
-  "description": "elastic_spike ===============",
+  "description": "series_tiempo_ar_api ===============",
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint -c .eslintrc.json elastic_spike/apps/**/*.js"
+    "lint": "eslint -c .eslintrc.json series_tiempo_ar_api/apps/**/*.js"
   },
   "repository": {
     "type": "git",

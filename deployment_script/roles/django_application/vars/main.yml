@@ -1,0 +1,30 @@
+---
+
+application_bins_dir: "{{ bins_dir }}app/"
+application_secret_key_bin: "{{ application_bins_dir }}django_secret_key.py"
+application_python_bin: "{{ application_virtualenv_dir }}bin/python"
+application_env_file_link: "{{ application_dir }}conf/settings/.env"
+
+application_conf: "{{ config_dir}}app/"
+application_env_file: "{{ application_conf }}env"
+application_secret_key_file: "{{ application_conf }}secret_key"
+
+application_temp_dir: "{{ application_base_dir }}temp/"
+
+checkout_branch: indexing
+
+env_mark: "## DEFAULT VARIABLES MARK"
+
+#Django
+django_settings:
+  MEDIA_ROOT: "{{ nginx_media_dir }}"
+  STATIC_ROOT: "{{ nginx_static_dir }}"
+  DATABASE_NAME: "{{ postgresql_database_name }}"
+  DATABASE_USER: "{{ postgresql_user }}"
+  DATABASE_PASSWORD: "{{ postgresql_password }}"
+  DATABASE_HOST: "127.0.0.1"
+
+django_environment:
+  DJANGO_SETTINGS_MODULE: "{{ application_settings_module }}"
+
+application_requirements: "{{ application_dir }}requirements.txt"

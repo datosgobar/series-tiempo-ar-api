@@ -1,0 +1,14 @@
+---
+
+
+- name: Install requirements
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - apache2-utils
+    - nginx
+
+
+- include: config_gunicorn.yml
+- include: config_nginx.yml
+- include: create_systemd_files.yml
+- include: configure_logrotate.yml

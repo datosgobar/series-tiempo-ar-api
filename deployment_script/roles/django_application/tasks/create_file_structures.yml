@@ -1,0 +1,88 @@
+---
+
+- name: Add django secret key generator script
+  copy:
+    src: django_secret_key.py
+    dest: "{{ application_secret_key_bin }}"
+    mode: 0770
+
+- name: Create media and static dirs
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}" # Should this be "www-data"?
+  with_items:
+    - "{{ nginx_media_dir }}"
+    - "{{ nginx_static_dir }}"
+
+- name: Create temporal clone dir
+  file:
+    path: "{{ application_temp_dir }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_user }}"
+    mode: u=rwx,g=rwx,o=rwx
+  tags: quickly
+
+- name: Set facts
+  set_fact: 
+    tempclone: "{{ application_temp_dir }}clone/"
+    tempapp: "{{ application_temp_dir }}clone/app/"
+  tags: quickly
+
+- name: Create temporal clone dir
+  file:
+    path: "{{ tempclone }}"
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: u=rwx,g=rwx
+  tags: quickly
+  become_user: "{{ ansible_ssh_user }}" # Why?!
+  become_method: sudo
+  become: yes
+
+- name: Create temporal clone dir
+  file:
+    path: "{{ tempapp }}"
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: u=rwx,g=rwx,o=rwx
+  tags: quickly
+  become_user: "{{ ansible_ssh_user }}" # Why?!
+  become_method: sudo
+  become: yes
+
+- name: Get application code
+  git:
+    accept_hostkey: yes
+    repo: "{{ application_clone_url }}"
+    dest: "{{ tempapp }}"
+    version: "{{ checkout_branch }}"
+  become_user: "{{ ansible_ssh_user }}"
+  tags: quickly
+
+- name: Remove old code
+  file:
+    path: "{{ application_dir }}"
+    state: absent
+  tags: quickly
+
+- name: Copy new code
+  shell: "cp {{ tempapp }} {{ application_dir }} -r"
+  tags: quickly
+
+- name: Remove temp clone folder
+  file:
+    path: "{{ tempclone }}"
+    state: absent
+  become_user: "{{ ansible_ssh_user }}" # Why?!
+  become_method: sudo
+  become: yes
+
+- name: Remove temp folder
+  file:
+    path: "{{ application_temp_dir }}"
+    state: absent

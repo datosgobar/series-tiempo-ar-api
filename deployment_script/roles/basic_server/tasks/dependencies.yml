@@ -1,0 +1,15 @@
+---
+
+- name: Install dependencies
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - git # For pulling the project
+    - libpq-dev
+    - libjpeg-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - zlib1g-dev
+    - libxml2-dev
+    - libxslt-dev
+    - vim
+    - acl # required for running ansible unprivileged user tasks
