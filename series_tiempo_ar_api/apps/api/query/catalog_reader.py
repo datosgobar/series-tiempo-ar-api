@@ -422,7 +422,7 @@ class Indexer(object):
 
         response = self.elastic.bulk(index=self.index,
                                      body=data,
-                                     timeout="30s")
+                                     request_timeout=settings.REQUEST_TIMEOUT)
 
         for item in response['items']:
             if item['index']['status'] not in settings.VALID_STATUS_CODES:
