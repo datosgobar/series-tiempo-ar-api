@@ -30,7 +30,7 @@ class Query(object):
             self._init_series()
 
         for serie in self.series:
-            serie['search'] = serie['search'][start:limit]
+            serie.search = serie.search[start:limit]
 
         # Guardo estos parámetros, necesarios en el evento de hacer un collapse
         self.args['start'] = start
@@ -45,17 +45,17 @@ class Query(object):
             'gte': start
         }
         for serie in self.series:
-            serie['search'] = serie['search'].filter('range',
-                                                     timestamp=_filter)
+            serie.search = serie.search.filter('range',
+                                               timestamp=_filter)
 
     def add_series(self, series_id, rep_mode):
-        if len(self.series) == 1:
-            search = self.series[0]['search'].filter('match',
-                                                     series_id=series_id)
+        if len(self.series) == 1 and not self.series[0].series_id:
+            search = self.series[0].search.filter('match',
+                                                  series_id=series_id)
 
-            self.series.append(Series(series_id=series_id,
-                                      rep_mode=rep_mode,
-                                      search=search))
+            self.series[0] = Series(series_id=series_id,
+                                    rep_mode=rep_mode,
+                                    search=search)
         else:
             self._init_series(series_id, rep_mode)
 
@@ -68,7 +68,7 @@ class Query(object):
                                    using=self.elastic)
 
         for serie in self.series:
-            search = serie.get('search')
+            search = serie.search
             multi_search = multi_search.add(search)
 
         responses = multi_search.execute()
@@ -82,7 +82,8 @@ class Query(object):
     def _populate_data(self, response, rep_mode):
         for i, hit in enumerate(response):
             if i == len(self.data):
-                data_row = [hit.timestamp]
+
+                data_row = [self._format_timestamp(hit.timestamp)]
                 self.data.append(data_row)
 
             if rep_mode in hit:
@@ -108,6 +109,12 @@ class Query(object):
 
         return meta
 
+    @staticmethod
+    def _format_timestamp(timestamp):
+        if timestamp.find('T') != -1:
+            return timestamp[:timestamp.find('T')]
+        return timestamp
+
 
 class CollapseQuery(Query):
     """Calcula el promedio de una serie en base a una bucket
@@ -130,8 +137,8 @@ class CollapseQuery(Query):
         Query.add_series(self, series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
-        search = serie['search']
-        serie['search'] = self._add_aggregation(search, rep_mode)
+        search = serie.search
+        serie.search = self._add_aggregation(search, rep_mode)
 
     def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
         if agg:
@@ -141,8 +148,8 @@ class CollapseQuery(Query):
 
         for serie in self.series:
             rep_mode = serie.get('rep_mode', global_rep_mode)
-            search = serie['search']
-            serie['search'] = self._add_aggregation(search, rep_mode)
+            search = serie.search
+            serie.search = self._add_aggregation(search, rep_mode)
 
     def _add_aggregation(self, search, rep_mode):
         search = search[:0]
@@ -178,7 +185,9 @@ class CollapseQuery(Query):
                 if i - start >= limit or i >= len(hits):  # No hay más datos
                     break
                 if i - start == len(self.data):  # No hay row, inicializo
-                    data_row = [hit['key_as_string']]
+                    # Strip de la parte de tiempo del datetime
+                    timestamp = hit['key_as_string']
+                    data_row = [self._format_timestamp(timestamp)]
                     self.data.append(data_row)
 
                 self.data[i - start].append(hit['agg'].value)

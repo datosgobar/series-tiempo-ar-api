@@ -14,8 +14,8 @@ class QueryTest(TestCase):
     default_limit = 10
     max_limit = 1000
 
-    start_date = '2010-01-01T03:00:00Z'
-    end_date = '2015-01-01T03:00:00Z'
+    start_date = '2010-01-01'
+    end_date = '2015-01-01'
 
     def setUp(self):
         self.query = Query()
@@ -50,15 +50,13 @@ class QueryTest(TestCase):
         self.query.run()
         for row in self.query.data:
             if 'T' in row[0]:
-                date = isodate.parse_datetime(row[0])
-                start_date = isodate.parse_datetime(self.start_date)
-                end_date = isodate.parse_datetime(self.end_date)
+                date = isodate.parse_date(row[0])
+                start_date = isodate.parse_date(self.start_date)
+                end_date = isodate.parse_date(self.end_date)
             else:
                 date = isodate.parse_date(row[0])
-                start_date = isodate.parse_date(
-                    self.start_date[:self.start_date.find('T')])
-                end_date = isodate.parse_date(
-                    self.end_date[:self.end_date.find('T')])
+                start_date = isodate.parse_date(self.start_date)
+                end_date = isodate.parse_date(self.end_date)
             self.assertGreaterEqual(date, start_date)
             self.assertLessEqual(date, end_date)
 
@@ -132,7 +130,7 @@ class CollapseQueryTests(TestCase):
         prev_timestamp = None
         for row in self.query.data:
             timestamp = row[0]
-            parsed_timestamp = isodate.parse_datetime(timestamp)
+            parsed_timestamp = isodate.parse_date(timestamp)
             if not prev_timestamp:
                 prev_timestamp = parsed_timestamp
                 continue
@@ -147,7 +145,7 @@ class CollapseQueryTests(TestCase):
         prev_timestamp = None
         for row in self.query.data:
             timestamp = row[0]
-            parsed_timestamp = isodate.parse_datetime(timestamp)
+            parsed_timestamp = isodate.parse_date(timestamp)
             if not prev_timestamp:
                 prev_timestamp = parsed_timestamp
                 continue
