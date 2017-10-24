@@ -2,5 +2,4 @@
 
 # Vagrant specific
 
-ansible_user: vagrant
-ansible_pass: vagrant
+ansible_ssh_pass: vagrant

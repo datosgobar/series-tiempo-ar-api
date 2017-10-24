@@ -1,7 +1,4 @@
-web1   ansible_host=192.168.35.10
+web1
 
 [web]
 web1
-
-[cluster:children]
-web
