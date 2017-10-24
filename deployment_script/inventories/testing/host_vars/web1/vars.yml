@@ -1,0 +1,4 @@
+---
+
+ansible_host: 181.209.63.223
+ansible_port: 22215
