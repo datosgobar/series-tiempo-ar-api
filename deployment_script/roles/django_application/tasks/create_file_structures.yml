@@ -35,11 +35,11 @@
   file:
     path: "{{ tempclone }}"
     state: directory
-    owner: "{{ ansible_ssh_user }}"
-    group: "{{ ansible_ssh_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: u=rwx,g=rwx
   tags: quickly
-  become_user: "{{ ansible_ssh_user }}" # Why?!
+  become_user: "{{ ansible_user }}" # Why?!
   become_method: sudo
   become: yes
 
@@ -47,11 +47,11 @@
   file:
     path: "{{ tempapp }}"
     state: directory
-    owner: "{{ ansible_ssh_user }}"
-    group: "{{ ansible_ssh_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: u=rwx,g=rwx,o=rwx
   tags: quickly
-  become_user: "{{ ansible_ssh_user }}" # Why?!
+  become_user: "{{ ansible_user }}" # Why?!
   become_method: sudo
   become: yes
 
@@ -61,7 +61,7 @@
     repo: "{{ application_clone_url }}"
     dest: "{{ tempapp }}"
     version: "{{ checkout_branch }}"
-  become_user: "{{ ansible_ssh_user }}"
+  become_user: "{{ ansible_user }}"
   tags: quickly
 
 - name: Remove old code
@@ -78,7 +78,7 @@
   file:
     path: "{{ tempclone }}"
     state: absent
-  become_user: "{{ ansible_ssh_user }}" # Why?!
+  become_user: "{{ ansible_user }}" # Why?!
   become_method: sudo
   become: yes
 

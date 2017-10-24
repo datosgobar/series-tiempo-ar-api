@@ -39,8 +39,8 @@
     mode: 0600
   become_user: "{{ application_user }}"
 
-- include: backups.yml
-- include: ensure_database.yml
+- include_tasks: backups.yml
+- include_tasks: ensure_database.yml
 
 - name: Backup database
   shell: "{{ psql_backup_bin }}"
