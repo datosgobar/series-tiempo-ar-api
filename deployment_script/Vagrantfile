@@ -1,6 +1,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 checkout_branch = ENV["CHECKOUT_BRANCH"] || "master"
+ansible_limit = ENV["ANSIBLE_LIMIT"] || "all"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "bento/ubuntu-16.04"
@@ -18,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     
     ansible.verbose = "vvv"
 #    ansible.tags = ["elastic"]
-    ansible.limit = "all"
+    ansible.limit = ansible_limit
     ansible.extra_vars = {
         "checkout_branch" => checkout_branch,
     }
