@@ -5,3 +5,7 @@ web1
 
 [es]
 web1
+
+[cluster:children]
+web
+es
