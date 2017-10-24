@@ -1,0 +1,4 @@
+---
+
+checkout_branch: elasticsearch-servers
+es_urls: "http://192.168.35.10:9200/"
