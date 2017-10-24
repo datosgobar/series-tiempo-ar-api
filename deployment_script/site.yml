@@ -11,6 +11,12 @@
     - name: Install python2
       raw: sudo apt-get -y install python
 
+- hosts: cluster
+  become: yes
+  become_method: sudo
+  roles:
+    - common
+
 - hosts: web
   become: yes
   become_method: sudo

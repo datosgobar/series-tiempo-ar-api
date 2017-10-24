@@ -1,5 +1,6 @@
 ---
 
+
 - name: Install firewall
   apt: name=ufw state=present update_cache=yes
 
@@ -20,11 +21,8 @@
 - name: allow application ports
   ufw:
     rule: allow
-    to_port: "{{item}}"
-  with_items:
-    - 22
-    - 80
-    - 443
+    to_port: "{{ item }}"
+  with_items: "{{ allowed_ufw_ports }}"
 
 - name: Enable firewall
   ufw:
