@@ -1,0 +1,5 @@
+---
+
+postgresql_user: vagrant_db_user
+postgresql_password: vagrant_db_pass
+
