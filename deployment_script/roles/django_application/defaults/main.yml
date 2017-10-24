@@ -11,7 +11,7 @@ application_secret_key_file: "{{ application_conf }}secret_key"
 
 application_temp_dir: "{{ application_base_dir }}temp/"
 
-checkout_branch: indexing
+checkout_branch: master
 
 env_mark: "## DEFAULT VARIABLES MARK"
 

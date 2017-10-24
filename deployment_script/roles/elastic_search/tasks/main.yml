@@ -8,12 +8,12 @@
 
 - name: Set Java8 licence selected
   shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-  sudo: yes
+  become_method: sudo
   tags: elastic
 
 - name: set licence seen
   shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
-  sudo: yes
+  become_method: sudo
   tags: elastic
 
 - name: Download and install the public signing key

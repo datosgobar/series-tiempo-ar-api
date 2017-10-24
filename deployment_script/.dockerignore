@@ -1,7 +1,0 @@
-.idea/
-.vagrant/
-*.retry
-.gitlab-ci.yml
-.python-version
-hosts.example
-Vagrantfile
