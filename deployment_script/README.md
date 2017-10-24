@@ -1,53 +1,58 @@
-# Simple (Django) deploy
+# Series de tiempo AR - Deployment
 
-With this project you'll be able to deploy [this django application](https://gitlab.devartis.com/samples/django-sample).
+Bienvenido a la documentación de "deployment" para Series de Tiempo AR
 
-## Requirements
+## Requerimientos
 
 - Ansible: `pip install -r requirements.txt`
 - SSH client
   - Ubuntu: `apt-get install openssh-client`
   - Arch linux: `pacman -S openssh` ([docs](https://wiki.archlinux.org/index.php/Secure_Shell#OpenSSH))
 
-See the [documentation](docs/index.md)
+## Setup un nuevo ambiente
 
-## Compatibilitymatrix
+Para inicializar un nuevo ambiente, necesitaremos crear un nuevo sub-directorio en el directorio "inventories".
+Como ejemplo usaremos "staging":
 
-Tested compatibility between branches of this repository and django-sample
+    mkdir -p inventories/stating/
 
-NOTE: When `(master)` is present, it means there's no specific branch or tag. It must be specified a django version, at least.
+Luego crearemos el inventario de las máquinas que ansible conocerá, podemos usar el archivo "inventories/vagrant/hosts" como base:
 
-    simple-deploy       |  django-sample
+    web1
 
-    master                 master
+    [web]
+    web1
 
-    0.2-new-hope           (master) - django-1.9
+En este ejemplo, le decimos a ansible que "web1" es una máquina, y ademas que pertenece al grupo "web".
+Luego debemos decirle a ansible dónde encontrar esta máquina, para eso creamos el directorio "inventories/staging/host_vars".
 
-    0.3-rc1-release        (master) - django-1.11.2
+    mkdir -p inventories/staging/host_vars
 
-## Contribute
+Luego dentro creamos un archivo en "inventories/staging/host_vars/web1.yml" donde le daremos a ansible algunas variables espeficicas para esa máquina:
 
-- Create a new issue & a new branch.
-- Implement your feature/fix.
-- Create a merge-request & assign it to someone else
-- Remove Docker image from registry after merge (TODO: Avoid this step)
+```bash
+ansible_host: 192.168.35.10
+ansible_port: 22
+```
 
-## Release
+Luego deberiamos ser capaces de correr el siguiente script:
 
-- Create a new branch with the form "$RELEASE_NUMBER-release"
-- Update the documentation
-  - `docs/integration.md`: Change the `DEPLOY_IMAGE:` at the `.gitlab-ci.yml` sample
-  - `.gitlab-ci.yml.sample`: Change the `DEPLOY_IMAGE:`.
-  - Add an entry at "compatibility matriz"
-- Notify!
+```bash
+./deploy.sh -i inventories/staging/hosts -p $DATABASE_USER -P $DATABASE_PASS -l $SSH_USER
+```
 
+Luego de finalzado, nuestro servidor debería contener toda la aplicación
 
+*NOTA:* Si nuestro usuario require _password_ para usar comandos con `sudo`, previamente debemos correr el siguiente comando:
+`export ANSIBLE_ASK_BECOME_PASS=true`.
 
 ## Vagrant & Tests
 
-You can test this project using [Vagrant](https://www.vagrantup.com/):
+Se puede probar con [vagrant](https://www.vagrantup.com/) siguiendo los siguientes pasos:
 
-    export REPO_URL=git@gitlab.devartis.com:samples/django-sample.git
-    eval "$(ssh-agent -s) # These two lines allow to pull the project with you ssh keys from gitlab
-    ssh-add ~/.ssh/id_rsa
-    vagrant up --provision # Setup and run playbook
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+vagrant up --no-provision
+./deploy.sh -p database_user -P database_pass -i inventories/vagrant/hosts -l vagrant
+```
