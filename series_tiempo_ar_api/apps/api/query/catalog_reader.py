@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.files import File
 from elasticsearch import ConnectionTimeout
+from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 from series_tiempo_ar.search import get_time_series_distributions
@@ -405,8 +406,16 @@ class Indexer(object):
             if series_id not in self.indexed_fields:
                 msg = 'Serie %s no encontrada en su dataframe'
                 logger.info(msg, series_id)
+                self._handle_missing_series(series_id)
 
         return result
+
+    def _handle_missing_series(self, series_id):
+        # Si no hay datos previos indexados, borro la entrada de la DB
+        search = Search(using=self.elastic).filter('match', series_id=series_id)
+        results = search.execute()
+        if not results:
+            Field.objects.get(series_id=series_id).delete()
 
     def _get_value(self, df, col, index):
         """Devuelve el valor del df[col][index] o nan si no es válido.
