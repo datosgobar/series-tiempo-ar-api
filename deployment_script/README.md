@@ -28,7 +28,7 @@ Luego debemos decirle a ansible dónde encontrar esta máquina, para eso creamos
 
     mkdir -p inventories/staging/host_vars
 
-Luego dentro creamos un archivo en "inventories/staging/host_vars/web1.yml" donde le daremos a ansible algunas variables espeficicas para esa máquina:
+Luego dentro creamos un archivo en "inventories/staging/host_vars/web1.yml" donde le daremos a ansible algunas variables espeficicas para esa máquina. En este ejemplo, especificamos la IP y el puerto ssh de la máquina.
 
 ```bash
 ansible_host: 192.168.35.10
@@ -43,8 +43,8 @@ Luego deberiamos ser capaces de correr el siguiente script:
 
 Luego de finalzado, nuestro servidor debería contener toda la aplicación
 
-*NOTA:* Si nuestro usuario require _password_ para usar comandos con `sudo`, previamente debemos correr el siguiente comando:
-`export ANSIBLE_ASK_BECOME_PASS=true`.
+*NOTA:* Si el usuario require _password_ para usar comandos con `sudo`, previamente debemos correr el siguiente comando:
+`export ANSIBLE_BECOME_ASK_PASS=true`.
 
 ## Vagrant & Tests
 
