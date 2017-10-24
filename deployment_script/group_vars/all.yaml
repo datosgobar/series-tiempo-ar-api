@@ -1,12 +1,9 @@
 ---
 
 ## Per application variables
+application_name: series_de_tiempo_ar_api
+application_clone_url: git@github.com:datosgobar/series-tiempo-ar-api.git
 
-application_name: "django_application"
-# git@example.com:user/repo
-application_clone_url:
-# XXXXXXXXXXXXXXXXXXXXXXXXXXX
-django_secret_key:
 postgresql_user:
 postgresql_password:
 

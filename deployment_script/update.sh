@@ -8,20 +8,16 @@ login_user=""
 
 usage() {
 	echo "Usage: `basename $0`" >&2
-	echo "(-r repository_url)" >&2
 	echo "(-b checkout branch)" >&2
 	echo "(-h host to be provisioned) (-l login_user )"; >&2
 }
-if ( ! getopts "r:s:b:h:l:" opt); then
+if ( ! getopts "s:b:h:l:" opt); then
     usage;
 	exit $E_OPTERROR;
 fi
 
-while getopts "r:s:b:h:l:" opt;do
+while getopts "s:b:h:l:" opt;do
 	case "$opt" in
-	r)
-	  repo_url="$OPTARG"
-      ;;
 	b)
 	  checkout_branch="$OPTARG"
       ;;
@@ -50,9 +46,8 @@ then
 fi
 
 
-extra_vars="application_clone_url=$repo_url \
-        checkout_branch=$checkout_branch \
-        ansible_ssh_user=$login_user"
+extra_vars="checkout_branch=$checkout_branch \
+        ansible_user=$login_user"
 
 echo "INFO: Running tasks with tag: quickly"
 ansible-playbook site.yml --extra-vars "$extra_vars" -i "$host," --tags "quickly"
