@@ -21,7 +21,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 #    ansible.tags = ["elastic"]
     ansible.limit = ansible_limit
     ansible.extra_vars = {
-        "checkout_branch" => checkout_branch,
+      "postgresql_user" => "database_user",
+      "postgresql_password" => "database_pass",
+      "checkout_branch" => checkout_branch,
     }
   end
 end
