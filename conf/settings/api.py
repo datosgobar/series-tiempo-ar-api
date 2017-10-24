@@ -1,6 +1,6 @@
 #! coding: utf-8
 
-ES_URL = "http://localhost:9200/"
+DEFAULT_ES_URL = "http://localhost:9200/"
 
 # JSON del mapping de series de tiempo
 MAPPING = {

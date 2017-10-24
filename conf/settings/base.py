@@ -1,7 +1,6 @@
 #! coding: utf-8
 from __future__ import absolute_import, unicode_literals
 
-import os
 from os.path import dirname
 
 import environ
@@ -14,6 +13,10 @@ APPS_DIR = ROOT_DIR.path(dirname(dirname(dirname(__file__))))
 
 env = environ.Env()
 environ.Env.read_env(SETTINGS_DIR('.env'))
+
+ES_CONFIGURATION = {
+    "ES_URLS": env("ES_URLS", default=DEFAULT_ES_URL).split(","),
+}
 
 DEBUG = True
 

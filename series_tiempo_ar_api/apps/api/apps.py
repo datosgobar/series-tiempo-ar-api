@@ -8,4 +8,5 @@ class ApiConfig(AppConfig):
     name = 'series_tiempo_ar_api.apps.api'
 
     def ready(self):
-        ElasticInstance.init(settings.ES_URL)
+        ES_URLS = settings.ES_CONFIGURATION["ES_URLS"]
+        ElasticInstance.init(ES_URLS)
