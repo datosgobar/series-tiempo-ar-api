@@ -1,57 +1,60 @@
 # Features
 
-Currently implemented features
-
 ## 503 maintenance page
 
-Every time a build is run (update or deploy) the application will be disabled and a 503 page will be shown.
-This is covered by the `maintenance` role.
+Con cada deployment (actualización o deployment completo), la aplicación mostrará una página de 503.
+Ver el Role "maintenance" para mas detalles.
 
 ## Logrotate
 
-Nginx and Gunicorn logs are rotated by configuration files.
-This is covered by `web_server` role, in the file `tasks/configure_logrotate.yml`
+Los logs de Nginx & Gunicorn logs son rotados periodicamente..
+En el Role `web_server`, el archivo `tasks/configure_logrotate.yml` define cómo se implementa.
 
 ## Django Secret Key
 
-This is generated once when the application if deployed. The result is saved at `config/app/secret_key`.
-If it gets deleted, it will be regenerated, but never the same value.
+Esta Key de Django es generada sólo una vez, en el primer deployment.
+El resultado es guardado en `config/app/secret_key`.
+Si ese archivo es borrado, una nueva clave será utilizada.
 
-This is covered by the `django_application` role, and the generator script is located at `files/django_secret_key.py`.
+En el Role `django_application`, hay un script que genera esta Key `files/django_secret_key.py`.
 
 ## Firewall
 
-A firewall is installed and only allows incoming connection for ports:
+`UFW` es instalado y sólo permite conecciones a los siguientes puertos para el servidor web:
 
 - 22
 - 80
 - 443
 
-## Nginx http and https (WIP)
+Para elasticsearch, el único puerto es el `22` desde cualquier IP y el rango de 9200-9400 desde IP en la red privada.
 
-By default a server at port `80` will be up. If you want to set up a https server, must follow these instructions:
 
-The `web_server` role will look at `config/nginx/` for `site.crt`, `site.key` and `site.domain` files.
-If they exist, must contain the following values:
+## Nginx - http & https
 
-- `site.crt`: ssl certificate
-- `site.key`: ssl secret key
-- `site.domain`: Application domain (e.g. `mydomain.com`)
+Por defecto el servidor utilizará el puerto 80.
+Para utilizar `https`, se debe seguir las siguientes instrucciones:
 
-**Note:** site.domain file must be a _one-line_ file and should not include a `www.` part, it will be included automatically.
+En el directorio `config/nginx/` agregar los siguientes archivos:
 
-After add that files, run a full deployment. It will re-write the nginx settings using HTTPS.
+- `site.crt`: Certificado ssl
+- `site.key`: Clave secreta SSH (ssl secret key)
+- `site.domain`: Dominio de la aplicación (e.g. `mydomain.com`)
 
-## Nginx http auth
+**Importante:** El archivo `site.domain` debe contentes _solo una línea_ y no incluir `www.`.
 
-Http auth can be enable by adding the auth file at `/home/devartis/webapp/conf/nginx/`, and then run a full deployment.
-It will re-write the nginx settings.
-For generating the auth file, the following command could be used (Replace $AUTH_USER with your preferred http auth user):
+Después de agregar esos archivos, correr un deployment completo, esto reescribirá la configuracion de Nginx
+
+## Nginx - http auth
+
+
+"Http auth" Puede ser activado mediante agregar un archivo en `/home/devartis/webapp/conf/nginx/`, y luego correr un deployment completo.
+
+Para generar este archivo, el siguiente comando podría ser usado (Reemplazar $AUTH_USER con uno a elección):
 
     htpasswd -c /home/devartis/conf/nginx/.htpasswd $AUTH_USER
 
-## Database backups
+## Backups
 
-A database backups is made every week and before running the migrations.
-The backups are stored at `/home/devartis/webapp/backups/postgresql/`.
-The backup script is located at `/home/devartis/webapp/bins/postgresql/psql_backup.sh`
+El backup de la base de datos es hecho cada semana y antes de correr migraciones.
+Los backups son guardados en `/home/devartis/webapp/backups/postgresql/`.
+El script para correrlo manualmente se encuentra en `/home/devartis/webapp/bins/postgresql/psql_backup.sh`

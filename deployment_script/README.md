@@ -7,7 +7,7 @@ Bienvenido a la documentación de "deployment" para Series de Tiempo AR
 - Ansible: `pip install -r requirements.txt`
 - SSH client
   - Ubuntu: `apt-get install openssh-client`
-  - Arch linux: `pacman -S openssh` ([docs](https://wiki.archlinux.org/index.php/Secure_Shell#OpenSSH))
+  - Arch linux: `pacman -S openssh` ([docs](http://wiki.archlinux.org/index.php/Secure_Shell#OpenSSH))
 
 ## Setup un nuevo ambiente
 
@@ -22,17 +22,29 @@ Luego crearemos el inventario de las máquinas que ansible conocerá, podemos us
 
     [web]
     web1
+    
+    [es]
+    web1
 
 En este ejemplo, le decimos a ansible que "web1" es una máquina, y ademas que pertenece al grupo "web".
+Además al pertenecer al grupo "es", ansible instalará `elasticsearch` en la máquina.
+
+
 Luego debemos decirle a ansible dónde encontrar esta máquina, para eso creamos el directorio "inventories/staging/host_vars".
 
     mkdir -p inventories/staging/host_vars
 
 Luego dentro creamos un archivo en "inventories/staging/host_vars/web1.yml" donde le daremos a ansible algunas variables espeficicas para esa máquina. En este ejemplo, especificamos la IP y el puerto ssh de la máquina.
 
-```bash
+```yaml
+# Connection variables
 ansible_host: 192.168.35.10
 ansible_port: 22
+
+# Elasticsearch configuration
+es_bind_host: "{{ ansible_host }}"
+es_publish_host: "{{ ansible_host }}"
+
 ```
 
 Luego deberiamos ser capaces de correr el siguiente script:
@@ -48,7 +60,7 @@ Luego de finalzado, nuestro servidor debería contener toda la aplicación
 
 ## Vagrant & Tests
 
-Se puede probar con [vagrant](https://www.vagrantup.com/) siguiendo los siguientes pasos:
+Se puede probar con [vagrant](http://www.vagrantup.com/) siguiendo los siguientes pasos:
 
 ```bash
 eval "$(ssh-agent -s)"
