@@ -1,4 +1,4 @@
 ---
 
 checkout_branch: elasticsearch-servers
-es_urls: "http://192.168.35.10:9200/"
+#es_urls: "http://192.168.35.20:9200/,http://192.168.35.21:9200/"
