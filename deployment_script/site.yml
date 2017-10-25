@@ -1,9 +1,7 @@
 ---
 
-# This was required because Digital Ocean's ubuntu16.04 does not provides a 'python' binary
-# We cannot make python3 default on ubuntu14.04, some scripts depends on python2
-# See http://stackoverflow.com/a/34402816
-- hosts: all
+# Ensure python is installed.
+- hosts: cluster
   become: yes
   become_method: sudo
   gather_facts: no
@@ -31,6 +29,7 @@
   roles:
     - elastic_search
 
+# Use non-root user
 - hosts: web
   become: yes
   become_method: sudo
