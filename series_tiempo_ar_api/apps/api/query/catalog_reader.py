@@ -412,7 +412,8 @@ class Indexer(object):
 
     def _handle_missing_series(self, series_id):
         # Si no hay datos previos indexados, borro la entrada de la DB
-        search = Search(using=self.elastic).filter('match', series_id=series_id)
+        search = Search(using=self.elastic,
+                        index=self.index).filter('match', series_id=series_id)
         results = search.execute()
         if not results:
             Field.objects.get(series_id=series_id).delete()
@@ -435,10 +436,9 @@ class Indexer(object):
 
         for item in response['items']:
             if item['index']['status'] not in settings.VALID_STATUS_CODES:
-                msg = "Debug: No se creó bien el item {} de {}. " \
+                msg = "Debug: No se creó bien el item {}. " \
                       "Status code {}".format(
                           item['index']['_id'],
-                          item['index']['_type'],
                           item['index']['status'])
                 logger.warn(msg)
 
