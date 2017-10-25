@@ -21,7 +21,8 @@
 - name: allow application ports
   ufw:
     rule: allow
-    to_port: "{{ item }}"
+    port: "{{ item }}"
+    proto: tcp
   with_items: "{{ allowed_ufw_ports }}"
 
 - name: Enable firewall
