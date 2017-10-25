@@ -18,12 +18,11 @@
     direction: outgoing
     policy: allow
 
-- name: allow application ports
+- name: Allow ssh port
   ufw:
-    rule: allow
-    port: "{{ item }}"
+    port: ssh
+    rule: limit
     proto: tcp
-  with_items: "{{ allowed_ufw_ports }}"
 
 - name: Enable firewall
   ufw:

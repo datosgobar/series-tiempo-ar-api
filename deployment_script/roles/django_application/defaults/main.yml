@@ -14,7 +14,8 @@ application_temp_dir: "{{ application_base_dir }}temp/"
 checkout_branch: master
 
 env_mark: "## DEFAULT VARIABLES MARK"
-es_urls: "http://127.0.0.1:9200/"
+# Default to same server!
+es_urls: "http://{{ ansible_host }}:9200/"
 
 #Django
 django_settings:
