@@ -1,12 +1,11 @@
 web1
 es1
-es2
 
 [web]
 web1
 
 [es]
-web1
+es1
 
 [cluster:children]
 web

@@ -12,13 +12,25 @@ if checkout_branch
   extra_vars["checkout_branch"] = checkout_branch
 end
 
+ES_SERVER_COUNT=1
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "bento/ubuntu-16.04"
   config.ssh.forward_agent = true
 
+  (0...ES_SERVER_COUNT).each do |n|
+      config.vm.define "es#{n}" do |web|
+          web.vm.provider :virtualbox do |vb|
+            vb.memory = 1024
+            vb.cpus = 1
+          end
+          web.vm.network "private_network", ip: "192.168.35.2#{n}"
+      end
+  end
+
   config.vm.define "web1" do |web|
       web.vm.provider :virtualbox do |vb|
-        vb.memory = 4096
+        vb.memory = 2048
         vb.cpus = 2
       end
       web.vm.network "private_network", ip: "192.168.35.10"
