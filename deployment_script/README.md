@@ -62,12 +62,12 @@ Luego de finalzado, nuestro servidor debería contener toda la aplicación
 
 Para configurar la cantidad de memoria usada por elasticsearch, podemos configurarlo para todas las máquinas o por host.
 Podemos agregar el archivo "inventories/staging/group_vars/es.yml" para configurar a todos los elasticsearch, o
-podemos usar el archivo "inventories/staging/host_vars/<nombre-de-host>.yml" para un host sólo.
+podemos usar el archivo "inventories/staging/host_vars/-nombre-del-host-.yml" para un host sólo.
 
 
 ### Límite de memoria heap
 
-El mismo debe tener estas variables (en este ejemplo limitamos a 512 mb):
+El mismo debe tener estas variables (en este ejemplo limitamos a 1 gb):
 
 ```yaml
 ---
