@@ -1,29 +1,10 @@
 #! coding: utf-8
 from django.test import TestCase
 
-from series_tiempo_ar_api.apps.api.models import \
-    Catalog, Dataset, Distribution, Field
 from series_tiempo_ar_api.apps.api.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter
 from series_tiempo_ar_api.apps.api.query.query import Query
-
-
-def setup_database():
-    catalog = Catalog.objects.create(title='test_catalog', metadata='{}')
-    dataset = Dataset.objects.create(identifier="132",
-                                     metadata={},
-                                     catalog=catalog)
-
-    distrib = Distribution.objects.create(identifier='132.1',
-                                          metadata='{}',
-                                          download_url="invalid_url",
-                                          dataset=dataset)
-    Field.objects.create(
-        series_id='random-0',
-        metadata='{}',
-        distribution=distrib,
-        title='random-0'
-    )
+from .helpers import setup_database
 
 
 class NameAndRepModeTest(TestCase):
@@ -163,4 +144,3 @@ class DateFilterTests(TestCase):
     def test_invalid_end_date(self):
         self.cmd.run(self.query, {'end_date': 'not a date'})
         self.assertTrue(self.cmd.errors)
-

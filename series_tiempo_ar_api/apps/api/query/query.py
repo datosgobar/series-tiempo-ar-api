@@ -48,7 +48,9 @@ class Query(object):
             serie.search = serie.search.filter('range',
                                                timestamp=_filter)
 
-    def add_series(self, series_id, rep_mode):
+    def add_series(self,
+                   series_id,
+                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         if len(self.series) == 1 and not self.series[0].series_id:
             search = self.series[0].search.filter('match',
                                                   series_id=series_id)
@@ -103,7 +105,17 @@ class Query(object):
                                   search=search))
 
     def get_metadata(self):
-        meta = [None]  # 1er row vacío para el indice de tiempo
+        meta = []
+        if not self.data:
+            return meta
+
+        index_meta = {
+            'start_date': self.data[0][0],
+            'end_date': self.data[-1][0],
+            'frequency': self._calculate_data_frequency()
+        }
+
+        meta.append(index_meta)
         for serie in self.series:
             meta.append(serie.get_metadata())
 
@@ -114,6 +126,11 @@ class Query(object):
         if timestamp.find('T') != -1:
             return timestamp[:timestamp.find('T')]
         return timestamp
+
+    def _calculate_data_frequency(self):
+        if not self.series:
+            return None
+        return self.series[0].get_periodicity()
 
 
 class CollapseQuery(Query):
@@ -127,13 +144,15 @@ class CollapseQuery(Query):
         # de operaciones
         self.collapse_aggregation = \
             settings.API_DEFAULT_VALUES['collapse_aggregation']
-        self.collapse = settings.API_DEFAULT_VALUES['collapse']
+        self.collapse_interval = settings.API_DEFAULT_VALUES['collapse']
 
         if other:
             self.series = list(other.series)
             self.args = other.args.copy()
 
-    def add_series(self, series_id, rep_mode):
+    def add_series(self,
+                   series_id,
+                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         Query.add_series(self, series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
@@ -144,7 +163,7 @@ class CollapseQuery(Query):
         if agg:
             self.collapse_aggregation = agg
         if interval:
-            self.collapse = interval
+            self.collapse_interval = interval
 
         for serie in self.series:
             rep_mode = serie.get('rep_mode', global_rep_mode)
@@ -157,7 +176,7 @@ class CollapseQuery(Query):
             .bucket('agg',
                     'date_histogram',
                     field='timestamp',
-                    interval=self.collapse) \
+                    interval=self.collapse_interval) \
             .metric('agg',
                     self.collapse_aggregation,
                     field=rep_mode)
@@ -191,6 +210,9 @@ class CollapseQuery(Query):
                     self.data.append(data_row)
 
                 self.data[i - start].append(hit['agg'].value)
+
+    def _calculate_data_frequency(self):
+        return self.collapse_interval
 
 
 class Series(object):
@@ -242,3 +264,7 @@ class Series(object):
         metadata['dataset'] = [dataset_meta]
 
         return metadata
+
+    def get_periodicity(self):
+        return Field.objects.get(series_id=self.series_id)\
+            .distribution.get_periodicity_human_format()
