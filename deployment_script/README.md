@@ -101,6 +101,17 @@ ansible_port: 22
 
 ```
 
+Luego debemos configurar todos los servidores "web" para que conozcan a los servidores de elasticsearch.
+En el archivo "inventories/staging/group_vars/web.yml" debemos agregar la siguiente parte:
+
+```yaml
+# suponiendo que la IP de elasticsearch esta en 192.168.35.20.
+es_urls: "http://192.168.35.20:9200/"
+```
+
+Si agregamos más servidores, simplementes agregamos las URLs separandolas por ",".
+
+
 ## Vagrant & Tests
 
 Se puede probar con [vagrant](http://www.vagrantup.com/) siguiendo los siguientes pasos:
