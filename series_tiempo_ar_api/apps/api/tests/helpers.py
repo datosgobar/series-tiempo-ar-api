@@ -10,13 +10,14 @@ def setup_database():
 
     catalog = Catalog.objects.create(title='test_catalog', metadata='{}')
     dataset = Dataset.objects.create(identifier="132",
-                                     metadata={},
+                                     metadata='{}',
                                      catalog=catalog)
 
     distrib = Distribution.objects.create(identifier='132.1',
                                           metadata='{}',
                                           download_url="invalid_url",
-                                          dataset=dataset)
+                                          dataset=dataset,
+                                          periodicity='R/P1M')
     Field.objects.create(
         series_id='random-0',
         metadata='{}',

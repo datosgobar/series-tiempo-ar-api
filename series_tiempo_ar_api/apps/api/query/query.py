@@ -4,6 +4,7 @@ import json
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
+from series_tiempo_ar_api.apps.api import helpers
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.models import Field
 
@@ -123,7 +124,7 @@ class Query(object):
 
     @staticmethod
     def _format_timestamp(timestamp):
-        if timestamp.find('T') != -1:
+        if timestamp.find('T') != -1:  # Borrado de la parte de tiempo
             return timestamp[:timestamp.find('T')]
         return timestamp
 
@@ -266,5 +267,6 @@ class Series(object):
         return metadata
 
     def get_periodicity(self):
-        return Field.objects.get(series_id=self.series_id)\
-            .distribution.get_periodicity_human_format()
+        periodicity = Field.objects.get(series_id=self.series_id)\
+            .distribution.periodicity
+        return helpers.get_periodicity_human_format(periodicity)
