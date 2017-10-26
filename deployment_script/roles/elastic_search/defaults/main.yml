@@ -7,3 +7,6 @@ elastic_cluster_name: "series-tiempo-ar-api-dev"
 # Por default usa el mismo host
 es_bind_host: "{{ ansible_host }}"
 es_publish_host: "{{ ansible_host }}"
+
+# Configure swapping
+off_swap: no

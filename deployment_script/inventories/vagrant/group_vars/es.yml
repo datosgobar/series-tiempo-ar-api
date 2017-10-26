@@ -3,3 +3,6 @@
 # Default to 2GB, but we don't have that locally :/
 elastic_jvm_xmx: "1g"
 elastic_jvm_xms: "1g"
+
+# Do not disable swap for web server!
+off_swap: yes

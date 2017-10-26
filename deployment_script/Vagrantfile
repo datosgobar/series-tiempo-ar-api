@@ -21,7 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   (0...ES_SERVER_COUNT).each do |n|
       config.vm.define "es#{n}" do |web|
           web.vm.provider :virtualbox do |vb|
-            vb.memory = 1024
+            vb.memory = 2048
             vb.cpus = 1
           end
           web.vm.network "private_network", ip: "192.168.35.2#{n}"
@@ -30,7 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "web1" do |web|
       web.vm.provider :virtualbox do |vb|
-        vb.memory = 2048
+        vb.memory = 1024
         vb.cpus = 2
       end
       web.vm.network "private_network", ip: "192.168.35.10"

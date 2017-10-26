@@ -1,0 +1,7 @@
+---
+
+- name: Set swapiness
+  sysctl:
+    name: vm.swappiness
+    value: "1"
+  when: off_swap

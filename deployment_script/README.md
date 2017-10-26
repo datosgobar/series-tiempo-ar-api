@@ -63,6 +63,10 @@ Luego de finalzado, nuestro servidor debería contener toda la aplicación
 Para configurar la cantidad de memoria usada por elasticsearch, podemos configurarlo para todas las máquinas o por host.
 Podemos agregar el archivo "inventories/staging/group_vars/es.yml" para configurar a todos los elasticsearch, o
 podemos usar el archivo "inventories/staging/host_vars/<nombre-de-host>.yml" para un host sólo.
+
+
+### Límite de memoria heap
+
 El mismo debe tener estas variables (en este ejemplo limitamos a 512 mb):
 
 ```yaml
@@ -70,6 +74,18 @@ El mismo debe tener estas variables (en este ejemplo limitamos a 512 mb):
 
 elastic_jvm_xmx: "1g"
 elastic_jvm_xms: "1g"
+
+```
+
+### Desactivar swap
+
+```yaml
+---
+
+# otras variables ...
+
+off_swap: yes
+
 ```
 
 ## Agregar mas servidores para elasticsearch
@@ -119,6 +135,9 @@ Se puede probar con [vagrant](http://www.vagrantup.com/) siguiendo los siguiente
 ```bash
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
-vagrant up --no-provision
-./deploy.sh -p database_user -P database_pass -i inventories/vagrant/hosts -l vagrant
+vagrant up --provision
 ```
+
+Además con la variable de entorno "CHECKOUT_BRANCH" se puede configurar el branch que deseamos usar _dentro_ del servidor.
+
+Para cambiar la cantidad de servidores de Elasticsearch debemos cambiar, dentro del archivo Vagranfile, la variable "ES_SERVER_COUNT" con un numero mayor a 1.
