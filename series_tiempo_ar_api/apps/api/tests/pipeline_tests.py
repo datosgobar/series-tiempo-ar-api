@@ -96,6 +96,7 @@ class PaginationTests(TestCase):
         self.cmd.run(self.query, params_start)
         self.query.run()
 
+        # Los datos del primer query empiezan en un offset de start en el otro
         self.assertEqual(self.query.data[0], other_query.data[self.start])
 
     def test_limit(self):
@@ -113,6 +114,16 @@ class PaginationTests(TestCase):
     def test_invalid_limit_parameter(self):
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'limit': 'not a number'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_start_over_limit(self):
+        self.cmd.run(self.query, {'ids': self.single_series,
+                                  'start': '99999999'})
+        self.assertTrue(self.cmd.errors)
+
+    def start_limit_over_limit(self):
+        self.cmd.run(self.query, {'ids': self.single_series,
+                                  'limit': '99999999'})
         self.assertTrue(self.cmd.errors)
 
 
