@@ -76,3 +76,8 @@ VALID_STATUS_CODES = (
 FORCE_MERGE_SEGMENTS = 5
 
 REQUEST_TIMEOUT = 30  # en segundos
+
+MAX_ALLOWED_VALUE = {
+    'start': 100000,  # tbd
+    'limit': 1000
+}

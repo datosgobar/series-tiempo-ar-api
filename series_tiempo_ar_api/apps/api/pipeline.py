@@ -97,6 +97,12 @@ class Pagination(BaseOperation):
 
         if parsed_arg is None or parsed_arg < min_value:
             self._append_error("Parámetro '{}' inválido: {}".format(name, arg))
+            return
+
+        max_value = settings.MAX_ALLOWED_VALUE[name]
+        if parsed_arg > max_value:
+            msg = "Parámetro {} por encima del límite permitido ({})"
+            self._append_error(msg.format(name, max_value))
 
 
 class DateFilter(BaseOperation):
