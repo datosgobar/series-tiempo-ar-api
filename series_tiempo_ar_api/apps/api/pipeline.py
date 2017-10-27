@@ -1,7 +1,7 @@
 #! coding: utf-8
 from abc import abstractmethod
 
-import isodate
+import iso8601
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.models import Field
@@ -114,10 +114,10 @@ class DateFilter(BaseOperation):
             return query
 
         if self.start:
-            self.start = str(isodate.parse_date(self.start))
+            self.start = str(iso8601.parse_date(self.start).date())
 
         if self.end:
-            self.end = str(isodate.parse_date(self.end))
+            self.end = str(iso8601.parse_date(self.end).date())
 
         query.add_filter(self.start, self.end)
         return query
@@ -159,8 +159,8 @@ class DateFilter(BaseOperation):
         """
 
         try:
-            parsed_date = isodate.parse_date(date)
-        except isodate.ISO8601Error:
+            parsed_date = iso8601.parse_date(date)
+        except iso8601.ParseError:
             error = 'Formato de rango temporal inválido: {}'.format(date)
             self._append_error(error)
             raise ValueError
