@@ -33,6 +33,19 @@ class NameAndRepModeTest(TestCase):
         self.cmd.run(self.query, {'ids': self.single_series})
         self.assertFalse(self.cmd.errors)
 
+    def test_global_rep_mode(self):
+        self.cmd.run(self.query, {'ids': self.single_series})
+        self.query.run()
+
+        other_query = Query()
+        self.cmd.run(other_query, {'ids': self.single_series,
+                                   'representation_mode': 'change'})
+        other_query.run()
+
+        for index, row in enumerate(other_query.data[1:], start=1):
+            change = self.query.data[index][1] - self.query.data[index - 1][1]
+            self.assertEqual(row[1], change)
+
 
 class CollapseTest(TestCase):
     single_series = 'random-0'
@@ -143,4 +156,18 @@ class DateFilterTests(TestCase):
 
     def test_invalid_end_date(self):
         self.cmd.run(self.query, {'end_date': 'not a date'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_non_iso_end_date(self):
+        self.cmd.run(self.query, {'end_date': '04-01-2010'})
+        self.assertTrue(self.cmd.errors)
+
+        self.cmd.run(self.query, {'end_date': '2010/04/01'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_non_iso_start_date(self):
+        self.cmd.run(self.query, {'start_date': '04-01-2010'})
+        self.assertTrue(self.cmd.errors)
+
+        self.cmd.run(self.query, {'start_date': '2010/04/01'})
         self.assertTrue(self.cmd.errors)
