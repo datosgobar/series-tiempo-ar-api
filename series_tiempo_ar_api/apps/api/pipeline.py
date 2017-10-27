@@ -215,7 +215,7 @@ class NameAndRepMode(BaseOperation):
 
         # rep_mode 'default', para todas las series, overrideado
         # si la serie individual especifica alguno
-        rep_mode = args.get('representation-mode',
+        rep_mode = args.get('representation_mode',
                             settings.API_DEFAULT_VALUES['rep_mode'])
         colon_index = serie.find(':')
         if colon_index < 0:
