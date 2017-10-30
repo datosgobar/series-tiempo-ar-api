@@ -9,7 +9,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.files import File
-from elasticsearch import ConnectionTimeout
+from elasticsearch.helpers import bulk
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
@@ -63,6 +63,7 @@ class Scraper(object):
         """Valida las distribuciones de series de tiempo de un catálogo
         entero a partir de su URL, o archivo fuente
         """
+        logger.info("Comienzo del scraping")
         catalog = DataJson(catalog)
         distributions = get_time_series_distributions(catalog)
         for distribution in distributions[:]:
@@ -91,6 +92,7 @@ class Scraper(object):
                 distributions.remove(distribution)
 
         self.distributions = distributions
+        logger.info("Fin del scraping")
 
     @staticmethod
     def _validate_url(distribution):
@@ -121,6 +123,7 @@ class DatabaseLoader(object):
             catalog (DataJson)
             distributions (list)
         """
+        logger.info("Comienzo de la escritura a base de datos")
         catalog = DataJson(catalog)
         self.catalog_model = self._catalog_model(catalog)
         for distribution in distributions:
@@ -139,6 +142,7 @@ class DatabaseLoader(object):
                                                               periodicity)
 
                 self._save_fields(distribution_model, fields)
+        logger.info("Fin de la escritura a base de datos")
 
     def _dataset_model(self, dataset):
         """Crea o actualiza el modelo del dataset a partir de un
@@ -259,6 +263,7 @@ class Indexer(object):
         self.elastic = ElasticInstance()
         self.index = index
         self.indexed_fields = set()
+        self.bulk_actions = []
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -284,27 +289,16 @@ class Indexer(object):
         msg = u'Inicio de la indexación. Cantidad de fields a indexar: %d'
         logger.info(msg, fields_count)
 
-        bulk_body = ''
         for distribution in distributions:
             fields = distribution.field_set.all()
             fields = {field.title: field.series_id for field in fields}
             df = self.init_df(distribution, fields)
 
-            bulk_body += self.generate_properties(df, fields)
+            self.generate_properties(df, fields)
 
-            if len(bulk_body) > self.block_size:
-                retry = 3
-                while retry:
-                    try:
-                        retry -= 1
-                        self._put_data(bulk_body)
-                        break
-                    except ConnectionTimeout:
-                        continue
-                bulk_body = ''
-
-        if bulk_body:
-            self._put_data(bulk_body)
+        logger.info("Inicio del bulk request a ES")
+        bulk(self.elastic, self.bulk_actions)
+        logger.info("Fin del bulk request a ES")
 
         # Reactivo el proceso de replicado una vez finalizado
         self.elastic.indices.put_settings(
@@ -373,33 +367,34 @@ class Indexer(object):
             'percent_change_a_year_ago':
                 self._year_ago_operation(df, self._pct_change)
         }
-        result = ''
+
+        action = {
+            "_index": self.index,
+            "_type": settings.TS_DOC_TYPE,
+            "_id": None,
+            "_source": {}
+        }
         for index, values in df.iterrows():
 
             timestamp = str(index.date())
             for column, value in values.iteritems():
-                properties = {
+                source = {
                     'timestamp': timestamp,
                     'series_id': fields[column]
                 }
 
                 if np.isfinite(value):
-                    properties['value'] = value
+                    source['value'] = value
 
                 for prop_name, df in data.iteritems():
                     value = self._get_value(df, column, index)
                     if np.isfinite(value):
-                        properties[prop_name] = value
+                        source[prop_name] = value
 
-                index_data = {
-                    "index": {
-                        "_id": fields[column] + '-' + timestamp,
-                        "_type": settings.TS_DOC_TYPE
-                    }
-                }
-
-                result += json.dumps(index_data) + '\n'
-                result += json.dumps(properties) + '\n'
+                index_data = action.copy()
+                index_data['_id'] = fields[column] + '-' + timestamp
+                index_data['_source'] = source
+                self.bulk_actions.append(index_data)
                 self.indexed_fields.add(fields[column])
 
         for series_id in fields.values():
@@ -407,8 +402,6 @@ class Indexer(object):
                 msg = 'Serie %s no encontrada en su dataframe'
                 logger.info(msg, series_id)
                 self._handle_missing_series(series_id)
-
-        return result
 
     def _handle_missing_series(self, series_id):
         # Si no hay datos previos indexados, borro la entrada de la DB
