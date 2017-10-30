@@ -3,8 +3,10 @@ import iso8601
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
+from nose.tools import raises
 
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery
+from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
+    CollapseError
 from .helpers import setup_database
 
 
@@ -202,3 +204,9 @@ class CollapseQueryTests(TestCase):
         index_meta = self.query.get_metadata()[0]
         self.assertEqual(self.query.data[0][0], index_meta['start_date'])
         self.assertEqual(self.query.data[-1][0], index_meta['end_date'])
+
+    @raises(CollapseError)
+    def test_invalid_collapse(self):
+        collapse_interval = 'day'  # Serie cargada es mensual
+        self.query.add_series(self.single_series)
+        self.query.add_collapse(interval=collapse_interval)
