@@ -5,7 +5,8 @@ import iso8601
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.models import Field
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery
+from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
+    CollapseError
 
 
 class QueryPipeline(object):
@@ -256,7 +257,13 @@ class Collapse(BaseOperation):
         if agg not in settings.AGGREGATIONS:
             self._append_error("Modo de agregación inválido: {}".format(agg))
         else:
-            query.add_collapse(agg, collapse, rep_mode)
+            try:
+                query.add_collapse(agg, collapse, rep_mode)
+            except CollapseError:
+                msg = "Intervalo de collapse inválido para la(s) serie(s) " \
+                      "seleccionadas: {}. Pruebe con un intervalo mayor"
+                msg = msg.format(collapse)
+                self._append_error(msg)
         return query
 
 
