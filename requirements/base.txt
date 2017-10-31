@@ -9,3 +9,4 @@ pydatajson>=0.3.13
 series-tiempo-ar==0.0.3
 pandas
 numpy
+django-rq==0.9.6
