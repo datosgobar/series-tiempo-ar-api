@@ -1,1 +1,3 @@
 -r testing.txt
+
+psycopg2==2.7.3.2
