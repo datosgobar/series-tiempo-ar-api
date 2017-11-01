@@ -1,33 +1,43 @@
 ---
 
-# This was required because Digital Ocean's ubuntu16.04 does not provides a 'python' binary
-# We cannot make python3 default on ubuntu14.04, some scripts depends on python2
-# See http://stackoverflow.com/a/34402816
-- hosts: all
+# Ensure python is installed.
+- hosts: cluster
   become: yes
   become_method: sudo
   gather_facts: no
   pre_tasks:
     - name: Install python2
-      raw: sudo apt-get -y install python && rm /usr/bin/python && sudo ln -s /usr/bin/python2 /usr/bin/python
+      raw: sudo apt-get -y install python
 
-- hosts: all
+- hosts: cluster
+  become: yes
+  become_method: sudo
+  roles:
+    - common
+
+- hosts: web
   become: yes
   become_method: sudo
   roles:
     - basic_server
     - { role: maintenance, maintenance_on: yes }
     - postgresql
+
+- hosts: es
+  become: yes
+  become_method: sudo
+  roles:
     - elastic_search
 
-- hosts: all
+# Use non-root user
+- hosts: web
   become: yes
   become_method: sudo
   become_user: "{{ application_user }}"
   roles:
     - django_application
 
-- hosts: all
+- hosts: web
   become: yes
   become_method: sudo
   roles:

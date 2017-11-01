@@ -1,0 +1,4 @@
+---
+
+#checkout_branch: master
+es_urls: "http://192.168.35.20:9200/"

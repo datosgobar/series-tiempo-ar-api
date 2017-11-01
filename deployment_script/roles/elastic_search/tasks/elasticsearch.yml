@@ -1,0 +1,77 @@
+---
+
+# Install Elastic Search (https://www.elastic.co/guide/en/elasticsearch/reference/5.6/deb.html)
+- name: Install Java8 repository
+  apt_repository:
+    repo: 'ppa:webupd8team/java'
+
+
+- name: Set Java8 licence selected
+  shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+  become_method: sudo
+
+
+- name: set licence seen
+  shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
+  become_method: sudo
+
+- name: Download and install the public signing key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Save the repository definition to /etc/apt/sources.list.d/elastic-5.x.list
+  lineinfile:
+    path: /etc/apt/sources.list.d/elastic-5.x.list
+    line: 'deb https://artifacts.elastic.co/packages/5.x/apt stable main'
+    state: present
+    create: yes
+
+- name: Install elasticsearch and dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - oracle-java8-installer
+    - apt-transport-https
+    - elasticsearch
+
+- name: Set Xms vars
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xms(.*)$'
+    line: '-Xms{{elastic_jvm_xms}}'
+    state: present
+
+- name: Set Xmx vars
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xmx(.*)$'
+    line: '-Xmx{{elastic_jvm_xmx}}'
+    state: present
+
+- name: Set Elastic's cluster.name
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    insertafter: '^#cluster\.name(.*)$'
+    line: 'cluster.name: {{elastic_cluster_name}}'
+    state: present
+
+- name: Allow site-local connections
+  blockinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    marker: "# {mark} ANSIBLE MANAGED BLOCK -->"
+    insertafter: '^#network\.host(.*)$'
+    content: |
+      network.host: ["_site_", "_local_"]
+      network.bind_host: {{ es_bind_host }}
+      network.publish_host: {{ es_publish_host }}
+      discovery.zen.ping.unicast.hosts: [{% for h in groups['es'] %}"{{ hostvars[h].ansible_host }}"{% if not loop.last %},{% endif %}{% endfor %}]
+
+
+- name: Enable elastic systemd unit
+  service:
+    state: restarted
+    name: elasticsearch.service
+    enabled: yes

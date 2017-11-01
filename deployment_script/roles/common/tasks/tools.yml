@@ -1,0 +1,8 @@
+---
+
+- name: Install tools
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - htop
+    - vim
+    - acl # required for running ansible unprivileged user tasks

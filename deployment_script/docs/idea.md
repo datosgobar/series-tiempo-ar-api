@@ -1,39 +1,35 @@
-# Simple (Django) deploy documentation
+# Series de tiempo AR - Deployment
 
-With this project you'll be able to deploy [this django application](https://gitlab.devartis.com/samples/django-sample).
+## Implementación
 
-## Implementation
+La implementación actual usa [ansible](https://www.ansible.com/) para provisionar la(s) máquiná(s).
 
-The current implementation uses [ansible](https://www.ansible.com/) for provisioning.
+### Base
 
-### Basics
+Los servidores terminarán con las siguientes características:
 
-The server will have these caracteristics. This is covered by `basic_server` role.
+- `python2` instalado, requerido por ansible
+- `acl` como una utilidad requerida por ansible
+- `python2`, `pip`, `virtualenv`, `pytohn-dev` para usar la aplicacion Django
+- `vim`, `htop` tareas de administración remota.
+- `git` como herramienta para obtener el código de la aplicación.
+- Firewall
+  - Sólo se permiten conecciones a los puertos `22, 80, 443` para el servidor web.
+  - Sólo se permiten conecciones a los puertos  `22, 9200-9400` para el servidor de elasticsearch.
+- Usuarios y grupos: Se crea un usuario sin privilegios llamado `devartis`.
+- Estructura de la aplicación:
+  - El código de la aplicación estará en `/home/devartis/webapp/` (APP_ROOT), junto con los logs, configuraciones y scripts.
+  - `app/`: La aplicación propiamente dicha, clonada con GIT.
+  - `sockets/`: cualquier socket usado por Gunicorn o PostgreSQL
+  - `logs/`: Logs de la aplicación, ya sea Gunicorn, Nginx o PostgreSQL
+  - `config/`: Configuración de la aplicación, como el `.env` usado.
+  - `bins/`: Scripts útiles.
 
-- Installs `python2` for running ansible, `python3` does not work well.
-- Install `acl` as ansible requirement.
-- Install `python3`, `pip`, `virtualenv`, `pytohn-dev` for running the application.
-- Install `vim` for editing files.
-- Install `git` for pulling the applicaiton.
-- Firewall: Only allows ports `22, 80, 443` for incoming connections.
-- Users & Groups: Creates a non-sudo user `devartis`.
-- Application structure
-  - All application code should be put at `/home/devartis/webapp/` (APP_ROOT) as any service log, socket or configuration.
-  - `sockets/`: Any unix socket used, like postgresql or gunicorn
-  - `logs/`: Any log specific of the application, like gunicorn or nginx
-  - `config/`: Any configuration file, like a `.env` file or gunicorn configuration.
-  - `bins/`: Any useful scripts.
-
-The final state will be:
-
-- Users & groups
-  - `devartis`: unprivileged user
-- Installed requirements
-  - `python2`, `python3`, `git`, `vim`, `acl` (See `roles/basic_server/tasks/dependencies.yml` for details)
-- files structures
+Estructura de archivos:
 
 ```
 - /home/devartis/webapp/ # Root application directory
+                - app/
                 - sockets/
                 - logs/
                 - config/
@@ -42,46 +38,47 @@ The final state will be:
 
 ### Postgres
 
-This is covered by `postgres` role.
+- Instalar `postgres` y `postgres-contrib`.
+- Instalar `python-psycopg2` requerido por ansible
+- Crear el sub-directorio "postgres" en `sockets/`, `logs/`, `config/` y `bins/`
+- Asegurarse que la base de datos sea creada y el usuario este presente.
+- Asegurarse que postgreSQL inicie con el sistema.
 
-- Install `postgres` and `postgres-contrib` with `apt-get`.
-- Install `python-psycopg2` required by ansible.
-- Create postgres sub-directory in `sockets/`, `logs/`, `config/` and `bins/`
-- Ensure database created with its user.
-- Enable systemd unit.
+### Aplicación Django
 
-### Django application
 
-This is covered by `django_application` role.
-
-- The application will be clone at `app/` directory
-- Will be created the `MEDIA` and `STATIC` dirs.
-- A `pip install -r requirements.txt` will be run.
-- A `python3 manage.py collectstatic --noinput` will be run.
-- A `python3 manage.py migrate` will be run
-- A link from `config/app/env` to `config/setting/.env` will be created.
-- File Structure (All relative to `/home/devartis/webapp/`)
-  - `app/`: Where the cloned web app will be.
-  - `.venv/`: Where the virtualenv will be created with the app's requirements.
+- La aplicación será clonada en `app/`
+- Se crearán los directorios para `MEDIA` y `STATIC` en la aplicación.
+- Se instalarán las dependencias mediante el comando: `pip install -r requirements.txt`.
+- Se generarán los archivos estaticos con el comando `python manage.py collectstatic --noinput`.
+- Se correrán las migraciones de la aplicación con `python manage.py migrate`.
+- Se creará un link desde `config/app/env` a `config/setting/.env`.
+- Estructura de archivos (Relativo a `/home/devartis/webapp/`)
+  - `app/`: Código de la aplicación.
+  - `.venv/`: "virtualenv" donde se isntalarán los requerimientos python de la aplicación
   - `config/app/`
-    - `env`: Where the application credentials must be set according to [django-environ](https://pypi.python.org/pypi/django-environ) specs.
-    - `secret_key`: Unique django secret key generated by first deploy (See `roles/django_application/files/django_secret_key.py` for details)
+    - `env`: Donde se guardaran las credenciales, según la especificación de [django-environ](https://pypi.python.org/pypi/django-environ).
+    - `secret_key`: Un "secret token" generado en el primer deploy (Ver `roles/django_application/files/django_secret_key.py` para mas detalles).
 
-### Gunicorn && nginx
+### Gunicorn & nginx
 
-This is covered by `web_server` role.
+- Agregar la configuración de **Gunicorn**.
+- Agregar la configuración de **Nginx**.
+- Configurar `logrotate` para **gunicorn** y **nginx**.
+- Crear los subdirectorios para Nginx y Gunicorn en `sockets/`, `logs/`, `config/` y `bins/`
+- Estructura de archivos (Relativo a `/home/devartis/webapp/`)
+  - `config/nginx/default.conf`: Archivo de configuracion *http* o *https*, que tiene un link a `/etc/nginx/site-available/default.conf`
+  - `config/gunicorn/config.py`: Configuración  de Gunicorn.
+  - `bin/gunicorn/run_gunicorn.sh`: Script para correr Gunicorn.
+  - `sockets/gunicorn/gunicorn.sock`: Socket de Unicorn
 
-- Add **gunicorn** configuration file.
-- Add **nginx** site file.
-- Configure logrotate files for **gunicorn** and **nginx** logs.
-- Create nginx and gunicorn sub-directory in `sockets/`, `logs/`, `config/` and `bins/`
-- File Structure (All relative to `/home/devartis/webapp/`)
-  - `config/nginx/default.conf`: *http* or *https* configuration file, linked from `/etc/nginx/site-available/default.conf`
-  - `config/gunicorn/config.py`: Gunicorn configuration file.
-  - `bin/gunicorn/run_gunicorn.sh`: Script for running gunicorn application.
-  - `sockets/gunicorn/gunicorn.sock`: Unicorn socket
+## Elasticsearch
 
-## Final result
+- Instalar `elasticsearch`
+- Configurarlo para que acepte conecciones sólo desde la red privada
+
+
+## Resultado final
 
 This might be the final file structure:
 ```

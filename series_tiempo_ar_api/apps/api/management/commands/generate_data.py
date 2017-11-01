@@ -17,7 +17,7 @@ class Command(BaseCommand):
         BaseCommand.__init__(self)
         self.indicators_count = 0
         self.prev_values = []
-        self.ES_URL = settings.ES_URL
+        self.ES_URL = settings.ES_CONFIGURATION["ES_URLS"][0]
 
     def add_arguments(self, parser):
         parser.add_argument('--indicators',

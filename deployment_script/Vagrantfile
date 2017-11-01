@@ -1,29 +1,49 @@
 VAGRANTFILE_API_VERSION = "2"
 
-checkout_branch = ENV["CHECKOUT_BRANCH"] || "master"
+checkout_branch = ENV["CHECKOUT_BRANCH"]
 ansible_limit = ENV["ANSIBLE_LIMIT"] || "all"
+
+extra_vars = {
+  "postgresql_user" => "database_user",
+  "postgresql_password" => "database_pass",
+}
+
+if checkout_branch
+  extra_vars["checkout_branch"] = checkout_branch
+end
+
+ES_SERVER_COUNT=1
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "bento/ubuntu-16.04"
-  config.vm.define "webserver" do |web|
+  config.ssh.forward_agent = true
+
+  (0...ES_SERVER_COUNT).each do |n|
+      config.vm.define "es#{n}" do |web|
+          web.vm.provider :virtualbox do |vb|
+            vb.memory = 2048
+            vb.cpus = 1
+          end
+          web.vm.network "private_network", ip: "192.168.35.2#{n}"
+      end
+  end
+
+  config.vm.define "web1" do |web|
       web.vm.provider :virtualbox do |vb|
-        vb.memory = 4096
+        vb.memory = 1024
         vb.cpus = 2
       end
       web.vm.network "private_network", ip: "192.168.35.10"
-  end
-  config.vm.provision "ansible" do |ansible|
-    ansible.compatibility_mode = "2.0"
-    ansible.playbook = "site.yml"
-    ansible.inventory_path = "inventories/vagrant/hosts"
-    
-    ansible.verbose = "vvv"
-#    ansible.tags = ["elastic"]
-    ansible.limit = ansible_limit
-    ansible.extra_vars = {
-      "postgresql_user" => "database_user",
-      "postgresql_password" => "database_pass",
-      "checkout_branch" => checkout_branch,
-    }
+
+      web.vm.provision "ansible" do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.playbook = "site.yml"
+        ansible.inventory_path = "inventories/vagrant/hosts"
+
+        ansible.verbose = "vvv"
+        # ansible.tags = ["elastic"]
+        ansible.limit = ansible_limit
+        ansible.extra_vars = extra_vars
+      end
   end
 end

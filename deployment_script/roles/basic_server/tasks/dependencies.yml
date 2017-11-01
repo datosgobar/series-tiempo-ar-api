@@ -11,5 +11,3 @@
     - zlib1g-dev
     - libxml2-dev
     - libxslt-dev
-    - vim
-    - acl # required for running ansible unprivileged user tasks

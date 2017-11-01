@@ -1,5 +1,6 @@
 ---
 
+
 - name: Install firewall
   apt: name=ufw state=present update_cache=yes
 
@@ -17,14 +18,11 @@
     direction: outgoing
     policy: allow
 
-- name: allow application ports
+- name: Allow ssh port
   ufw:
-    rule: allow
-    to_port: "{{item}}"
-  with_items:
-    - 22
-    - 80
-    - 443
+    port: ssh
+    rule: limit
+    proto: tcp
 
 - name: Enable firewall
   ufw:

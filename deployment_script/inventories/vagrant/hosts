@@ -1,4 +1,12 @@
 web1
+es1
 
 [web]
 web1
+
+[es]
+es1
+
+[cluster:children]
+web
+es
