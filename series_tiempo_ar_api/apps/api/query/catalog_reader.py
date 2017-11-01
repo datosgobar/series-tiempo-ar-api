@@ -11,7 +11,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.files import File
-from elasticsearch.helpers import bulk
+from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
@@ -27,6 +27,9 @@ from series_tiempo_ar_api.apps.api.helpers import \
 
 logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
+
+# Ignora divisiones por cero, no nos molesta el NaN
+np.seterr(divide='ignore', invalid='ignore')
 
 
 class ReaderPipeline(object):
@@ -301,7 +304,11 @@ class Indexer(object):
             self.generate_properties(df, fields)
 
         logger.info("Inicio del bulk request a ES")
-        bulk(self.elastic, self.bulk_actions)
+
+        for success, info in parallel_bulk(self.elastic, self.bulk_actions):
+            if not success:
+                logger.warn(u"Error en la indexación: %s", info)
+
         logger.info("Fin del bulk request a ES")
 
         # Reactivo el proceso de replicado una vez finalizado
