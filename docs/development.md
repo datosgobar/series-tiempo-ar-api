@@ -36,6 +36,18 @@ docker-compose up -d
 python manage.py migrate
 ```
 
+## Web server
+
+```bash
+python manage.py runserver
+```
+
+## Worker
+
+```bash
+python manage.py rqworker default low scrapping
+```
+
 ## Pruebas
 
 ```bash
