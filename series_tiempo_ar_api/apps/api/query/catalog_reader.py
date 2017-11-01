@@ -72,13 +72,11 @@ class Scraper(object):
         """
         logger.info("Comienzo del scraping")
         catalog = DataJson(catalog)
-        distributions = get_time_series_distributions(catalog)
-        for distribution in distributions[:]:
+        distributions = []
+        for distribution in get_time_series_distributions(catalog):
             distribution_id = distribution['identifier']
-            if not self.read_local:
-                if not self._validate_url(distribution):
-                    distributions.remove(distribution)
-                    continue
+            if not (self.read_local or self._validate_url(distribution)):
+                continue
 
             url = distribution['downloadURL']
             dataset = catalog.get_dataset(distribution['dataset_identifier'])
@@ -96,7 +94,8 @@ class Scraper(object):
                     e.message
                 )
                 logger.info(msg)
-                distributions.remove(distribution)
+            else:
+                distributions.append(distribution)
 
         self.distributions = distributions
         logger.info("Fin del scraping")
