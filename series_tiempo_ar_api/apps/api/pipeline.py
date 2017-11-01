@@ -35,8 +35,11 @@ class QueryPipeline(object):
                 self.result['errors'] = list(cmd_instance.errors)
                 return
 
-        self.result['data'] = query.data
-        self.result['meta'] = query.get_metadata()
+        if query.data:  # Puede ser vacío en el caso de sólo metadatos
+            self.result['data'] = query.data
+
+        if query.get_metadata():  # Puede ser vacío en el caso de sólo datos
+            self.result['meta'] = query.get_metadata()
 
     @staticmethod
     def init_commands():
@@ -48,6 +51,7 @@ class QueryPipeline(object):
             NameAndRepMode,
             DateFilter,
             Pagination,
+            Metadata,
             Collapse,
             Execute
         ]
@@ -273,6 +277,22 @@ class Collapse(BaseOperation):
                       "seleccionadas: {}. Pruebe con un intervalo mayor"
                 msg = msg.format(collapse)
                 self._append_error(msg)
+        return query
+
+
+class Metadata(BaseOperation):
+
+    def run(self, query, args):
+        metadata = args.get('metadata')
+        if not metadata:
+            return query
+
+        if metadata not in settings.METADATA_SETTINGS:
+            msg = u'Configuración de metadatos inválido: {}'.format(metadata)
+            self._append_error(msg)
+        else:
+            query.set_metadata_config(metadata)
+
         return query
 
 

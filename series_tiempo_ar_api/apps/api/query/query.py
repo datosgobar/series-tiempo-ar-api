@@ -25,6 +25,7 @@ class Query(object):
         self.elastic = ElasticInstance()
         self.data = []
         self.args = {}
+        self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
 
     def add_pagination(self, start, limit):
         if not len(self.series):
@@ -63,6 +64,9 @@ class Query(object):
             self._init_series(series_id, rep_mode)
 
     def run(self):
+        if self.metadata_config == 'only':  # No corre datos
+            return
+
         if not self.series:
             self._init_series()
 
@@ -106,19 +110,20 @@ class Query(object):
                                   search=search))
 
     def get_metadata(self):
-        meta = []
-        if not self.data:
-            return meta
+        if self.metadata_config == 'none':
+            return None
 
+        meta = []
         index_meta = {
-            'start_date': self.data[0][0],
-            'end_date': self.data[-1][0],
             'frequency': self._calculate_data_frequency()
         }
+        if self.metadata_config != 'only':
+            index_meta['start_date'] = self.data[0][0]
+            index_meta['end_date'] = self.data[-1][0]
 
         meta.append(index_meta)
         for serie in self.series:
-            meta.append(serie.get_metadata())
+            meta.append(serie.get_metadata(how=self.metadata_config))
 
         return meta
 
@@ -132,6 +137,9 @@ class Query(object):
         if not self.series:
             return None
         return self.series[0].get_periodicity()
+
+    def set_metadata_config(self, how):
+        self.metadata_config = how
 
 
 class CollapseQuery(Query):
@@ -240,6 +248,7 @@ class Series(object):
         self.series_id = series_id
         self.rep_mode = rep_mode
         self.search = search or Search()
+        self.meta = None
 
     def __getitem__(self, item):
         return self.__getattribute__(item)
@@ -250,7 +259,7 @@ class Series(object):
     def get(self, item, default=None):
         return getattr(self, item, default)
 
-    def get_metadata(self):
+    def get_metadata(self, how):
         """Devuelve un diccionario (data.json-like) de los metadatos
         de la serie:
 
@@ -268,20 +277,30 @@ class Series(object):
         }
 
         """
+        assert (how in settings.METADATA_SETTINGS)
+
+        if self.meta:
+            return self.meta
+
+        metadata = None
+        if how == 'full' or how == 'only':
+            metadata = self._get_full_metadata()
+
+        self.meta = metadata  # "Cacheado"
+        return metadata
+
+    def _get_full_metadata(self):
         field = Field.objects.get(series_id=self.series_id)
         distribution = field.distribution
         dataset = distribution.dataset
         catalog = dataset.catalog
-
         metadata = json.loads(catalog.metadata)
         dataset_meta = json.loads(dataset.metadata)
         distribution_meta = json.loads(distribution.metadata)
         field_meta = json.loads(field.metadata)
-
         distribution_meta['field'] = [field_meta]
         dataset_meta['distribution'] = [distribution_meta]
         metadata['dataset'] = [dataset_meta]
-
         return metadata
 
     def get_periodicity(self):
