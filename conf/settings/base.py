@@ -149,6 +149,7 @@ VENDOR_APPS = (
 
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
+    'series_tiempo_ar_api.libs.indexing',
 )
 
 INSTALLED_APPS = DJANGO_BASE_APPS + VENDOR_APPS + APPS
@@ -211,7 +212,7 @@ LOGGING = {
             'propagate': True
         },
         "rq.worker": {
-            "handlers": ["rq_console",],
+            "handlers": ["rq_console", ],
             "level": "DEBUG"
         },
     }
@@ -235,5 +236,11 @@ RQ_QUEUES = {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
-    }
+    },
+    'scrapping': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 3600,
+    },
 }
