@@ -41,3 +41,10 @@ python manage.py migrate
 ```bash
 python manage.py read_datajson http://infra.datos.gob.ar/catalog/sspm/data.json
 ```
+
+## Tests
+
+```bash
+./manage.py generate_data --years=300
+./manage.py test
+```
