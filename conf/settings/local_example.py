@@ -8,9 +8,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# Default of docker container!
-ES_URL = "http://elastic:changeme@localhost:9200/"
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

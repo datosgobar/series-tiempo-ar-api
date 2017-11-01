@@ -1,6 +1,7 @@
 #! coding: utf-8
 
-DEFAULT_ES_URL = "http://localhost:9200/"
+# Default of docker container!
+DEFAULT_ES_URL = "http://elastic:changeme@localhost:9200/"
 
 # JSON del mapping de series de tiempo
 MAPPING = {
