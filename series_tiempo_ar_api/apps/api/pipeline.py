@@ -1,11 +1,14 @@
 #! coding: utf-8
 from abc import abstractmethod
+from calendar import monthrange
+from datetime import date
 
-import isodate
+import iso8601
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.models import Field
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery
+from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
+    CollapseError
 
 
 class QueryPipeline(object):
@@ -97,6 +100,12 @@ class Pagination(BaseOperation):
 
         if parsed_arg is None or parsed_arg < min_value:
             self._append_error("Parámetro '{}' inválido: {}".format(name, arg))
+            return
+
+        max_value = settings.MAX_ALLOWED_VALUE[name]
+        if parsed_arg > max_value:
+            msg = "Parámetro {} por encima del límite permitido ({})"
+            self._append_error(msg.format(name, max_value))
 
 
 class DateFilter(BaseOperation):
@@ -113,13 +122,20 @@ class DateFilter(BaseOperation):
         if self.errors:
             return query
 
+        start_date, end_date = None, None
         if self.start:
-            self.start = str(isodate.parse_date(self.start))
-
+            start_date = str(iso8601.parse_date(self.start).date())
         if self.end:
-            self.end = str(isodate.parse_date(self.end))
+            end_date = iso8601.parse_date(self.end).date()
+            if '-' not in self.end:  # Solo especifica año
+                end_date = date(end_date.year, 12, 31)
+            if self.end.count('-') == 1:  # Especifica año y mes
+                # Obtengo el último día del mes, monthrange devuelve
+                # tupla (month, last_day)
+                days = monthrange(end_date.year, end_date.month)[1]
+                end_date = date(end_date.year, end_date.month, days)
 
-        query.add_filter(self.start, self.end)
+        query.add_filter(start_date, end_date)
         return query
 
     def validate_start_end_dates(self):
@@ -159,8 +175,8 @@ class DateFilter(BaseOperation):
         """
 
         try:
-            parsed_date = isodate.parse_date(date)
-        except isodate.ISO8601Error:
+            parsed_date = iso8601.parse_date(date)
+        except iso8601.ParseError:
             error = 'Formato de rango temporal inválido: {}'.format(date)
             self._append_error(error)
             raise ValueError
@@ -215,7 +231,7 @@ class NameAndRepMode(BaseOperation):
 
         # rep_mode 'default', para todas las series, overrideado
         # si la serie individual especifica alguno
-        rep_mode = args.get('representation-mode',
+        rep_mode = args.get('representation_mode',
                             settings.API_DEFAULT_VALUES['rep_mode'])
         colon_index = serie.find(':')
         if colon_index < 0:
@@ -250,7 +266,13 @@ class Collapse(BaseOperation):
         if agg not in settings.AGGREGATIONS:
             self._append_error("Modo de agregación inválido: {}".format(agg))
         else:
-            query.add_collapse(agg, collapse, rep_mode)
+            try:
+                query.add_collapse(agg, collapse, rep_mode)
+            except CollapseError:
+                msg = "Intervalo de collapse inválido para la(s) serie(s) " \
+                      "seleccionadas: {}. Pruebe con un intervalo mayor"
+                msg = msg.format(collapse)
+                self._append_error(msg)
         return query
 
 

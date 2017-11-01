@@ -1,10 +1,12 @@
 # coding=utf-8
-import isodate
+import iso8601
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
+from nose.tools import raises
 
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery
+from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
+    CollapseError
 from .helpers import setup_database
 
 
@@ -59,13 +61,13 @@ class QueryTest(TestCase):
         self.query.run()
         for row in self.query.data:
             if 'T' in row[0]:
-                date = isodate.parse_date(row[0])
-                start_date = isodate.parse_date(self.start_date)
-                end_date = isodate.parse_date(self.end_date)
+                date = iso8601.parse_date(row[0])
+                start_date = iso8601.parse_date(self.start_date)
+                end_date = iso8601.parse_date(self.end_date)
             else:
-                date = isodate.parse_date(row[0])
-                start_date = isodate.parse_date(self.start_date)
-                end_date = isodate.parse_date(self.end_date)
+                date = iso8601.parse_date(row[0])
+                start_date = iso8601.parse_date(self.start_date)
+                end_date = iso8601.parse_date(self.end_date)
             self.assertGreaterEqual(date, start_date)
             self.assertLessEqual(date, end_date)
 
@@ -161,7 +163,7 @@ class CollapseQueryTests(TestCase):
         prev_timestamp = None
         for row in self.query.data:
             timestamp = row[0]
-            parsed_timestamp = isodate.parse_date(timestamp)
+            parsed_timestamp = iso8601.parse_date(timestamp)
             if not prev_timestamp:
                 prev_timestamp = parsed_timestamp
                 continue
@@ -176,7 +178,7 @@ class CollapseQueryTests(TestCase):
         prev_timestamp = None
         for row in self.query.data:
             timestamp = row[0]
-            parsed_timestamp = isodate.parse_date(timestamp)
+            parsed_timestamp = iso8601.parse_date(timestamp)
             if not prev_timestamp:
                 prev_timestamp = parsed_timestamp
                 continue
@@ -202,3 +204,9 @@ class CollapseQueryTests(TestCase):
         index_meta = self.query.get_metadata()[0]
         self.assertEqual(self.query.data[0][0], index_meta['start_date'])
         self.assertEqual(self.query.data[-1][0], index_meta['end_date'])
+
+    @raises(CollapseError)
+    def test_invalid_collapse(self):
+        collapse_interval = 'day'  # Serie cargada es mensual
+        self.query.add_series(self.single_series)
+        self.query.add_collapse(interval=collapse_interval)

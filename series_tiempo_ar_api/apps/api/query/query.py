@@ -141,8 +141,6 @@ class CollapseQuery(Query):
 
     def __init__(self, other=None):
         Query.__init__(self)
-        # Datos guardados en la instancia para asegurar conmutabilidad
-        # de operaciones
         self.collapse_aggregation = \
             settings.API_DEFAULT_VALUES['collapse_aggregation']
         self.collapse_interval = settings.API_DEFAULT_VALUES['collapse']
@@ -161,15 +159,31 @@ class CollapseQuery(Query):
         serie.search = self._add_aggregation(search, rep_mode)
 
     def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
+        """Agrega funcionalidad de collapse.
+        
+        Args:
+            agg: Agregación a usar válida por ES
+            interval: uno de 'day', 'month', 'quarter', o 'year'
+            global_rep_mode: Modo de representación de los datos.
+        """
         if agg:
             self.collapse_aggregation = agg
         if interval:
             self.collapse_interval = interval
 
         for serie in self.series:
+            if not self._validate_collapse(serie.get_periodicity()):
+                raise CollapseError
             rep_mode = serie.get('rep_mode', global_rep_mode)
             search = serie.search
             serie.search = self._add_aggregation(search, rep_mode)
+
+    def _validate_collapse(self, collapse):
+        order = ['day', 'month', 'quarter', 'year']
+
+        if order.index(collapse) > order.index(self.collapse_interval):
+            return False
+        return True
 
     def _add_aggregation(self, search, rep_mode):
         search = search[:0]
@@ -214,6 +228,10 @@ class CollapseQuery(Query):
 
     def _calculate_data_frequency(self):
         return self.collapse_interval
+
+
+class CollapseError(Exception):
+    pass
 
 
 class Series(object):
