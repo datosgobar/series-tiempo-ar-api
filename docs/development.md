@@ -45,7 +45,7 @@ python manage.py runserver
 ## Worker
 
 ```bash
-python manage.py rqworker default low scrapping
+python manage.py rqworker high default low scrapping
 ```
 
 ## Pruebas
