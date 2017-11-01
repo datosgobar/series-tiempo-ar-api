@@ -1,5 +1,6 @@
 #! coding: utf-8
 from django.test import TestCase
+from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter
@@ -182,3 +183,15 @@ class DateFilterTests(TestCase):
 
         self.cmd.run(self.query, {'start_date': '2010/04/01'})
         self.assertTrue(self.cmd.errors)
+
+    def test_partial_end_date_is_inclusive(self):
+        self.query.add_series('random-0', 'value')
+        self.cmd.run(self.query, {'end_date': '2005'})
+
+        # Me aseguro de traer suficientes resultados
+        self.query.add_pagination(start=0, limit=1000)
+        self.query.run()
+        # Trajo resultados hasta 2005 inclusive
+        last_date = iso8601.parse_date(self.query.data[-1][0])
+        self.assertEqual(last_date.year, 2005)
+        self.assertGreaterEqual(last_date.month, 4)
