@@ -1,14 +1,14 @@
 #! coding: utf-8
 from abc import abstractmethod
 from calendar import monthrange
-from datetime import date
+import datetime
 
 import iso8601
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.models import Field
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
-    CollapseError
+from series_tiempo_ar_api.apps.api.query.query import Query
+from .query.exceptions import CollapseError
 
 
 class QueryPipeline(object):
@@ -22,21 +22,20 @@ class QueryPipeline(object):
                 request
         """
         self.args = request_args
-        self.result = {}
         self.commands = self.init_commands()
-        self.run()
 
     def run(self):
         query = Query()
+        response = {}
         for cmd in self.commands:
             cmd_instance = cmd()
             query = cmd_instance.run(query, self.args)
             if cmd_instance.errors:
-                self.result['errors'] = list(cmd_instance.errors)
-                return
+                response['errors'] = list(cmd_instance.errors)
+                return response
 
-        self.result['data'] = query.data
-        self.result['meta'] = query.get_metadata()
+        response = query.run()
+        return response
 
     @staticmethod
     def init_commands():
@@ -49,7 +48,7 @@ class QueryPipeline(object):
             DateFilter,
             Pagination,
             Collapse,
-            Execute
+            Metadata
         ]
 
 
@@ -62,10 +61,10 @@ class BaseOperation(object):
         """Ejecuta la operación del pipeline sobre el parámetro query
 
         Args:
-            query (Query)
+            query (ESQuery)
             args (dict): parámetros del request
         Returns:
-            Query: nuevo objeto query, el original con la operación
+            ESQuery: nuevo objeto query, el original con la operación
                 pertinente aplicada
         """
         raise NotImplementedError
@@ -128,12 +127,12 @@ class DateFilter(BaseOperation):
         if self.end:
             end_date = iso8601.parse_date(self.end).date()
             if '-' not in self.end:  # Solo especifica año
-                end_date = date(end_date.year, 12, 31)
+                end_date = datetime.date(end_date.year, 12, 31)
             if self.end.count('-') == 1:  # Especifica año y mes
                 # Obtengo el último día del mes, monthrange devuelve
                 # tupla (month, last_day)
                 days = monthrange(end_date.year, end_date.month)[1]
-                end_date = date(end_date.year, end_date.month, days)
+                end_date = datetime.date(end_date.year, end_date.month, days)
 
         query.add_filter(start_date, end_date)
         return query
@@ -161,11 +160,11 @@ class DateFilter(BaseOperation):
                 error = "Filtro por rango temporal inválido (start > end)"
                 self._append_error(error)
 
-    def validate_date(self, date):
+    def validate_date(self, _date):
         """Valida y parsea la fecha pasada.
 
         Args:
-            date (str): date string, ISO 8601
+            _date (str): date string, ISO 8601
 
         Returns:
             date con la fecha parseada
@@ -175,9 +174,9 @@ class DateFilter(BaseOperation):
         """
 
         try:
-            parsed_date = iso8601.parse_date(date)
+            parsed_date = iso8601.parse_date(_date)
         except iso8601.ParseError:
-            error = 'Formato de rango temporal inválido: {}'.format(date)
+            error = 'Formato de rango temporal inválido: {}'.format(_date)
             self._append_error(error)
             raise ValueError
         return parsed_date
@@ -257,7 +256,6 @@ class Collapse(BaseOperation):
             self._append_error(msg.format(collapse))
             return query
 
-        query = CollapseQuery(query)
         agg = args.get('collapse_aggregation',
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
         rep_mode = args.get('representation_mode',
@@ -276,7 +274,17 @@ class Collapse(BaseOperation):
         return query
 
 
-class Execute(BaseOperation):
+class Metadata(BaseOperation):
+
     def run(self, query, args):
-        query.run()
+        metadata = args.get('metadata')
+        if not metadata:
+            return query
+
+        if metadata not in settings.METADATA_SETTINGS:
+            msg = u'Configuración de metadatos inválido: {}'.format(metadata)
+            self._append_error(msg)
+        else:
+            query.set_metadata_config(metadata)
+
         return query

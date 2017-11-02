@@ -65,7 +65,8 @@ API_DEFAULT_VALUES = {
     'collapse_aggregation': 'avg',
     'collapse': 'year',
     'start': 0,
-    'limit': 100
+    'limit': 100,
+    'metadata': 'full'
 }
 
 
@@ -82,3 +83,10 @@ MAX_ALLOWED_VALUE = {
     'start': 100000,  # tbd
     'limit': 1000
 }
+
+METADATA_SETTINGS = [
+    'simple',
+    'full',
+    'none',
+    'only'
+]
