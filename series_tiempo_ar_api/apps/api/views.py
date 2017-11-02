@@ -5,5 +5,5 @@ from series_tiempo_ar_api.apps.api.pipeline import QueryPipeline
 
 
 def query_view(request):
-    query = QueryPipeline(request.GET.copy())
-    return JsonResponse(query.run())
+    query = QueryPipeline()
+    return JsonResponse(query.run(request.GET.copy()))

@@ -16,26 +16,21 @@ class QueryPipeline(object):
     """Pipeline del proceso de queries de la serie de tiempo. Ejecuta
     varias operaciones o comandos sobre un objeto query, usando los
     parámetros pasados por el request"""
-    def __init__(self, request_args):
-        """
-        Args:
-            request_args (dict): dict con los parámetros del GET
-                request
-        """
-        self.args = request_args
+    def __init__(self):
         self.commands = self.init_commands()
 
-    def run(self):
+    def run(self, args):
         query = Query()
         response = {}
         for cmd in self.commands:
             cmd_instance = cmd()
-            query = cmd_instance.run(query, self.args)
+            query = cmd_instance.run(query, args)
             if cmd_instance.errors:
                 response['errors'] = list(cmd_instance.errors)
                 return response
 
         response = query.run()
+        response['params'] = self._generate_params_field(query, args)
         return response
 
     @staticmethod
@@ -52,6 +47,17 @@ class QueryPipeline(object):
             Collapse,
             Metadata
         ]
+
+    @staticmethod
+    def _generate_params_field(query, args):
+        """Genera el campo adicional de parámetros pasados de la
+        respuesta. Contiene todos los argumentos pasados en la llamada,
+        más una lista de identifiers de field, distribution y dataset
+        por cada serie pedida
+        """
+        params = args.copy()
+        params['identifiers'] = query.get_series_identifiers()
+        return params
 
 
 class BaseOperation(object):
@@ -202,22 +208,29 @@ class NameAndRepMode(BaseOperation):
             return
 
         name, rep_mode = self._parse_series(self.ids, args)
-        self._validate(name, rep_mode)
+        field_model = self._get_model(name, rep_mode)
+        if not field_model:
+            return query
 
-        query.add_series(name, rep_mode)
+        query.add_series(name, field_model, rep_mode)
         return query
 
-    def _validate(self, doc_type, rep_mode):
+    def _get_model(self, doc_type, rep_mode):
         """Valida si el 'doc_type' es válido, es decir, si la serie
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        if not Field.objects.filter(series_id=doc_type):
+        field_model = Field.objects.filter(series_id=doc_type)
+        if not field_model:
             self._append_error('{}: {}'.format(SERIES_DOES_NOT_EXIST, self.ids))
+            return
 
         if rep_mode not in settings.REP_MODES:
             error = "Modo de representación inválido: {}".format(rep_mode)
             self._append_error(error)
+            return
+
+        return field_model[0]
 
     def _parse_series(self, serie, args):
         """Parsea una serie invididual. Actualiza la lista de errores

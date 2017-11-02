@@ -2,6 +2,7 @@
 from django.test import TestCase
 from iso8601 import iso8601
 
+from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter, Sort
 from series_tiempo_ar_api.apps.api.query.query import Query
@@ -91,6 +92,7 @@ class PaginationTests(TestCase):
     @classmethod
     def setUpClass(cls):
         setup_database()
+        cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, PaginationTests).setUpClass()
 
     def setUp(self):
@@ -100,15 +102,16 @@ class PaginationTests(TestCase):
     @classmethod
     def setUpClass(cls):
         setup_database()
+        cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, PaginationTests).setUpClass()
 
     def test_start(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
         other_query = Query()
-        other_query.add_series('random-0', 'value')
+        other_query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(other_query, params)
         other_data = other_query.run()['data']
 
@@ -122,14 +125,14 @@ class PaginationTests(TestCase):
         self.assertEqual(data[0], other_data[self.start])
 
     def test_limit(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'limit': self.limit})
         data = self.query.run()['data']
         self.assertEqual(len(data), self.limit)
 
     def test_invalid_start_parameter(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
 
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'start': 'not a number'})
@@ -161,6 +164,7 @@ class DateFilterTests(TestCase):
     @classmethod
     def setUpClass(cls):
         setup_database()
+        cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, DateFilterTests).setUpClass()
 
     def setUp(self):
@@ -170,10 +174,11 @@ class DateFilterTests(TestCase):
     @classmethod
     def setUpClass(cls):
         setup_database()
+        cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, DateFilterTests).setUpClass()
 
     def test_start_date(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'start_date': self.start_date})
         self.query.sort('asc')
 
@@ -185,7 +190,7 @@ class DateFilterTests(TestCase):
     def test_end_date(self):
         self.cmd.run(self.query, {'end_date': self.end_date})
 
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.query.sort('asc')
         # Me aseguro que haya suficientes resultados
         self.query.add_pagination(start=0, limit=1000)
@@ -217,7 +222,7 @@ class DateFilterTests(TestCase):
         self.assertTrue(self.cmd.errors)
 
     def test_partial_end_date_is_inclusive(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'end_date': '2005'})
 
         # Me aseguro de traer suficientes resultados
@@ -230,9 +235,13 @@ class DateFilterTests(TestCase):
 
 
 class SortTests(TestCase):
+
+    single_series = 'random-0'
+
     @classmethod
     def setUpClass(cls):
         setup_database()
+        cls.field = Field.objects.get(series_id='random-0')
         super(cls, SortTests).setUpClass()
 
     def setUp(self):
@@ -240,7 +249,7 @@ class SortTests(TestCase):
         self.cmd = Sort()
 
     def test_add_asc_sort(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'sort': 'asc'})
 
         data = self.query.run()['data']
@@ -252,7 +261,7 @@ class SortTests(TestCase):
             previous = current
 
     def test_add_desc_sort(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'sort': 'desc'})
 
         data = self.query.run()['data']
@@ -264,7 +273,7 @@ class SortTests(TestCase):
             previous = current
 
     def test_sort_desc_with_collapse(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'sort': 'desc'})
         self.query.add_collapse(collapse='year')
         data = self.query.run()['data']
@@ -276,7 +285,7 @@ class SortTests(TestCase):
             previous = current
 
     def test_sort_asc_with_collapse(self):
-        self.query.add_series('random-0', 'value')
+        self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'sort': 'asc'})
         self.query.add_collapse(collapse='year')
         data = self.query.run()['data']
