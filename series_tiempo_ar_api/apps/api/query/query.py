@@ -5,7 +5,6 @@ from django.conf import settings
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
-from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
 from series_tiempo_ar_api.apps.api.query.exceptions import CollapseError
 
@@ -18,6 +17,7 @@ class Query(object):
     """
     def __init__(self):
         self.es_query = ESQuery()
+        self.series_models = []
         self.meta = {}
         self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
 
@@ -30,7 +30,9 @@ class Query(object):
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
 
-    def add_series(self, name, rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+    def add_series(self, name, field,
+                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+        self.series_models.append(field)
         return self.es_query.add_series(name, rep_mode)
 
     def add_collapse(self, agg=None,
@@ -46,8 +48,8 @@ class Query(object):
     def _validate_collapse(self, collapse):
         order = ['day', 'month', 'quarter', 'year']
 
-        for serie in self.get_series_ids():
-            periodicity = Field.objects.get(series_id=serie).distribution.periodicity
+        for serie in self.series_models:
+            periodicity = serie.distribution.periodicity
             periodicity = get_periodicity_human_format(periodicity)
             if order.index(periodicity) > order.index(collapse):
                 raise CollapseError
@@ -74,12 +76,12 @@ class Query(object):
             index_meta.update(self.es_query.get_data_start_end_dates())
 
         meta.append(index_meta)
-        for series_id in self.es_query.get_series_ids():
-            meta.append(self._get_series_metadata(series_id))
+        for serie_model in self.series_models:
+            meta.append(self._get_series_metadata(serie_model))
 
         return meta
 
-    def _get_series_metadata(self, series_id):
+    def _get_series_metadata(self, serie_model):
         """Devuelve un diccionario (data.json-like) de los metadatos
         de la serie:
 
@@ -103,14 +105,13 @@ class Query(object):
 
         metadata = None
         if self.metadata_config == 'full' or self.metadata_config == 'only':
-            metadata = self._get_full_metadata(series_id)
+            metadata = self._get_full_metadata(serie_model)
 
         self.meta = metadata  # "Cacheado"
         return metadata
 
     @staticmethod
-    def _get_full_metadata(series_id):
-        field = Field.objects.get(series_id=series_id)
+    def _get_full_metadata(field):
         distribution = field.distribution
         dataset = distribution.dataset
         catalog = dataset.catalog
@@ -128,8 +129,7 @@ class Query(object):
             # noinspection PyUnresolvedReferences
             return self.es_query.collapse_interval
         else:
-            series_id = self.es_query.get_series_ids()[0]
-            periodicity = Field.objects.get(series_id=series_id).distribution.periodicity
+            periodicity = self.series_models[0].distribution.periodicity
             return get_periodicity_human_format(periodicity)
 
     def sort(self, how):
@@ -141,9 +141,7 @@ class Query(object):
         """
 
         result = []
-        ids = self.es_query.get_series_ids()
-        fields = Field.objects.filter(series_id__in=ids)
-        for field in fields:
+        for field in self.series_models:
             result.append({
                 'id': field.series_id,
                 'distribution': field.distribution.identifier,

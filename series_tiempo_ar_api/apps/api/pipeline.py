@@ -207,22 +207,29 @@ class NameAndRepMode(BaseOperation):
             return
 
         name, rep_mode = self._parse_series(self.ids, args)
-        self._validate(name, rep_mode)
+        field_model = self._get_model(name, rep_mode)
+        if not field_model:
+            return query
 
-        query.add_series(name, rep_mode)
+        query.add_series(name, field_model, rep_mode)
         return query
 
-    def _validate(self, doc_type, rep_mode):
+    def _get_model(self, doc_type, rep_mode):
         """Valida si el 'doc_type' es válido, es decir, si la serie
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        if not Field.objects.filter(series_id=doc_type):
+        field_model = Field.objects.filter(series_id=doc_type)
+        if not field_model:
             self._append_error('Serie inválida: {}'.format(self.ids))
+            return
 
         if rep_mode not in settings.REP_MODES:
             error = "Modo de representación inválido: {}".format(rep_mode)
             self._append_error(error)
+            return
+
+        return field_model[0]
 
     def _parse_series(self, serie, args):
         """Parsea una serie invididual. Actualiza la lista de errores
