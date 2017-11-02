@@ -2,6 +2,20 @@
 
 Bienvenido a la documentación de "deployment" para Series de Tiempo AR
 
+## Consideraciones
+
+### Sudo y las contraseñas
+
+Si para los servidores a los que se van a acceder se necesita una contraseña para poder usar `sudo`,
+_todos los usuario de ese servidor tiene que tener la misma contraseña_.
+Esto se debe a que ansible _solamente_ deja usar 1 contraseña para sudo en todos los servidores.
+
+### Punto de entrada
+
+El script asume fuertemente que estamos accediendo a las máquinas desde _dentro de la misma red_.
+O sea, todas las conecciones deben ser hechas a alguna IP del estilo "192.168.35.10".
+Para que esto sea posible, se puede crear una máquina que sea solamente para correr el "deployment", _dentro de la misma red_.
+
 ## Requerimientos
 
 - Ansible: `pip install -r requirements.txt`
