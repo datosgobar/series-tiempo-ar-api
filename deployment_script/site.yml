@@ -1,7 +1,7 @@
 ---
 
 # Ensure python is installed.
-- hosts: cluster
+- hosts: api_cluster
   become: yes
   become_method: sudo
   gather_facts: no
@@ -9,7 +9,7 @@
     - name: Install python2
       raw: sudo apt-get -y install python
 
-- hosts: cluster
+- hosts: api_cluster
   become: yes
   become_method: sudo
   roles:

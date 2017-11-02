@@ -40,7 +40,7 @@ Luego crearemos el inventario de las máquinas que ansible conocerá, podemos us
     [es]
     web1
 
-    [cluster:children]
+    [api_cluster:children]
     web
     es
 
@@ -117,7 +117,7 @@ Agregar un nuevo servidor en el inventario (en este caso, "es1") y ponerlo bajo 
     [es]
     es1
 
-    [cluster:children]
+    [api_cluster:children]
     web
     es
 

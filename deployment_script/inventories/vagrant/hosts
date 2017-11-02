@@ -7,6 +7,6 @@ web1
 [es]
 es1
 
-[cluster:children]
+[api_cluster:children]
 web
 es

@@ -2,3 +2,10 @@ web1
 
 [web]
 web1
+
+[es]
+web1
+
+[api_cluster:children]
+web
+es
