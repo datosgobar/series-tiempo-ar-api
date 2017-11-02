@@ -125,7 +125,7 @@ class CollapseQuery(ESQuery):
     """
 
     def __init__(self, other=None):
-        ESQuery.__init__(self)
+        super(CollapseQuery, self).__init__()
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
         self.collapse_aggregation = \
