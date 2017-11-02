@@ -14,3 +14,9 @@
   notify:
     - Reload systemd
     - Enable and restart web server
+
+# This is a bug, I have to restart gunicorn because I cannot detect repo changes.
+-  name: trigger nginx-restart
+   command: /bin/true
+   notify:
+     - Enable and restart web server
