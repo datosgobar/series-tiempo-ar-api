@@ -36,6 +36,9 @@ Luego crearemos el inventario de las máquinas que ansible conocerá, podemos us
 
     [web]
     web1
+
+    [redis]
+    web1
     
     [es]
     web1
@@ -43,6 +46,7 @@ Luego crearemos el inventario de las máquinas que ansible conocerá, podemos us
     [api_cluster:children]
     web
     es
+    redis
 
 En este ejemplo, le decimos a ansible que "web1" es una máquina, y ademas que pertenece al grupo "web".
 Además al pertenecer al grupo "es", ansible instalará `elasticsearch` en la máquina.
@@ -114,12 +118,16 @@ Agregar un nuevo servidor en el inventario (en este caso, "es1") y ponerlo bajo 
     [web]
     web1
 
+    [redis]
+    web1
+
     [es]
     es1
 
     [api_cluster:children]
     web
     es
+    redis
 
 Luego debemos crear el archivo "inventories/staging/host_vars/es1.yml" con la configuración de acceso:
 
@@ -140,6 +148,46 @@ es_urls: "http://192.168.35.20:9200/"
 ```
 
 Si agregamos más servidores, simplementes agregamos las URLs separandolas por ",".
+
+## Agregar un servidor de Redis
+
+En el ejemplo, se instalará redis en el mismo servidor que el servidor web.
+Para instalarlo en otro servidor, se pueden seguir los siguientes pasos:
+
+1)
+
+Agregar un "host" al inventario, en este ejemplo, "redis1".  Agregar el archivo "inventories/staging/host_vars/redis1.yml", para
+configurar cómo se accede a el mismo.
+
+```
+web1
+es1
+redis1
+
+[web]
+web1
+
+[es]
+es1
+
+[redis]
+redis1
+
+[api_cluster:children]
+web
+es
+redis
+```
+
+En el archivo "inventories/staging/group_vars/web.yml" agregar la configuración para conectar a redis desde los servidores o workers:
+
+```yaml
+---
+
+# Reemplazar la IP por la correspondientes
+default_redis_host: "192.168.35.30"
+```
+
 
 
 ## Vagrant & Tests
