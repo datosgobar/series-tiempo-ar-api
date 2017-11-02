@@ -1,4 +1,6 @@
 #! coding: utf-8
+from collections import OrderedDict
+
 from django.conf import settings
 from pandas import json
 
@@ -51,7 +53,7 @@ class Query(object):
                 raise CollapseError
 
     def run(self):
-        response = {}
+        response = OrderedDict()
         if self.metadata_config != 'only':
             response['data'] = self.es_query.run()
 
