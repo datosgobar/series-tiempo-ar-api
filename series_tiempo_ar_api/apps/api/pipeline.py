@@ -1,7 +1,7 @@
 #! coding: utf-8
 from abc import abstractmethod
 from calendar import monthrange
-from datetime import date
+import datetime
 
 import iso8601
 from django.conf import settings
@@ -127,12 +127,12 @@ class DateFilter(BaseOperation):
         if self.end:
             end_date = iso8601.parse_date(self.end).date()
             if '-' not in self.end:  # Solo especifica año
-                end_date = date(end_date.year, 12, 31)
+                end_date = datetime.date(end_date.year, 12, 31)
             if self.end.count('-') == 1:  # Especifica año y mes
                 # Obtengo el último día del mes, monthrange devuelve
                 # tupla (month, last_day)
                 days = monthrange(end_date.year, end_date.month)[1]
-                end_date = date(end_date.year, end_date.month, days)
+                end_date = datetime.date(end_date.year, end_date.month, days)
 
         query.add_filter(start_date, end_date)
         return query
