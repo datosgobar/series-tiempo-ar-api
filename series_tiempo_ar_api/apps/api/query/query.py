@@ -131,3 +131,6 @@ class Query(object):
             series_id = self.es_query.get_series_ids()[0]
             periodicity = Field.objects.get(series_id=series_id).distribution.periodicity
             return get_periodicity_human_format(periodicity)
+
+    def sort(self, how):
+        return self.es_query.sort(how)

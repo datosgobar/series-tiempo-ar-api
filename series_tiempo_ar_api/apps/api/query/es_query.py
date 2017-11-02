@@ -20,7 +20,13 @@ class ESQuery(object):
         self.series = []
         self.elastic = ElasticInstance()
         self.data = []
-        self.args = {}
+
+        # Parámetros que deben ser guardados y accedidos varias veces
+        self.args = {
+            'start': settings.API_DEFAULT_VALUES['start'],
+            'limit': settings.API_DEFAULT_VALUES['limit'],
+            'sort': settings.API_DEFAULT_VALUES['sort']
+        }
 
     def add_pagination(self, start, limit):
         if not len(self.series):
@@ -94,7 +100,7 @@ class ESQuery(object):
     def _init_series(self, series_id=None,
                      rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
 
-        search = Search(using=self.elastic).sort('timestamp')
+        search = Search(using=self.elastic)
         if series_id:
             search = search.filter('match', series_id=series_id)
 
@@ -117,6 +123,23 @@ class ESQuery(object):
             'start_date': self.data[0][0],
             'end_date': self.data[-1][0]
         }
+
+    def sort(self, how):
+        """Ordena los resultados por ascendiente o descendiente"""
+        if how == 'asc':
+            order = 'timestamp'
+
+        elif how == 'desc':
+            order = '-timestamp'
+        else:
+            msg = '"how" debe ser "asc", o "desc", recibido {}'.format(how)
+            raise ValueError(msg)
+
+        for serie in self.series:
+            serie.search = serie.search.sort(order)
+
+        # Guardo el parámetro, necesario en el evento de hacer un collapse
+        self.args['sort'] = how
 
 
 class CollapseQuery(ESQuery):
@@ -163,6 +186,7 @@ class CollapseQuery(ESQuery):
             .bucket('agg',
                     'date_histogram',
                     field='timestamp',
+                    order={"_key": self.args['sort']},
                     interval=self.collapse_interval) \
             .metric('agg',
                     self.collapse_aggregation,
@@ -172,9 +196,8 @@ class CollapseQuery(ESQuery):
 
     def _format_response(self, responses):
 
-        start = self.args.get('start', settings.API_DEFAULT_VALUES['start'])
-        limit = self.args.get('limit',
-                              start + settings.API_DEFAULT_VALUES['limit'])
+        start = self.args.get('start')
+        limit = self.args.get('limit')
         for response in responses:
             if not response.aggregations:
                 continue
