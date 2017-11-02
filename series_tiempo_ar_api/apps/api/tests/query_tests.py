@@ -30,7 +30,7 @@ class QueryTests(TestCase):
     def test_collapse_index_metadata_frequency(self):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series)
-        self.query.add_collapse('avg', collapse_interval, 'value')
+        self.query.add_collapse(collapse=collapse_interval)
         self.query.run()
 
         index_frequency = self.query.get_metadata()[0]['frequency']
@@ -39,7 +39,7 @@ class QueryTests(TestCase):
     def test_collapse_index_metadata_start_end_dates(self):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series)
-        self.query.add_collapse('avg', collapse_interval, 'value')
+        self.query.add_collapse(collapse=collapse_interval)
         self.query.run()
 
         index_meta = self.query.get_metadata()[0]
@@ -50,4 +50,4 @@ class QueryTests(TestCase):
     def test_invalid_collapse(self):
         collapse_interval = 'day'  # Serie cargada es mensual
         self.query.add_series(self.single_series)
-        self.query.add_collapse('avg', collapse_interval, 'value')
+        self.query.add_collapse(collapse=collapse_interval)

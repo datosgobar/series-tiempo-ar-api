@@ -31,7 +31,9 @@ class Query(object):
     def add_series(self, name, rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         return self.es_query.add_series(name, rep_mode)
 
-    def add_collapse(self, agg, collapse, rep_mode):
+    def add_collapse(self, agg=None,
+                     collapse=None,
+                     rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(self.es_query)
         return self.es_query.add_collapse(agg, collapse, rep_mode)
