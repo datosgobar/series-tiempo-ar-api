@@ -47,6 +47,8 @@
             owner="{{ application_user }}"
             group="www-data"
   when: use_https is not defined
+  notify:
+    - Enable and restart web server
 
 - name: Create the nginx HTTPS config file
   template: src=nginx_https_config.j2
@@ -56,6 +58,8 @@
             owner="{{ application_user }}"
             group="www-data"
   when: use_https is defined
+  notify:
+    - Enable and restart web server
 
 - name: Set up http auth
   blockinfile:

@@ -8,21 +8,15 @@
     group: "{{ application_group }}"
     mode: 0770
     backup: yes
+  notify:
+    - Enable and workers
 
 - name: Create systemd unit for worker
   template: src=rqworker/services/rqworker.service.j2
             dest=/etc/systemd/system/rqworker.service
             mode=0664
             backup=no
+  notify:
+    - Reload systemd
+    - Enable and restart workers
 
-- name: Reload systemd
-  command: systemctl daemon-reload
-
-- name: Enable web server systemd units
-  service: 
-    state: restarted
-    name: "{{ item }}"
-    enabled: yes
-  tags: quickly
-  with_items:
-    - rqworker.service

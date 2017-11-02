@@ -5,6 +5,8 @@
     dest: "{{ gunicorn_conf }}"
     mode: 0774
     backup: yes
+  notify:
+    - Enable and restart web server
 
 - name: Create gunicorn run file
   template: 
@@ -14,3 +16,5 @@
     group: "{{ application_group }}"
     mode: 0770
     backup: yes
+  notify:
+    - Enable and restart web server

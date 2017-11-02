@@ -1,0 +1,20 @@
+---
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and restart web server
+  service:
+    state: restarted
+    name: "{{ item }}"
+    enabled: yes
+  tags: quickly
+  with_items:
+    - gunicorn.socket
+    - nginx.service
+
+- name: Enable and restart workers
+  service:
+    state: restarted
+    name: rqworker.service
+    enabled: yes
