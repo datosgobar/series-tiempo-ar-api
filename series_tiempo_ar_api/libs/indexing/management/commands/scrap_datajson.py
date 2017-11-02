@@ -20,4 +20,3 @@ class Command(BaseCommand):
             scrap.delay(catalog_url)
         else:
             scrap(catalog_url)
-
