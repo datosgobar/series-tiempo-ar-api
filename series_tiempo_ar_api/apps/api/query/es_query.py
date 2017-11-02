@@ -1,12 +1,8 @@
 #! coding: utf-8
-import json
-
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
-from series_tiempo_ar_api.apps.api import helpers
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-from series_tiempo_ar_api.apps.api.models import Field
 
 
 class ESQuery(object):
@@ -109,34 +105,11 @@ class ESQuery(object):
                                   rep_mode=rep_mode,
                                   search=search))
 
-    def get_metadata(self):
-        if self.metadata_config == 'none':
-            return None
-
-        meta = []
-        index_meta = {
-            'frequency': self._calculate_data_frequency()
-        }
-        if self.metadata_config != 'only':
-            index_meta['start_date'] = self.data[0][0]
-            index_meta['end_date'] = self.data[-1][0]
-
-        meta.append(index_meta)
-        for serie in self.series:
-            meta.append(serie.get_metadata(how=self.metadata_config))
-
-        return meta
-
     @staticmethod
     def _format_timestamp(timestamp):
         if timestamp.find('T') != -1:  # Borrado de la parte de tiempo
             return timestamp[:timestamp.find('T')]
         return timestamp
-
-    def _calculate_data_frequency(self):
-        if not self.series:
-            return None
-        return self.series[0].get_periodicity()
 
     def get_series_ids(self):
         """Devuelve una lista de series cargadas"""
@@ -173,6 +146,7 @@ class CollapseQuery(ESQuery):
         serie.search = self._add_aggregation(search, rep_mode)
 
     def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
+
         if agg:
             self.collapse_aggregation = agg
         if interval:
@@ -244,52 +218,3 @@ class Series(object):
 
     def get(self, item, default=None):
         return getattr(self, item, default)
-
-    def get_metadata(self, how):
-        """Devuelve un diccionario (data.json-like) de los metadatos
-        de la serie:
-
-        {
-            <catalog_meta>
-            "dataset": [
-                <dataset_meta>
-                "distribution": [
-                    <distribution_meta>
-                    "field": [
-                        <field_meta>
-                    ]
-                ]
-            ]
-        }
-
-        """
-        assert (how in settings.METADATA_SETTINGS)
-
-        if self.meta:
-            return self.meta
-
-        metadata = None
-        if how == 'full' or how == 'only':
-            metadata = self._get_full_metadata()
-
-        self.meta = metadata  # "Cacheado"
-        return metadata
-
-    def _get_full_metadata(self):
-        field = Field.objects.get(series_id=self.series_id)
-        distribution = field.distribution
-        dataset = distribution.dataset
-        catalog = dataset.catalog
-        metadata = json.loads(catalog.metadata)
-        dataset_meta = json.loads(dataset.metadata)
-        distribution_meta = json.loads(distribution.metadata)
-        field_meta = json.loads(field.metadata)
-        distribution_meta['field'] = [field_meta]
-        dataset_meta['distribution'] = [distribution_meta]
-        metadata['dataset'] = [dataset_meta]
-        return metadata
-
-    def get_periodicity(self):
-        periodicity = Field.objects.get(series_id=self.series_id)\
-            .distribution.periodicity
-        return helpers.get_periodicity_human_format(periodicity)
