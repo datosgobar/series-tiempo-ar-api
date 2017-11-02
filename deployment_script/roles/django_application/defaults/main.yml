@@ -17,6 +17,10 @@ env_mark: "## DEFAULT VARIABLES MARK"
 # Default to same server!
 es_urls: "http://{{ ansible_host }}:9200/"
 
+# Default same server!
+default_redis_host: "{{ ansible_host }}"
+default_redis_port: 6379
+
 #Django
 django_settings:
   MEDIA_ROOT: "{{ nginx_media_dir }}"
@@ -26,6 +30,8 @@ django_settings:
   DATABASE_PASSWORD: "{{ postgresql_password }}"
   DATABASE_HOST: "127.0.0.1"
   ES_URLS: "{{ es_urls }}"
+  DEFAULT_REDIS_HOST: "{{ default_redis_host }}"
+  DEFAULT_REDIS_PORT: "{{ default_redis_port }}"
 
 django_environment:
   DJANGO_SETTINGS_MODULE: "{{ application_settings_module }}"

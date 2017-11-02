@@ -1,6 +1,8 @@
 ---
 
 - import_playbook: api_cluster.yml
+- import_playbook: redis.yml
+- import_playbook: elasticsearch.yml
 
 - hosts: web
   become: yes
@@ -9,8 +11,6 @@
     - basic_server
     - { role: maintenance, maintenance_on: yes }
     - postgresql
-
-- import_playbook: elasticsearch.yml
 
 # Use non-root user
 - hosts: web
