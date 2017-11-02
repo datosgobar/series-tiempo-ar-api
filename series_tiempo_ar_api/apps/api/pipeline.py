@@ -8,6 +8,7 @@ from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
+from .strings import SERIES_DOES_NOT_EXIST
 from .query.exceptions import CollapseError
 
 
@@ -212,7 +213,7 @@ class NameAndRepMode(BaseOperation):
         encontrarse, llena la lista de errores según corresponda.
         """
         if not Field.objects.filter(series_id=doc_type):
-            self._append_error('Serie inválida: {}'.format(self.ids))
+            self._append_error('{}: {}'.format(SERIES_DOES_NOT_EXIST, self.ids))
 
         if rep_mode not in settings.REP_MODES:
             error = "Modo de representación inválido: {}".format(rep_mode)
