@@ -4,7 +4,7 @@ from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter
-from series_tiempo_ar_api.apps.api.query.query import Query
+from series_tiempo_ar_api.apps.api.query.query import ESQuery
 from .helpers import setup_database
 
 
@@ -23,7 +23,7 @@ class NameAndRepModeTest(TestCase):
 
     def setUp(self):
         self.cmd = NameAndRepMode()
-        self.query = Query()
+        self.query = ESQuery()
 
     def test_invalid_series(self):
         invalid_series = 'invalid'
@@ -38,7 +38,7 @@ class NameAndRepModeTest(TestCase):
         self.cmd.run(self.query, {'ids': self.single_series})
         self.query.run()
 
-        other_query = Query()
+        other_query = ESQuery()
         self.cmd.run(other_query, {'ids': self.single_series,
                                    'representation_mode': 'change'})
         other_query.run()
@@ -52,7 +52,7 @@ class CollapseTest(TestCase):
     single_series = 'random-0'
 
     def setUp(self):
-        self.query = Query()
+        self.query = ESQuery()
         self.cmd = Collapse()
 
     def test_valid_aggregation(self):
@@ -75,7 +75,7 @@ class PaginationTests(TestCase):
     start = 50
 
     def setUp(self):
-        self.query = Query()
+        self.query = ESQuery()
         self.cmd = Pagination()
 
     @classmethod
@@ -87,7 +87,7 @@ class PaginationTests(TestCase):
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
-        other_query = Query()
+        other_query = ESQuery()
         self.cmd.run(other_query, params)
         other_query.run()
 
@@ -135,7 +135,7 @@ class DateFilterTests(TestCase):
     end_date = '2015-01-01'
 
     def setUp(self):
-        self.query = Query()
+        self.query = ESQuery()
         self.cmd = DateFilter()
 
     @classmethod
