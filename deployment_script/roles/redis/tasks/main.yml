@@ -11,6 +11,6 @@
   lineinfile:
     path: /etc/redis/redis.conf
     regexp: '^bind.*'
-    line: "bind {% for h in groups['web'] %}{{ hostvars[h].ansible_host }} {% endfor %}"
+    line: "bind {{ ansible_host }}"
   notify:
     - Restart redis server
