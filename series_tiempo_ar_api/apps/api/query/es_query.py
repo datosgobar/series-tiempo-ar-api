@@ -21,7 +21,6 @@ class ESQuery(object):
         self.elastic = ElasticInstance()
         self.data = []
         self.args = {}
-        self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
 
     def add_pagination(self, start, limit):
         if not len(self.series):
@@ -60,9 +59,6 @@ class ESQuery(object):
             self._init_series(series_id, rep_mode)
 
     def run(self):
-        if self.metadata_config == 'only':  # No corre datos
-            return
-
         if not self.series:
             self._init_series()
 
@@ -76,6 +72,7 @@ class ESQuery(object):
 
         responses = multi_search.execute()
         self._format_response(responses)
+        return self.data
 
     def _format_response(self, responses):
         for i, response in enumerate(responses):
@@ -115,8 +112,11 @@ class ESQuery(object):
         """Devuelve una lista de series cargadas"""
         return [serie.series_id for serie in self.series]
 
-    def set_metadata_config(self, how):
-        self.metadata_config = how
+    def get_data_start_end_dates(self):
+        return {
+            'start_date': self.data[0][0],
+            'end_date': self.data[-1][0]
+        }
 
 
 class CollapseQuery(ESQuery):

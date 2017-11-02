@@ -51,11 +51,14 @@ class Query(object):
                 raise CollapseError
 
     def run(self):
-        return self.es_query.run()
+        response = {}
+        if self.metadata_config != 'only':
+            response['data'] = self.es_query.run()
 
-    @property
-    def data(self):
-        return self.es_query.data
+        if self.metadata_config in ('full', 'only'):
+            response['meta'] = self.get_metadata()
+
+        return response
 
     def get_metadata(self):
         if self.metadata_config == 'none':
@@ -66,8 +69,7 @@ class Query(object):
             'frequency': self._calculate_data_frequency()
         }
         if self.metadata_config != 'only':
-            index_meta['start_date'] = self.data[0][0]
-            index_meta['end_date'] = self.data[-1][0]
+            index_meta.update(self.es_query.get_data_start_end_dates())
 
         meta.append(index_meta)
         for series_id in self.es_query.get_series_ids():

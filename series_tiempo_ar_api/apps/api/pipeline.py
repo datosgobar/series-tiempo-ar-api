@@ -34,18 +34,7 @@ class QueryPipeline(object):
                 response['errors'] = list(cmd_instance.errors)
                 return response
 
-        response = self.generate_response(query)
-        return response
-
-    def generate_response(self, query):
-        response = {}
-
-        if query.data:  # Puede ser vacío en el caso de sólo metadatos
-            response['data'] = query.data
-
-        if query.get_metadata():  # Puede ser vacío en el caso de sólo datos
-            response['meta'] = query.get_metadata()
-
+        response = query.run()
         return response
 
     @staticmethod
@@ -59,7 +48,6 @@ class QueryPipeline(object):
             DateFilter,
             Pagination,
             Collapse,
-            Execute,
             Metadata
         ]
 
@@ -299,10 +287,4 @@ class Metadata(BaseOperation):
         else:
             query.set_metadata_config(metadata)
 
-        return query
-
-
-class Execute(BaseOperation):
-    def run(self, query, args):
-        query.run()
         return query

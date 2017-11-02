@@ -21,11 +21,11 @@ class QueryTests(TestCase):
 
     def test_index_metadata_start_end_dates(self):
         self.query.add_series(self.single_series)
-        self.query.run()
+        data = self.query.run()['data']
 
         index_meta = self.query.get_metadata()[0]
-        self.assertEqual(self.query.data[0][0], index_meta['start_date'])
-        self.assertEqual(self.query.data[-1][0], index_meta['end_date'])
+        self.assertEqual(data[0][0], index_meta['start_date'])
+        self.assertEqual(data[-1][0], index_meta['end_date'])
 
     def test_collapse_index_metadata_frequency(self):
         collapse_interval = 'quarter'
@@ -40,11 +40,11 @@ class QueryTests(TestCase):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series)
         self.query.add_collapse(collapse=collapse_interval)
-        self.query.run()
+        data = self.query.run()['data']
 
         index_meta = self.query.get_metadata()[0]
-        self.assertEqual(self.query.data[0][0], index_meta['start_date'])
-        self.assertEqual(self.query.data[-1][0], index_meta['end_date'])
+        self.assertEqual(data[0][0], index_meta['start_date'])
+        self.assertEqual(data[-1][0], index_meta['end_date'])
 
     @raises(CollapseError)
     def test_invalid_collapse(self):
