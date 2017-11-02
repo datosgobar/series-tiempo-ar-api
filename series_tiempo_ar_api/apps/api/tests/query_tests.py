@@ -5,8 +5,8 @@ from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
-    CollapseError
+from series_tiempo_ar_api.apps.api.query.exceptions import CollapseError
+from series_tiempo_ar_api.apps.api.query.query import ESQuery, CollapseQuery
 from .helpers import setup_database
 
 
@@ -29,7 +29,7 @@ class QueryTest(TestCase):
         super(QueryTest, cls).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = ESQuery()
 
     def test_inicialmente_no_hay_series(self):
         self.assertFalse(self.query.series)
@@ -148,7 +148,7 @@ class CollapseQueryTests(TestCase):
         self.assertEqual(len(self.query.data), self.limit)
 
     def test_init_from_other(self):
-        other_query = Query()
+        other_query = ESQuery()
         other_query.add_series(self.single_series)
         self.query = CollapseQuery(other_query)
         self.query.run()

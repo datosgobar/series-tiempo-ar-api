@@ -7,8 +7,8 @@ import iso8601
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.models import Field
-from series_tiempo_ar_api.apps.api.query.query import Query, CollapseQuery, \
-    CollapseError
+from series_tiempo_ar_api.apps.api.query.query import Query
+from .query.exceptions import CollapseError
 
 
 class QueryPipeline(object):
@@ -23,7 +23,6 @@ class QueryPipeline(object):
         """
         self.args = request_args
         self.commands = self.init_commands()
-        self.run()
 
     def run(self):
         query = Query()
@@ -33,12 +32,12 @@ class QueryPipeline(object):
             query = cmd_instance.run(query, self.args)
             if cmd_instance.errors:
                 response['errors'] = list(cmd_instance.errors)
-                return
+                return response
 
         response = self.generate_response(query)
         return response
 
-    def generate_response(self, query, _format='json'):
+    def generate_response(self, query):
         response = {}
 
         if query.data:  # Puede ser vacío en el caso de sólo metadatos
@@ -59,9 +58,9 @@ class QueryPipeline(object):
             NameAndRepMode,
             DateFilter,
             Pagination,
-            Metadata,
             Collapse,
-            Execute
+            Execute,
+            Metadata
         ]
 
 
@@ -74,10 +73,10 @@ class BaseOperation(object):
         """Ejecuta la operación del pipeline sobre el parámetro query
 
         Args:
-            query (Query)
+            query (ESQuery)
             args (dict): parámetros del request
         Returns:
-            Query: nuevo objeto query, el original con la operación
+            ESQuery: nuevo objeto query, el original con la operación
                 pertinente aplicada
         """
         raise NotImplementedError
@@ -269,7 +268,6 @@ class Collapse(BaseOperation):
             self._append_error(msg.format(collapse))
             return query
 
-        query = CollapseQuery(query)
         agg = args.get('collapse_aggregation',
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
         rep_mode = args.get('representation_mode',
