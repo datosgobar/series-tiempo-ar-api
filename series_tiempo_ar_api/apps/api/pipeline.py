@@ -47,7 +47,13 @@ class QueryPipeline(object):
             Metadata
         ]
 
-    def _generate_params_field(self, query, args):
+    @staticmethod
+    def _generate_params_field(query, args):
+        """Genera el campo adicional de parámetros pasados de la
+        respuesta. Contiene todos los argumentos pasados en la llamada,
+        más una lista de identifiers de field, distribution y dataset
+        por cada serie pedida
+        """
         params = args.copy()
         params['identifiers'] = query.get_series_identifiers()
         return params
