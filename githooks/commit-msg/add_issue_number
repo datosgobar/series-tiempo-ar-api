@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ticket=$(git rev-parse --abbrev-ref HEAD | awk -F- '/^[0-9]+-/ {print $1}')
+if [ -n "$ticket" ]; then
+    echo "
+    refs:#$ticket" >> $1
+fi
+
