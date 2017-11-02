@@ -1,0 +1,7 @@
+---
+
+- hosts: redis
+  become: yes
+  become_method: sudo
+  roles:
+    - redis
