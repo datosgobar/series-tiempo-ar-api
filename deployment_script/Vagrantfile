@@ -28,6 +28,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
   end
 
+  config.vm.define "redis1" do |web|
+      web.vm.provider :virtualbox do |vb|
+        vb.memory = 1024
+        vb.cpus = 1
+      end
+      web.vm.network "private_network", ip: "192.168.35.30"
+  end
+
   config.vm.define "web1" do |web|
       web.vm.provider :virtualbox do |vb|
         vb.memory = 1024

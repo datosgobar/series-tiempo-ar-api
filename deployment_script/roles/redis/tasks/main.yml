@@ -1,0 +1,16 @@
+---
+
+- import_tasks: security.yml
+
+- name: Install dependencies
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - redis-server
+
+- name: Bind site-local connections
+  lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^bind.*'
+    line: "bind {{ ansible_host }}"
+  notify:
+    - Restart redis server
