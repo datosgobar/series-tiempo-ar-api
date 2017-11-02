@@ -15,26 +15,21 @@ class QueryPipeline(object):
     """Pipeline del proceso de queries de la serie de tiempo. Ejecuta
     varias operaciones o comandos sobre un objeto query, usando los
     parámetros pasados por el request"""
-    def __init__(self, request_args):
-        """
-        Args:
-            request_args (dict): dict con los parámetros del GET
-                request
-        """
-        self.args = request_args
+    def __init__(self):
         self.commands = self.init_commands()
 
-    def run(self):
+    def run(self, args):
         query = Query()
         response = {}
         for cmd in self.commands:
             cmd_instance = cmd()
-            query = cmd_instance.run(query, self.args)
+            query = cmd_instance.run(query, args)
             if cmd_instance.errors:
                 response['errors'] = list(cmd_instance.errors)
                 return response
 
         response = query.run()
+        response['params'] = self._generate_params_field(query, args)
         return response
 
     @staticmethod
@@ -51,6 +46,11 @@ class QueryPipeline(object):
             Collapse,
             Metadata
         ]
+
+    def _generate_params_field(self, query, args):
+        params = args.copy()
+        params['identifiers'] = query.get_series_identifiers()
+        return params
 
 
 class BaseOperation(object):

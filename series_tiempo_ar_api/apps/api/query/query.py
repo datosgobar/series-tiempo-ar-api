@@ -134,3 +134,19 @@ class Query(object):
 
     def sort(self, how):
         return self.es_query.sort(how)
+
+    def get_series_identifiers(self):
+        """Devuelve los identifiers a nivel dataset, distribution
+        y field de cada una de las series cargadas en la query
+        """
+
+        result = []
+        ids = self.es_query.get_series_ids()
+        fields = Field.objects.filter(series_id__in=ids)
+        for field in fields:
+            result.append({
+                'id': field.series_id,
+                'distribution': field.distribution.identifier,
+                'dataset': field.distribution.dataset.identifier
+            })
+        return result

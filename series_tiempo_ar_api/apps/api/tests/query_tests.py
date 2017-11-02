@@ -2,6 +2,7 @@
 from django.test import TestCase
 from nose.tools import raises
 
+from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.query.query import Query
 
@@ -51,3 +52,13 @@ class QueryTests(TestCase):
         collapse_interval = 'day'  # Serie cargada es mensual
         self.query.add_series(self.single_series)
         self.query.add_collapse(collapse=collapse_interval)
+
+    def test_identifiers(self):
+
+        self.query.add_series(self.single_series)
+        # Devuelve lista de ids, una por serie. Me quedo con la primera (única)
+        ids = self.query.get_series_identifiers()[0]
+        field = Field.objects.get(series_id=self.single_series)
+        self.assertEqual(ids['id'], field.series_id)
+        self.assertEqual(ids['distribution'], field.distribution.identifier)
+        self.assertEqual(ids['dataset'], field.distribution.dataset.identifier)
