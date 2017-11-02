@@ -9,7 +9,7 @@
     mode: 0770
     backup: yes
   notify:
-    - Enable and workers
+    - Enable and restart workers
 
 - name: Create systemd unit for worker
   template: src=rqworker/services/rqworker.service.j2
