@@ -11,3 +11,4 @@
     - zlib1g-dev
     - libxml2-dev
     - libxslt-dev
+    - redis-server

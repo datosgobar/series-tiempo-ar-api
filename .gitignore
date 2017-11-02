@@ -30,4 +30,5 @@ node_modules/
 
 # Archivos fuente de las distribuciones
 media/distribution_raw
+datajson_sample/
 

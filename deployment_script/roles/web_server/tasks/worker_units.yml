@@ -1,0 +1,28 @@
+---
+
+- name: Create the Worker run file
+  template:
+    src: rqworker/run_rqworker.j2
+    dest: "{{ run_rqworker_bin }}"
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: 0770
+    backup: yes
+
+- name: Create systemd unit for worker
+  template: src=rqworker/services/rqworker.service.j2
+            dest=/etc/systemd/system/rqworker.service
+            mode=0664
+            backup=no
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable web server systemd units
+  service: 
+    state: restarted
+    name: "{{ item }}"
+    enabled: yes
+  tags: quickly
+  with_items:
+    - rqworker.service

@@ -144,10 +144,12 @@ DJANGO_BASE_APPS = (
 )
 
 VENDOR_APPS = (
+    "django_rq",
 )
 
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
+    'series_tiempo_ar_api.libs.indexing',
 )
 
 INSTALLED_APPS = DJANGO_BASE_APPS + VENDOR_APPS + APPS
@@ -162,12 +164,24 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    "formatters": {
+        "rq_console": {
+            "format": "%(asctime)s %(message)s",
+            "datefmt": "%H:%M:%S",
+        },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
     'handlers': {
+        "rq_console": {
+            "level": "DEBUG",
+            "class": "rq.utils.ColorizingStreamHandler",
+            "formatter": "rq_console",
+            "exclude": ["%(asctime)s"],
+        },
         'null': {
             'level': 'DEBUG',
             'class': 'logging.NullHandler',
@@ -196,9 +210,37 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': True
-        }
+        },
+        "rq.worker": {
+            "handlers": ["rq_console", ],
+            "level": "DEBUG"
+        },
     }
 }
 
 # EMAILS
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'high': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'low': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'scrapping': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 3600,
+    },
+}
