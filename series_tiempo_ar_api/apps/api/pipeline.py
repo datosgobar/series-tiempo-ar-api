@@ -22,24 +22,32 @@ class QueryPipeline(object):
                 request
         """
         self.args = request_args
-        self.result = {}
         self.commands = self.init_commands()
         self.run()
 
     def run(self):
         query = Query()
+        response = {}
         for cmd in self.commands:
             cmd_instance = cmd()
             query = cmd_instance.run(query, self.args)
             if cmd_instance.errors:
-                self.result['errors'] = list(cmd_instance.errors)
+                response['errors'] = list(cmd_instance.errors)
                 return
 
+        response = self.generate_response(query)
+        return response
+
+    def generate_response(self, query, _format='json'):
+        response = {}
+
         if query.data:  # Puede ser vacío en el caso de sólo metadatos
-            self.result['data'] = query.data
+            response['data'] = query.data
 
         if query.get_metadata():  # Puede ser vacío en el caso de sólo datos
-            self.result['meta'] = query.get_metadata()
+            response['meta'] = query.get_metadata()
+
+        return response
 
     @staticmethod
     def init_commands():
