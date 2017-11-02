@@ -47,6 +47,7 @@ class QueryPipeline(object):
             NameAndRepMode,
             DateFilter,
             Pagination,
+            Sort,
             Collapse,
             Metadata
         ]
@@ -286,5 +287,19 @@ class Metadata(BaseOperation):
             self._append_error(msg)
         else:
             query.set_metadata_config(metadata)
+
+        return query
+
+
+class Sort(BaseOperation):
+
+    def run(self, query, args):
+        sort = args.get('sort', settings.API_DEFAULT_VALUES['sort'])
+
+        if sort not in settings.SORT_VALUES:
+            msg = u'Parámetro sort inválido: {}'.format(sort)
+            self._append_error(msg)
+        else:
+            query.sort(sort)
 
         return query

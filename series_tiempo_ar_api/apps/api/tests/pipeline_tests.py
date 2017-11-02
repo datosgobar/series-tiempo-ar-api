@@ -1,10 +1,11 @@
 #! coding: utf-8
 from django.test import TestCase
 from iso8601 import iso8601
+from nose.tools import raises
 
 from series_tiempo_ar_api.apps.api.pipeline import \
-    NameAndRepMode, Collapse, Pagination, DateFilter
-from series_tiempo_ar_api.apps.api.query.query import ESQuery
+    NameAndRepMode, Collapse, Pagination, DateFilter, Sort
+from series_tiempo_ar_api.apps.api.query.query import Query
 from .helpers import setup_database
 
 
@@ -23,7 +24,7 @@ class NameAndRepModeTest(TestCase):
 
     def setUp(self):
         self.cmd = NameAndRepMode()
-        self.query = ESQuery()
+        self.query = Query()
 
     def test_invalid_series(self):
         invalid_series = 'invalid'
@@ -36,23 +37,30 @@ class NameAndRepModeTest(TestCase):
 
     def test_global_rep_mode(self):
         self.cmd.run(self.query, {'ids': self.single_series})
-        self.query.run()
+        self.query.sort('asc')
+        data = self.query.run()['data']
 
-        other_query = ESQuery()
+        other_query = Query()
         self.cmd.run(other_query, {'ids': self.single_series,
                                    'representation_mode': 'change'})
-        other_query.run()
+        other_query.sort('asc')
+        other_data = other_query.run()['data']
 
-        for index, row in enumerate(other_query.data[1:], start=1):
-            change = self.query.data[index][1] - self.query.data[index - 1][1]
+        for index, row in enumerate(other_data[1:], start=1):
+            change = data[index][1] - data[index - 1][1]
             self.assertEqual(row[1], change)
 
 
 class CollapseTest(TestCase):
     single_series = 'random-0'
 
+    @classmethod
+    def setUpClass(cls):
+        setup_database()
+        super(cls, CollapseTest).setUpClass()
+
     def setUp(self):
-        self.query = ESQuery()
+        self.query = Query()
         self.cmd = Collapse()
 
     def test_valid_aggregation(self):
@@ -74,8 +82,13 @@ class PaginationTests(TestCase):
     limit = 1000
     start = 50
 
+    @classmethod
+    def setUpClass(cls):
+        setup_database()
+        super(cls, PaginationTests).setUpClass()
+
     def setUp(self):
-        self.query = ESQuery()
+        self.query = Query()
         self.cmd = Pagination()
 
     @classmethod
@@ -84,29 +97,34 @@ class PaginationTests(TestCase):
         super(cls, PaginationTests).setUpClass()
 
     def test_start(self):
+        self.query.add_series('random-0', 'value')
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
-        other_query = ESQuery()
+        other_query = Query()
+        other_query.add_series('random-0', 'value')
         self.cmd.run(other_query, params)
-        other_query.run()
+        other_data = other_query.run()['data']
 
         # Query con un offset de 'start'
         params_start = params.copy()
         params_start['start'] = self.start
         self.cmd.run(self.query, params_start)
-        self.query.run()
+        data = self.query.run()['data']
 
         # Los datos del primer query empiezan en un offset de start en el otro
-        self.assertEqual(self.query.data[0], other_query.data[self.start])
+        self.assertEqual(data[0], other_data[self.start])
 
     def test_limit(self):
+        self.query.add_series('random-0', 'value')
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'limit': self.limit})
-        self.query.run()
-        self.assertEqual(len(self.query.data), self.limit)
+        data = self.query.run()['data']
+        self.assertEqual(len(data), self.limit)
 
     def test_invalid_start_parameter(self):
+        self.query.add_series('random-0', 'value')
+
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'start': 'not a number'})
         self.query.run()
@@ -134,8 +152,13 @@ class DateFilterTests(TestCase):
     start_date = '2010-01-01'
     end_date = '2015-01-01'
 
+    @classmethod
+    def setUpClass(cls):
+        setup_database()
+        super(cls, DateFilterTests).setUpClass()
+
     def setUp(self):
-        self.query = ESQuery()
+        self.query = Query()
         self.cmd = DateFilter()
 
     @classmethod
@@ -144,22 +167,25 @@ class DateFilterTests(TestCase):
         super(cls, DateFilterTests).setUpClass()
 
     def test_start_date(self):
+        self.query.add_series('random-0', 'value')
         self.cmd.run(self.query, {'start_date': self.start_date})
+        self.query.sort('asc')
 
-        self.query.run()
+        data = self.query.run()['data']
 
-        first_timestamp = self.query.data[0][0]
+        first_timestamp = data[0][0]
         self.assertEqual(self.start_date, first_timestamp)
 
     def test_end_date(self):
         self.cmd.run(self.query, {'end_date': self.end_date})
 
         self.query.add_series('random-0', 'value')
+        self.query.sort('asc')
         # Me aseguro que haya suficientes resultados
         self.query.add_pagination(start=0, limit=1000)
-        self.query.run()
+        data = self.query.run()['data']
 
-        last_timestamp = self.query.data[-1][0]
+        last_timestamp = data[-1][0]
         self.assertEqual(self.end_date, last_timestamp)
 
     def test_invalid_start_date(self):
@@ -190,8 +216,72 @@ class DateFilterTests(TestCase):
 
         # Me aseguro de traer suficientes resultados
         self.query.add_pagination(start=0, limit=1000)
-        self.query.run()
+        data = self.query.run()['data']
         # Trajo resultados hasta 2005 inclusive
-        last_date = iso8601.parse_date(self.query.data[-1][0])
+        last_date = iso8601.parse_date(data[-1][0])
         self.assertEqual(last_date.year, 2005)
         self.assertGreaterEqual(last_date.month, 4)
+
+
+class SortTests(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        setup_database()
+        super(cls, SortTests).setUpClass()
+
+    def setUp(self):
+        self.query = Query()
+        self.cmd = Sort()
+
+    def test_add_asc_sort(self):
+        self.query.add_series('random-0', 'value')
+        self.cmd.run(self.query, {'sort': 'asc'})
+
+        data = self.query.run()['data']
+
+        previous = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            current = iso8601.parse_date(row[0])
+            self.assertGreater(current, previous)
+            previous = current
+
+    def test_add_desc_sort(self):
+        self.query.add_series('random-0', 'value')
+        self.cmd.run(self.query, {'sort': 'desc'})
+
+        data = self.query.run()['data']
+
+        previous = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            current = iso8601.parse_date(row[0])
+            self.assertLess(current, previous)
+            previous = current
+
+    def test_sort_desc_with_collapse(self):
+        self.query.add_series('random-0', 'value')
+        self.cmd.run(self.query, {'sort': 'desc'})
+        self.query.add_collapse(collapse='year')
+        data = self.query.run()['data']
+
+        previous = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            current = iso8601.parse_date(row[0])
+            self.assertLess(current, previous)
+            previous = current
+
+    def test_sort_asc_with_collapse(self):
+        self.query.add_series('random-0', 'value')
+        self.cmd.run(self.query, {'sort': 'asc'})
+        self.query.add_collapse(collapse='year')
+        data = self.query.run()['data']
+
+        previous = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            current = iso8601.parse_date(row[0])
+            self.assertGreater(current, previous)
+            previous = current
+
+    def test_invalid_sort(self):
+        self.cmd.run(self.query, {'sort': 'invalid'})
+        self.assertTrue(self.cmd.errors)

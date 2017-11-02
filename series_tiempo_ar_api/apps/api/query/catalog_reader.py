@@ -394,7 +394,7 @@ class Indexer(object):
 
     def elastic_index(self, row, series_id):
         """Indexa la fila de datos correspondientes a una serie en ES
-        
+
         la fila tiene forma de iterable con los datos de un único
         valor de la serie: el valor real, su variación inmnediata,
         porcentual, etc

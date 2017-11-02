@@ -66,7 +66,8 @@ API_DEFAULT_VALUES = {
     'collapse': 'year',
     'start': 0,
     'limit': 100,
-    'metadata': 'full'
+    'metadata': 'full',
+    'sort': 'asc'
 }
 
 
@@ -89,4 +90,9 @@ METADATA_SETTINGS = [
     'full',
     'none',
     'only'
+]
+
+SORT_VALUES = [
+    'asc',
+    'desc'
 ]
