@@ -6,6 +6,6 @@ cd ${DIR}/..
 
 
 echo "Running jscpd"
-jscpd --verbose --o /dev/null --limit 1
+npm run jsc
 echo "jscpd OK :)"
 

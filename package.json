@@ -5,7 +5,8 @@
   "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint -c .eslintrc.json series_tiempo_ar_api/apps/**/*.js"
+    "lint": "eslint -c .eslintrc.json series_tiempo_ar_api/apps/**/*.js",
+    "jsc": "jscpd --verbose --o /dev/null --limit 1"
   },
   "repository": {
     "type": "git",
@@ -16,6 +17,9 @@
     "eslint": "^3.9.1",
     "eslint-config-standard": "^6.2.1",
     "eslint-plugin-promise": "^3.3.0",
-    "eslint-plugin-standard": "^2.0.1"
+    "eslint-plugin-standard": "^2.0.1",
+    "jscpd": "^0.6.15"
+  },
+  "dependencies": {
   }
 }
