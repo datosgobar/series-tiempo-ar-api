@@ -223,7 +223,7 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.c
 
 
 DEFAULT_REDIS_HOST = env("DEFAULT_REDIS_HOST", default="localhost")
-DEFAULT_REDIS_PORT = env("DEFAULT_REDIS_HOST", default="6379")
+DEFAULT_REDIS_PORT = env("DEFAULT_REDIS_PORT", default="6379")
 DEFAULT_REDIS_DB = env("DEFAULT_REDIS_DB", default="0")
 
 RQ_QUEUES = {
