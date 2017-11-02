@@ -96,8 +96,6 @@ class QueryTest(TestCase):
         self.assertTrue(len(self.query.data[0]) == 3)
 
 
-
-
 class CollapseQueryTests(TestCase):
 
     start = 10

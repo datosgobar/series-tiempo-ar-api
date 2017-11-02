@@ -95,7 +95,6 @@ class Query(object):
         }
 
         """
-        assert (self.metadata_config in settings.METADATA_SETTINGS)
 
         if self.meta:
             return self.meta

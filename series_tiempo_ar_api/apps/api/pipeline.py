@@ -160,11 +160,11 @@ class DateFilter(BaseOperation):
                 error = "Filtro por rango temporal inválido (start > end)"
                 self._append_error(error)
 
-    def validate_date(self, date):
+    def validate_date(self, _date):
         """Valida y parsea la fecha pasada.
 
         Args:
-            date (str): date string, ISO 8601
+            _date (str): date string, ISO 8601
 
         Returns:
             date con la fecha parseada
@@ -174,9 +174,9 @@ class DateFilter(BaseOperation):
         """
 
         try:
-            parsed_date = iso8601.parse_date(date)
+            parsed_date = iso8601.parse_date(_date)
         except iso8601.ParseError:
-            error = 'Formato de rango temporal inválido: {}'.format(date)
+            error = 'Formato de rango temporal inválido: {}'.format(_date)
             self._append_error(error)
             raise ValueError
         return parsed_date
