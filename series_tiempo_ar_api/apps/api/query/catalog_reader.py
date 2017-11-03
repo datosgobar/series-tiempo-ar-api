@@ -336,7 +336,7 @@ class Indexer(object):
         df['percent_change_a_year_ago'] = \
             self._year_ago_column(col, self._pct_change, freq)
 
-        df.apply(self.elastic_index, axis=1, args=[fields[col.name]])
+        df.apply(self.elastic_index, axis=1, args=(fields[col.name],))
 
     def elastic_index(self, row, series_id):
         """Indexa la fila de datos correspondientes a una serie en ES
