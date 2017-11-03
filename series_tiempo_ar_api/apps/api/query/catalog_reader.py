@@ -365,7 +365,7 @@ class Indexer(object):
         }
 
         for column, value in row.iteritems():
-            if value and np.isfinite(value):
+            if value is not None and np.isfinite(value):
                 source[column] = value
 
         action['_id'] = series_id + '-' + timestamp
