@@ -15,8 +15,6 @@ from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
-from series_tiempo_ar.search import get_time_series_distributions
-from series_tiempo_ar.validations import validate_distribution
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, \
