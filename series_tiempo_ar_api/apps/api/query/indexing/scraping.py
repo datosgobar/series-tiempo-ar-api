@@ -10,6 +10,7 @@ from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 from series_tiempo_ar.validations import validate_distribution
 
+from .constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
 from .strings import START_SCRAPING, END_SCRAPING, INVALID_DISTRIBUTION_URL, DESESTIMATED_DISTRIBUTION
 
 logger = logging.Logger(__name__)
@@ -31,12 +32,12 @@ class Scraper(object):
         catalog = DataJson(catalog)
         distributions = []
         for distribution in get_time_series_distributions(catalog):
-            distribution_id = distribution['identifier']
+            distribution_id = distribution[IDENTIFIER]
             if not (self.read_local or self._validate_url(distribution)):
                 continue
 
-            url = distribution['downloadURL']
-            dataset = catalog.get_dataset(distribution['dataset_identifier'])
+            url = distribution[DOWNLOAD_URL]
+            dataset = catalog.get_dataset(distribution[DATASET_IDENTIFIER])
             df = pd.read_csv(url, parse_dates=[settings.INDEX_COLUMN])
             df = df.set_index(settings.INDEX_COLUMN)
 
@@ -60,8 +61,8 @@ class Scraper(object):
 
     @staticmethod
     def _validate_url(distribution):
-        distribution_id = distribution['identifier']
-        url = distribution.get('downloadURL')
+        distribution_id = distribution[IDENTIFIER]
+        url = distribution.get(DOWNLOAD_URL)
         if not url or requests.head(url).status_code != 200:
             msg = u'{} {}'.format(INVALID_DISTRIBUTION_URL, distribution_id)
             logger.info(msg)
