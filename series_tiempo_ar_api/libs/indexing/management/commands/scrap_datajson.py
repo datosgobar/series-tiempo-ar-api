@@ -1,10 +1,7 @@
 #! coding: utf-8
-import requests
 from django.core.management import BaseCommand
-from series_tiempo_ar_api.libs.indexing.tasks import scrap
 
-
-from series_tiempo_ar_api.apps.api.query.catalog_reader import ReaderPipeline, Scraper
+from series_tiempo_ar_api.libs.indexing.tasks import scrape
 
 
 class Command(BaseCommand):
@@ -17,6 +14,6 @@ class Command(BaseCommand):
         run_async = options.get('async')
 
         if run_async:
-            scrap.delay(catalog_url)
+            scrape.delay(catalog_url)
         else:
-            scrap(catalog_url)
+            scrape(catalog_url)
