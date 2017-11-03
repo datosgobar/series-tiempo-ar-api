@@ -3,25 +3,27 @@ from elasticsearch import Elasticsearch
 
 
 class ElasticInstance(object):
-
     elastic = None
 
     @classmethod
-    def init(cls, urls):
-        """Devuelve la instancia del cliente de Elasticsearch. Si se
+    def init(cls, urls, options=None):
+        """
+        Devuelve la instancia del cliente de Elasticsearch. Si se
         espeficica el parámetro 'urls', inicializa un cliente nuevo con
         conexión a las instancias en esas direcciones.
 
         Args:
             urls (list): Lista de URLs a conectarse
+            options (dict): Opciones para configurar el cliente Elasticsearch
 
         Returns:
             Elasticsearch
         """
         if cls.elastic:
             return cls.elastic
-
-        cls.elastic = Elasticsearch(urls)
+        if options is None:
+            options = {}
+        cls.elastic = Elasticsearch(urls, **options)
         return cls.elastic
 
     @classmethod

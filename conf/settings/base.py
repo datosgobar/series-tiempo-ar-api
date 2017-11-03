@@ -16,6 +16,11 @@ environ.Env.read_env(SETTINGS_DIR('.env'))
 
 ES_CONFIGURATION = {
     "ES_URLS": env("ES_URLS", default=DEFAULT_ES_URL).split(","),
+    "CONNECTIONS": {
+        "default": {
+            "timeout": 30,
+        },
+    },
 }
 
 DEBUG = True
