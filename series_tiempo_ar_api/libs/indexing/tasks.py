@@ -2,11 +2,11 @@
 
 from django_rq import job
 
-from series_tiempo_ar_api.apps.api.query.catalog_reader import Scraper
+from series_tiempo_ar_api.apps.api.query.indexing.scraping import get_scraper
 
 
 @job("scrapping")
 def scrap(url):
-    scrapper = Scraper()
+    scrapper = get_scraper()
     scrapper.run(url)
     return scrapper.distributions

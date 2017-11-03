@@ -1,10 +1,7 @@
 #! coding: utf-8
-import requests
 from django.core.management import BaseCommand
+
 from series_tiempo_ar_api.libs.indexing.tasks import scrap
-
-
-from series_tiempo_ar_api.apps.api.query.catalog_reader import ReaderPipeline, Scraper
 
 
 class Command(BaseCommand):
