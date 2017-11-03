@@ -113,14 +113,18 @@ class DatabaseLoader(object):
             identifier=identifier,
             catalog=self.catalog_model
         )
+
+        dataset = self._remove_blacklisted_fields(
+            dataset,
+            settings.DATASET_BLACKLIST
+        )
         dataset_model.metadata = json.dumps(dataset)
         dataset_model.save()
 
         self.dataset_cache[dataset['identifier']] = dataset_model
         return dataset_model
 
-    @staticmethod
-    def _catalog_model(catalog):
+    def _catalog_model(self, catalog):
         """Crea o actualiza el catalog model con el título pedido a partir
         de el diccionario de metadatos de un catálogo
         """
@@ -129,6 +133,11 @@ class DatabaseLoader(object):
         catalog.pop('dataset', None)
         title = catalog.get('title')
         catalog_model, _ = Catalog.objects.get_or_create(title=title)
+
+        catalog = self._remove_blacklisted_fields(
+            catalog,
+            settings.CATALOG_BLACKLIST
+        )
         catalog_model.metadata = json.dumps(catalog)
         catalog_model.save()
         return catalog_model
@@ -151,6 +160,10 @@ class DatabaseLoader(object):
         distribution_model, _ = Distribution.objects.get_or_create(
             identifier=identifier,
             dataset=dataset_model
+        )
+        distribution = self._remove_blacklisted_fields(
+            distribution,
+            settings.DISTRIBUTION_BLACKLIST
         )
         distribution_model.metadata = json.dumps(distribution)
         distribution_model.download_url = url
@@ -188,8 +201,7 @@ class DatabaseLoader(object):
 
         distribution_model.data_file = File(lf)
 
-    @staticmethod
-    def _save_fields(distribution_model, fields):
+    def _save_fields(self, distribution_model, fields):
         for field in fields:
             if field.get('specialType') == 'time_index':
                 continue
@@ -201,8 +213,22 @@ class DatabaseLoader(object):
                 title=title,
                 distribution=distribution_model
             )
+            field = self._remove_blacklisted_fields(
+                field,
+                settings.FIELD_BLACKLIST
+            )
             field_model.metadata = json.dumps(field)
             field_model.save()
+
+    @staticmethod
+    def _remove_blacklisted_fields(metadata, blacklist):
+        """Borra los campos listados en 'blacklist' de el diccionario
+        'metadata'
+        """
+
+        for field in blacklist:
+            metadata.pop(field, None)
+        return metadata
 
 
 class Indexer(object):
