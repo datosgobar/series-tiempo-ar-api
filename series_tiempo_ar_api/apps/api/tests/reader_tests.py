@@ -2,20 +2,19 @@
 import os
 
 from django.test import TestCase
+from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
-from elasticsearch_dsl import Search
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Distribution, Field
+from series_tiempo_ar_api.apps.api.models import Distribution, Field
+from series_tiempo_ar_api.apps.api.query.catalog_reader import Indexer, DatabaseLoader
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-from series_tiempo_ar_api.apps.api.query.catalog_reader import \
-    Scraper, Indexer, DatabaseLoader
+from series_tiempo_ar_api.apps.api.query.indexing.scraping import Scraper
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
 class ScrapperTests(TestCase):
-
     def setUp(self):
         self.scrapper = Scraper(read_local=True)
 
@@ -82,7 +81,7 @@ class IndexerTests(TestCase):
         self._index_catalog('missing_field.json')
 
         results = Search(using=self.elastic,
-                         index=self.test_index)\
+                         index=self.test_index) \
             .filter('match', series_id=missing_field).execute()
 
         self.assertTrue(len(results))
@@ -96,7 +95,7 @@ class IndexerTests(TestCase):
         catalog_title = DataJson(catalog_path)['title']
 
         results = Search(using=self.elastic,
-                         index=self.test_index)\
+                         index=self.test_index) \
             .filter('match', series_id=missing_series_id).execute()
 
         self.assertFalse(len(results))
@@ -117,5 +116,5 @@ class IndexerTests(TestCase):
         distributions = get_time_series_distributions(catalog)
         db_loader = DatabaseLoader(read_local=True)
         db_loader.run(catalog, distributions)
-        Indexer(index=self.test_index).\
+        Indexer(index=self.test_index). \
             run(distributions=db_loader.distribution_models)
