@@ -20,7 +20,6 @@ logger.addHandler(logging.StreamHandler())
 class Scraper(object):
     def __init__(self, read_local=False):
         self.distributions = []
-        self.fields = []
         self.read_local = read_local
 
     def run(self, catalog):
