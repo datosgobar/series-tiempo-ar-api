@@ -8,4 +8,4 @@ echo "Starting Worker $WORKER_NAME"
 
 export DJANGO_SETTINGS_MODULE={{ application_settings_module }}
 
-python {{ application_dir }}manage.py rqworker --name "$WORKER_NAME" default low scrapping
+python {{ application_dir }}manage.py rqworker --name "$WORKER_NAME" high default low scrapping
