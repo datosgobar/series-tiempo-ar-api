@@ -32,7 +32,6 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 class ReaderPipeline(object):
-
     def __init__(self, catalog, index_only=False):
         """Ejecuta el pipeline de lectura, guardado e indexado de datos
         y metadatos sobre el catálogo especificado
@@ -56,6 +55,7 @@ class ReaderPipeline(object):
             loader.run(self.catalog, distributions)
             distribution_models = loader.distribution_models
         Indexer().run(distribution_models)
+
 
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
@@ -299,7 +299,7 @@ class Indexer(object):
 
         # Chequeo de series de días hábiles (business days)
         if freq == 'D' and new_index.size > df.index.size:
-            new_index = pd.date_range(df.index[0], df.index[-1], freq='B')\
+            new_index = pd.date_range(df.index[0], df.index[-1], freq='B')
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
 
