@@ -274,6 +274,11 @@ class NameAndRepMode(BaseOperation):
         else:
             try:
                 name, rep_mode = serie.split(':')
+                if not rep_mode:
+                    error = "Modo de representación vacío para {}".format(
+                        name)
+                    self._append_error(error)
+                    return None, None
             except ValueError:
                 self._append_error("Formato de series a seleccionar inválido")
                 return None, None
