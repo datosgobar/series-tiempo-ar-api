@@ -107,7 +107,8 @@
                             "units": "Millones de pesos",
                             "id": "212.1_PSCIOS_ERS_0_0_22",
                             "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Total",
-                            "title": "pib_scios_com_soc_pers"
+                            "title": "pib_scios_com_soc_pers",
+                            "scrapingIdentifierCell": "AC9"
                         },
                         {
                             "units": "Millones de pesos",
@@ -119,12 +120,14 @@
                             "units": "Millones de pesos",
                             "id": "212.1_PSCIOS_IOS_0_0_25",
                             "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Otros Servicios",
-                            "title": "pib_scios_com_otros_scios"
+                            "title": "pib_scios_com_otros_scios",
+                            "scrapingDataStartCell": "AD10"
                         }
                     ],
                     "draft": false,
                     "units": "Millones de pesos",
-                    "identifier": "212.1"
+                    "identifier": "212.1",
+                    "scrapingFileSheet": "32. Ingreso IED Pais"
                 }
             ]
         }

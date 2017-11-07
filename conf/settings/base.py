@@ -6,6 +6,7 @@ from os.path import dirname
 import environ
 
 from .api import *
+from .metadata import *
 
 SETTINGS_DIR = environ.Path(__file__) - 1
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)

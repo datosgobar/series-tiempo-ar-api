@@ -1,13 +1,16 @@
 #! coding: utf-8
+import json
 import os
 
+from django.conf import settings
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
+from series_tiempo_ar_api.apps.api.query.catalog_reader import Indexer, \
+    DatabaseLoader
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
-from series_tiempo_ar_api.apps.api.query.catalog_reader import Indexer, DatabaseLoader
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.query.indexing.scraping import Scraper
 
@@ -118,3 +121,53 @@ class IndexerTests(TestCase):
         db_loader.run(catalog, distributions)
         Indexer(index=self.test_index). \
             run(distributions=db_loader.distribution_models)
+
+
+class DatabaseLoaderTests(TestCase):
+
+    def setUp(self):
+        self.loader = DatabaseLoader(read_local=True)
+
+    def test_blacklisted_catalog_meta(self):
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+        distributions = get_time_series_distributions(catalog)
+
+        self.loader.run(catalog, distributions)
+        meta = self.loader.distribution_models[0].dataset.catalog.metadata
+        meta = json.loads(meta)
+        for field in settings.CATALOG_BLACKLIST:
+            self.assertTrue(field not in meta)
+
+    def test_blacklisted_dataset_meta(self):
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+        distributions = get_time_series_distributions(catalog)
+
+        self.loader.run(catalog, distributions)
+        for distribution in self.loader.distribution_models:
+            meta = distribution.dataset.metadata
+            meta = json.loads(meta)
+            for field in settings.DATASET_BLACKLIST:
+                self.assertTrue(field not in meta)
+
+    def test_blacklisted_distrib_meta(self):
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+        distributions = get_time_series_distributions(catalog)
+
+        self.loader.run(catalog, distributions)
+
+        for distribution in self.loader.distribution_models:
+            meta = distribution.metadata
+            meta = json.loads(meta)
+            for field in settings.DISTRIBUTION_BLACKLIST:
+                self.assertTrue(field not in meta)
+
+    def test_blacklisted_field_meta(self):
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+        distributions = get_time_series_distributions(catalog)
+
+        self.loader.run(catalog, distributions)
+
+        for distribution in self.loader.distribution_models:
+            for field_model in distribution.field_set.all():
+                for field in settings.FIELD_BLACKLIST:
+                    self.assertTrue(field not in field_model.metadata)
