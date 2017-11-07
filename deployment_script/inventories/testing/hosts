@@ -6,6 +6,10 @@ web1
 [es]
 web1
 
+[redis]
+web1
+
 [api_cluster:children]
 web
 es
+redis
