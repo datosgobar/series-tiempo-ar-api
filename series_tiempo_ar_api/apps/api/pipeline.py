@@ -10,6 +10,7 @@ from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from .strings import SERIES_DOES_NOT_EXIST
 from .query.exceptions import CollapseError
+from .response import ResponseGenerator
 
 
 class QueryPipeline(object):
@@ -29,9 +30,7 @@ class QueryPipeline(object):
                 response['errors'] = list(cmd_instance.errors)
                 return response
 
-        response = query.run()
-        response['params'] = self._generate_params_field(query, args)
-        return response
+        return ResponseGenerator('json').execute(query, args)
 
     @staticmethod
     def init_commands():
@@ -47,17 +46,6 @@ class QueryPipeline(object):
             Collapse,
             Metadata
         ]
-
-    @staticmethod
-    def _generate_params_field(query, args):
-        """Genera el campo adicional de parámetros pasados de la
-        respuesta. Contiene todos los argumentos pasados en la llamada,
-        más una lista de identifiers de field, distribution y dataset
-        por cada serie pedida
-        """
-        params = args.copy()
-        params['identifiers'] = query.get_series_identifiers()
-        return params
 
 
 class BaseOperation(object):
