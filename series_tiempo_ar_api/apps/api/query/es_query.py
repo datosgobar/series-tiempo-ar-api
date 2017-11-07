@@ -119,6 +119,9 @@ class ESQuery(object):
         return [serie.series_id for serie in self.series]
 
     def get_data_start_end_dates(self):
+        if not self.data:
+            return {}
+
         return {
             'start_date': self.data[0][0],
             'end_date': self.data[-1][0]
