@@ -258,3 +258,8 @@ ansible-playbook -i inventories/vagrant/hosts --vault-password-file inventories/
 Además con la variable de entorno "CHECKOUT_BRANCH" se puede configurar el branch que deseamos usar _dentro_ del servidor.
 
 Para cambiar la cantidad de servidores de Elasticsearch debemos cambiar, dentro del archivo Vagranfile, la variable "ES_SERVER_COUNT" con un numero mayor a 1.
+
+
+## Mas info
+
+Ver la documentacion de [idea](docs/idea.md) y [features](docs/features.md)
