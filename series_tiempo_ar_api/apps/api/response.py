@@ -72,7 +72,7 @@ class ResponseFormatterGenerator(object):
     }
 
     def __init__(self, _format):
-        if not isinstance(_format, str) or self.formatters.get(_format) is None:
+        if self.formatters.get(_format) is None:
             raise InvalidFormatError
 
         self.formatter = self.formatters[_format]
