@@ -24,7 +24,7 @@ class QueryPipeline(object):
         response = {}
         for cmd in self.commands:
             cmd_instance = cmd()
-            query = cmd_instance.run(query, args)
+            cmd_instance.run(query, args)
             if cmd_instance.errors:
                 response['errors'] = list(cmd_instance.errors)
                 return response
@@ -92,12 +92,11 @@ class Pagination(BaseOperation):
         self.validate_arg(start, name='start')
         self.validate_arg(limit, min_value=1, name='limit')
         if self.errors:
-            return query
+            return
 
         start = int(start)
         limit = start + int(limit)
         query.add_pagination(start, limit)
-        return query
 
     def validate_arg(self, arg, min_value=0, name='limit'):
         try:
@@ -127,7 +126,7 @@ class DateFilter(BaseOperation):
 
         self.validate_start_end_dates()
         if self.errors:
-            return query
+            return
 
         start_date, end_date = None, None
         if self.start:
@@ -143,7 +142,6 @@ class DateFilter(BaseOperation):
                 end_date = datetime.date(end_date.year, end_date.month, days)
 
         query.add_filter(start_date, end_date)
-        return query
 
     def validate_start_end_dates(self):
         """Valida el intervalo de fechas (start, end). Actualiza la
@@ -210,10 +208,9 @@ class NameAndRepMode(BaseOperation):
         name, rep_mode = self._parse_series(self.ids, args)
         field_model = self._get_model(name, rep_mode)
         if not field_model:
-            return query
+            return
 
         query.add_series(name, field_model, rep_mode)
-        return query
 
     def _get_model(self, doc_type, rep_mode):
         """Valida si el 'doc_type' es válido, es decir, si la serie
@@ -264,12 +261,12 @@ class Collapse(BaseOperation):
     def run(self, query, args):
         collapse = args.get('collapse')
         if not collapse:
-            return query
+            return
 
         if collapse not in settings.COLLAPSE_INTERVALS:
             msg = 'Intervalo de agregación inválido: {}'
             self._append_error(msg.format(collapse))
-            return query
+            return
 
         agg = args.get('collapse_aggregation',
                        settings.API_DEFAULT_VALUES['collapse_aggregation'])
@@ -286,7 +283,6 @@ class Collapse(BaseOperation):
                       "seleccionadas: {}. Pruebe con un intervalo mayor"
                 msg = msg.format(collapse)
                 self._append_error(msg)
-        return query
 
 
 class Metadata(BaseOperation):
@@ -294,15 +290,13 @@ class Metadata(BaseOperation):
     def run(self, query, args):
         metadata = args.get('metadata')
         if not metadata:
-            return query
+            return
 
         if metadata not in settings.METADATA_SETTINGS:
             msg = u'Configuración de metadatos inválido: {}'.format(metadata)
             self._append_error(msg)
         else:
             query.set_metadata_config(metadata)
-
-        return query
 
 
 class Sort(BaseOperation):
@@ -315,5 +309,3 @@ class Sort(BaseOperation):
             self._append_error(msg)
         else:
             query.sort(sort)
-
-        return query
