@@ -66,7 +66,7 @@ API_DEFAULT_VALUES = {
     'collapse': 'year',
     'start': 0,
     'limit': 100,
-    'metadata': 'full',
+    'metadata': 'simple',
     'sort': 'asc'
 }
 
@@ -95,4 +95,30 @@ METADATA_SETTINGS = [
 SORT_VALUES = [
     'asc',
     'desc'
+]
+
+CATALOG_SIMPLE_META_FIELDS = [
+    'title',
+    'dataset'
+]
+
+DATASET_SIMPLE_META_FIELDS = [
+    'distribution',
+    'title',
+    'description',
+    'issued',
+    'source'
+]
+
+DISTRIBUTION_SIMPLE_META_FIELDS = [
+    'field',
+    'title',
+    'downloadURL',
+    'units',
+]
+
+FIELD_SIMPLE_META_FIELDS = [
+    'id',
+    'description',
+    'units'
 ]

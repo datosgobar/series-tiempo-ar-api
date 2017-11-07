@@ -59,7 +59,7 @@ class Query(object):
         if self.metadata_config != 'only':
             response['data'] = self.es_query.run()
 
-        if self.metadata_config in ('full', 'only'):
+        if self.metadata_config != 'none':
             response['meta'] = self.get_metadata()
 
         return response
@@ -106,7 +106,8 @@ class Query(object):
         metadata = None
         if self.metadata_config == 'full' or self.metadata_config == 'only':
             metadata = self._get_full_metadata(serie_model)
-
+        elif self.metadata_config == 'simple':
+            metadata = self._get_simple_metadata(serie_model)
         self.meta = metadata  # "Cacheado"
         return metadata
 
@@ -148,3 +149,33 @@ class Query(object):
                 'dataset': field.distribution.dataset.identifier
             })
         return result
+
+    def _get_simple_metadata(self, serie_model):
+        """Obtiene los campos de metadatos marcados como simples en
+        la configuración de un modelo de una serie. La estructura
+        final de metadatos respeta el formato de un data.json
+        """
+
+        # Idea: obtener todos los metadatos y descartar los que no queremos
+        meta = self._get_full_metadata(serie_model)
+
+        for meta_field in meta.keys():
+            if meta_field not in settings.CATALOG_SIMPLE_META_FIELDS:
+                meta.pop(meta_field)
+
+        dataset = meta['dataset'][0]  # Dataset de un único elemento
+        for meta_field in dataset.keys():
+            if meta_field not in settings.DATASET_SIMPLE_META_FIELDS:
+                dataset.pop(meta_field)
+
+        distribution = dataset['distribution'][0]
+        for meta_field in distribution.keys():
+            if meta_field not in settings.DISTRIBUTION_SIMPLE_META_FIELDS:
+                distribution.pop(meta_field)
+
+        field = distribution['field'][0]
+        for meta_field in field.keys():
+            if meta_field not in settings.FIELD_SIMPLE_META_FIELDS:
+                field.pop(meta_field)
+
+        return meta
