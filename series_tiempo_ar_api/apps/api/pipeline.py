@@ -31,7 +31,7 @@ class QueryPipeline(object):
                 response['errors'] = list(cmd_instance.errors)
                 return JsonResponse(response)
 
-        _format = args.get('format', settings.API_DEFAULT_VALUES)
+        _format = args.get('format', settings.API_DEFAULT_VALUES['format'])
         formatter = self.get_formatter(_format)
         return formatter.run(query, args)
 
