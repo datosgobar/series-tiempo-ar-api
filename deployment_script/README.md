@@ -224,7 +224,24 @@ En el archivo "inventories/staging/group_vars/web/vars.yml" agregar la configura
 default_redis_host: "192.168.35.30"
 ```
 
+## Post instalación
 
+El script de deployment _no_ crea un super usuario en la aplicación. Para hacerlo se requieren los siguientes pasos manuales:
+
+```
+# Cambiar al usuario de la aplicacion
+sudo su - devartis
+cd /home/devartis/webapp
+
+# Activar el virtualenv
+. .venv/bin/activate
+export DJANGO_SETTINGS_MODULE=conf.settings.production
+
+# Correr el script
+cd app/
+python manage.py createsuperuser
+
+```
 
 ## Vagrant & Tests
 
