@@ -2,8 +2,8 @@
 from django.test import TestCase
 from nose.tools import raises
 
+from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
-from series_tiempo_ar_api.apps.api.query.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
