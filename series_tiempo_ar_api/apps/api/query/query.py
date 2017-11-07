@@ -4,9 +4,9 @@ from collections import OrderedDict
 from django.conf import settings
 from pandas import json
 
+from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
-from series_tiempo_ar_api.apps.api.query.exceptions import CollapseError
 
 
 class Query(object):

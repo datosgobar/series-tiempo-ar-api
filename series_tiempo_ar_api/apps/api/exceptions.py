@@ -3,3 +3,7 @@
 
 class CollapseError(BaseException):
     pass
+
+
+class InvalidFormatError(BaseException):
+    pass
