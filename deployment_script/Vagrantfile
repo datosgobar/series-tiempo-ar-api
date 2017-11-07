@@ -3,11 +3,6 @@ VAGRANTFILE_API_VERSION = "2"
 checkout_branch = ENV["CHECKOUT_BRANCH"]
 ansible_limit = ENV["ANSIBLE_LIMIT"] || "all"
 
-extra_vars = {
-  "postgresql_user" => "database_user",
-  "postgresql_password" => "database_pass",
-}
-
 if checkout_branch
   extra_vars["checkout_branch"] = checkout_branch
 end
@@ -47,11 +42,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "site.yml"
         ansible.inventory_path = "inventories/vagrant/hosts"
+        ansible.vault_password_file = "inventories/vagrant/vault_password.txt"
 
         ansible.verbose = "vvv"
         # ansible.tags = ["elastic"]
         ansible.limit = ansible_limit
-        ansible.extra_vars = extra_vars
       end
   end
 end
