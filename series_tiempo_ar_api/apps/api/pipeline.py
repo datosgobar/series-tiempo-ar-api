@@ -1,16 +1,17 @@
 #! coding: utf-8
+import datetime
 from abc import abstractmethod
 from calendar import monthrange
-import datetime
 
 import iso8601
 from django.conf import settings
+from django.http import JsonResponse
 
+from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
+from .response import ResponseFormatterGenerator
 from .strings import SERIES_DOES_NOT_EXIST
-from .query.exceptions import CollapseError
-from .response import ResponseGenerator
 
 
 class QueryPipeline(object):
@@ -28,9 +29,16 @@ class QueryPipeline(object):
             cmd_instance.run(query, args)
             if cmd_instance.errors:
                 response['errors'] = list(cmd_instance.errors)
-                return response
+                return JsonResponse(response)
 
-        return ResponseGenerator('json').execute(query, args)
+        _format = args.get('format', settings.API_DEFAULT_VALUES)
+        formatter = self.get_formatter(_format)
+        return formatter.run(query, args)
+
+    @staticmethod
+    def get_formatter(_format):
+        generator = ResponseFormatterGenerator(_format)
+        return generator.get_formatter()
 
     @staticmethod
     def init_commands():
@@ -44,7 +52,8 @@ class QueryPipeline(object):
             Pagination,
             Sort,
             Collapse,
-            Metadata
+            Metadata,
+            Format
         ]
 
 
@@ -297,3 +306,15 @@ class Sort(BaseOperation):
             self._append_error(msg)
         else:
             query.sort(sort)
+
+
+class Format(BaseOperation):
+    """Valida el parámetro de formato de la respuesta. No realiza
+    operación
+    """
+    def run(self, query, args):
+        sort = args.get('format', settings.API_DEFAULT_VALUES['format'])
+
+        if sort not in settings.FORMAT_VALUES:
+            msg = u'Parámetro format inválido: {}'.format(sort)
+            self._append_error(msg)

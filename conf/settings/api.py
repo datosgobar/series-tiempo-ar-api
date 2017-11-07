@@ -67,7 +67,8 @@ API_DEFAULT_VALUES = {
     'start': 0,
     'limit': 100,
     'metadata': 'simple',
-    'sort': 'asc'
+    'sort': 'asc',
+    'format': 'json'
 }
 
 
@@ -121,4 +122,9 @@ FIELD_SIMPLE_META_FIELDS = [
     'id',
     'description',
     'units'
+]
+
+FORMAT_VALUES = [
+    'json',
+    'csv'
 ]
