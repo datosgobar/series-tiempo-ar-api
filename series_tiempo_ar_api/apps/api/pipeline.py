@@ -23,17 +23,20 @@ class QueryPipeline(object):
 
     def run(self, args):
         query = Query()
-        response = {}
         for cmd in self.commands:
             cmd_instance = cmd()
             cmd_instance.run(query, args)
             if cmd_instance.errors:
-                response['errors'] = list(cmd_instance.errors)
-                return JsonResponse(response)
+                return self.generate_error_response(cmd_instance.errors)
 
         _format = args.get('format', settings.API_DEFAULT_VALUES['format'])
         formatter = self.get_formatter(_format)
         return formatter.run(query, args)
+
+    @staticmethod
+    def generate_error_response(errors_list):
+        response = {'errors': list(errors_list)}
+        return JsonResponse(response, status=settings.RESPONSE_ERROR_CODE)
 
     @staticmethod
     def get_formatter(_format):
