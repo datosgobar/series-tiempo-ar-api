@@ -226,7 +226,8 @@ default_redis_host: "192.168.35.30"
 
 ## Post instalación
 
-El script de deployment _no_ crea un super usuario en la aplicación. Para hacerlo se requieren los siguientes pasos manuales:
+El script de deployment _no_ crea un super usuario en la aplicación.
+Para hacerlo se requieren los siguientes pasos manuales *dentro del servidor*:
 
 ```
 # Cambiar al usuario de la aplicacion
