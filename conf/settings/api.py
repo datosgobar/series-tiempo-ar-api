@@ -128,3 +128,5 @@ FORMAT_VALUES = [
     'json',
     'csv'
 ]
+
+RESPONSE_ERROR_CODE = 400
