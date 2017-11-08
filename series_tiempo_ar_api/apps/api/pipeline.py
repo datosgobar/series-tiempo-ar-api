@@ -350,3 +350,15 @@ class Format(BaseOperation):
         if sort not in settings.FORMAT_VALUES:
             msg = u'Parámetro format inválido: {}'.format(sort)
             self._append_error(msg)
+
+
+class Header(BaseOperation):
+    """Valida el parámetro de header de la respuesta CSV. No realiza
+    operación"""
+
+    def run(self, query, args):
+        header = args.get('header', settings.API_DEFAULT_VALUES['header'])
+
+        if header not in settings.VALID_CSV_HEADER_MODES:
+            msg = u'Parámetro header inválido {}'.format(header)
+            self._append_error(msg)

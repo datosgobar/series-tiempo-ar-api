@@ -21,7 +21,13 @@ class Query(object):
         self.meta = {}
         self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
 
-    def get_series_ids(self):
+    def get_series_ids(self, how=settings.API_DEFAULT_VALUES['header']):
+        if how and how not in settings.VALID_CSV_HEADER_MODES:
+            raise ValueError
+
+        if how == 'names':
+            return [model.title for model in self.series_models]
+
         return self.es_query.get_series_ids()
 
     def add_pagination(self, start, limit):
