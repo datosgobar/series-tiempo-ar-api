@@ -247,6 +247,17 @@ En el archivo "inventories/staging/group_vars/web/vars.yml" agregar la configura
 default_redis_host: "192.168.35.30"
 ```
 
+### Configuraciones
+
+Para configurar la ip de "binding" de Redis manualmente, se debe usar la siguiente variable:
+
+```yaml
+---
+
+
+redis_bind_host: "127.0.0.1"
+```
+
 ## Post instalación
 
 El script de deployment _no_ crea un super usuario en la aplicación.
