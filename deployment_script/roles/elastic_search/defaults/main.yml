@@ -4,6 +4,8 @@ elastic_jvm_xmx: "2g"
 elastic_jvm_xms: "2g"
 elastic_cluster_name: "series-tiempo-ar-api-dev"
 
+es_use_discovery: yes
+
 # Por default usa el mismo host
 es_bind_host: "{{ ansible_host }}"
 es_publish_host: "{{ ansible_host }}"
