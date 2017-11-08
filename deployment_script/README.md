@@ -119,6 +119,29 @@ Podemos agregar el archivo "inventories/staging/group_vars/es.yml" para configur
 podemos usar el archivo "inventories/staging/host_vars/-nombre-del-host-.yml" para un host sólo.
 
 
+### Configuración de "binding"
+
+Por default se configurará la IP que se usa para acceder al server (Recordamos que se asumen IP privadas).
+Para configurarlas con valores fijos, basta agregar las siguientes variables (por host o grupo):
+
+```yaml
+---
+
+es_bind_host: "127.0.0.1"
+es_publish_host: "127.0.0.1"
+
+```
+
+### Configurar "Discovery" de nodos
+
+Para desactivar el discovery de nodos (para cuando solo tenemos uno), podemos usar la siguiente variable:
+
+```yaml
+---
+
+es_use_discovery: no
+```
+
 ### Límite de memoria heap
 
 El mismo debe tener estas variables (en este ejemplo limitamos a 1 gb):
