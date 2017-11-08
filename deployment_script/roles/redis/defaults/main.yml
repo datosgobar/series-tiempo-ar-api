@@ -1,0 +1,3 @@
+---
+
+redis_bind_host: "{{ ansible_host }}"
