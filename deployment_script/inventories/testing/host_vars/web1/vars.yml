@@ -9,6 +9,7 @@ es_urls: "http://127.0.0.1:9200/"
 # This configures Elasticsearch server
 es_bind_host: "127.0.0.1"
 es_publish_host: "127.0.0.1"
+es_use_discovery: no
 
 # This configures Django
 default_redis_host: "127.0.0.1"
