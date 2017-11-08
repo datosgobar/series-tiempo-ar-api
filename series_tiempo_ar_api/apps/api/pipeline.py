@@ -6,6 +6,7 @@ from calendar import monthrange
 import iso8601
 from django.conf import settings
 from django.http import JsonResponse
+from elasticsearch import TransportError
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
@@ -31,7 +32,11 @@ class QueryPipeline(object):
 
         _format = args.get('format', settings.API_DEFAULT_VALUES['format'])
         formatter = self.get_formatter(_format)
-        return formatter.run(query, args)
+        try:
+            return formatter.run(query, args)
+        except TransportError:
+            msg = 'Error Fatal. Contacte un administrador'
+            return self.generate_error_response([msg])
 
     @staticmethod
     def generate_error_response(errors_list):
