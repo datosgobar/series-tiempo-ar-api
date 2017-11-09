@@ -1,7 +1,9 @@
 #! coding: utf-8
+import iso8601
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
+from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 
 
@@ -202,31 +204,89 @@ class CollapseQuery(ESQuery):
 
         start = self.args.get('start')
         limit = self.args.get('limit')
-        for response in responses:
+
+        self._sort_responses(responses)
+
+        for row_len, response in enumerate(responses, 2):
             if not response.aggregations:
                 continue
 
             hits = response.aggregations.agg.buckets
 
-            # Este loop DEBE ser de esta forma: 'hits' no es una lista común
-            # Entonces declarar el offset en enumerate no tiene el resultado
-            # esperado de saltearse los primeros 'start' índices
+            first_date = self._format_timestamp(hits[0]['key_as_string'])
+
+            # Agrego rows necesarios vacíos para garantizar continuidad
+            self._make_date_index_continuous(first_date)
+
+            start_index = find_index(self.data, first_date)
+            if start_index < 0:
+                start_index = 0  # Se va a appendear, no uso el offset
+
             for i, hit in enumerate(hits):
                 if i < start:
                     continue
+                data_index = i - start
 
-                if i - start >= limit or i >= len(hits):  # No hay más datos
+                if data_index >= limit:  # Ya conseguimos datos suficientes
                     break
-                if i - start == len(self.data):  # No hay row, inicializo
+                if data_index + start_index == len(self.data):  # No hay row, inicializo
                     # Strip de la parte de tiempo del datetime
                     timestamp = hit['key_as_string']
                     data_row = [self._format_timestamp(timestamp)]
+                    if row_len > 2:  # Lleno el row de nulls
+                        nulls = [None for _ in range(1, len(self.data[0]))]
+                        data_row.extend(nulls)
                     self.data.append(data_row)
 
-                self.data[i - start].append(hit['agg'].value)
+                self.data[data_index + start_index].append(hit['agg'].value)
 
-    def _calculate_data_frequency(self):
-        return self.collapse_interval
+            self._fill_nulls(row_len)
+
+    @staticmethod
+    def _sort_responses(responses):
+        def list_len_cmp(x, y):
+            """Ordena por primera fecha de resultados"""
+            if not x or not y:
+                return 0
+
+            first_date_x = x[0].timestamp
+            first_date_y = y[0].timestamp
+            if first_date_x == first_date_y:
+                return 0
+
+            if first_date_x < first_date_y:
+                return -1
+            return 1
+
+        responses.sort(list_len_cmp)
+
+    def _fill_nulls(self, row_len):
+        """Rellena los espacios faltantes de la respuesta, haciendo
+        continuo el índice de tiempo y rellenando con nulls los datos
+        faltantes hasta que toda fila tenga longitud 'row_len'
+        """
+        for row in self.data:
+            while len(row) < row_len:
+                row.append(None)
+
+    def _make_date_index_continuous(self, date_up_to):
+        """Hace el índice de tiempo de los resultados continuo (según
+        el intervalo de resultados), sin saltos, hasta la fecha
+        especificada
+        """
+
+        # Si no hay datos cargados no hay nada que hacer
+        if not len(self.data):
+            return
+
+        end_date = iso8601.parse_date(date_up_to)
+        last_date = iso8601.parse_date(self.data[-1][0])
+        delta = get_relative_delta(self.collapse_interval)
+
+        while last_date < end_date:
+            last_date = last_date + delta
+            date_str = self._format_timestamp(str(last_date.date()))
+            self.data.append([date_str])
 
 
 class Series(object):

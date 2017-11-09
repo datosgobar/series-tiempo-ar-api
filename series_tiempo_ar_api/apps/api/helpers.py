@@ -1,5 +1,6 @@
 #! coding: utf-8
 from django.conf import settings
+from dateutil.relativedelta import relativedelta
 
 
 def get_periodicity_human_format(periodicity):
@@ -35,3 +36,28 @@ def get_max_periodicity(periodicities):
         index = index if index > field_index else field_index
 
     return order[index]
+
+
+def find_index(list_of_lists, element):
+    """Devuelve el índice de la lista que contenga la primera
+    ocurrencia de 'element' en la lista de listas. Si no se encuentra
+    ninguna devuelve -1
+    """
+    for i, row in enumerate(list_of_lists):
+        if element in row:
+            return i
+    return -1
+
+
+def get_relative_delta(periodicity):
+    """Devuelve un objeto relativedelta a partir del intervalo
+    'periodicity' pasado"""
+
+    deltas = {
+        'day': relativedelta(days=1),
+        'month': relativedelta(months=1),
+        'quarter': relativedelta(months=3),
+        'year': relativedelta(years=1)
+    }
+
+    return deltas[periodicity]
