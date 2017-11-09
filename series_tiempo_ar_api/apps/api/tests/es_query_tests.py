@@ -44,19 +44,19 @@ class QueryTest(TestCase):
 
     def test_pagination(self):
         self.query.add_pagination(self.start, self.limit)
-        self.query.run()
+        data = self.query.run()
 
-        self.assertEqual(len(self.query.data), self.limit - self.start)
+        self.assertEqual(len(data), self.limit - self.start)
 
     def test_pagination_limit(self):
         self.query.add_pagination(self.start, self.max_limit)
-        self.query.run()
-        self.assertEqual(len(self.query.data), self.max_limit - self.start)
+        data = self.query.run()
+        self.assertEqual(len(data), self.max_limit - self.start)
 
     def test_time_filter(self):
         self.query.add_filter(self.start_date, self.end_date)
-        self.query.run()
-        for row in self.query.data:
+        data = self.query.run()
+        for row in data:
             if 'T' in row[0]:
                 date = iso8601.parse_date(row[0])
                 start_date = iso8601.parse_date(self.start_date)
@@ -69,31 +69,31 @@ class QueryTest(TestCase):
             self.assertLessEqual(date, end_date)
 
     def test_execute_single_series(self):
-        self.query.run()
+        data = self.query.run()
 
-        self.assertTrue(self.query.data)
+        self.assertTrue(data)
 
     def test_default_return_limits(self):
-        self.query.run()
+        data = self.query.run()
 
-        self.assertEqual(len(self.query.data), self.default_limit)
+        self.assertEqual(len(data), self.default_limit)
 
     def test_add_series(self):
         self.query.add_series(self.single_series)
-        self.query.run()
+        data = self.query.run()
 
-        self.assertTrue(self.query.data)
+        self.assertTrue(data)
         # Expected: rows de 2 datos: timestamp, valor de la serie
-        self.assertTrue(len(self.query.data[0]) == 2)
+        self.assertTrue(len(data[0]) == 2)
 
     def test_add_two_series(self):
         self.query.add_series(self.single_series, 'value')
         self.query.add_series(self.single_series, 'percent_change')
-        self.query.run()
+        data = self.query.run()
 
-        self.assertTrue(self.query.data)
+        self.assertTrue(data)
         # Expected: rows de 3 datos: timestamp, serie 1, serie 2
-        self.assertTrue(len(self.query.data[0]) == 3)
+        self.assertTrue(len(data[0]) == 3)
 
 
 class CollapseQueryTests(TestCase):
@@ -112,28 +112,30 @@ class CollapseQueryTests(TestCase):
         self.query = CollapseQuery()
 
     def test_execute_empty(self):
-        self.query.run()
+        data = self.query.run()
 
-        self.assertFalse(self.query.data)
+        self.assertFalse(data)
 
     def test_execute_single(self):
         self.query.add_series(self.single_series)
 
-        self.query.run()
-        self.assertTrue(self.query.data)
+        data = self.query.run()
+        self.assertTrue(data)
 
     def test_start_limit(self):
         self.query.add_series(self.single_series)
         self.query.add_pagination(self.start, self.limit)
-        self.query.run()
+        data = self.query.run()
 
-        self.assertEqual(len(self.query.data), self.limit)
+        self.assertEqual(len(data), self.limit)
 
     def test_init_from_other(self):
         other_query = ESQuery()
         other_query.add_series(self.single_series)
         self.query = CollapseQuery(other_query)
-        self.query.run()
+        self.query.add_collapse()
+        data = self.query.run()
+        self.assertTrue(data)
 
     def test_add_collapse(self):
         """Testea que luego de agregar un collapse default, los
@@ -141,9 +143,9 @@ class CollapseQueryTests(TestCase):
         diferencia con su anterior"""
         self.query.add_series(self.single_series)
         self.query.add_collapse()
-        self.query.run()
+        data = self.query.run()
         prev_timestamp = None
-        for row in self.query.data:
+        for row in data:
             timestamp = row[0]
             parsed_timestamp = iso8601.parse_date(timestamp)
             if not prev_timestamp:
@@ -156,9 +158,9 @@ class CollapseQueryTests(TestCase):
     def test_collapse_custom_params(self):
         self.query.add_series(self.single_series)
         self.query.add_collapse(interval='quarter')
-        self.query.run()
+        data = self.query.run()
         prev_timestamp = None
-        for row in self.query.data:
+        for row in data:
             timestamp = row[0]
             parsed_timestamp = iso8601.parse_date(timestamp)
             if not prev_timestamp:
@@ -167,3 +169,27 @@ class CollapseQueryTests(TestCase):
             delta = relativedelta(parsed_timestamp, prev_timestamp)
             self.assertTrue(delta.months == 3, timestamp)
             prev_timestamp = parsed_timestamp
+
+    def test_add_two_collapses(self):
+        """Esperado: El segundo collapse overridea el primero"""
+        self.query.add_collapse(interval='quarter')
+        self.query.add_collapse(interval='year')
+        data = self.query.run()
+
+        prev_timestamp = None
+        for row in data:
+            timestamp = row[0]
+            parsed_timestamp = iso8601.parse_date(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.years == 1, timestamp)
+            prev_timestamp = parsed_timestamp
+
+    def test_init_from_other_collapse_query(self):
+        other_query = CollapseQuery()
+        other_query.add_series(self.single_series)
+        self.query = CollapseQuery(other_query)
+        data = self.query.run()
+        self.assertTrue(data)
