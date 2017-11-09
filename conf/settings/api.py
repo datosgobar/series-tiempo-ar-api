@@ -54,7 +54,8 @@ AGGREGATIONS = [
     'sum'
 ]
 
-COLLAPSE_INTERVALS = [
+COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
+    'day',
     'month',
     'quarter',
     'year'

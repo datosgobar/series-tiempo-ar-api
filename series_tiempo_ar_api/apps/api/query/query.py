@@ -5,7 +5,8 @@ from django.conf import settings
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
+from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format, \
+    get_max_periodicity
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
 
 
@@ -39,6 +40,15 @@ class Query(object):
     def add_series(self, name, field,
                    rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         self.series_models.append(field)
+
+        # Colapso los datos de las series en la misma periodicidad
+        if len(self.series_models) > 1:
+            periodicities = [
+                field.distribution.periodicity for field in self.series_models
+            ]
+            periodicity = get_max_periodicity(periodicities)
+            self.add_collapse(collapse=periodicity)
+
         return self.es_query.add_series(name, rep_mode)
 
     def add_collapse(self, agg=None,
@@ -46,13 +56,13 @@ class Query(object):
                      rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(self.es_query)
-        return self.es_query.add_collapse(agg, collapse, rep_mode)
+        self.es_query.add_collapse(agg, collapse, rep_mode)
 
     def set_metadata_config(self, how):
         self.metadata_config = how
 
     def _validate_collapse(self, collapse):
-        order = ['day', 'month', 'quarter', 'year']
+        order = settings.COLLAPSE_INTERVALS
 
         for serie in self.series_models:
             periodicity = serie.distribution.periodicity
