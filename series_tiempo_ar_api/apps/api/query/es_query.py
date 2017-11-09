@@ -282,11 +282,13 @@ class CollapseQuery(ESQuery):
         end_date = iso8601.parse_date(date_up_to)
         last_date = iso8601.parse_date(self.data[-1][0])
         delta = get_relative_delta(self.collapse_interval)
-
+        row_len = len(self.data[0])
         while last_date < end_date:
             last_date = last_date + delta
             date_str = self._format_timestamp(str(last_date.date()))
-            self.data.append([date_str])
+            row = [date_str]
+            row.extend([None for _ in range(1, row_len)])
+            self.data.append(row)
 
 
 class Series(object):
