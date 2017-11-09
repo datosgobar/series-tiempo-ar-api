@@ -22,5 +22,5 @@ def setup_database():
         series_id='random-0',
         metadata='{}',
         distribution=distrib,
-        title='random-0'
+        title='random_0_title'
     )

@@ -161,18 +161,19 @@ class CollapseQuery(ESQuery):
         if other:
             self.series = list(other.series)
             self.args = other.args.copy()
+            # Inicializo con collapse default a las series
+            self.add_collapse()
 
     def add_series(self,
                    series_id,
                    rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
-        ESQuery.add_series(self, series_id, rep_mode)
+        super(CollapseQuery, self).add_series(series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
         serie.search = self._add_aggregation(search, rep_mode)
 
     def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
-
         if agg:
             self.collapse_aggregation = agg
         if interval:

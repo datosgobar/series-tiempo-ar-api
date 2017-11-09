@@ -4,6 +4,7 @@ from django.test import TestCase
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.response import ResponseFormatterGenerator
+from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
 
 class ResponseTests(TestCase):
@@ -11,6 +12,7 @@ class ResponseTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        setup_database()
         cls.query = Query()
         cls.query.add_series(cls.single_series,
                              Field.objects.get(series_id=cls.single_series))
@@ -27,3 +29,17 @@ class ResponseTests(TestCase):
         response = generator.run(self.query, {})
 
         self.assertEqual(response.get('Content-Type'), 'application/json')
+
+    def test_csv_response_header_ids(self):
+        generator = ResponseFormatterGenerator('csv').get_formatter()
+        response = generator.run(self.query, {'header': 'ids'})
+        line_end = response.content.find('\n')
+        header = response.content[:line_end]
+        self.assertTrue('random-0' in header)
+
+    def test_csv_response_header(self):
+        generator = ResponseFormatterGenerator('csv').get_formatter()
+        response = generator.run(self.query, {'header': 'names'})
+        line_end = response.content.find('\n')
+        header = response.content[:line_end]
+        self.assertTrue('random_0_title' in header)

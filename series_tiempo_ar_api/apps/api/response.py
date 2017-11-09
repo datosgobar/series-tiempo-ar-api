@@ -44,7 +44,8 @@ class CSVFormatter(BaseFormatter):
         # Saco metadatos, no se usan para el formato CSV
         query.set_metadata_config('none')
 
-        series_ids = query.get_series_ids()
+        header = query_args.get('header', settings.API_DEFAULT_VALUES['header'])
+        series_ids = query.get_series_ids(how=header)
         data = query.run()['data']
 
         response = HttpResponse(content_type='text/csv')

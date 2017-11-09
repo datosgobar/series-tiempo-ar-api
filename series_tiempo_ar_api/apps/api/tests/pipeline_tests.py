@@ -19,6 +19,8 @@ class NameAndRepModeTest(TestCase):
     single_series = 'random-0'
     single_series_rep_mode = 'random-0:percent_change'
 
+    multi_series = 'random-0,random-0'
+
     @classmethod
     def setUpClass(cls):
         setup_database()
@@ -56,6 +58,40 @@ class NameAndRepModeTest(TestCase):
         for index, row in enumerate(other_data[1:], start=1):
             change = data[index][1] - data[index - 1][1]
             self.assertEqual(row[1], change)
+
+    def test_multiple_series(self):
+        self.cmd.run(self.query, {'ids': self.multi_series})
+        data = self.query.run()['data']
+
+        self.assertTrue(len(data[0]), 3)
+
+    def test_leading_comma(self):
+        self.cmd.run(self.query, {'ids': ',random-0'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_final_comma(self):
+        self.cmd.run(self.query, {'ids': 'random-0,'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_one_valid_one_invalid(self):
+        self.cmd.run(self.query, {'ids': 'random-0,invalid'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_second_valid_first_invalid(self):
+        self.cmd.run(self.query, {'ids': 'invalid,random-0'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_invalid_rep_mode(self):
+        self.cmd.run(self.query, {'ids': 'random-0:random-0'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_leading_semicolon(self):
+        self.cmd.run(self.query, {'ids': ':random-0'})
+        self.assertTrue(self.cmd.errors)
+
+    def test_final_semicolon(self):
+        self.cmd.run(self.query, {'ids': 'random-0:'})
+        self.assertTrue(self.cmd.errors)
 
 
 class CollapseTest(TestCase):

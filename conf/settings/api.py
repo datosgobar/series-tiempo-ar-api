@@ -54,7 +54,8 @@ AGGREGATIONS = [
     'sum'
 ]
 
-COLLAPSE_INTERVALS = [
+COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
+    'day',
     'month',
     'quarter',
     'year'
@@ -68,7 +69,8 @@ API_DEFAULT_VALUES = {
     'limit': 100,
     'metadata': 'simple',
     'sort': 'asc',
-    'format': 'json'
+    'format': 'json',
+    'header': 'names'
 }
 
 
@@ -130,3 +132,8 @@ FORMAT_VALUES = [
 ]
 
 RESPONSE_ERROR_CODE = 400
+
+VALID_CSV_HEADER_MODES = [
+    'names',
+    'ids'
+]

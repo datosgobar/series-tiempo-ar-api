@@ -6,6 +6,7 @@ from calendar import monthrange
 import iso8601
 from django.conf import settings
 from django.http import JsonResponse
+from elasticsearch import TransportError
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
@@ -31,7 +32,11 @@ class QueryPipeline(object):
 
         _format = args.get('format', settings.API_DEFAULT_VALUES['format'])
         formatter = self.get_formatter(_format)
-        return formatter.run(query, args)
+        try:
+            return formatter.run(query, args)
+        except TransportError:
+            msg = 'Error Fatal. Contacte un administrador'
+            return self.generate_error_response([msg])
 
     @staticmethod
     def generate_error_response(errors_list):
@@ -197,29 +202,55 @@ class NameAndRepMode(BaseOperation):
 
     def __init__(self):
         BaseOperation.__init__(self)
-        self.ids = None
 
     def run(self, query, args):
-        self.ids = args.get('ids')
-        if not self.ids:
+        # Formato del parámetro 'ids':
+        # serie1:rep_mode1,serie2:repmode2,serie3,serie4:rep_mode3
+        # rep_mode es opcional, hay un valor default, dado por otro parámetro
+        # 'representation_mode'
+        # Parseamos esa string y agregamos a la query las series pedidas
+        ids = args.get('ids')
+        rep_mode = args.get('representation_mode',
+                            settings.API_DEFAULT_VALUES['rep_mode'])
+        if not ids:
             self._append_error('No se especificó una serie de tiempo.')
             return
 
-        name, rep_mode = self._parse_series(self.ids, args)
-        field_model = self._get_model(name, rep_mode)
+        delim = ids.find(',')
+        series = ids.split(',') if delim > -1 else [ids]
+        for serie_string in series:
+            self.process_serie_string(query, serie_string, rep_mode)
+
+    def process_serie_string(self, query, serie_string, default_rep_mode):
+        name, rep_mode = self._parse_single_series(serie_string)
+
+        if not rep_mode:
+            rep_mode = default_rep_mode
+
+        if self.errors:
+            return
+
+        self.add_series(query, name, rep_mode)
+
+        if self.errors:
+            return
+
+    def add_series(self, query, series_id, rep_mode):
+        field_model = self._get_model(series_id, rep_mode)
         if not field_model:
             return
 
-        query.add_series(name, field_model, rep_mode)
+        query.add_series(series_id, field_model, rep_mode)
 
-    def _get_model(self, doc_type, rep_mode):
+    def _get_model(self, series_id, rep_mode):
         """Valida si el 'doc_type' es válido, es decir, si la serie
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        field_model = Field.objects.filter(series_id=doc_type)
+        field_model = Field.objects.filter(series_id=series_id)
         if not field_model:
-            self._append_error('{}: {}'.format(SERIES_DOES_NOT_EXIST, self.ids))
+            self._append_error('{}: {}'.format(SERIES_DOES_NOT_EXIST,
+                                               series_id))
             return
 
         if rep_mode not in settings.REP_MODES:
@@ -229,12 +260,11 @@ class NameAndRepMode(BaseOperation):
 
         return field_model[0]
 
-    def _parse_series(self, serie, args):
+    def _parse_single_series(self, serie):
         """Parsea una serie invididual. Actualiza la lista de errores
             en caso de encontrar alguno
         Args:
             serie (str): string con formato de tipo 'id:rep_mode'
-            args (dict): argumentos de la query
 
         Returns:
             nombre y rep_mode parseados
@@ -242,17 +272,21 @@ class NameAndRepMode(BaseOperation):
 
         # rep_mode 'default', para todas las series, overrideado
         # si la serie individual especifica alguno
-        rep_mode = args.get('representation_mode',
-                            settings.API_DEFAULT_VALUES['rep_mode'])
         colon_index = serie.find(':')
         if colon_index < 0:
             name = serie
+            rep_mode = None
         else:
             try:
                 name, rep_mode = serie.split(':')
+                if not rep_mode:
+                    error = "Modo de representación vacío para {}".format(
+                        name)
+                    self._append_error(error)
+                    return None, None
             except ValueError:
                 self._append_error("Formato de series a seleccionar inválido")
-                return
+                return None, None
         return name, rep_mode
 
 
@@ -320,4 +354,16 @@ class Format(BaseOperation):
 
         if sort not in settings.FORMAT_VALUES:
             msg = u'Parámetro format inválido: {}'.format(sort)
+            self._append_error(msg)
+
+
+class Header(BaseOperation):
+    """Valida el parámetro de header de la respuesta CSV. No realiza
+    operación"""
+
+    def run(self, query, args):
+        header = args.get('header', settings.API_DEFAULT_VALUES['header'])
+
+        if header not in settings.VALID_CSV_HEADER_MODES:
+            msg = u'Parámetro header inválido {}'.format(header)
             self._append_error(msg)
