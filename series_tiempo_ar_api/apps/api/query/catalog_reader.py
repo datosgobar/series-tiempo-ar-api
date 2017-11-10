@@ -456,7 +456,7 @@ class Indexer(object):
     def _pct_change(self, x, y):
         if isinstance(y, int) and y == 0:
             return self.default_value
-        return x - y / y
+        return (x - y) / y
 
     @staticmethod
     def _change(x, y):
