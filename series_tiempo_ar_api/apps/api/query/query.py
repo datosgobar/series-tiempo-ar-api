@@ -5,8 +5,8 @@ from django.conf import settings
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format, \
-    get_max_periodicity
+from series_tiempo_ar_api.apps.api.helpers import \
+    get_periodicity_human_format, get_max_periodicity
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
 
 
@@ -19,7 +19,6 @@ class Query(object):
     def __init__(self):
         self.es_query = ESQuery()
         self.series_models = []
-        self.meta = {}
         self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
 
     def get_series_ids(self, how=settings.API_DEFAULT_VALUES['header']):
@@ -116,15 +115,11 @@ class Query(object):
 
         """
 
-        if self.meta:
-            return self.meta
-
         metadata = None
         if self.metadata_config == 'full' or self.metadata_config == 'only':
             metadata = self._get_full_metadata(serie_model)
         elif self.metadata_config == 'simple':
             metadata = self._get_simple_metadata(serie_model)
-        self.meta = metadata  # "Cacheado"
         return metadata
 
     @staticmethod
