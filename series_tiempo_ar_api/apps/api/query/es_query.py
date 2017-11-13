@@ -231,7 +231,6 @@ class CollapseQuery(ESQuery):
         self._fill_nulls(row_len)
 
     def _format_response(self, responses):
-
         start = self.args.get('start')
         limit = self.args.get('limit')
 
