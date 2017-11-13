@@ -16,10 +16,15 @@ def get_periodicity_human_format(periodicity):
 
 
 def freq_pandas_to_index_offset(freq):
+    """Dada una lista de datos de una serie de frecuencia 'freq',
+    devuelve el la distancia de elementos separados por un año en esa
+    lista.
+    Ejemplo: para una serie mensual se devuelve 12
+    """
     offset = {
         'AS': 1,
+        '6MS': 2,
         'QS': 4,
-        '6MS': 6,
         'MS': 12
     }
     for key, value in offset.items():
