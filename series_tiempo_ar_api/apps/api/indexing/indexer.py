@@ -13,6 +13,9 @@ from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 
+import strings
+import constants
+
 # Ignora divisiones por cero, no nos molesta el NaN
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -24,7 +27,6 @@ class Indexer(object):
     """Lee distribuciones y las indexa a través de un bulk create en
     Elasticsearch
     """
-    block_size = 1e6
 
     default_value = 0
 
@@ -44,19 +46,13 @@ class Indexer(object):
         # Optimización: Desactivo el refresh de los datos mientras indexo
         self.elastic.indices.put_settings(
             index=self.index,
-            body={'index': {
-                'refresh_interval': -1
-            }}
+            body=constants.DEACTIVATE_REFRESH_BODY
         )
 
-        if not distributions:
+        if not distributions:  # Indexo todas las series cargadas
             distributions = Distribution.objects.exclude(data_file='')
 
-        fields_count = 0
-        for distribution in distributions:
-            fields_count += distribution.field_set.count()
-        msg = u'Inicio de la indexación. Cantidad de fields a indexar: %d'
-        logger.info(msg, fields_count)
+        logger.info(strings.INDEX_START)
 
         for distribution in distributions:
             fields = distribution.field_set.all()
@@ -65,29 +61,24 @@ class Indexer(object):
 
             self.generate_properties(df, fields)
 
-        logger.info("Inicio del bulk request a ES")
+        logger.info(strings.BULK_REQUEST_START)
 
         for success, info in parallel_bulk(self.elastic, self.bulk_actions):
             if not success:
-                logger.warn(u"Error en la indexación: %s", info)
+                logger.warn(strings.BULK_REQUEST_ERROR, info)
 
-        logger.info("Fin del bulk request a ES")
+        logger.info(strings.BULK_REQUEST_END)
 
         # Reactivo el proceso de replicado una vez finalizado
         self.elastic.indices.put_settings(
             index=self.index,
-            body={
-                'index': {
-                    'refresh_interval': settings.TS_REFRESH_INTERVAL
-                }
-            }
+            body=constants.REACTIVATE_REFRESH_BODY
         )
         segments = settings.FORCE_MERGE_SEGMENTS
         self.elastic.indices.forcemerge(index=self.index,
                                         max_num_segments=segments)
 
-        msg = u'Fin de la indexación. %d series indexadas.'
-        logger.info(msg, len(self.indexed_fields))
+        logger.info(strings.INDEX_END)
 
     @staticmethod
     def init_df(distribution, fields):
@@ -107,7 +98,7 @@ class Indexer(object):
         # Borro las columnas que no figuren en los metadatos
         for column in df.columns:
             if column not in fields:
-                df.drop(column, axis=1, inplace=True)
+                df.drop(column, axis='columns', inplace=True)
         columns = df.columns
 
         data = np.array(df)
@@ -115,8 +106,10 @@ class Indexer(object):
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
 
         # Chequeo de series de días hábiles (business days)
-        if freq == 'D' and new_index.size > df.index.size:
-            new_index = pd.date_range(df.index[0], df.index[-1], freq='B')
+        if freq == constants.DAILY_FREQ and new_index.size > df.index.size:
+            new_index = pd.date_range(df.index[0],
+                                      df.index[-1],
+                                      freq=constants.BUSINESS_DAILY_FREQ)
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
 
@@ -131,8 +124,7 @@ class Indexer(object):
         # Manejo de series faltantes
         for series_id in fields.values():
             if series_id not in self.indexed_fields:
-                msg = 'Serie %s no encontrada en su dataframe'
-                logger.info(msg, series_id)
+                logger.info(strings.SERIES_NOT_FOUND, series_id)
                 self._handle_missing_series(series_id)
 
     def process_column(self, col, fields):
@@ -145,18 +137,19 @@ class Indexer(object):
 
         freq = col.index.freq.freqstr
         df = pd.DataFrame()
-        df['value'] = col
-        df['change'] = col.diff(1)
-        df['percent_change'] = col.pct_change(1)
-        df['change_a_year_ago'] = \
+        df[constants.VALUE] = col
+        df[constants.CHANGE] = col.diff(1)
+        df[constants.PCT_CHANGE] = col.pct_change(1)
+        df[constants.CHANGE_YEAR_AGO] = \
             self._year_ago_column(col, self._change, freq)
-        df['percent_change_a_year_ago'] = \
+        df[constants.PCT_CHANGE_YEAR_AGO] = \
             self._year_ago_column(col, self._pct_change, freq)
 
-        df.apply(self.elastic_index, axis=1, args=(fields[col.name],))
+        df.apply(self.elastic_index, axis='columns', args=(fields[col.name],))
 
     def elastic_index(self, row, series_id):
-        """Indexa la fila de datos correspondientes a una serie en ES
+        """Arma el JSON entendible por el bulk request de ES y lo
+        agrega a la lista de bulk_actions
 
         la fila tiene forma de iterable con los datos de un único
         valor de la serie: el valor real, su variación inmnediata,

@@ -12,6 +12,10 @@ from pydatajson.search import get_dataset
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
 
+import constants
+from .strings import DB_LOAD_START, DB_LOAD_END
+
+
 logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
 
@@ -34,16 +38,16 @@ class DatabaseLoader(object):
             catalog (DataJson)
             distributions (list)
         """
-        logger.info("Comienzo de la escritura a base de datos")
+        logger.info(DB_LOAD_START)
         catalog = DataJson(catalog)
         self.catalog_model = self._catalog_model(catalog)
         for distribution in distributions:
-            fields = distribution['field']
+            fields = distribution[constants.FIELD]
             time_distribution = False
             periodicity = None
             for field in fields:
-                if field.get('specialType') == 'time_index':
-                    periodicity = field.get('specialTypeDetail')
+                if field.get(constants.SPECIAL_TYPE) == constants.TIME_INDEX:
+                    periodicity = field.get(constants.SPECIAL_TYPE_DETAIL)
                     time_distribution = True
                     break
 
@@ -53,19 +57,19 @@ class DatabaseLoader(object):
                                                               periodicity)
 
                 self._save_fields(distribution_model, fields)
-        logger.info("Fin de la escritura a base de datos")
+        logger.info(DB_LOAD_END)
 
     def _dataset_model(self, dataset):
         """Crea o actualiza el modelo del dataset a partir de un
         diccionario que lo representa
         """
-        if dataset['identifier'] in self.dataset_cache:
-            return self.dataset_cache[dataset['identifier']]
+        if dataset[constants.IDENTIFIER] in self.dataset_cache:
+            return self.dataset_cache[dataset[constants.IDENTIFIER]]
 
         dataset = dataset.copy()
         # Borro las distribuciones, de existir. Solo guardo metadatos
-        dataset.pop('distribution', None)
-        identifier = dataset['identifier']
+        dataset.pop(constants.DISTRIBUTION, None)
+        identifier = dataset[constants.IDENTIFIER]
         dataset_model, _ = Dataset.objects.get_or_create(
             identifier=identifier,
             catalog=self.catalog_model
@@ -78,7 +82,7 @@ class DatabaseLoader(object):
         dataset_model.metadata = json.dumps(dataset)
         dataset_model.save()
 
-        self.dataset_cache[dataset['identifier']] = dataset_model
+        self.dataset_cache[dataset[constants.IDENTIFIER]] = dataset_model
         return dataset_model
 
     def _catalog_model(self, catalog):
@@ -87,8 +91,8 @@ class DatabaseLoader(object):
         """
         catalog = catalog.copy()
         # Borro el dataset, de existir. Solo guardo metadatos
-        catalog.pop('dataset', None)
-        title = catalog.get('title')
+        catalog.pop(constants.DATASET, None)
+        title = catalog.get(constants.FIELD_TITLE)
         catalog_model, _ = Catalog.objects.get_or_create(title=title)
 
         catalog = self._remove_blacklisted_fields(
@@ -105,14 +109,13 @@ class DatabaseLoader(object):
         """
         distribution = distribution.copy()
         # Borro los fields, de existir. Sólo guardo metadatos
-        distribution.pop('field', None)
-        identifier = distribution['identifier']
-        url = distribution.get('downloadURL')
+        distribution.pop(constants.FIELD, None)
+        identifier = distribution[constants.IDENTIFIER]
+        url = distribution.get(constants.DOWNLOAD_URL)
+        dataset_identifier = distribution.get(constants.DATASET_IDENTIFIER)
+        dataset = get_dataset(catalog, identifier=dataset_identifier)
 
-        dataset = get_dataset(catalog,
-                              identifier=distribution.get('dataset_identifier'))
-
-        dataset.pop('distribution', None)
+        dataset.pop(constants.DISTRIBUTION, None)
         dataset_model = self._dataset_model(dataset)
         distribution_model, _ = Distribution.objects.get_or_create(
             identifier=identifier,
@@ -160,11 +163,11 @@ class DatabaseLoader(object):
 
     def _save_fields(self, distribution_model, fields):
         for field in fields:
-            if field.get('specialType') == 'time_index':
+            if field.get(constants.SPECIAL_TYPE) == constants.TIME_INDEX:
                 continue
 
-            series_id = field.get('id')
-            title = field.get('title')
+            series_id = field.get(constants.FIELD_ID)
+            title = field.get(constants.FIELD_TITLE)
             field_model, _ = Field.objects.get_or_create(
                 series_id=series_id,
                 title=title,
