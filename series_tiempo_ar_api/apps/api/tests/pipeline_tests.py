@@ -3,7 +3,7 @@ from django.test import TestCase
 from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.models import Field
-from series_tiempo_ar_api.apps.api.pipeline import \
+from series_tiempo_ar_api.apps.api.query.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter, Sort
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.strings import SERIES_DOES_NOT_EXIST
