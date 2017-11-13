@@ -178,6 +178,9 @@ class CollapseQuery(ESQuery):
         if agg:
             self.collapse_aggregation = agg
         if interval:
+            if interval == 'semester':
+                interval = 'year'
+
             self.collapse_interval = interval
 
         for serie in self.series:
