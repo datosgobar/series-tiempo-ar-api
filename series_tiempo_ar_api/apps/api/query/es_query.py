@@ -3,6 +3,7 @@ import iso8601
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
+from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 
@@ -56,19 +57,11 @@ class ESQuery(object):
     def add_series(self,
                    series_id,
                    rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
-        if len(self.series) == 1 and not self.series[0].series_id:
-            search = self.series[0].search.filter('match',
-                                                  series_id=series_id)
-
-            self.series[0] = Series(series_id=series_id,
-                                    rep_mode=rep_mode,
-                                    search=search)
-        else:
-            self._init_series(series_id, rep_mode)
+        self._init_series(series_id, rep_mode)
 
     def run(self):
         if not self.series:
-            self._init_series()
+            raise QueryError("Query vacía, primero agregue una serie")
 
         multi_search = MultiSearch(index=settings.TS_INDEX,
                                    doc_type=settings.TS_DOC_TYPE,

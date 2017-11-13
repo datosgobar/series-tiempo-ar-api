@@ -224,9 +224,8 @@ class DateFilterTests(TestCase):
         self.assertEqual(self.start_date, first_timestamp)
 
     def test_end_date(self):
-        self.cmd.run(self.query, {'end_date': self.end_date})
-
         self.query.add_series(self.single_series, self.field, 'value')
+        self.cmd.run(self.query, {'end_date': self.end_date})
         self.query.sort('asc')
         # Me aseguro que haya suficientes resultados
         self.query.add_pagination(start=0, limit=1000)

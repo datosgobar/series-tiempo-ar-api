@@ -33,13 +33,11 @@ def freq_pandas_to_index_offset(freq):
 
 
 def get_max_periodicity(periodicities):
-    """Devuelve la periodicity máxima en la lista periodicities,
-    en formato 'humano' y legible por Elasticsearch (no ISO 8601)
-    """
+    """Devuelve la periodicity máxima en la lista periodicities"""
     order = settings.COLLAPSE_INTERVALS
     index = 0
     for periodicity in periodicities:
-        field_index = order.index(get_periodicity_human_format(periodicity))
+        field_index = order.index(periodicity)
         index = index if index > field_index else field_index
 
     return order[index]
