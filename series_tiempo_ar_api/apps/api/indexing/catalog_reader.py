@@ -8,7 +8,7 @@ from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
 from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
-
+from series_tiempo_ar_api.apps.api.indexing import strings
 
 logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -34,6 +34,11 @@ class ReaderPipeline(object):
             scraper = get_scraper()
             scraper.run(self.catalog)
             distributions = scraper.distributions
+
+            if not distributions:
+                logger.info(strings.NO_SERIES_SCRAPPED)
+                return
+
             loader = DatabaseLoader()
             loader.run(self.catalog, distributions)
             distribution_models = loader.distribution_models

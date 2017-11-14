@@ -6,6 +6,8 @@ END_SCRAPING = u"Fin del scraping"
 INVALID_DISTRIBUTION_URL = u"URL inválida en distribución"
 DESESTIMATED_DISTRIBUTION = u"Desestimada la distribución"
 
+NO_SERIES_SCRAPPED = u"No fueron encontradas series de tiempo en este catálogo"
+
 # Database Loader
 DB_LOAD_START = u"Comienzo de la escritura a base de datos"
 DB_LOAD_END = u"Fin de la escritura a base de datos"
