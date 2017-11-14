@@ -6,6 +6,7 @@ from elasticsearch_dsl import Search, MultiSearch
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.api.query import strings
 
 
 class ESQuery(object):
@@ -33,7 +34,7 @@ class ESQuery(object):
 
     def add_pagination(self, start, limit):
         if not len(self.series):
-            raise QueryError
+            raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:
             serie.search = serie.search[start:limit]
@@ -44,7 +45,7 @@ class ESQuery(object):
 
     def add_filter(self, start=None, end=None):
         if not len(self.series):
-            raise QueryError
+            raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         _filter = {
             'lte': end,
@@ -61,7 +62,7 @@ class ESQuery(object):
 
     def run(self):
         if not self.series:
-            raise QueryError("Query vacía, primero agregue una serie")
+            raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         multi_search = MultiSearch(index=settings.TS_INDEX,
                                    doc_type=settings.TS_DOC_TYPE,
@@ -129,7 +130,7 @@ class ESQuery(object):
         elif how == 'desc':
             order = '-timestamp'
         else:
-            msg = '"how" debe ser "asc", o "desc", recibido {}'.format(how)
+            msg = strings.INVALID_SORT_PARAMETER.format(how)
             raise ValueError(msg)
 
         for serie in self.series:
