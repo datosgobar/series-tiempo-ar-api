@@ -37,3 +37,4 @@ django_environment:
   DJANGO_SETTINGS_MODULE: "{{ application_settings_module }}"
 
 application_requirements: "{{ application_dir }}requirements.txt"
+run_migrations: yes
