@@ -15,6 +15,7 @@ from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
 from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from series_tiempo_ar_api.apps.api.query import strings
+from series_tiempo_ar_api.apps.api.query import constants
 
 
 class QueryPipeline(object):
@@ -32,7 +33,7 @@ class QueryPipeline(object):
             if cmd_instance.errors:
                 return self.generate_error_response(cmd_instance.errors)
 
-        _format = args.get('format', settings.API_DEFAULT_VALUES['format'])
+        _format = args.get('format', constants.API_DEFAULT_VALUES['format'])
         formatter = self.get_formatter(_format)
         try:
             return formatter.run(query, args)
@@ -42,7 +43,7 @@ class QueryPipeline(object):
     @staticmethod
     def generate_error_response(errors_list):
         response = {'errors': list(errors_list)}
-        return JsonResponse(response, status=settings.RESPONSE_ERROR_CODE)
+        return JsonResponse(response, status=constants.RESPONSE_ERROR_CODE)
 
     @staticmethod
     def get_formatter(_format):
@@ -93,8 +94,8 @@ class Pagination(BaseOperation):
     """Agrega paginación de resultados a una búsqueda"""
 
     def run(self, query, args):
-        start = args.get('start', settings.API_DEFAULT_VALUES['start'])
-        limit = args.get('limit', settings.API_DEFAULT_VALUES['limit'])
+        start = args.get('start', constants.API_DEFAULT_VALUES['start'])
+        limit = args.get('limit', constants.API_DEFAULT_VALUES['limit'])
         self.validate_arg(start, name='start')
         self.validate_arg(limit, min_value=1, name='limit')
         if self.errors:
@@ -211,7 +212,7 @@ class NameAndRepMode(BaseOperation):
         # Parseamos esa string y agregamos a la query las series pedidas
         ids = args.get('ids')
         rep_mode = args.get('representation_mode',
-                            settings.API_DEFAULT_VALUES['rep_mode'])
+                            constants.API_DEFAULT_VALUES['rep_mode'])
         if not ids:
             self._append_error(strings.NO_TIME_SERIES_ERROR)
             return
@@ -253,7 +254,7 @@ class NameAndRepMode(BaseOperation):
                                                series_id))
             return
 
-        if rep_mode not in settings.REP_MODES:
+        if rep_mode not in constants.REP_MODES:
             error = strings.INVALID_PARAMETER.format('rep_mode', rep_mode)
             self._append_error(error)
             return
@@ -296,17 +297,17 @@ class Collapse(BaseOperation):
         if not collapse:
             return
 
-        if collapse not in settings.COLLAPSE_INTERVALS:
+        if collapse not in constants.COLLAPSE_INTERVALS:
             msg = strings.INVALID_PARAMETER.format('collapse', collapse)
             self._append_error(msg)
             return
 
         agg = args.get('collapse_aggregation',
-                       settings.API_DEFAULT_VALUES['collapse_aggregation'])
+                       constants.API_DEFAULT_VALUES['collapse_aggregation'])
         rep_mode = args.get('representation_mode',
-                            settings.API_DEFAULT_VALUES['rep_mode'])
+                            constants.API_DEFAULT_VALUES['rep_mode'])
 
-        if agg not in settings.AGGREGATIONS:
+        if agg not in constants.AGGREGATIONS:
             msg = strings.INVALID_PARAMETER.format('agg', agg)
             self._append_error(msg)
         else:
@@ -324,7 +325,7 @@ class Metadata(BaseOperation):
         if not metadata:
             return
 
-        if metadata not in settings.METADATA_SETTINGS:
+        if metadata not in constants.METADATA_SETTINGS:
             msg = strings.INVALID_PARAMETER.format('metadata', metadata)
             self._append_error(msg)
         else:
@@ -334,9 +335,9 @@ class Metadata(BaseOperation):
 class Sort(BaseOperation):
 
     def run(self, query, args):
-        sort = args.get('sort', settings.API_DEFAULT_VALUES['sort'])
+        sort = args.get('sort', constants.API_DEFAULT_VALUES['sort'])
 
-        if sort not in settings.SORT_VALUES:
+        if sort not in constants.SORT_VALUES:
             msg = strings.INVALID_PARAMETER.format('sort', sort)
             self._append_error(msg)
         else:
@@ -348,9 +349,9 @@ class Format(BaseOperation):
     operación
     """
     def run(self, query, args):
-        sort = args.get('format', settings.API_DEFAULT_VALUES['format'])
+        sort = args.get('format', constants.API_DEFAULT_VALUES['format'])
 
-        if sort not in settings.FORMAT_VALUES:
+        if sort not in constants.FORMAT_VALUES:
             msg = strings.INVALID_PARAMETER.format('format', format)
             self._append_error(msg)
 
@@ -360,8 +361,8 @@ class Header(BaseOperation):
     operación"""
 
     def run(self, query, args):
-        header = args.get('header', settings.API_DEFAULT_VALUES['header'])
+        header = args.get('header', constants.API_DEFAULT_VALUES['header'])
 
-        if header not in settings.VALID_CSV_HEADER_MODES:
+        if header not in constants.VALID_CSV_HEADER_MODES:
             msg = strings.INVALID_PARAMETER.format('header', header)
             self._append_error(msg)

@@ -1,19 +1,19 @@
 # coding=utf-8
 import iso8601
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery, CollapseQuery
 from .helpers import setup_database
 
 
 class QueryTest(TestCase):
 
-    start = settings.API_DEFAULT_VALUES['start']
-    limit = settings.API_DEFAULT_VALUES['limit']
+    start = constants.API_DEFAULT_VALUES['start']
+    limit = constants.API_DEFAULT_VALUES['limit']
 
     default_limit = 10
     max_limit = 1000

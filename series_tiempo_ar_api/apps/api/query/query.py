@@ -1,12 +1,12 @@
 #! coding: utf-8
 from collections import OrderedDict
 
-from django.conf import settings
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import \
     get_periodicity_human_format, get_max_periodicity
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
 
 
@@ -19,10 +19,10 @@ class Query(object):
     def __init__(self):
         self.es_query = ESQuery()
         self.series_models = []
-        self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
+        self.metadata_config = constants.API_DEFAULT_VALUES['metadata']
 
-    def get_series_ids(self, how=settings.API_DEFAULT_VALUES['header']):
-        if how and how not in settings.VALID_CSV_HEADER_MODES:
+    def get_series_ids(self, how=constants.API_DEFAULT_VALUES['header']):
+        if how and how not in constants.VALID_CSV_HEADER_MODES:
             raise ValueError
 
         if how == 'names':
@@ -37,7 +37,7 @@ class Query(object):
         return self.es_query.add_filter(start_date, end_date)
 
     def add_series(self, name, field,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
         self.series_models.append(field)
 
         periodicities = [
@@ -52,7 +52,7 @@ class Query(object):
 
     def add_collapse(self, agg=None,
                      collapse=None,
-                     rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                     rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(self.es_query)
         self.es_query.add_collapse(agg, collapse, rep_mode)
@@ -61,7 +61,7 @@ class Query(object):
         self.metadata_config = how
 
     def _validate_collapse(self, collapse):
-        order = settings.COLLAPSE_INTERVALS
+        order = constants.COLLAPSE_INTERVALS
 
         for serie in self.series_models:
             periodicity = serie.distribution.periodicity
@@ -171,22 +171,22 @@ class Query(object):
         meta = self._get_full_metadata(serie_model)
 
         for meta_field in meta.keys():
-            if meta_field not in settings.CATALOG_SIMPLE_META_FIELDS:
+            if meta_field not in constants.CATALOG_SIMPLE_META_FIELDS:
                 meta.pop(meta_field)
 
         dataset = meta['dataset'][0]  # Dataset de un único elemento
         for meta_field in dataset.keys():
-            if meta_field not in settings.DATASET_SIMPLE_META_FIELDS:
+            if meta_field not in constants.DATASET_SIMPLE_META_FIELDS:
                 dataset.pop(meta_field)
 
         distribution = dataset['distribution'][0]
         for meta_field in distribution.keys():
-            if meta_field not in settings.DISTRIBUTION_SIMPLE_META_FIELDS:
+            if meta_field not in constants.DISTRIBUTION_SIMPLE_META_FIELDS:
                 distribution.pop(meta_field)
 
         field = distribution['field'][0]
         for meta_field in field.keys():
-            if meta_field not in settings.FIELD_SIMPLE_META_FIELDS:
+            if meta_field not in constants.FIELD_SIMPLE_META_FIELDS:
                 field.pop(meta_field)
 
         return meta

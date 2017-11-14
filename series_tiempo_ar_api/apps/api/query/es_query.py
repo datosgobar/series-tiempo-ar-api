@@ -7,6 +7,7 @@ from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.query import strings
+from series_tiempo_ar_api.apps.api.query import constants
 
 
 class ESQuery(object):
@@ -27,9 +28,9 @@ class ESQuery(object):
 
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
-            'start': settings.API_DEFAULT_VALUES['start'],
-            'limit': settings.API_DEFAULT_VALUES['limit'],
-            'sort': settings.API_DEFAULT_VALUES['sort']
+            'start': constants.API_DEFAULT_VALUES['start'],
+            'limit': constants.API_DEFAULT_VALUES['limit'],
+            'sort': constants.API_DEFAULT_VALUES['sort']
         }
 
     def add_pagination(self, start, limit):
@@ -57,7 +58,7 @@ class ESQuery(object):
 
     def add_series(self,
                    series_id,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
         self._init_series(series_id, rep_mode)
 
     def run(self):
@@ -93,7 +94,7 @@ class ESQuery(object):
                 self.data[i].append(None)
 
     def _init_series(self, series_id=None,
-                     rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                     rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
 
         search = Search(using=self.elastic)
         if series_id:
@@ -150,8 +151,8 @@ class CollapseQuery(ESQuery):
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
         self.collapse_aggregation = \
-            settings.API_DEFAULT_VALUES['collapse_aggregation']
-        self.collapse_interval = settings.API_DEFAULT_VALUES['collapse']
+            constants.API_DEFAULT_VALUES['collapse_aggregation']
+        self.collapse_interval = constants.API_DEFAULT_VALUES['collapse']
 
         if other:
             self.series = list(other.series)
@@ -161,7 +162,7 @@ class CollapseQuery(ESQuery):
 
     def add_series(self,
                    series_id,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
         super(CollapseQuery, self).add_series(series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
