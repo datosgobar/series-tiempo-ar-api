@@ -1,0 +1,34 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "API de Series de Tiempo\n\n\nDocumentaci\u00f3n de la API de Series de Tiempo del \nPaquete de Apertura de Datos de la Rep\u00fablica Argentina\n.\n\n\nEsta API expone m\u00e9todos para consultar series de tiempo abiertas por organismos que cumplen con el Perfil de Metadatos de la Pol\u00edtica de Apertura de Datos de la Administraci\u00f3n P\u00fablica Nacional.\n\n\nEjemplo de uso\n\n\nPoner un ejemplo de uso r\u00e1pido\n\n\nVer m\u00e1s en \nComienzo r\u00e1pido\n (TODO: linkear a la secci\u00f3n de comienzo r\u00e1pido)", 
+            "title": "Inicio"
+        }, 
+        {
+            "location": "/#api-de-series-de-tiempo", 
+            "text": "Documentaci\u00f3n de la API de Series de Tiempo del  Paquete de Apertura de Datos de la Rep\u00fablica Argentina .  Esta API expone m\u00e9todos para consultar series de tiempo abiertas por organismos que cumplen con el Perfil de Metadatos de la Pol\u00edtica de Apertura de Datos de la Administraci\u00f3n P\u00fablica Nacional.", 
+            "title": "API de Series de Tiempo"
+        }, 
+        {
+            "location": "/#ejemplo-de-uso", 
+            "text": "Poner un ejemplo de uso r\u00e1pido  Ver m\u00e1s en  Comienzo r\u00e1pido  (TODO: linkear a la secci\u00f3n de comienzo r\u00e1pido)", 
+            "title": "Ejemplo de uso"
+        }, 
+        {
+            "location": "/quick_start/", 
+            "text": "", 
+            "title": "Comienzo r\u00e1pido"
+        }, 
+        {
+            "location": "/api_reference/", 
+            "text": "", 
+            "title": "API"
+        }, 
+        {
+            "location": "/api_examples/", 
+            "text": "", 
+            "title": "Ejemplos de uso"
+        }
+    ]
+}

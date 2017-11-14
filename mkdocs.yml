@@ -1,0 +1,7 @@
+site_name: API de Series de Tiempo
+pages:
+- Inicio: index.md
+- Comienzo rápido: quick_start.md
+- API: api_reference.md
+- Ejemplos de uso: api_examples.md
+theme: readthedocs
