@@ -4,18 +4,18 @@
 - import_playbook: redis.yml
 - import_playbook: elasticsearch.yml
 
-- hosts: web
-  become: yes
-  become_method: sudo
-  roles:
-    - { role: maintenance, maintenance_on: yes }
-
 - hosts: apps
   become: yes
   become_method: sudo
   roles:
     - basic_server
+
+- hosts: web
+  become: yes
+  become_method: sudo
+  roles:
     - postgresql
+    - { role: maintenance, maintenance_on: yes }
 
 
 # Use non-root user

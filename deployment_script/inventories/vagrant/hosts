@@ -2,9 +2,6 @@ web1
 es1
 redis1
 
-[apps]
-web1
-
 [web]
 web1
 
@@ -17,7 +14,12 @@ es1
 [redis]
 redis1
 
+[apps:children]
+web
+rqworker
+
 [api_cluster:children]
 web
+rqworker
 es
 redis
