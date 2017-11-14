@@ -6,7 +6,7 @@ from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter, Sort
 from series_tiempo_ar_api.apps.api.query.query import Query
-from series_tiempo_ar_api.apps.api.strings import SERIES_DOES_NOT_EXIST
+from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from .helpers import setup_database
 from .support.pipeline import time_serie_name
 

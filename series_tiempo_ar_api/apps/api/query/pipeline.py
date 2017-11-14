@@ -13,7 +13,7 @@ from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
-from series_tiempo_ar_api.apps.api.strings import SERIES_DOES_NOT_EXIST
+from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 
 
 class QueryPipeline(object):
