@@ -1,5 +1,6 @@
 #! coding: utf-8
 from __future__ import division
+import logging
 
 from pydatajson import DataJson
 
@@ -7,6 +8,10 @@ from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
 from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
+
+
+logger = logging.Logger(__name__)
+logger.addHandler(logging.StreamHandler())
 
 
 class ReaderPipeline(object):

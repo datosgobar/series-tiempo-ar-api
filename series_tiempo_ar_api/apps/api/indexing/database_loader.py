@@ -12,8 +12,8 @@ from pydatajson.search import get_dataset
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
 
-import constants
-from .strings import DB_LOAD_START, DB_LOAD_END
+from series_tiempo_ar_api.apps.api.indexing import strings
+from series_tiempo_ar_api.apps.api.indexing import constants
 
 
 logger = logging.Logger(__name__)
@@ -38,7 +38,7 @@ class DatabaseLoader(object):
             catalog (DataJson)
             distributions (list)
         """
-        logger.info(DB_LOAD_START)
+        logger.info(strings.DB_LOAD_START)
         catalog = DataJson(catalog)
         self.catalog_model = self._catalog_model(catalog)
         for distribution in distributions:
@@ -57,7 +57,7 @@ class DatabaseLoader(object):
                                                               periodicity)
 
                 self._save_fields(distribution_model, fields)
-        logger.info(DB_LOAD_END)
+        logger.info(strings.DB_LOAD_END)
 
     def _dataset_model(self, dataset):
         """Crea o actualiza el modelo del dataset a partir de un

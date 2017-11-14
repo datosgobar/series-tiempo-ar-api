@@ -13,8 +13,8 @@ from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 
-import strings
-import constants
+from series_tiempo_ar_api.apps.api.indexing import strings
+from series_tiempo_ar_api.apps.api.indexing import constants
 
 # Ignora divisiones por cero, no nos molesta el NaN
 np.seterr(divide='ignore', invalid='ignore')
