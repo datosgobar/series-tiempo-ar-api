@@ -139,7 +139,7 @@ class Indexer(object):
         df = pd.DataFrame()
         df[constants.VALUE] = col
         df[constants.CHANGE] = col.diff(1)
-        df[constants.PCT_CHANGE] = col.pct_change(1)
+        df[constants.PCT_CHANGE] = col.pct_change(1, fill_method=None)
         df[constants.CHANGE_YEAR_AGO] = \
             self._year_ago_column(col, self._change, freq)
         df[constants.PCT_CHANGE_YEAR_AGO] = \
