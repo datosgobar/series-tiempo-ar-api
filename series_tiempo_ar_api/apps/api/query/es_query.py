@@ -90,7 +90,6 @@ class ESQuery(object):
     def _populate_data(self, response, rep_mode):
         for i, hit in enumerate(response):
             if i == len(self.data):
-
                 data_row = [self._format_timestamp(hit.timestamp)]
                 self.data.append(data_row)
 
@@ -200,6 +199,41 @@ class CollapseQuery(ESQuery):
 
         return search
 
+    def _format_single_response(self, row_len, response, start, limit):
+        if not response.aggregations:
+            return
+
+        hits = response.aggregations.agg.buckets
+
+        first_date = self._format_timestamp(hits[0]['key_as_string'])
+
+        # Agrego rows necesarios vacíos para garantizar continuidad
+        self._make_date_index_continuous(first_date)
+
+        start_index = find_index(self.data, first_date)
+        if start_index < 0:
+            start_index = 0  # Se va a appendear, no uso el offset
+
+        for i, hit in enumerate(hits):
+            if i < start:
+                continue
+            data_index = i - start
+
+            if data_index >= limit:  # Ya conseguimos datos suficientes
+                break
+            if data_index + start_index == len(self.data):  # No hay row, inicializo
+                # Strip de la parte de tiempo del datetime
+                timestamp = hit['key_as_string']
+                data_row = [self._format_timestamp(timestamp)]
+                if row_len > 2:  # Lleno el row de nulls
+                    nulls = [None for _ in range(1, len(self.data[0]))]
+                    data_row.extend(nulls)
+                self.data.append(data_row)
+
+            self.data[data_index + start_index].append(hit['agg'].value)
+
+        self._fill_nulls(row_len)
+
     def _format_response(self, responses):
 
         start = self.args.get('start')
@@ -208,39 +242,8 @@ class CollapseQuery(ESQuery):
         self._sort_responses(responses)
 
         for row_len, response in enumerate(responses, 2):
-            if not response.aggregations:
-                continue
-
-            hits = response.aggregations.agg.buckets
-
-            first_date = self._format_timestamp(hits[0]['key_as_string'])
-
-            # Agrego rows necesarios vacíos para garantizar continuidad
-            self._make_date_index_continuous(first_date)
-
-            start_index = find_index(self.data, first_date)
-            if start_index < 0:
-                start_index = 0  # Se va a appendear, no uso el offset
-
-            for i, hit in enumerate(hits):
-                if i < start:
-                    continue
-                data_index = i - start
-
-                if data_index >= limit:  # Ya conseguimos datos suficientes
-                    break
-                if data_index + start_index == len(self.data):  # No hay row, inicializo
-                    # Strip de la parte de tiempo del datetime
-                    timestamp = hit['key_as_string']
-                    data_row = [self._format_timestamp(timestamp)]
-                    if row_len > 2:  # Lleno el row de nulls
-                        nulls = [None for _ in range(1, len(self.data[0]))]
-                        data_row.extend(nulls)
-                    self.data.append(data_row)
-
-                self.data[data_index + start_index].append(hit['agg'].value)
-
-            self._fill_nulls(row_len)
+            # Smart solution
+            self._format_single_response(row_len, response, start, limit)
 
     @staticmethod
     def _sort_responses(responses):
@@ -292,7 +295,6 @@ class CollapseQuery(ESQuery):
 
 
 class Series(object):
-
     def __init__(self, series_id=None, rep_mode=None, search=None):
         self.series_id = series_id
         self.rep_mode = rep_mode
