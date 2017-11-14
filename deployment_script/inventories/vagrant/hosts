@@ -2,7 +2,13 @@ web1
 es1
 redis1
 
+[apps]
+web1
+
 [web]
+web1
+
+[rqworker]
 web1
 
 [es]

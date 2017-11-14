@@ -8,24 +8,36 @@
   become: yes
   become_method: sudo
   roles:
-    - basic_server
     - { role: maintenance, maintenance_on: yes }
+
+- hosts: apps
+  become: yes
+  become_method: sudo
+  roles:
+    - basic_server
     - postgresql
 
+
 # Use non-root user
-- hosts: web
+# This is a dependency of rqworker group and web group
+- hosts: apps
   become: yes
   become_method: sudo
   become_user: "{{ application_user }}"
   roles:
     - django_application
 
+- hosts: rqworker
+  become: yes
+  become_method: sudo
+  roles:
+    - rqworker
+
 - hosts: web
   become: yes
   become_method: sudo
   roles:
     - web_server
-    - rqworker
     - { role: maintenance, maintenance_off: yes }
 
 
