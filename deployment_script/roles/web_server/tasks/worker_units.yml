@@ -13,10 +13,14 @@
 
 - name: Create systemd unit for worker
   template: src=rqworker/services/rqworker.service.j2
-            dest=/etc/systemd/system/rqworker.service
+            dest=/etc/systemd/system/rqworker@.service
             mode=0664
             backup=no
   notify:
     - Reload systemd
     - Enable and restart workers
 
+- name: Disable and stop all workers
+  shell: systemctl stop rqworker*.service
+  notify:
+    - Enable and restart workers

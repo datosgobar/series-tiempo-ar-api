@@ -1,15 +1,16 @@
 [Unit]
-Description=Rqworker daemon
+Description=Rqworker daemon %i
 After=network.target
 
 [Service]
 User={{ worker_user }}
 Group={{ worker_group }}
 WorkingDirectory={{ application_dir }}
-ExecStart={{ run_rqworker_bin }}
+ExecStart={{ run_rqworker_bin }} %i
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 PrivateTmp=true
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

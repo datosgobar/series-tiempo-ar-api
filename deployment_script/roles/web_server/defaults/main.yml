@@ -46,6 +46,7 @@ nginx_http_auth_file: "{{ nginx_conf_dir }}.htpasswd"
 
 # Workers
 
+worker_count: 1
 worker_user: "{{ application_user }}"
 worker_group: "{{ application_group }}"
 run_rqworker_bin: "{{ application_virtualenv_dir }}bin/rqworker"

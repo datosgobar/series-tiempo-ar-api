@@ -14,7 +14,8 @@
     - nginx.service
 
 - name: Enable and restart workers
-  service:
-    state: restarted
-    name: rqworker.service
+  systemd:
+    name: rqworker@{{ item }}.service
     enabled: yes
+    state: restarted
+  with_sequence: count={{ worker_count }}
