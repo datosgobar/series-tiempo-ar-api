@@ -49,9 +49,6 @@ class Indexer(object):
             body=constants.DEACTIVATE_REFRESH_BODY
         )
 
-        if not distributions:  # Indexo todas las series cargadas
-            distributions = Distribution.objects.exclude(data_file='')
-
         logger.info(strings.INDEX_START)
 
         for distribution in distributions:
