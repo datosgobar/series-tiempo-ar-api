@@ -2,7 +2,7 @@
 
 from django_rq import job
 
-from series_tiempo_ar_api.apps.api.query.indexing.scraping import get_scraper
+from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
 
 
 @job("scrapping")

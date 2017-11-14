@@ -32,3 +32,7 @@ node_modules/
 media/distribution_raw
 datajson_sample/
 .nvmrc
+
+# jupyter
+.ipynb_checkpoints
+

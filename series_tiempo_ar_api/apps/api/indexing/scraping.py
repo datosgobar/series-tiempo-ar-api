@@ -9,7 +9,7 @@ from series_tiempo_ar.search import get_time_series_distributions
 from series_tiempo_ar.validations import validate_distribution
 
 from .constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
-from .strings import START_SCRAPING, END_SCRAPING, INVALID_DISTRIBUTION_URL, DESESTIMATED_DISTRIBUTION
+from series_tiempo_ar_api.apps.api.indexing import strings
 
 logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -25,7 +25,7 @@ class Scraper(object):
         Valida las distribuciones de series de tiempo de un catálogo
         entero a partir de su URL, o archivo fuente
         """
-        logger.info(START_SCRAPING)
+        logger.info(strings.START_SCRAPING)
         catalog = DataJson(catalog)
         distributions = []
         for distribution in get_time_series_distributions(catalog):
@@ -45,7 +45,7 @@ class Scraper(object):
                                       distribution)
             except ValueError as e:
                 msg = u'{} {}. Razón: {}'.format(
-                    DESESTIMATED_DISTRIBUTION,
+                    strings.DESESTIMATED_DISTRIBUTION,
                     distribution_id,
                     e.message
                 )
@@ -54,14 +54,15 @@ class Scraper(object):
                 distributions.append(distribution)
 
         self.distributions = distributions
-        logger.info(END_SCRAPING)
+        logger.info(strings.END_SCRAPING)
 
     @staticmethod
     def _validate_url(distribution):
         distribution_id = distribution[IDENTIFIER]
         url = distribution.get(DOWNLOAD_URL)
         if not url or requests.head(url).status_code != 200:
-            msg = u'{} {}'.format(INVALID_DISTRIBUTION_URL, distribution_id)
+            msg = u'{} {}'.format(strings.INVALID_DISTRIBUTION_URL,
+                                  distribution_id)
             logger.info(msg)
             return False
         return True

@@ -1,9 +1,8 @@
 #! coding: utf-8
-import requests
 from django.core.management import BaseCommand
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.api.query.catalog_reader import ReaderPipeline
+from series_tiempo_ar_api.apps.api.indexing.catalog_reader import ReaderPipeline
 
 
 class Command(BaseCommand):

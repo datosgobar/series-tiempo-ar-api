@@ -7,3 +7,7 @@ class CollapseError(BaseException):
 
 class InvalidFormatError(BaseException):
     pass
+
+
+class QueryError(BaseException):
+    pass

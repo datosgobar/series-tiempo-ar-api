@@ -8,15 +8,22 @@ def get_periodicity_human_format(periodicity):
         'R/P1Y': 'year',
         'R/P3M': 'quarter',
         'R/P1M': 'month',
-        'R/P1D': 'day'
+        'R/P1D': 'day',
+        'R/P6M': 'semester'
     }
 
     return periodicities[periodicity]
 
 
 def freq_pandas_to_index_offset(freq):
+    """Dada una lista de datos de una serie de frecuencia 'freq',
+    devuelve el la distancia de elementos separados por un año en esa
+    lista.
+    Ejemplo: para una serie mensual se devuelve 12
+    """
     offset = {
         'AS': 1,
+        '6MS': 2,
         'QS': 4,
         'MS': 12
     }
@@ -26,13 +33,11 @@ def freq_pandas_to_index_offset(freq):
 
 
 def get_max_periodicity(periodicities):
-    """Devuelve la periodicity máxima en la lista periodicities,
-    en formato 'humano' y legible por Elasticsearch (no ISO 8601)
-    """
+    """Devuelve la periodicity máxima en la lista periodicities"""
     order = settings.COLLAPSE_INTERVALS
     index = 0
     for periodicity in periodicities:
-        field_index = order.index(get_periodicity_human_format(periodicity))
+        field_index = order.index(periodicity)
         index = index if index > field_index else field_index
 
     return order[index]

@@ -3,7 +3,8 @@ from django.test import TestCase
 
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
-from series_tiempo_ar_api.apps.api.response import ResponseFormatterGenerator
+from series_tiempo_ar_api.apps.api.query.response import \
+    ResponseFormatterGenerator
 from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
 
