@@ -11,8 +11,9 @@ from elasticsearch import TransportError
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
-from .response import ResponseFormatterGenerator
-from .strings import SERIES_DOES_NOT_EXIST
+from series_tiempo_ar_api.apps.api.query.response import \
+    ResponseFormatterGenerator
+from series_tiempo_ar_api.apps.api.strings import SERIES_DOES_NOT_EXIST
 
 
 class QueryPipeline(object):

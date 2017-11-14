@@ -58,6 +58,7 @@ COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
     'day',
     'month',
     'quarter',
+    'semester',
     'year'
 ]
 

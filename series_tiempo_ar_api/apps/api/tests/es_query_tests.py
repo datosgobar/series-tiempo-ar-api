@@ -3,6 +3,9 @@ import iso8601
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
+from nose.tools import raises
+
+from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query.query import ESQuery, CollapseQuery
 from .helpers import setup_database
 
@@ -69,11 +72,13 @@ class QueryTest(TestCase):
             self.assertLessEqual(date, end_date)
 
     def test_execute_single_series(self):
+        self.query.add_series(self.single_series)
         data = self.query.run()
 
         self.assertTrue(data)
 
     def test_default_return_limits(self):
+        self.query.add_series(self.single_series)
         data = self.query.run()
 
         self.assertEqual(len(data), self.default_limit)
@@ -111,6 +116,7 @@ class CollapseQueryTests(TestCase):
     def setUp(self):
         self.query = CollapseQuery()
 
+    @raises(QueryError)
     def test_execute_empty(self):
         data = self.query.run()
 
@@ -172,6 +178,7 @@ class CollapseQueryTests(TestCase):
 
     def test_add_two_collapses(self):
         """Esperado: El segundo collapse overridea el primero"""
+        self.query.add_series(self.single_series)
         self.query.add_collapse(interval='quarter')
         self.query.add_collapse(interval='year')
         data = self.query.run()

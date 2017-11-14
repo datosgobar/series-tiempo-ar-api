@@ -40,15 +40,19 @@ class Query(object):
                    rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
         self.series_models.append(field)
 
-        # Colapso los datos de las series en la misma periodicidad
-        if len(self.series_models) > 1:
-            periodicities = [
-                field.distribution.periodicity for field in self.series_models
-            ]
+        periodicities = [
+            get_periodicity_human_format(field.distribution.periodicity)
+            for field in self.series_models
+        ]
+        series_periodicity = get_periodicity_human_format(
+            field.distribution.periodicity)
+
+        if periodicities and series_periodicity not in periodicities:
+            # Hay varias series con distintas periodicities, colapso los datos
             periodicity = get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
-
-        return self.es_query.add_series(name, rep_mode)
+        else:
+            self.es_query.add_series(name, rep_mode)
 
     def add_collapse(self, agg=None,
                      collapse=None,
