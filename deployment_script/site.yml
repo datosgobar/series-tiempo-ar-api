@@ -25,6 +25,7 @@
   become_method: sudo
   roles:
     - web_server
+    - rqworker
     - { role: maintenance, maintenance_off: yes }
 
 
