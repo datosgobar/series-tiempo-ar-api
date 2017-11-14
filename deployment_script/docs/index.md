@@ -31,13 +31,13 @@ Si el usuario require _contraseña_ para usar comandos con `sudo`, previamente d
 
 ## Setup un nuevo ambiente
 
-Ver la documentación específica [aquí](docs/setup.md)
+Ver la documentación específica [aquí](setup.md)
 
 
 ## Configuraciones
 
-- [Elasticsearch](docs/elasticsearch.md)
-- [Redis](docs/redis.md)
+- [Elasticsearch](elasticsearch.md)
+- [Redis](redis.md)
 
 
 ## Post instalación
