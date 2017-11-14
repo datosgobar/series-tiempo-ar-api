@@ -3,6 +3,8 @@ VAGRANTFILE_API_VERSION = "2"
 checkout_branch = ENV["CHECKOUT_BRANCH"]
 ansible_limit = ENV["ANSIBLE_LIMIT"] || "all"
 
+extra_vars = {}
+
 if checkout_branch
   extra_vars["checkout_branch"] = checkout_branch
 end
@@ -47,6 +49,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.verbose = "vvv"
         # ansible.tags = ["elastic"]
         ansible.limit = ansible_limit
+        ansible.extra_vars = extra_vars
       end
   end
 end
