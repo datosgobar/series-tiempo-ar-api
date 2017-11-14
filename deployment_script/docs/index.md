@@ -79,4 +79,4 @@ Para cambiar la cantidad de servidores de Elasticsearch debemos cambiar, dentro 
 
 ## Mas info
 
-Ver la documentacion de [idea](docs/idea.md) y [features](docs/features.md)
+Ver la documentacion de [idea](idea.md) y [features](features.md)
