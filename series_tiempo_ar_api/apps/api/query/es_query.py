@@ -33,7 +33,7 @@ class ESQuery(object):
 
     def add_pagination(self, start, limit):
         if not len(self.series):
-            self._init_series()
+            raise QueryError
 
         for serie in self.series:
             serie.search = serie.search[start:limit]
@@ -44,7 +44,7 @@ class ESQuery(object):
 
     def add_filter(self, start=None, end=None):
         if not len(self.series):
-            self._init_series()
+            raise QueryError
 
         _filter = {
             'lte': end,
