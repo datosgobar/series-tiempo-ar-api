@@ -10,22 +10,30 @@ configurar cómo se accede a el mismo.
 
 ```
 web1
-es1
 redis1
 
 [web]
 web1
 
+[rqworker]
+web1
+
 [es]
-es1
+web1
 
 [redis]
 redis1
 
+[apps:children]
+web
+rqworker
+
 [api_cluster:children]
 web
+rqworker
 es
 redis
+
 ```
 
 En el archivo "inventories/staging/group_vars/web/vars.yml" agregar la configuración para conectar a redis desde los servidores o workers:

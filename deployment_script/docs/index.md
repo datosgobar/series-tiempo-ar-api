@@ -38,6 +38,7 @@ Ver la documentación específica [aquí](setup.md)
 
 - [Elasticsearch](elasticsearch.md)
 - [Redis](redis.md)
+- [Workers](workers.md)
 
 
 ## Post instalación
