@@ -171,6 +171,8 @@ class CollapseQuery(ESQuery):
         if agg:
             self.collapse_aggregation = agg
         if interval:
+            # Temporalmente: convertir collapse semestral en anual,
+            # Elasticsearch no los soporta
             if interval == 'semester':
                 interval = 'year'
 
