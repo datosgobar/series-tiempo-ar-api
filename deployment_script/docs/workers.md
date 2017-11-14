@@ -6,7 +6,6 @@ Para instalarlo en otro servidor, se pueden seguir los siguientes pasos:
 1)
 
 Agregar un "host" al inventario, en este ejemplo, "worker1".
-Agregar el archivo "inventories/staging/host_vars/worker1.yml", para configurar cómo se accede a el mismo.
 
 ```
 web1
@@ -35,6 +34,27 @@ es
 redis
 
 ```
+
+Agregar el archivo "inventories/staging/host_vars/worker1.yml", para configurar cómo se accede a el mismo.
+
+```yml
+---
+
+ansible_host: 192.168.35.40
+ansible_port: 22
+```
+
+Además debemos agregar el siguiente archivo con el siguiente contenido.
+En el archivo "inventories/staging/group_vars/rqworker.yml" poner:
+
+```yml
+---
+
+run_migrations: no
+```
+
+Esto evitará que los workers intenten correr migraciones de la aplicación.
+
 
 ## Configuraciones
 

@@ -1,12 +1,13 @@
 web1
 es1
 redis1
+worker1
 
 [web]
 web1
 
 [rqworker]
-web1
+worker1
 
 [es]
 es1

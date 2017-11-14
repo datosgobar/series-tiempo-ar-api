@@ -10,6 +10,7 @@ if checkout_branch
 end
 
 ES_SERVER_COUNT=1
+WORKER_SERVER_COUNT=1
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "bento/ubuntu-16.04"
@@ -31,6 +32,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.cpus = 1
       end
       web.vm.network "private_network", ip: "192.168.35.30"
+  end
+
+  (0...WORKER_SERVER_COUNT).each do |n|
+      config.vm.define "worker#{n}" do |web|
+          web.vm.provider :virtualbox do |vb|
+            vb.memory = 1048
+            vb.cpus = 1
+          end
+          web.vm.network "private_network", ip: "192.168.35.4#{n}"
+      end
   end
 
   config.vm.define "web1" do |web|
