@@ -126,10 +126,10 @@ class ESQuery(object):
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
         if how == constants.SORT_ASCENDING:
-            order = 'timestamp'
+            order = settings.TS_TIME_INDEX_FIELD
 
         elif how == constants.SORT_DESCENDING:
-            order = '-timestamp'
+            order = '-' + settings.TS_TIME_INDEX_FIELD
         else:
             msg = strings.INVALID_SORT_PARAMETER.format(how)
             raise ValueError(msg)
@@ -188,12 +188,12 @@ class CollapseQuery(ESQuery):
     def _add_aggregation(self, search, rep_mode):
         search = search[:0]
         search.aggs \
-            .bucket('agg',
+            .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
-                    field='timestamp',
+                    field=settings.TS_TIME_INDEX_FIELD,
                     order={"_key": self.args[constants.PARAM_SORT]},
                     interval=self.collapse_interval) \
-            .metric('agg',
+            .metric(constants.COLLAPSE_AGG_NAME,
                     self.collapse_aggregation,
                     field=rep_mode)
 
@@ -230,7 +230,7 @@ class CollapseQuery(ESQuery):
                     data_row.extend(nulls)
                 self.data.append(data_row)
 
-            self.data[data_index + start_index].append(hit['agg'].value)
+            self.data[data_index + start_index].append(hit[constants.COLLAPSE_AGG_NAME].value)
 
         self._fill_nulls(row_len)
 

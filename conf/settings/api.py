@@ -12,6 +12,9 @@ TS_DOC_TYPE = "doc"
 # Actualización de datos en segundos
 TS_REFRESH_INTERVAL = "30s"
 
+# Field del valor del índice de tiempo en ES
+TS_TIME_INDEX_FIELD = 'timestamp'
+
 # Nombre de la columna de índice de tiempo en las distribuciones
 INDEX_COLUMN = 'indice_tiempo'
 

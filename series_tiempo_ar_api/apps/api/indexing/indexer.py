@@ -165,7 +165,7 @@ class Indexer(object):
         }
 
         source = {
-            'timestamp': timestamp,
+            settings.TS_TIME_INDEX_FIELD: timestamp,
             'series_id': series_id
         }
 

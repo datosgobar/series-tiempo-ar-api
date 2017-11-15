@@ -14,16 +14,23 @@ SPECIAL_TYPE = 'specialType'
 SPECIAL_TYPE_DETAIL = 'specialTypeDetail'
 TIME_INDEX = 'time_index'
 
+# Transformaciones a indexar
+VALUE = 'value'
+CHANGE = 'change'
+PCT_CHANGE = 'percent_change'
+CHANGE_YEAR_AGO = 'change_a_year_ago'
+PCT_CHANGE_YEAR_AGO = 'percent_change_a_year_ago'
+
 # JSON del mapping de series de tiempo
 MAPPING = {
   "properties": {
-    "timestamp":                    {"type": "date"},
-    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
-    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
-    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000},
-    "series_id":                    {"type": "keyword"}
+    settings.TS_TIME_INDEX_FIELD: {"type": "date"},
+    VALUE: {"type": "scaled_float", "scaling_factor": 10000000},
+    CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
+    PCT_CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
+    CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
+    PCT_CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
+    "series_id": {"type": "keyword"}
   },
   "_all": {"enabled": False},
   "dynamic": "strict"
@@ -40,11 +47,6 @@ FORCE_MERGE_SEGMENTS = 5
 
 REQUEST_TIMEOUT = 30  # en segundos
 
-VALUE = 'value'
-CHANGE = 'change'
-PCT_CHANGE = 'percent_change'
-CHANGE_YEAR_AGO = 'change_a_year_ago'
-PCT_CHANGE_YEAR_AGO = 'percent_change_a_year_ago'
 
 # Frecuencias de pandas
 DAILY_FREQ = 'D'
