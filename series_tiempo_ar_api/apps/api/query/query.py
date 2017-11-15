@@ -51,11 +51,10 @@ class Query(object):
             self.add_collapse(collapse=periodicity)
 
     def add_collapse(self, agg=None,
-                     collapse=None,
-                     rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
+                     collapse=None):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(self.es_query)
-        self.es_query.add_collapse(agg, collapse, rep_mode)
+        self.es_query.add_collapse(agg, collapse)
 
     def set_metadata_config(self, how):
         self.metadata_config = how

@@ -169,7 +169,7 @@ class CollapseQuery(ESQuery):
         search = serie.search
         serie.search = self._add_aggregation(search, rep_mode)
 
-    def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
+    def add_collapse(self, agg=None, interval=None):
         if agg:
             self.collapse_aggregation = agg
         if interval:
