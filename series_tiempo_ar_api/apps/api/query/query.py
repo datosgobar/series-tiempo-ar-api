@@ -19,9 +19,9 @@ class Query(object):
     def __init__(self):
         self.es_query = ESQuery()
         self.series_models = []
-        self.metadata_config = constants.API_DEFAULT_VALUES['metadata']
+        self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
 
-    def get_series_ids(self, how=constants.API_DEFAULT_VALUES['header']):
+    def get_series_ids(self, how=constants.API_DEFAULT_VALUES[constants.PARAM_HEADER]):
         if how and how not in constants.VALID_CSV_HEADER_MODES:
             raise ValueError
 
@@ -37,7 +37,7 @@ class Query(object):
         return self.es_query.add_filter(start_date, end_date)
 
     def add_series(self, name, field,
-                   rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         self.series_models.append(field)
 
         periodicities = [
@@ -52,7 +52,7 @@ class Query(object):
 
     def add_collapse(self, agg=None,
                      collapse=None,
-                     rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
+                     rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(self.es_query)
         self.es_query.add_collapse(agg, collapse, rep_mode)

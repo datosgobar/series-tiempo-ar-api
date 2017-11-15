@@ -25,16 +25,29 @@ COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
     'year'
 ]
 
+PARAM_IDS = 'ids'
+PARAM_REP_MODE = 'representation_mode'
+PARAM_COLLAPSE_AGG = 'collapse_aggregation'
+PARAM_COLLAPSE = 'collapse'
+PARAM_START = 'start'
+PARAM_LIMIT = 'limit'
+PARAM_METADATA = 'metadata'
+PARAM_SORT = 'sort'
+PARAM_FORMAT = 'format'
+PARAM_HEADER = 'header'
+PARAM_START_DATE = 'start_date'
+PARAM_END_DATE = 'end_date'
+
 API_DEFAULT_VALUES = {
-    'rep_mode': 'value',
-    'collapse_aggregation': 'avg',
-    'collapse': 'year',
-    'start': 0,
-    'limit': 100,
-    'metadata': 'simple',
-    'sort': 'asc',
-    'format': 'json',
-    'header': 'names'
+    PARAM_REP_MODE: 'value',
+    PARAM_COLLAPSE_AGG: 'avg',
+    PARAM_COLLAPSE: 'year',
+    PARAM_START: 0,
+    PARAM_LIMIT: 100,
+    PARAM_METADATA: 'simple',
+    PARAM_SORT: 'asc',
+    PARAM_FORMAT: 'json',
+    PARAM_HEADER: 'names'
 }
 
 

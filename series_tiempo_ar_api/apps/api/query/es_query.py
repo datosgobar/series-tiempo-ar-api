@@ -41,8 +41,8 @@ class ESQuery(object):
             serie.search = serie.search[start:limit]
 
         # Guardo estos parámetros, necesarios en el evento de hacer un collapse
-        self.args['start'] = start
-        self.args['limit'] = limit
+        self.args[constants.PARAM_START] = start
+        self.args[constants.PARAM_LIMIT] = limit
 
     def add_filter(self, start=None, end=None):
         if not len(self.series):
@@ -58,7 +58,7 @@ class ESQuery(object):
 
     def add_series(self,
                    series_id,
-                   rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         self._init_series(series_id, rep_mode)
 
     def run(self):
@@ -79,7 +79,7 @@ class ESQuery(object):
 
     def _format_response(self, responses):
         for i, response in enumerate(responses):
-            rep_mode = self.series[i]['rep_mode']
+            rep_mode = self.series[i].rep_mode
             self._populate_data(response, rep_mode)
 
     def _populate_data(self, response, rep_mode):
@@ -94,7 +94,7 @@ class ESQuery(object):
                 self.data[i].append(None)
 
     def _init_series(self, series_id=None,
-                     rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
+                     rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
 
         search = Search(using=self.elastic)
         if series_id:
@@ -138,7 +138,7 @@ class ESQuery(object):
             serie.search = serie.search.sort(order)
 
         # Guardo el parámetro, necesario en el evento de hacer un collapse
-        self.args['sort'] = how
+        self.args[constants.PARAM_SORT] = how
 
 
 class CollapseQuery(ESQuery):
@@ -151,8 +151,8 @@ class CollapseQuery(ESQuery):
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
         self.collapse_aggregation = \
-            constants.API_DEFAULT_VALUES['collapse_aggregation']
-        self.collapse_interval = constants.API_DEFAULT_VALUES['collapse']
+            constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
+        self.collapse_interval = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE]
 
         if other:
             self.series = list(other.series)
@@ -162,7 +162,7 @@ class CollapseQuery(ESQuery):
 
     def add_series(self,
                    series_id,
-                   rep_mode=constants.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         super(CollapseQuery, self).add_series(series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
@@ -181,7 +181,7 @@ class CollapseQuery(ESQuery):
             self.collapse_interval = interval
 
         for serie in self.series:
-            rep_mode = serie.get('rep_mode', global_rep_mode)
+            rep_mode = serie.rep_mode
             search = serie.search
             serie.search = self._add_aggregation(search, rep_mode)
 
@@ -191,7 +191,7 @@ class CollapseQuery(ESQuery):
             .bucket('agg',
                     'date_histogram',
                     field='timestamp',
-                    order={"_key": self.args['sort']},
+                    order={"_key": self.args[constants.PARAM_SORT]},
                     interval=self.collapse_interval) \
             .metric('agg',
                     self.collapse_aggregation,
@@ -235,8 +235,8 @@ class CollapseQuery(ESQuery):
         self._fill_nulls(row_len)
 
     def _format_response(self, responses):
-        start = self.args.get('start')
-        limit = self.args.get('limit')
+        start = self.args.get(constants.PARAM_START)
+        limit = self.args.get(constants.PARAM_LIMIT)
 
         self._sort_responses(responses)
 

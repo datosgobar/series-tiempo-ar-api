@@ -2,7 +2,7 @@
 
 
 ELASTICSEARCH_ERROR = u"Error Fatal. Contacte un administrador"
-SERIES_DOES_NOT_EXIST = u"Serie inexistente"
+SERIES_DOES_NOT_EXIST = u"Serie inexistente: {}"
 INVALID_PARAMETER = u"Parámetro {} inválido: {}"
 PARAMETER_OVER_LIMIT = u"Parámetro {} por encima del límite permitido ({}): {}"
 INVALID_COLLAPSE = u"Intervalo de collapse inválido para la(s) serie(s) seleccionadas: {}. Pruebe con un intervalo mayor"

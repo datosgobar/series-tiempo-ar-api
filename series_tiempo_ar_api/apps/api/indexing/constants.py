@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.conf import settings
 
 IDENTIFIER = "identifier"
 DATASET_IDENTIFIER = "dataset_identifier"
@@ -13,6 +14,31 @@ SPECIAL_TYPE = 'specialType'
 SPECIAL_TYPE_DETAIL = 'specialTypeDetail'
 TIME_INDEX = 'time_index'
 
+# JSON del mapping de series de tiempo
+MAPPING = {
+  "properties": {
+    "timestamp":                    {"type": "date"},
+    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
+    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
+    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
+    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
+    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000},
+    "series_id":                    {"type": "keyword"}
+  },
+  "_all": {"enabled": False},
+  "dynamic": "strict"
+}
+
+
+INDEX_CREATION_BODY = {
+    'mappings': {
+        settings.TS_DOC_TYPE: MAPPING
+    }
+}
+
+FORCE_MERGE_SEGMENTS = 5
+
+REQUEST_TIMEOUT = 30  # en segundos
 
 VALUE = 'value'
 CHANGE = 'change'
