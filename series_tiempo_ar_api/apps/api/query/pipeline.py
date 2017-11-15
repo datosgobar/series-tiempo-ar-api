@@ -370,6 +370,6 @@ class Header(BaseOperation):
     def run(self, query, args):
         header = args.get(constants.PARAM_HEADER, constants.API_DEFAULT_VALUES[constants.PARAM_HEADER])
 
-        if header not in constants.VALID_CSV_HEADER_MODES:
+        if header not in constants.VALID_CSV_HEADER_VALUES:
             msg = strings.INVALID_PARAMETER.format(constants.PARAM_HEADER, header)
             self._append_error(msg)

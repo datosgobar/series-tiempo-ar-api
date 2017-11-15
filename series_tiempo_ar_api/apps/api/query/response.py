@@ -70,8 +70,8 @@ class CSVFormatter(BaseFormatter):
 class ResponseFormatterGenerator(object):
 
     formatters = {
-        'json': JsonFormatter,
-        'csv': CSVFormatter
+        constants.FORMAT_JSON: JsonFormatter,
+        constants.FORMAT_CSV: CSVFormatter
     }
 
     def __init__(self, _format):

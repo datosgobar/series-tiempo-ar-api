@@ -22,10 +22,15 @@ class Query(object):
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
 
     def get_series_ids(self, how=constants.API_DEFAULT_VALUES[constants.PARAM_HEADER]):
-        if how and how not in constants.VALID_CSV_HEADER_MODES:
+        """Devuelve una lista con strings que identifican a las series
+        de tiempo cargadas, según el parámetro 'how':
+            - 'names': los nombres (títulos) de las series
+            - 'ids': las IDs de las series
+        """
+        if how and how not in constants.VALID_CSV_HEADER_VALUES:
             raise ValueError
 
-        if how == 'names':
+        if how == constants.HEADER_PARAM_NAMES:
             return [model.title for model in self.series_models]
 
         return self.es_query.get_series_ids()

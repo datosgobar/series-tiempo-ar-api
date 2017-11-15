@@ -119,16 +119,16 @@ class ESQuery(object):
             return {}
 
         return {
-            'start_date': self.data[0][0],
-            'end_date': self.data[-1][0]
+            constants.PARAM_START_DATE: self.data[0][0],
+            constants.PARAM_END_DATE: self.data[-1][0]
         }
 
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
-        if how == 'asc':
+        if how == constants.SORT_ASCENDING:
             order = 'timestamp'
 
-        elif how == 'desc':
+        elif how == constants.SORT_DESCENDING:
             order = '-timestamp'
         else:
             msg = strings.INVALID_SORT_PARAMETER.format(how)
