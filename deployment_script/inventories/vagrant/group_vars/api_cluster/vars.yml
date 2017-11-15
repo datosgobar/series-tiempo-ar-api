@@ -1,0 +1,4 @@
+---
+
+generate_django_secret_key: no
+django_secret_key: "{{ django_secret_key_vault }}"
