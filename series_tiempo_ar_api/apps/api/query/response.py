@@ -43,9 +43,10 @@ class CSVFormatter(BaseFormatter):
         """
 
         # Saco metadatos, no se usan para el formato CSV
-        query.set_metadata_config('none')
+        query.set_metadata_config(constants.METADATA_NONE)
 
-        header = query_args.get('header', constants.API_DEFAULT_VALUES['header'])
+        header = query_args.get(constants.PARAM_HEADER,
+                                constants.API_DEFAULT_VALUES[constants.PARAM_HEADER])
         series_ids = query.get_series_ids(how=header)
         data = query.run()['data']
 

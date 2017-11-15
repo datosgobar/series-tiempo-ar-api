@@ -38,30 +38,35 @@ PARAM_HEADER = 'header'
 PARAM_START_DATE = 'start_date'
 PARAM_END_DATE = 'end_date'
 
-API_DEFAULT_VALUES = {
-    PARAM_REP_MODE: 'value',
-    PARAM_COLLAPSE_AGG: 'avg',
-    PARAM_COLLAPSE: 'year',
-    PARAM_START: 0,
-    PARAM_LIMIT: 100,
-    PARAM_METADATA: 'simple',
-    PARAM_SORT: 'asc',
-    PARAM_FORMAT: 'json',
-    PARAM_HEADER: 'names'
-}
 
+METADATA_SIMPLE = 'simple'
+METADATA_FULL = 'full'
+METADATA_ONLY = 'only'
+METADATA_NONE = 'none'
 
 METADATA_SETTINGS = [
-    'simple',
-    'full',
-    'none',
-    'only'
+    METADATA_SIMPLE,
+    METADATA_FULL,
+    METADATA_ONLY,
+    METADATA_NONE
 ]
 
 SORT_VALUES = [
     'asc',
     'desc'
 ]
+
+API_DEFAULT_VALUES = {
+    PARAM_REP_MODE: 'value',
+    PARAM_COLLAPSE_AGG: 'avg',
+    PARAM_COLLAPSE: 'year',
+    PARAM_START: 0,
+    PARAM_LIMIT: 100,
+    PARAM_METADATA: METADATA_SIMPLE,
+    PARAM_SORT: 'asc',
+    PARAM_FORMAT: 'json',
+    PARAM_HEADER: 'names'
+}
 
 CATALOG_SIMPLE_META_FIELDS = [
     'title',

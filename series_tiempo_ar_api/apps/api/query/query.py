@@ -71,23 +71,24 @@ class Query(object):
 
     def run(self):
         response = OrderedDict()
-        if self.metadata_config != 'only':
+        if self.metadata_config != constants.METADATA_ONLY:
             response['data'] = self.es_query.run()
 
-        if self.metadata_config != 'none':
+        if self.metadata_config != constants.METADATA_NONE:
             response['meta'] = self.get_metadata()
 
         return response
 
     def get_metadata(self):
-        if self.metadata_config == 'none':
+        if self.metadata_config == constants.METADATA_NONE:
             return None
 
         meta = []
         index_meta = {
             'frequency': self._calculate_data_frequency()
         }
-        if self.metadata_config != 'only':
+        # si pedimos solo metadatos no tenemos start y end dates
+        if self.metadata_config != constants.METADATA_ONLY:
             index_meta.update(self.es_query.get_data_start_end_dates())
 
         meta.append(index_meta)
@@ -116,9 +117,10 @@ class Query(object):
         """
 
         metadata = None
-        if self.metadata_config == 'full' or self.metadata_config == 'only':
+        full_meta_values = (constants.METADATA_ONLY, constants.METADATA_FULL)
+        if self.metadata_config in full_meta_values:
             metadata = self._get_full_metadata(serie_model)
-        elif self.metadata_config == 'simple':
+        elif self.metadata_config == constants.METADATA_SIMPLE:
             metadata = self._get_simple_metadata(serie_model)
         return metadata
 
