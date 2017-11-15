@@ -199,40 +199,52 @@ class CollapseQuery(ESQuery):
 
         return search
 
-    def _format_single_response(self, row_len, response, start, limit):
+    def _format_single_response(self, response, start, limit):
         if not response.aggregations:
             return
 
         hits = response.aggregations.agg.buckets
-
         first_date = self._format_timestamp(hits[0]['key_as_string'])
 
         # Agrego rows necesarios vacíos para garantizar continuidad
-        self._make_date_index_continuous(first_date)
+        self._make_date_index_continuous(date_up_to=first_date)
 
-        start_index = find_index(self.data, first_date)
-        if start_index < 0:
-            start_index = 0  # Se va a appendear, no uso el offset
+        first_date_index = find_index(self.data, first_date)
+        if first_date_index < 0:
+            # indice no encontrado, vamos a appendear los resultados
+            first_date_index = 0
 
+        new_row_len = len(self.data[0]) + 1 if self.data else 2  # 1 timestamp + 1 dato = len 2
         for i, hit in enumerate(hits):
             if i < start:
                 continue
-            data_index = i - start
 
-            if data_index >= limit:  # Ya conseguimos datos suficientes
+            data = hit[constants.COLLAPSE_AGG_NAME].value
+            data_offset = i - start  # Offset de la primera fecha donde va a ir el dato actual
+            data_index = first_date_index + data_offset
+            if data_offset >= limit:  # Ya conseguimos datos suficientes
                 break
-            if data_index + start_index == len(self.data):  # No hay row, inicializo
-                # Strip de la parte de tiempo del datetime
-                timestamp = hit['key_as_string']
-                data_row = [self._format_timestamp(timestamp)]
-                if row_len > 2:  # Lleno el row de nulls
-                    nulls = [None for _ in range(1, len(self.data[0]))]
-                    data_row.extend(nulls)
-                self.data.append(data_row)
+            if data_index == len(self.data):  # No hay row, inicializo
+                timestamp = self._format_timestamp(hit['key_as_string'])
+                self._init_row(timestamp, data, new_row_len)
+            else:
+                self.data[data_index].append(data)
 
-            self.data[data_index + start_index].append(hit[constants.COLLAPSE_AGG_NAME].value)
+        # Consistencia del tamaño de las filas
+        self._fill_data_with_nulls(row_len=len(self.data[first_date_index]))
 
-        self._fill_nulls(row_len)
+    def _init_row(self, timestamp, data, row_len):
+        """Inicializa una nueva fila de los datos de respuesta,
+        garantizando que tenga longitud row_len, que el primer valor
+        sea el índice de tiempo, y el último el dato.
+        """
+
+        row = [timestamp]
+        # Lleno de nulls todo el row menos 2 espacios (timestamp + el dato a agregar)
+        nulls = [None] * (row_len - 2)
+        row.extend(nulls)
+        row.append(data)
+        self.data.append(row)
 
     def _format_response(self, responses):
         start = self.args.get(constants.PARAM_START)
@@ -240,9 +252,9 @@ class CollapseQuery(ESQuery):
 
         self._sort_responses(responses)
 
-        for row_len, response in enumerate(responses, 2):
+        for response in responses:
             # Smart solution
-            self._format_single_response(row_len, response, start, limit)
+            self._format_single_response(response, start, limit)
 
     @staticmethod
     def _sort_responses(responses):
@@ -262,10 +274,10 @@ class CollapseQuery(ESQuery):
 
         responses.sort(list_len_cmp)
 
-    def _fill_nulls(self, row_len):
-        """Rellena los espacios faltantes de la respuesta, haciendo
-        continuo el índice de tiempo y rellenando con nulls los datos
-        faltantes hasta que toda fila tenga longitud 'row_len'
+    def _fill_data_with_nulls(self, row_len):
+        """Rellena los espacios faltantes de la respuesta rellenando
+        con nulls los datos faltantes hasta que toda fila tenga
+        longitud 'row_len'
         """
         for row in self.data:
             while len(row) < row_len:

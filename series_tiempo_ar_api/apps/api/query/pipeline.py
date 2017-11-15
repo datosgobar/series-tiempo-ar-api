@@ -310,15 +310,13 @@ class Collapse(BaseOperation):
 
         agg = args.get(constants.PARAM_COLLAPSE_AGG,
                        constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG])
-        rep_mode = args.get(constants.PARAM_REP_MODE,
-                            constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE])
 
         if agg not in constants.AGGREGATIONS:
             msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE_AGG, agg)
             self._append_error(msg)
         else:
             try:
-                query.add_collapse(agg, collapse, rep_mode)
+                query.add_collapse(agg, collapse)
             except CollapseError:
                 msg = strings.INVALID_COLLAPSE.format(collapse)
                 self._append_error(msg)
