@@ -37,4 +37,9 @@ django_environment:
   DJANGO_SETTINGS_MODULE: "{{ application_settings_module }}"
 
 application_requirements: "{{ application_dir }}requirements.txt"
+
 run_migrations: yes
+
+# Set "django_secret_key" value if this changes!
+generate_django_secret_key: yes
+django_secret_key:

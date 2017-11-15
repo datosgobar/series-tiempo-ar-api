@@ -11,6 +11,13 @@
   shell: "{{ application_python_bin }} {{ application_secret_key_bin }} {{ application_secret_key_file }}"
   args:
     creates: "{{ application_secret_key_file }}"
+  when: generate_django_secret_key
+
+- name: Write django secret key from var
+  template:
+    src: django_secret_key
+    dest: "{{ application_secret_key_file }}"
+  when: not generate_django_secret_key
 
 - name: Get secret key
   slurp:
