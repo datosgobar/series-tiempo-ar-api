@@ -69,7 +69,7 @@ class Query(object):
                 raise CollapseError
 
     def run(self):
-        response = OrderedDict()
+        response = OrderedDict()  # Garantiza el orden de los objetos cargados
         if self.metadata_config != constants.METADATA_ONLY:
             response['data'] = self.es_query.run()
 
@@ -79,6 +79,10 @@ class Query(object):
         return response
 
     def get_metadata(self):
+        """Arma la respuesta de metadatos: una lista de objetos con
+        un metadato por serie de tiempo pedida, más una extra para el
+        índice de tiempo
+        """
         if self.metadata_config == constants.METADATA_NONE:
             return None
 
@@ -138,6 +142,9 @@ class Query(object):
         return metadata
 
     def _calculate_data_frequency(self):
+        """Devuelve la periodicidad de la o las series pedidas. Si son
+        muchas devuelve el intervalo de tiempo colapsado
+        """
         if hasattr(self.es_query, 'collapse_interval'):
             # noinspection PyUnresolvedReferences
             return self.es_query.collapse_interval
