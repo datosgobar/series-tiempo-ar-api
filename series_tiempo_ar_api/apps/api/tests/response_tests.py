@@ -2,6 +2,7 @@
 from django.test import TestCase
 
 from series_tiempo_ar_api.apps.api.models import Field
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
@@ -44,3 +45,11 @@ class ResponseTests(TestCase):
         line_end = response.content.find('\n')
         header = response.content[:line_end]
         self.assertTrue('random_0_title' in header)
+
+    def test_csv_name(self):
+        generator = ResponseFormatterGenerator('csv').get_formatter()
+        response = generator.run(self.query, {})
+        self.assertEquals(
+            response.get('Content-Disposition'),
+            'attachment; filename="{}"'.format(constants.CSV_RESPONSE_FILENAME)
+        )
