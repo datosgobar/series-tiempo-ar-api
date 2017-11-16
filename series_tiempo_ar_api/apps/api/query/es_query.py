@@ -253,21 +253,25 @@ class CollapseQuery(ESQuery):
         start = self.args.get(constants.PARAM_START)
         limit = self.args.get(constants.PARAM_LIMIT)
 
-        self._sort_responses(responses)
+        responses_sorted = self._sort_responses(responses)
 
-        for response in responses:
+        for response in responses_sorted:
             # Smart solution
             self._format_single_response(response, start, limit)
 
     @staticmethod
     def _sort_responses(responses):
-        def list_len_cmp(x, y):
-            """Ordena por primera fecha de resultados"""
-            if not x or not y:
+        def date_order_cmp(x, y):
+            """Ordena por primera fecha de resultados del bucket aggregation"""
+
+            hits_x = x.aggregations.agg.buckets
+            hits_y = y.aggregations.agg.buckets
+
+            if not hits_x or not hits_y:
                 return 0
 
-            first_date_x = x[0].timestamp
-            first_date_y = y[0].timestamp
+            first_date_x = hits_x[0]['key_as_string']
+            first_date_y = hits_y[0]['key_as_string']
             if first_date_x == first_date_y:
                 return 0
 
@@ -275,7 +279,7 @@ class CollapseQuery(ESQuery):
                 return -1
             return 1
 
-        responses.sort(list_len_cmp)
+        return sorted(responses, cmp=date_order_cmp)
 
     def _fill_data_with_nulls(self, row_len):
         """Rellena los espacios faltantes de la respuesta rellenando
