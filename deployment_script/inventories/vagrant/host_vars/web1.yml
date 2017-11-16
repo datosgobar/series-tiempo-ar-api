@@ -1,4 +1,0 @@
----
-
-ansible_host: 192.168.35.10
-ansible_port: 22

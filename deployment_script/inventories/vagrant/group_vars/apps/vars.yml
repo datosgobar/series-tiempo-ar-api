@@ -1,9 +1,0 @@
----
-
-postgresql_user: "{{ postgresql_user_vault }}"
-postgresql_password: "{{ postgresql_password_vault }}"
-
-#checkout_branch: master
-es_urls: "http://192.168.35.20:9200/"
-
-default_redis_host: "192.168.35.30"

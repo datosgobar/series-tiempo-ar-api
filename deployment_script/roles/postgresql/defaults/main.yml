@@ -1,9 +1,0 @@
----
-
-
-# Postgresql
-postgresql_host: localhost
-postgresql_port: 5432
-postgresql_backup_dir: "{{ backups_dir }}postgresql/"
-postgresql_bins: "{{ bins_dir }}postgresql/"
-psql_backup_bin: "{{ postgresql_bins }}psql_backup.sh"

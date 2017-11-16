@@ -1,4 +1,0 @@
----
-
-- name: Enable psql backup timer
-  service: state=restarted name="psql_backup.timer" enabled=yes

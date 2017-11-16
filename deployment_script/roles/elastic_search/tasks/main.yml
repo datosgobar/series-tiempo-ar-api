@@ -1,6 +1,0 @@
----
-
-- include_tasks: system.yml
-- include_tasks: elasticsearch.yml
-  tags: elastic
-- include_tasks: security.yml

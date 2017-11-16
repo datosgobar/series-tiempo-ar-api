@@ -1,4 +1,0 @@
----
-
-#postgresql_user: "{{ postgresql_user_vault }}"
-#postgresql_password: "{{ postgresql_password_vault }}"
