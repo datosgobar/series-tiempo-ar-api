@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.management import BaseCommand
 
+from series_tiempo_ar_api.apps.api.indexing import constants
+
 
 class Command(BaseCommand):
     start_date = datetime(2004, 1, 1)
@@ -51,7 +53,7 @@ class Command(BaseCommand):
         # Chequeo si existe el mapping, si no, lo creo
         response = requests.get(url)
         if response.status_code == 404:
-            requests.put(url, json.dumps(settings.MAPPING))
+            requests.put(url, json.dumps(constants.MAPPING))
 
         for _ in range(indicators):
             self.generate_random_series(options['years'], options['interval'])
