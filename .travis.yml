@@ -7,6 +7,9 @@ language: python
 python:
   - "2.7"
 
+env:
+  - DJANGO_SETTINGS_MODULE=conf.settings.testing
+
 before_install:
  - docker-compose pull
  - docker-compose up -d elasticsearch redis
