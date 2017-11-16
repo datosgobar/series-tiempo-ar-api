@@ -28,9 +28,9 @@ class ESQuery(object):
 
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
-            'start': constants.API_DEFAULT_VALUES['start'],
-            'limit': constants.API_DEFAULT_VALUES['limit'],
-            'sort': constants.API_DEFAULT_VALUES['sort']
+            constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
+            constants.PARAM_LIMIT: constants.API_DEFAULT_VALUES[constants.PARAM_LIMIT],
+            constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
         }
 
     def add_pagination(self, start, limit):
@@ -53,6 +53,7 @@ class ESQuery(object):
             'gte': start
         }
         for serie in self.series:
+            # Agrega un filtro de rango temporal a la query de ES
             serie.search = serie.search.filter('range',
                                                timestamp=_filter)
 
@@ -98,6 +99,7 @@ class ESQuery(object):
 
         search = Search(using=self.elastic)
         if series_id:
+            # Filtra los resultados por la serie pedida
             search = search.filter('match', series_id=series_id)
 
         self.series.append(Series(series_id=series_id,
@@ -187,6 +189,7 @@ class CollapseQuery(ESQuery):
 
     def _add_aggregation(self, search, rep_mode):
         search = search[:0]
+        # Agrega el collapse de los datos según intervalo de tiempo
         search.aggs \
             .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
