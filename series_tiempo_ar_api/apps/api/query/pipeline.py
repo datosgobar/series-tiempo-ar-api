@@ -13,7 +13,9 @@ from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
-from series_tiempo_ar_api.apps.api.strings import SERIES_DOES_NOT_EXIST
+from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
+from series_tiempo_ar_api.apps.api.query import strings
+from series_tiempo_ar_api.apps.api.query import constants
 
 
 class QueryPipeline(object):
@@ -31,18 +33,18 @@ class QueryPipeline(object):
             if cmd_instance.errors:
                 return self.generate_error_response(cmd_instance.errors)
 
-        _format = args.get('format', settings.API_DEFAULT_VALUES['format'])
+        _format = args.get(constants.PARAM_FORMAT,
+                           constants.API_DEFAULT_VALUES[constants.PARAM_FORMAT])
         formatter = self.get_formatter(_format)
         try:
             return formatter.run(query, args)
         except TransportError:
-            msg = 'Error Fatal. Contacte un administrador'
-            return self.generate_error_response([msg])
+            return self.generate_error_response([strings.ELASTICSEARCH_ERROR])
 
     @staticmethod
     def generate_error_response(errors_list):
         response = {'errors': list(errors_list)}
-        return JsonResponse(response, status=settings.RESPONSE_ERROR_CODE)
+        return JsonResponse(response, status=constants.RESPONSE_ERROR_CODE)
 
     @staticmethod
     def get_formatter(_format):
@@ -93,10 +95,12 @@ class Pagination(BaseOperation):
     """Agrega paginación de resultados a una búsqueda"""
 
     def run(self, query, args):
-        start = args.get('start', settings.API_DEFAULT_VALUES['start'])
-        limit = args.get('limit', settings.API_DEFAULT_VALUES['limit'])
-        self.validate_arg(start, name='start')
-        self.validate_arg(limit, min_value=1, name='limit')
+        start = args.get(constants.PARAM_START,
+                         constants.API_DEFAULT_VALUES[constants.PARAM_START])
+        limit = args.get(constants.PARAM_LIMIT,
+                         constants.API_DEFAULT_VALUES[constants.PARAM_LIMIT])
+        self.validate_arg(start, name=constants.PARAM_START)
+        self.validate_arg(limit, min_value=1, name=constants.PARAM_LIMIT)
         if self.errors:
             return
 
@@ -104,20 +108,20 @@ class Pagination(BaseOperation):
         limit = start + int(limit)
         query.add_pagination(start, limit)
 
-    def validate_arg(self, arg, min_value=0, name='limit'):
+    def validate_arg(self, arg, min_value=0, name=constants.PARAM_LIMIT):
         try:
             parsed_arg = int(arg)
         except ValueError:
             parsed_arg = None
 
         if parsed_arg is None or parsed_arg < min_value:
-            self._append_error("Parámetro '{}' inválido: {}".format(name, arg))
+            self._append_error(strings.INVALID_PARAMETER.format(name, arg))
             return
 
-        max_value = settings.MAX_ALLOWED_VALUE[name]
+        max_value = settings.MAX_ALLOWED_VALUES[name]
         if parsed_arg > max_value:
-            msg = "Parámetro {} por encima del límite permitido ({})"
-            self._append_error(msg.format(name, max_value))
+            msg = strings.PARAMETER_OVER_LIMIT.format(name, max_value, parsed_arg)
+            self._append_error(msg)
 
 
 class DateFilter(BaseOperation):
@@ -127,8 +131,8 @@ class DateFilter(BaseOperation):
         self.end = None
 
     def run(self, query, args):
-        self.start = args.get('start_date')
-        self.end = args.get('end_date')
+        self.start = args.get(constants.PARAM_START_DATE)
+        self.end = args.get(constants.PARAM_END_DATE)
 
         self.validate_start_end_dates()
         if self.errors:
@@ -157,26 +161,28 @@ class DateFilter(BaseOperation):
         parsed_start, parsed_end = None, None
         if self.start:
             try:
-                parsed_start = self.validate_date(self.start)
+                parsed_start = self.validate_date(self.start,
+                                                  constants.PARAM_START_DATE)
             except ValueError:
                 pass
 
         if self.end:
             try:
-                parsed_end = self.validate_date(self.end)
+                parsed_end = self.validate_date(self.end,
+                                                constants.PARAM_END_DATE)
             except ValueError:
                 pass
 
         if parsed_start and parsed_end:
             if parsed_start > parsed_end:
-                error = "Filtro por rango temporal inválido (start > end)"
-                self._append_error(error)
+                self._append_error(strings.INVALID_DATE_FILTER)
 
-    def validate_date(self, _date):
+    def validate_date(self, _date, param):
         """Valida y parsea la fecha pasada.
 
         Args:
             _date (str): date string, ISO 8601
+            param (str): Parámetro siendo parseado
 
         Returns:
             date con la fecha parseada
@@ -188,8 +194,7 @@ class DateFilter(BaseOperation):
         try:
             parsed_date = iso8601.parse_date(_date)
         except iso8601.ParseError:
-            error = 'Formato de rango temporal inválido: {}'.format(_date)
-            self._append_error(error)
+            self._append_error(strings.INVALID_DATE.format(param, _date))
             raise ValueError
         return parsed_date
 
@@ -210,11 +215,11 @@ class NameAndRepMode(BaseOperation):
         # rep_mode es opcional, hay un valor default, dado por otro parámetro
         # 'representation_mode'
         # Parseamos esa string y agregamos a la query las series pedidas
-        ids = args.get('ids')
-        rep_mode = args.get('representation_mode',
-                            settings.API_DEFAULT_VALUES['rep_mode'])
+        ids = args.get(constants.PARAM_IDS)
+        rep_mode = args.get(constants.PARAM_REP_MODE,
+                            constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE])
         if not ids:
-            self._append_error('No se especificó una serie de tiempo.')
+            self._append_error(strings.NO_TIME_SERIES_ERROR)
             return
 
         delim = ids.find(',')
@@ -250,12 +255,12 @@ class NameAndRepMode(BaseOperation):
         """
         field_model = Field.objects.filter(series_id=series_id)
         if not field_model:
-            self._append_error('{}: {}'.format(SERIES_DOES_NOT_EXIST,
-                                               series_id))
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
             return
 
-        if rep_mode not in settings.REP_MODES:
-            error = "Modo de representación inválido: {}".format(rep_mode)
+        if rep_mode not in constants.REP_MODES:
+            error = strings.INVALID_PARAMETER.format(constants.PARAM_REP_MODE,
+                                                     rep_mode)
             self._append_error(error)
             return
 
@@ -281,12 +286,11 @@ class NameAndRepMode(BaseOperation):
             try:
                 name, rep_mode = serie.split(':')
                 if not rep_mode:
-                    error = "Modo de representación vacío para {}".format(
-                        name)
+                    error = strings.NO_REP_MODE_ERROR.format(name)
                     self._append_error(error)
                     return None, None
             except ValueError:
-                self._append_error("Formato de series a seleccionar inválido")
+                self._append_error(strings.INVALID_SERIES_IDS_FORMAT)
                 return None, None
         return name, rep_mode
 
@@ -294,41 +298,39 @@ class NameAndRepMode(BaseOperation):
 class Collapse(BaseOperation):
     """Maneja las distintas agregaciones (suma, promedio)"""
     def run(self, query, args):
-        collapse = args.get('collapse')
+        collapse = args.get(constants.PARAM_COLLAPSE)
         if not collapse:
             return
 
-        if collapse not in settings.COLLAPSE_INTERVALS:
-            msg = 'Intervalo de agregación inválido: {}'
-            self._append_error(msg.format(collapse))
+        if collapse not in constants.COLLAPSE_INTERVALS:
+            msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE,
+                                                   collapse)
+            self._append_error(msg)
             return
 
-        agg = args.get('collapse_aggregation',
-                       settings.API_DEFAULT_VALUES['collapse_aggregation'])
-        rep_mode = args.get('representation_mode',
-                            settings.API_DEFAULT_VALUES['rep_mode'])
+        agg = args.get(constants.PARAM_COLLAPSE_AGG,
+                       constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG])
 
-        if agg not in settings.AGGREGATIONS:
-            self._append_error("Modo de agregación inválido: {}".format(agg))
+        if agg not in constants.AGGREGATIONS:
+            msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE_AGG, agg)
+            self._append_error(msg)
         else:
             try:
-                query.add_collapse(agg, collapse, rep_mode)
+                query.add_collapse(agg, collapse)
             except CollapseError:
-                msg = "Intervalo de collapse inválido para la(s) serie(s) " \
-                      "seleccionadas: {}. Pruebe con un intervalo mayor"
-                msg = msg.format(collapse)
+                msg = strings.INVALID_COLLAPSE.format(collapse)
                 self._append_error(msg)
 
 
 class Metadata(BaseOperation):
 
     def run(self, query, args):
-        metadata = args.get('metadata')
+        metadata = args.get(constants.PARAM_METADATA)
         if not metadata:
             return
 
-        if metadata not in settings.METADATA_SETTINGS:
-            msg = u'Configuración de metadatos inválido: {}'.format(metadata)
+        if metadata not in constants.METADATA_SETTINGS:
+            msg = strings.INVALID_PARAMETER.format(constants.PARAM_METADATA, metadata)
             self._append_error(msg)
         else:
             query.set_metadata_config(metadata)
@@ -337,10 +339,10 @@ class Metadata(BaseOperation):
 class Sort(BaseOperation):
 
     def run(self, query, args):
-        sort = args.get('sort', settings.API_DEFAULT_VALUES['sort'])
+        sort = args.get(constants.PARAM_SORT, constants.API_DEFAULT_VALUES[constants.PARAM_SORT])
 
-        if sort not in settings.SORT_VALUES:
-            msg = u'Parámetro sort inválido: {}'.format(sort)
+        if sort not in constants.SORT_VALUES:
+            msg = strings.INVALID_PARAMETER.format(constants.PARAM_SORT, sort)
             self._append_error(msg)
         else:
             query.sort(sort)
@@ -351,10 +353,11 @@ class Format(BaseOperation):
     operación
     """
     def run(self, query, args):
-        sort = args.get('format', settings.API_DEFAULT_VALUES['format'])
+        sort = args.get(constants.PARAM_FORMAT,
+                        constants.API_DEFAULT_VALUES[constants.PARAM_FORMAT])
 
-        if sort not in settings.FORMAT_VALUES:
-            msg = u'Parámetro format inválido: {}'.format(sort)
+        if sort not in constants.FORMAT_VALUES:
+            msg = strings.INVALID_PARAMETER.format(constants.PARAM_FORMAT, format)
             self._append_error(msg)
 
 
@@ -363,8 +366,8 @@ class Header(BaseOperation):
     operación"""
 
     def run(self, query, args):
-        header = args.get('header', settings.API_DEFAULT_VALUES['header'])
+        header = args.get(constants.PARAM_HEADER, constants.API_DEFAULT_VALUES[constants.PARAM_HEADER])
 
-        if header not in settings.VALID_CSV_HEADER_MODES:
-            msg = u'Parámetro header inválido {}'.format(header)
+        if header not in constants.VALID_CSV_HEADER_VALUES:
+            msg = strings.INVALID_PARAMETER.format(constants.PARAM_HEADER, header)
             self._append_error(msg)

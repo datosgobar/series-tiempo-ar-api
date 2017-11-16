@@ -8,6 +8,7 @@ from django.conf import settings
 from django.http.response import JsonResponse, HttpResponse
 
 from series_tiempo_ar_api.apps.api.exceptions import InvalidFormatError
+from series_tiempo_ar_api.apps.api.query import constants
 
 
 class BaseFormatter(object):
@@ -42,9 +43,10 @@ class CSVFormatter(BaseFormatter):
         """
 
         # Saco metadatos, no se usan para el formato CSV
-        query.set_metadata_config('none')
+        query.set_metadata_config(constants.METADATA_NONE)
 
-        header = query_args.get('header', settings.API_DEFAULT_VALUES['header'])
+        header = query_args.get(constants.PARAM_HEADER,
+                                constants.API_DEFAULT_VALUES[constants.PARAM_HEADER])
         series_ids = query.get_series_ids(how=header)
         data = query.run()['data']
 
@@ -68,8 +70,8 @@ class CSVFormatter(BaseFormatter):
 class ResponseFormatterGenerator(object):
 
     formatters = {
-        'json': JsonFormatter,
-        'csv': CSVFormatter
+        constants.FORMAT_JSON: JsonFormatter,
+        constants.FORMAT_CSV: CSVFormatter
     }
 
     def __init__(self, _format):

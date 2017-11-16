@@ -1,12 +1,11 @@
 #! coding: utf-8
 from collections import OrderedDict
 
-from django.conf import settings
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from series_tiempo_ar_api.apps.api.helpers import \
-    get_periodicity_human_format, get_max_periodicity
+from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
 
 
@@ -19,13 +18,18 @@ class Query(object):
     def __init__(self):
         self.es_query = ESQuery()
         self.series_models = []
-        self.metadata_config = settings.API_DEFAULT_VALUES['metadata']
+        self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
 
-    def get_series_ids(self, how=settings.API_DEFAULT_VALUES['header']):
-        if how and how not in settings.VALID_CSV_HEADER_MODES:
+    def get_series_ids(self, how=constants.API_DEFAULT_VALUES[constants.PARAM_HEADER]):
+        """Devuelve una lista con strings que identifican a las series
+        de tiempo cargadas, según el parámetro 'how':
+            - 'names': los nombres (títulos) de las series
+            - 'ids': las IDs de las series
+        """
+        if how and how not in constants.VALID_CSV_HEADER_VALUES:
             raise ValueError
 
-        if how == 'names':
+        if how == constants.HEADER_PARAM_NAMES:
             return [model.title for model in self.series_models]
 
         return self.es_query.get_series_ids()
@@ -36,32 +40,47 @@ class Query(object):
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
 
-    def add_series(self, name, field,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
-        self.series_models.append(field)
-
+    def add_series(self, name, field_model,
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         periodicities = [
             get_periodicity_human_format(field.distribution.periodicity)
             for field in self.series_models
         ]
 
-        self.es_query.add_series(name, rep_mode)
-        if len(self.series_models) > 1:
-            periodicity = get_max_periodicity(periodicities)
+        self.series_models.append(field_model)
+
+        series_periodicity = get_periodicity_human_format(
+            field_model.distribution.periodicity)
+
+        if periodicities and series_periodicity not in periodicities:
+            # Hay varias series con distintas periodicities, colapso los datos
+            periodicity = self.get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
 
+        self.es_query.add_series(name, rep_mode)
+
+    @staticmethod
+    def get_max_periodicity(periodicities):
+        """Devuelve la periodicity máxima en la lista periodicities"""
+        order = constants.COLLAPSE_INTERVALS
+        index = 0
+        for periodicity in periodicities:
+            field_index = order.index(periodicity)
+            index = index if index > field_index else field_index
+
+        return order[index]
+
     def add_collapse(self, agg=None,
-                     collapse=None,
-                     rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                     collapse=None):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(self.es_query)
-        self.es_query.add_collapse(agg, collapse, rep_mode)
+        self.es_query.add_collapse(agg, collapse)
 
     def set_metadata_config(self, how):
         self.metadata_config = how
 
     def _validate_collapse(self, collapse):
-        order = settings.COLLAPSE_INTERVALS
+        order = constants.COLLAPSE_INTERVALS
 
         for serie in self.series_models:
             periodicity = serie.distribution.periodicity
@@ -70,24 +89,29 @@ class Query(object):
                 raise CollapseError
 
     def run(self):
-        response = OrderedDict()
-        if self.metadata_config != 'only':
+        response = OrderedDict()  # Garantiza el orden de los objetos cargados
+        if self.metadata_config != constants.METADATA_ONLY:
             response['data'] = self.es_query.run()
 
-        if self.metadata_config != 'none':
+        if self.metadata_config != constants.METADATA_NONE:
             response['meta'] = self.get_metadata()
 
         return response
 
     def get_metadata(self):
-        if self.metadata_config == 'none':
+        """Arma la respuesta de metadatos: una lista de objetos con
+        un metadato por serie de tiempo pedida, más una extra para el
+        índice de tiempo
+        """
+        if self.metadata_config == constants.METADATA_NONE:
             return None
 
         meta = []
         index_meta = {
             'frequency': self._calculate_data_frequency()
         }
-        if self.metadata_config != 'only':
+        # si pedimos solo metadatos no tenemos start y end dates
+        if self.metadata_config != constants.METADATA_ONLY:
             index_meta.update(self.es_query.get_data_start_end_dates())
 
         meta.append(index_meta)
@@ -116,9 +140,10 @@ class Query(object):
         """
 
         metadata = None
-        if self.metadata_config == 'full' or self.metadata_config == 'only':
+        full_meta_values = (constants.METADATA_ONLY, constants.METADATA_FULL)
+        if self.metadata_config in full_meta_values:
             metadata = self._get_full_metadata(serie_model)
-        elif self.metadata_config == 'simple':
+        elif self.metadata_config == constants.METADATA_SIMPLE:
             metadata = self._get_simple_metadata(serie_model)
         return metadata
 
@@ -137,6 +162,9 @@ class Query(object):
         return metadata
 
     def _calculate_data_frequency(self):
+        """Devuelve la periodicidad de la o las series pedidas. Si son
+        muchas devuelve el intervalo de tiempo colapsado
+        """
         if hasattr(self.es_query, 'collapse_interval'):
             # noinspection PyUnresolvedReferences
             return self.es_query.collapse_interval
@@ -171,22 +199,22 @@ class Query(object):
         meta = self._get_full_metadata(serie_model)
 
         for meta_field in meta.keys():
-            if meta_field not in settings.CATALOG_SIMPLE_META_FIELDS:
+            if meta_field not in constants.CATALOG_SIMPLE_META_FIELDS:
                 meta.pop(meta_field)
 
         dataset = meta['dataset'][0]  # Dataset de un único elemento
         for meta_field in dataset.keys():
-            if meta_field not in settings.DATASET_SIMPLE_META_FIELDS:
+            if meta_field not in constants.DATASET_SIMPLE_META_FIELDS:
                 dataset.pop(meta_field)
 
         distribution = dataset['distribution'][0]
         for meta_field in distribution.keys():
-            if meta_field not in settings.DISTRIBUTION_SIMPLE_META_FIELDS:
+            if meta_field not in constants.DISTRIBUTION_SIMPLE_META_FIELDS:
                 distribution.pop(meta_field)
 
         field = distribution['field'][0]
         for meta_field in field.keys():
-            if meta_field not in settings.FIELD_SIMPLE_META_FIELDS:
+            if meta_field not in constants.FIELD_SIMPLE_META_FIELDS:
                 field.pop(meta_field)
 
         return meta

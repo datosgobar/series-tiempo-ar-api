@@ -1,19 +1,19 @@
 # coding=utf-8
 import iso8601
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery, CollapseQuery
 from .helpers import setup_database
 
 
 class QueryTest(TestCase):
 
-    start = settings.API_DEFAULT_VALUES['start']
-    limit = settings.API_DEFAULT_VALUES['limit']
+    start = constants.API_DEFAULT_VALUES['start']
+    limit = constants.API_DEFAULT_VALUES['limit']
 
     default_limit = 10
     max_limit = 1000
@@ -31,32 +31,24 @@ class QueryTest(TestCase):
     def setUp(self):
         self.query = ESQuery()
 
-    def test_inicialmente_no_hay_series(self):
+    def test_initially_no_series(self):
         self.assertFalse(self.query.series)
 
-    def test_pagination_agrega_serie_si_no_existe(self):
-        self.query.add_pagination(self.start, self.limit)
-
-        self.assertEqual(len(self.query.series), 1)
-
-    def test_pagination_no_agrega_serie_si_ya_existe_una(self):
-        self.query.add_pagination(self.start, self.limit)
-        self.query.add_pagination(self.start, self.limit)
-
-        self.assertEqual(len(self.query.series), 1)
-
     def test_pagination(self):
+        self.query.add_series(self.single_series)
         self.query.add_pagination(self.start, self.limit)
         data = self.query.run()
 
         self.assertEqual(len(data), self.limit - self.start)
 
     def test_pagination_limit(self):
+        self.query.add_series(self.single_series)
         self.query.add_pagination(self.start, self.max_limit)
         data = self.query.run()
         self.assertEqual(len(data), self.max_limit - self.start)
 
     def test_time_filter(self):
+        self.query.add_series(self.single_series)
         self.query.add_filter(self.start_date, self.end_date)
         data = self.query.run()
         for row in data:

@@ -1,5 +1,4 @@
 #! coding: utf-8
-from django.conf import settings
 from dateutil.relativedelta import relativedelta
 
 
@@ -30,17 +29,6 @@ def freq_pandas_to_index_offset(freq):
     for key, value in offset.items():
         if key in freq:
             return value
-
-
-def get_max_periodicity(periodicities):
-    """Devuelve la periodicity máxima en la lista periodicities"""
-    order = settings.COLLAPSE_INTERVALS
-    index = 0
-    for periodicity in periodicities:
-        field_index = order.index(periodicity)
-        index = index if index > field_index else field_index
-
-    return order[index]
 
 
 def find_index(list_of_lists, element):

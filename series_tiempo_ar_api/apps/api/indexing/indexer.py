@@ -71,7 +71,7 @@ class Indexer(object):
             index=self.index,
             body=constants.REACTIVATE_REFRESH_BODY
         )
-        segments = settings.FORCE_MERGE_SEGMENTS
+        segments = constants.FORCE_MERGE_SEGMENTS
         self.elastic.indices.forcemerge(index=self.index,
                                         max_num_segments=segments)
 
@@ -113,7 +113,7 @@ class Indexer(object):
     def init_index(self):
         if not self.elastic.indices.exists(self.index):
             self.elastic.indices.create(self.index,
-                                        body=settings.INDEX_CREATION_BODY)
+                                        body=constants.INDEX_CREATION_BODY)
 
     def generate_properties(self, df, fields):
         df.apply(self.process_column, args=[fields])
@@ -165,7 +165,7 @@ class Indexer(object):
         }
 
         source = {
-            'timestamp': timestamp,
+            settings.TS_TIME_INDEX_FIELD: timestamp,
             'series_id': series_id
         }
 

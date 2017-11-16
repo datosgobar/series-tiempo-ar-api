@@ -6,6 +6,8 @@ from elasticsearch_dsl import Search, MultiSearch
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.api.query import strings
+from series_tiempo_ar_api.apps.api.query import constants
 
 
 class ESQuery(object):
@@ -26,42 +28,43 @@ class ESQuery(object):
 
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
-            'start': settings.API_DEFAULT_VALUES['start'],
-            'limit': settings.API_DEFAULT_VALUES['limit'],
-            'sort': settings.API_DEFAULT_VALUES['sort']
+            constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
+            constants.PARAM_LIMIT: constants.API_DEFAULT_VALUES[constants.PARAM_LIMIT],
+            constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
         }
 
     def add_pagination(self, start, limit):
         if not len(self.series):
-            self._init_series()
+            raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:
             serie.search = serie.search[start:limit]
 
         # Guardo estos parámetros, necesarios en el evento de hacer un collapse
-        self.args['start'] = start
-        self.args['limit'] = limit
+        self.args[constants.PARAM_START] = start
+        self.args[constants.PARAM_LIMIT] = limit
 
     def add_filter(self, start=None, end=None):
         if not len(self.series):
-            self._init_series()
+            raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         _filter = {
             'lte': end,
             'gte': start
         }
         for serie in self.series:
+            # Agrega un filtro de rango temporal a la query de ES
             serie.search = serie.search.filter('range',
                                                timestamp=_filter)
 
     def add_series(self,
                    series_id,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         self._init_series(series_id, rep_mode)
 
     def run(self):
         if not self.series:
-            raise QueryError("Query vacía, primero agregue una serie")
+            raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         multi_search = MultiSearch(index=settings.TS_INDEX,
                                    doc_type=settings.TS_DOC_TYPE,
@@ -77,7 +80,7 @@ class ESQuery(object):
 
     def _format_response(self, responses):
         for i, response in enumerate(responses):
-            rep_mode = self.series[i]['rep_mode']
+            rep_mode = self.series[i].rep_mode
             self._populate_data(response, rep_mode)
 
     def _populate_data(self, response, rep_mode):
@@ -92,10 +95,11 @@ class ESQuery(object):
                 self.data[i].append(None)
 
     def _init_series(self, series_id=None,
-                     rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                     rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
 
         search = Search(using=self.elastic)
         if series_id:
+            # Filtra los resultados por la serie pedida
             search = search.filter('match', series_id=series_id)
 
         self.series.append(Series(series_id=series_id,
@@ -117,26 +121,26 @@ class ESQuery(object):
             return {}
 
         return {
-            'start_date': self.data[0][0],
-            'end_date': self.data[-1][0]
+            constants.PARAM_START_DATE: self.data[0][0],
+            constants.PARAM_END_DATE: self.data[-1][0]
         }
 
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
-        if how == 'asc':
-            order = 'timestamp'
+        if how == constants.SORT_ASCENDING:
+            order = settings.TS_TIME_INDEX_FIELD
 
-        elif how == 'desc':
-            order = '-timestamp'
+        elif how == constants.SORT_DESCENDING:
+            order = '-' + settings.TS_TIME_INDEX_FIELD
         else:
-            msg = '"how" debe ser "asc", o "desc", recibido {}'.format(how)
+            msg = strings.INVALID_SORT_PARAMETER.format(how)
             raise ValueError(msg)
 
         for serie in self.series:
             serie.search = serie.search.sort(order)
 
         # Guardo el parámetro, necesario en el evento de hacer un collapse
-        self.args['sort'] = how
+        self.args[constants.PARAM_SORT] = how
 
 
 class CollapseQuery(ESQuery):
@@ -149,8 +153,8 @@ class CollapseQuery(ESQuery):
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
         self.collapse_aggregation = \
-            settings.API_DEFAULT_VALUES['collapse_aggregation']
-        self.collapse_interval = settings.API_DEFAULT_VALUES['collapse']
+            constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
+        self.collapse_interval = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE]
 
         if other:
             self.series = list(other.series)
@@ -160,14 +164,14 @@ class CollapseQuery(ESQuery):
 
     def add_series(self,
                    series_id,
-                   rep_mode=settings.API_DEFAULT_VALUES['rep_mode']):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
         super(CollapseQuery, self).add_series(series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
         serie.search = self._add_aggregation(search, rep_mode)
 
-    def add_collapse(self, agg=None, interval=None, global_rep_mode=None):
+    def add_collapse(self, agg=None, interval=None):
         if agg:
             self.collapse_aggregation = agg
         if interval:
@@ -179,78 +183,95 @@ class CollapseQuery(ESQuery):
             self.collapse_interval = interval
 
         for serie in self.series:
-            rep_mode = serie.get('rep_mode', global_rep_mode)
+            rep_mode = serie.rep_mode
             search = serie.search
             serie.search = self._add_aggregation(search, rep_mode)
 
     def _add_aggregation(self, search, rep_mode):
         search = search[:0]
+        # Agrega el collapse de los datos según intervalo de tiempo
         search.aggs \
-            .bucket('agg',
+            .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
-                    field='timestamp',
-                    order={"_key": self.args['sort']},
+                    field=settings.TS_TIME_INDEX_FIELD,
+                    order={"_key": self.args[constants.PARAM_SORT]},
                     interval=self.collapse_interval) \
-            .metric('agg',
+            .metric(constants.COLLAPSE_AGG_NAME,
                     self.collapse_aggregation,
                     field=rep_mode)
 
         return search
 
-    def _format_single_response(self, row_len, response, start, limit):
+    def _format_single_response(self, response, start, limit):
         if not response.aggregations:
             return
 
         hits = response.aggregations.agg.buckets
-
         first_date = self._format_timestamp(hits[0]['key_as_string'])
 
         # Agrego rows necesarios vacíos para garantizar continuidad
-        self._make_date_index_continuous(first_date)
+        self._make_date_index_continuous(date_up_to=first_date)
 
-        start_index = find_index(self.data, first_date)
-        if start_index < 0:
-            start_index = 0  # Se va a appendear, no uso el offset
+        first_date_index = find_index(self.data, first_date)
+        if first_date_index < 0:
+            # indice no encontrado, vamos a appendear los resultados
+            first_date_index = 0
 
+        new_row_len = len(self.data[0]) + 1 if self.data else 2  # 1 timestamp + 1 dato = len 2
         for i, hit in enumerate(hits):
             if i < start:
                 continue
-            data_index = i - start
 
-            if data_index >= limit:  # Ya conseguimos datos suficientes
+            data = hit[constants.COLLAPSE_AGG_NAME].value
+            data_offset = i - start  # Offset de la primera fecha donde va a ir el dato actual
+            data_index = first_date_index + data_offset
+            if data_offset >= limit:  # Ya conseguimos datos suficientes
                 break
-            if data_index + start_index == len(self.data):  # No hay row, inicializo
-                # Strip de la parte de tiempo del datetime
-                timestamp = hit['key_as_string']
-                data_row = [self._format_timestamp(timestamp)]
-                if row_len > 2:  # Lleno el row de nulls
-                    nulls = [None for _ in range(1, len(self.data[0]))]
-                    data_row.extend(nulls)
-                self.data.append(data_row)
+            if data_index == len(self.data):  # No hay row, inicializo
+                timestamp = self._format_timestamp(hit['key_as_string'])
+                self._init_row(timestamp, data, new_row_len)
+            else:
+                self.data[data_index].append(data)
 
-            self.data[data_index + start_index].append(hit['agg'].value)
+        # Consistencia del tamaño de las filas
+        self._fill_data_with_nulls(row_len=len(self.data[first_date_index]))
 
-        self._fill_nulls(row_len)
+    def _init_row(self, timestamp, data, row_len):
+        """Inicializa una nueva fila de los datos de respuesta,
+        garantizando que tenga longitud row_len, que el primer valor
+        sea el índice de tiempo, y el último el dato.
+        """
+
+        row = [timestamp]
+        # Lleno de nulls todo el row menos 2 espacios (timestamp + el dato a agregar)
+        nulls = [None] * (row_len - 2)
+        row.extend(nulls)
+        row.append(data)
+        self.data.append(row)
 
     def _format_response(self, responses):
-        start = self.args.get('start')
-        limit = self.args.get('limit')
+        start = self.args.get(constants.PARAM_START)
+        limit = self.args.get(constants.PARAM_LIMIT)
 
-        self._sort_responses(responses)
+        responses_sorted = self._sort_responses(responses)
 
-        for row_len, response in enumerate(responses, 2):
+        for response in responses_sorted:
             # Smart solution
-            self._format_single_response(row_len, response, start, limit)
+            self._format_single_response(response, start, limit)
 
     @staticmethod
     def _sort_responses(responses):
-        def list_len_cmp(x, y):
-            """Ordena por primera fecha de resultados"""
-            if not x or not y:
+        def date_order_cmp(x, y):
+            """Ordena por primera fecha de resultados del bucket aggregation"""
+
+            hits_x = x.aggregations.agg.buckets
+            hits_y = y.aggregations.agg.buckets
+
+            if not hits_x or not hits_y:
                 return 0
 
-            first_date_x = x[0].timestamp
-            first_date_y = y[0].timestamp
+            first_date_x = hits_x[0]['key_as_string']
+            first_date_y = hits_y[0]['key_as_string']
             if first_date_x == first_date_y:
                 return 0
 
@@ -258,12 +279,12 @@ class CollapseQuery(ESQuery):
                 return -1
             return 1
 
-        responses.sort(list_len_cmp)
+        return sorted(responses, cmp=date_order_cmp)
 
-    def _fill_nulls(self, row_len):
-        """Rellena los espacios faltantes de la respuesta, haciendo
-        continuo el índice de tiempo y rellenando con nulls los datos
-        faltantes hasta que toda fila tenga longitud 'row_len'
+    def _fill_data_with_nulls(self, row_len):
+        """Rellena los espacios faltantes de la respuesta rellenando
+        con nulls los datos faltantes hasta que toda fila tenga
+        longitud 'row_len'
         """
         for row in self.data:
             while len(row) < row_len:

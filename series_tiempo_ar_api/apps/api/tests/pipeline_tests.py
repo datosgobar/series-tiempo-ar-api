@@ -6,7 +6,7 @@ from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.pipeline import \
     NameAndRepMode, Collapse, Pagination, DateFilter, Sort
 from series_tiempo_ar_api.apps.api.query.query import Query
-from series_tiempo_ar_api.apps.api.strings import SERIES_DOES_NOT_EXIST
+from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from .helpers import setup_database
 from .support.pipeline import time_serie_name
 
@@ -38,7 +38,8 @@ class NameAndRepModeTest(TestCase):
     def test_serie_does_not_exist_message(self):
         invalid_series = time_serie_name()
         self.cmd.run(self.query, {'ids': invalid_series})
-        self.assertIn(SERIES_DOES_NOT_EXIST, self.cmd.errors[0]["error"])
+        base_msg = SERIES_DOES_NOT_EXIST.format('')
+        self.assertIn(base_msg, self.cmd.errors[0]["error"])
 
     def test_valid_series(self):
         self.cmd.run(self.query, {'ids': self.single_series})

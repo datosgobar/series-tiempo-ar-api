@@ -1,5 +1,6 @@
 #! coding: utf-8
 from elasticsearch import Elasticsearch
+from series_tiempo_ar_api.apps.api.query import strings
 
 
 class ElasticInstance(object):
@@ -38,4 +39,4 @@ class ElasticInstance(object):
 
 
 class NotInitializedError(BaseException):
-    message = "Instancia no inicializada. Pruebe con init(urls)"
+    message = strings.ES_NOT_INIT_ERROR
