@@ -54,6 +54,7 @@ class Query(object):
 
         if periodicities and series_periodicity not in periodicities:
             # Hay varias series con distintas periodicities, colapso los datos
+            periodicities.append(series_periodicity)
             periodicity = self.get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
 
