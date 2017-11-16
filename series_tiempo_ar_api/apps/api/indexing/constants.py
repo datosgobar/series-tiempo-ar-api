@@ -23,17 +23,17 @@ PCT_CHANGE_YEAR_AGO = 'percent_change_a_year_ago'
 
 # JSON del mapping de series de tiempo
 MAPPING = {
-  "properties": {
-    settings.TS_TIME_INDEX_FIELD: {"type": "date"},
-    VALUE: {"type": "scaled_float", "scaling_factor": 10000000},
-    CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
-    PCT_CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
-    CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
-    PCT_CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
-    "series_id": {"type": "keyword"}
-  },
-  "_all": {"enabled": False},
-  "dynamic": "strict"
+    "properties": {
+        settings.TS_TIME_INDEX_FIELD: {"type": "date"},
+        VALUE: {"type": "scaled_float", "scaling_factor": 10000000},
+        CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
+        PCT_CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
+        CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
+        PCT_CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
+        "series_id": {"type": "keyword"}
+    },
+    "_all": {"enabled": False},
+    "dynamic": "strict"
 }
 
 

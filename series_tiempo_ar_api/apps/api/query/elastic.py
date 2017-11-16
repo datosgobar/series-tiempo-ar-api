@@ -2,6 +2,7 @@
 from elasticsearch import Elasticsearch
 from series_tiempo_ar_api.apps.api.query import strings
 
+
 class ElasticInstance(object):
     elastic = None
 
