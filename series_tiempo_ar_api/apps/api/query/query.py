@@ -4,8 +4,7 @@ from collections import OrderedDict
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from series_tiempo_ar_api.apps.api.helpers import \
-    get_periodicity_human_format, get_max_periodicity
+from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
 
@@ -41,19 +40,35 @@ class Query(object):
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
 
-    def add_series(self, name, field,
+    def add_series(self, name, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
-        self.series_models.append(field)
-
         periodicities = [
             get_periodicity_human_format(field.distribution.periodicity)
             for field in self.series_models
         ]
 
-        self.es_query.add_series(name, rep_mode)
-        if len(self.series_models) > 1:
-            periodicity = get_max_periodicity(periodicities)
+        self.series_models.append(field_model)
+
+        series_periodicity = get_periodicity_human_format(
+            field_model.distribution.periodicity)
+
+        if periodicities and series_periodicity not in periodicities:
+            # Hay varias series con distintas periodicities, colapso los datos
+            periodicity = self.get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
+
+        self.es_query.add_series(name, rep_mode)
+
+    @staticmethod
+    def get_max_periodicity(periodicities):
+        """Devuelve la periodicity máxima en la lista periodicities"""
+        order = constants.COLLAPSE_INTERVALS
+        index = 0
+        for periodicity in periodicities:
+            field_index = order.index(periodicity)
+            index = index if index > field_index else field_index
+
+        return order[index]
 
     def add_collapse(self, agg=None,
                      collapse=None):
