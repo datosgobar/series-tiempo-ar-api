@@ -8,4 +8,4 @@ cd ${DIR}/..
 echo "Running pycodestyle"
 pycodestyle series_tiempo_ar_api -v
 
-echo "pep8 OK :)"
+echo "pycodestyle OK :)"
