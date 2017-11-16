@@ -20,6 +20,9 @@ install:
 
 before_script:
   - ./manage.py generate_data --years 300
+
 script:
   - scripts/tests.sh
+  - scripts/pylint.sh
+  - scripts/pycodestyle.sh
 
