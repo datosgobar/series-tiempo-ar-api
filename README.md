@@ -1,4 +1,8 @@
-# Spike de series de tiempo y APIs
+# Aplicación distribuible de la API de series de tiempo
+
+[![Build Status](https://travis-ci.org/datosgobar/series-tiempo-ar-api.svg?branch=master)](https://travis-ci.org/datosgobar/series-tiempo-ar-api)
+
+
 
 Spike de APIs de bases de datos de series de tiempo.
 Es necesario tener configurada una instancia de Elasticsearch>=5.4 corriendo en localhost:9200.
