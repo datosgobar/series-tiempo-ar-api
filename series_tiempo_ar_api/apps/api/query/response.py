@@ -51,12 +51,8 @@ class CSVFormatter(BaseFormatter):
         data = query.run()['data']
 
         response = HttpResponse(content_type='text/csv')
-        content = 'attachment; filename="{}.csv"'
-        filename = series_ids[0]
-        for serie in series_ids[1:]:
-            filename += ',' + serie
-
-        response['Content-Disposition'] = content.format(filename)
+        content = 'attachment; filename="{}"'
+        response['Content-Disposition'] = content.format(constants.CSV_RESPONSE_FILENAME)
 
         writer = unicodecsv.writer(response)
         header = [settings.INDEX_COLUMN] + series_ids
