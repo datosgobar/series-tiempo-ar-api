@@ -17,11 +17,15 @@ before_install:
 
 install:
   - pip install -r requirements/testing.txt
+  - nvm install v7.4.0
+  - nvm use v7.4.0
+  - npm install
 
 before_script:
   - ./manage.py generate_data --years 300
 
 script:
+  - npm run jsc
   - scripts/tests.sh
   - scripts/pylint.sh
   - scripts/pycodestyle.sh
