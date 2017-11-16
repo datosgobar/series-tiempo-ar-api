@@ -1,7 +1,0 @@
----
-
-- hosts: es
-  become: yes
-  become_method: sudo
-  roles:
-    - elastic_search

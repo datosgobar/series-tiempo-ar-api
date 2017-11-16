@@ -1,5 +1,0 @@
----
-
-- include_tasks: security.yml
-- include_tasks: users_and_group.yml
-- include_tasks: tools.yml

@@ -1,5 +1,0 @@
----
-
-- include_tasks: create_file_structures.yml
-- include_tasks: setup_python_env.yml
-- include_tasks: migrate.yml
