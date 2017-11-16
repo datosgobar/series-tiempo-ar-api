@@ -57,22 +57,32 @@ Para agregar mas servidores con elasticsearch, debemos seguir los siguientes pas
 
 Agregar un nuevo servidor en el inventario (en este caso, "es1") y ponerlo bajo el grupo "es":
 
-    web1
-    es1
+```
+web1
+es1
 
-    [web]
-    web1
+[web]
+web1
 
-    [redis]
-    web1
+[rqworker]
+web1
 
-    [es]
-    es1
+[es]
+es1
 
-    [api_cluster:children]
-    web
-    es
-    redis
+[redis]
+web1
+
+[apps:children]
+web
+rqworker
+
+[api_cluster:children]
+web
+rqworker
+es
+redis
+```
 
 Luego debemos crear el archivo "inventories/staging/host_vars/es1.yml" con la configuración de acceso:
 

@@ -8,24 +8,37 @@ Como ejemplo usaremos "staging":
 
 Luego crearemos el inventario de las máquinas que ansible conocerá, podemos usar el archivo "inventories/vagrant/hosts" como base:
 
-    web1
+```
+web1
 
-    [web]
-    web1
+[web]
+web1
 
-    [redis]
-    web1
+[rqworker]
+web1
 
-    [es]
-    web1
+[es]
+web1
 
-    [api_cluster:children]
-    web
-    es
-    redis
+[redis]
+web1
 
-En este ejemplo, le decimos a ansible que "web1" es una máquina, y ademas que pertenece al grupo "web".
-Además al pertenecer a los grupos "es" y "redis", ansible instalará `elasticsearch` y `redis` en la máquina.
+[apps:children]
+web
+rqworker
+
+[api_cluster:children]
+web
+rqworker
+es
+redis
+
+```
+
+En este ejemplo, le decimos a ansible que "web1" es una máquina.
+Además que pertenece a los grupos "web" (indica que debe descargarse correrse un webserver y la base de datos),
+"rqworker" (indica que se correrá un worker en esa maquina), "es" (que indica que debe instalarse Elasticsearch)
+y "redis" (que indica que se instalará redis-server)
 
 
 Luego debemos decirle a ansible dónde encontrar esta máquina, para eso creamos el directorio "inventories/staging/host_vars".
@@ -35,11 +48,11 @@ Luego debemos decirle a ansible dónde encontrar esta máquina, para eso creamos
 Luego dentro creamos un archivo en "inventories/staging/host_vars/web1/vars.yml" donde le daremos a ansible algunas variables espeficicas para esa máquina. En este ejemplo, especificamos la IP y el puerto ssh de la máquina.
 
 ```yaml
-# Connection variables
+# Variables de conección
+
+# Podemos especificar aquí o para mejor seguridad en vault.yml
 ansible_host: 192.168.35.10
 ansible_port: 22
-# Podemos especificar el usuario aquí o para mejor seguridad en vault.yml
-ansible_user: my_user
 
 ```
 
@@ -63,6 +76,7 @@ En este archivo debemos poner el valor real de las variables.
 ---
 # vault.yml
 
+ansible_user: my_user
 postgresql_user_vault: my_usuario_de_la_base_de_datos
 postgresql_password_vault: my_pass_de_la_base_de_datos
 ```

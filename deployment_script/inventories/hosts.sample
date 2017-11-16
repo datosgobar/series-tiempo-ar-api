@@ -1,19 +1,16 @@
 web1
-es1
-redis1
-worker1
 
 [web]
 web1
 
 [rqworker]
-worker1
+web1
 
 [es]
-es1
+web1
 
 [redis]
-redis1
+web1
 
 [apps:children]
 web

@@ -6,6 +6,7 @@
     app_path: "{{ application_dir }}"
     virtualenv: "{{ application_virtualenv_dir }}"
   environment: "{{ django_environment }}"
+  when: run_migrations
   tags: quickly
 
 - name: Collect static

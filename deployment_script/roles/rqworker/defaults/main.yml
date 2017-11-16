@@ -1,0 +1,9 @@
+---
+
+# Workers
+
+worker_count: 1
+worker_user: "{{ application_user }}"
+worker_group: "{{ application_group }}"
+application_bins_dir: "{{ bins_dir }}app/"
+run_rqworker_bin: "{{ application_bins_dir }}run_rqworker.sh"

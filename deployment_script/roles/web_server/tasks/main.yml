@@ -9,7 +9,6 @@
 
 
 - include_tasks: config_gunicorn.yml
-- include_tasks: worker_units.yml
 - include_tasks: config_nginx.yml
 - include_tasks: create_systemd_files.yml
 - include_tasks: configure_logrotate.yml

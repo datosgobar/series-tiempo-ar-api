@@ -1,0 +1,11 @@
+---
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and restart workers
+  systemd:
+    name: rqworker@{{ item }}.service
+    enabled: yes
+    state: restarted
+  with_sequence: count={{ worker_count }}
