@@ -1,6 +1,6 @@
 #! coding: utf-8
 from django.conf import settings
-from ..common.constants import *
+from ..common.constants import VALUE, CHANGE, PCT_CHANGE, CHANGE_YEAR_AGO, PCT_CHANGE_YEAR_AGO
 
 IDENTIFIER = "identifier"
 DATASET_IDENTIFIER = "dataset_identifier"
