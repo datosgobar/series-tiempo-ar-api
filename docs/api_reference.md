@@ -1,4 +1,3 @@
-
 # Referencia API
 
 La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones.

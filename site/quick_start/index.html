@@ -57,17 +57,27 @@
     <a class="current" href="./">Comienzo rápido</a>
     <ul class="subnav">
             
+    <li class="toctree-l2"><a href="#comienzo-rapido">Comienzo rápido</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</a></li>
+        
+            <li><a class="toctree-l3" href="#filtrar-por-fechas">Filtrar por fechas</a></li>
+        
+            <li><a class="toctree-l3" href="#cambiar-la-agregacion-temporal">Cambiar la agregación temporal</a></li>
+        
+            <li><a class="toctree-l3" href="#aplicar-transformaciones">Aplicar transformaciones</a></li>
+        
+        </ul>
+    
+
     </ul>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../api_reference/">API</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../api_examples/">Ejemplos de uso</a>
+    <a class="" href="../api_reference/">Referencia API</a>
 	    </li>
           
         </ul>
@@ -102,7 +112,38 @@
           <div role="main">
             <div class="section">
               
-                
+                <h1 id="comienzo-rapido">Comienzo rápido</h1>
+<h2 id="descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</h2>
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15&amp;format=csv
+</code></pre>
+
+<h2 id="filtrar-por-fechas">Filtrar por fechas</h2>
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01
+</code></pre>
+
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general hasta Diciembre de 2016</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;end_date=2016-12-01
+</code></pre>
+
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, hasta Diciembre de 2016</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01&amp;end_date=2016-12-01
+</code></pre>
+
+<h2 id="cambiar-la-agregacion-temporal">Cambiar la agregación temporal</h2>
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
+</code></pre>
+
+<h2 id="aplicar-transformaciones">Aplicar transformaciones</h2>
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, en valores mensuales y variación porcentual</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change
+</code></pre>
+
+<p><em>Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01
+</code></pre>
               
             </div>
           </div>
@@ -110,7 +151,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../api_reference/" class="btn btn-neutral float-right" title="API">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../api_reference/" class="btn btn-neutral float-right" title="Referencia API">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href=".." class="btn btn-neutral" title="Inicio"><span class="icon icon-circle-arrow-left"></span> Previous</a>
