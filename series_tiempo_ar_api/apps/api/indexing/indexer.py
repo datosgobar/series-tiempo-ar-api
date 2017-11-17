@@ -3,16 +3,14 @@ import logging
 
 import numpy as np
 import pandas as pd
-from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
-from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-
+from series_tiempo_ar_api.apps.api.common.operations import pct_change_a_year_ago, change_a_year_ago
 from series_tiempo_ar_api.apps.api.indexing import strings
 from series_tiempo_ar_api.apps.api.indexing import constants
 
@@ -27,8 +25,6 @@ class Indexer(object):
     """Lee distribuciones y las indexa a través de un bulk create en
     Elasticsearch
     """
-
-    default_value = 0
 
     def __init__(self, index=settings.TS_INDEX):
         self.elastic = ElasticInstance()
@@ -137,10 +133,8 @@ class Indexer(object):
         df[constants.VALUE] = col
         df[constants.CHANGE] = col.diff(1)
         df[constants.PCT_CHANGE] = col.pct_change(1, fill_method=None)
-        df[constants.CHANGE_YEAR_AGO] = \
-            self._year_ago_column(col, self._change, freq)
-        df[constants.PCT_CHANGE_YEAR_AGO] = \
-            self._year_ago_column(col, self._pct_change, freq)
+        df[constants.CHANGE_YEAR_AGO] = change_a_year_ago(col, freq)
+        df[constants.PCT_CHANGE_YEAR_AGO] = pct_change_a_year_ago(col, freq)
 
         df.apply(self.elastic_index, axis='columns', args=(fields[col.name],))
 
@@ -185,60 +179,3 @@ class Indexer(object):
         results = search.execute()
         if not results:
             Field.objects.get(series_id=series_id).delete()
-
-    def _get_value(self, df, col, index):
-        """Devuelve el valor del df[col][index] o nan si no es válido.
-        Evita Cargar Infinity y NaN en Elasticsearch
-        """
-        if index not in df[col]:
-            return self.default_value
-
-        return df[col][index] if np.isfinite(df[col][index]) else \
-            self.default_value
-
-    def _year_ago_column(self, col, operation, freq):
-        """Aplica operación entre los datos de una columna y su valor
-        un año antes. Devuelve una nueva serie de pandas
-        """
-        array = []
-        offset = freq_pandas_to_index_offset(freq) or 0
-        if offset:
-            values = col.values
-            array = operation(values[offset:], values[:-offset])
-        else:
-            for idx, val in col.iteritems():
-                value = self._get_value_a_year_ago(idx, col, validate=True)
-                if value != self.default_value:
-                    array.append(operation(val, value))
-                else:
-                    array.append(None)
-
-        return pd.Series(array, index=col.index[offset:])
-
-    def _get_value_a_year_ago(self, idx, col, validate=False):
-        """Devuelve el valor de la serie determinada por df[col] un
-        año antes del índice de tiempo 'idx'. Hace validación de si
-        existe el índice o no según 'validate' (operación costosa)
-        """
-
-        value = self.default_value
-        year_ago_idx = idx.date() - relativedelta(years=1)
-        if not validate:
-            if year_ago_idx not in col.index:
-                return self.default_value
-
-            value = col[year_ago_idx]
-        else:
-            if year_ago_idx in col:
-                value = col[year_ago_idx]
-
-        return value
-
-    def _pct_change(self, x, y):
-        if isinstance(y, int) and y == 0:
-            return self.default_value
-        return x - y / y
-
-    @staticmethod
-    def _change(x, y):
-        return x - y
