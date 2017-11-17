@@ -323,6 +323,7 @@ class CollapseAggregation(BaseOperation):
         if agg and agg not in constants.AGGREGATIONS:
             msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE_AGG, agg)
             self._append_error(msg)
+            return
 
         try:
             query.set_collapse_aggregation(agg)
