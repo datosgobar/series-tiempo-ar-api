@@ -1,5 +1,15 @@
 # Comienzo rápido
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Descargar una tabla con una o varias series](#descargar-una-tabla-con-una-o-varias-series)
+- [Filtrar por fechas](#filtrar-por-fechas)
+- [Cambiar la agregación temporal](#cambiar-la-agregaci%C3%B3n-temporal)
+- [Aplicar transformaciones](#aplicar-transformaciones)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Descargar una tabla con una o varias series
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general*
