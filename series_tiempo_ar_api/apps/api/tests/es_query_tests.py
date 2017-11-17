@@ -22,7 +22,7 @@ class QueryTest(TestCase):
     start_date = '2010-01-01'
     end_date = '2015-01-01'
 
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
@@ -99,7 +99,7 @@ class CollapseQueryTests(TestCase):
     start = 10
     limit = 15
 
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):

@@ -10,7 +10,7 @@ from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
 
 class QueryTests(TestCase):
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):

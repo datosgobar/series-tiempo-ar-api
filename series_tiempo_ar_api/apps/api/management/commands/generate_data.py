@@ -1,106 +1,81 @@
 #! coding: utf-8
-import json
 from random import random
 from datetime import datetime
 
-import requests
+from elasticsearch.helpers import parallel_bulk
 from dateutil.relativedelta import relativedelta
+from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from django.conf import settings
 from django.core.management import BaseCommand
 
 from series_tiempo_ar_api.apps.api.indexing import constants
+from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
 
 
 class Command(BaseCommand):
-    start_date = datetime(2004, 1, 1)
-    date_format = '%Y-%m-%dT03:00:00Z'
+    date_format = '%Y-%m-%d'
+    start_date = datetime(1910, 1, 1)
+    max_data = settings.MAX_ALLOWED_VALUES['limit']
+    series_per_interval = 2
 
     def __init__(self):
         BaseCommand.__init__(self)
-        self.indicators_count = 0
         self.prev_values = []
         self.ES_URL = settings.ES_CONFIGURATION["ES_URLS"][0]
-
-    def add_arguments(self, parser):
-        parser.add_argument('--indicators',
-                            default=1,
-                            type=int,
-                            dest='indicators')
-
-        parser.add_argument('--years',
-                            default=100,
-                            type=int,
-                            dest='years')
-
-        parser.add_argument('--interval',
-                            default='quarter',
-                            type=str,
-                            dest='interval',
-                            choices=['month', 'quarter', 'year'])
+        self.elastic = ElasticInstance()
+        self.bulk_items = []
 
     def handle(self, *args, **options):
-        indicators = options['indicators']
-
         # Chequeo si existe el índice, si no, lo creo
-        index_url = self.ES_URL + settings.TEST_INDEX
-        response = requests.get(index_url)
-        if response.status_code == 404:
-            requests.put(index_url)
+        if not self.elastic.indices.exists(settings.TEST_INDEX):
+            self.elastic.indices.create(settings.TEST_INDEX,
+                                        body=constants.INDEX_CREATION_BODY)
 
-        # Mapping del indicador
-        url = index_url + "/_mapping/" + settings.TS_DOC_TYPE
+        for interval in COLLAPSE_INTERVALS:
+            for series_count in range(self.series_per_interval):
+                self.generate_random_series(interval, series_count)
 
-        # Chequeo si existe el mapping, si no, lo creo
-        response = requests.get(url)
-        if response.status_code == 404:
-            requests.put(url, json.dumps(constants.MAPPING))
+        for success, info in parallel_bulk(self.elastic, self.bulk_items):
+            if not success:
+                print("ERROR:", info)
 
-        for _ in range(indicators):
-            self.generate_random_series(options['years'], options['interval'])
-
-    def generate_random_series(self, years, interval):
+    def generate_random_series(self, interval, series_count):
         self.prev_values = []
 
-        message = ''  # Request de la API de bulk create
         current_date = self.start_date
-        end_date = self.start_date + relativedelta(years=years)
-        indic_name = "random-" + str(self.indicators_count)
+        series_name = "random_series-{}-{}".format(interval, series_count)
 
-        while current_date < end_date:
+        for _ in range(self.max_data):
             date_str = current_date.strftime(self.date_format)
 
             index_data = {
-                "index": {
-                    "_id": indic_name + '-' + date_str,
-                    "_type": settings.TS_DOC_TYPE
-                }
+                "_index": settings.TEST_INDEX,
+                "_id": series_name + '-' + date_str,
+                "_type": settings.TS_DOC_TYPE,
+                "_source": self.generate_properties(date_str, series_name)
             }
-            message += json.dumps(index_data) + '\n'
 
-            properties = self.generate_properties(date_str)
-            message += json.dumps(properties) + '\n'
-
+            self.bulk_items.append(index_data)
             current_date = self.add_interval(current_date, interval)
-
-        url = self.ES_URL + settings.TEST_INDEX + "/_bulk"
-        resp = requests.post(url, message)
-        if resp.status_code in (200, 201):
-            self.stdout.write("Generado: " + indic_name)
-
-        self.indicators_count += 1
 
     @staticmethod
     def add_interval(date, interval):
+
+        if interval == 'day':
+            return date + relativedelta(days=1)
+
         months_to_add = 0
         if interval == 'year':
             months_to_add = 12
+        elif interval == 'semester':
+            months_to_add = 6
         elif interval == 'quarter':
             months_to_add = 3
         elif interval == 'month':
             months_to_add = 1
         return date + relativedelta(months=months_to_add)
 
-    def generate_properties(self, date_str):
+    def generate_properties(self, date_str, series_name):
         """ Genera los valores del indicador aleatoriamente, junto con los
         valores de cambio y porcentuales"""
         properties = {
@@ -110,7 +85,7 @@ class Command(BaseCommand):
             'percent_change': 1,
             'change_a_year_ago': 1,
             'percent_change_a_year_ago': 1,
-            'series_id': "random-" + str(self.indicators_count)
+            'series_id': series_name
         }
 
         if len(self.prev_values):

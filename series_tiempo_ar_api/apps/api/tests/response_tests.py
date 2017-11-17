@@ -10,14 +10,15 @@ from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
 
 class ResponseTests(TestCase):
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
         setup_database()
         cls.query = Query()
-        cls.query.add_series(cls.single_series,
-                             Field.objects.get(series_id=cls.single_series))
+        field = Field.objects.get(series_id=cls.single_series)
+        cls.query.add_series(cls.single_series, field)
+        cls.series_name = field.title
         super(ResponseTests, cls).setUpClass()
 
     def test_csv_response(self):
@@ -37,14 +38,14 @@ class ResponseTests(TestCase):
         response = generator.run(self.query, {'header': 'ids'})
         line_end = response.content.find('\n')
         header = response.content[:line_end]
-        self.assertTrue('random-0' in header)
+        self.assertTrue(self.single_series in header)
 
     def test_csv_response_header(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(self.query, {'header': 'names'})
         line_end = response.content.find('\n')
         header = response.content[:line_end]
-        self.assertTrue('random_0_title' in header)
+        self.assertTrue(self.series_name in header)
 
     def test_csv_name(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()

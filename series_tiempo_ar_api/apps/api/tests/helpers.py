@@ -19,8 +19,8 @@ def setup_database():
                                           dataset=dataset,
                                           periodicity='R/P1M')
     Field.objects.create(
-        series_id='random-0',
+        series_id='random_series-month-0',
         metadata='{}',
         distribution=distrib,
-        title='random_0_title'
+        title='random_month_0_title'
     )
