@@ -14,14 +14,14 @@ class ESQuery(object):
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
 
-    def __init__(self):
+    def __init__(self, index):
         """
         Instancia una nueva query
 
         args:
-            series (str):  Nombre de una serie
-            parameters (dict): Opciones de la query
+            index (str): Índice de Elasticsearch a ejecutar las queries.
         """
+        self.index = index
         self.series = []
         self.elastic = ElasticInstance()
         self.data = []
@@ -66,7 +66,7 @@ class ESQuery(object):
         if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
-        multi_search = MultiSearch(index=settings.TS_INDEX,
+        multi_search = MultiSearch(index=self.index,
                                    doc_type=settings.TS_DOC_TYPE,
                                    using=self.elastic)
 
@@ -97,7 +97,7 @@ class ESQuery(object):
     def _init_series(self, series_id=None,
                      rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
 
-        search = Search(using=self.elastic)
+        search = Search(using=self.elastic, index=self.index)
         if series_id:
             # Filtra los resultados por la serie pedida
             search = search.filter('match', series_id=series_id)
@@ -148,8 +148,8 @@ class CollapseQuery(ESQuery):
     aggregation
     """
 
-    def __init__(self, other=None):
-        super(CollapseQuery, self).__init__()
+    def __init__(self, index, other=None):
+        super(CollapseQuery, self).__init__(index)
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
         self.collapse_aggregation = \

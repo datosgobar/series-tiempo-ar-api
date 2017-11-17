@@ -42,7 +42,7 @@ class Command(BaseCommand):
         indicators = options['indicators']
 
         # Chequeo si existe el índice, si no, lo creo
-        index_url = self.ES_URL + settings.TS_INDEX
+        index_url = self.ES_URL + settings.TEST_INDEX
         response = requests.get(index_url)
         if response.status_code == 404:
             requests.put(index_url)
@@ -82,7 +82,7 @@ class Command(BaseCommand):
 
             current_date = self.add_interval(current_date, interval)
 
-        url = self.ES_URL + settings.TS_INDEX + "/_bulk"
+        url = self.ES_URL + settings.TEST_INDEX + "/_bulk"
         resp = requests.post(url, message)
         if resp.status_code in (200, 201):
             self.stdout.write("Generado: " + indic_name)

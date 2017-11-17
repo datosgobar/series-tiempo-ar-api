@@ -6,6 +6,9 @@ DEFAULT_ES_URL = "http://elastic:changeme@localhost:9200/"
 # Único índice asignado a las series de tiempo
 TS_INDEX = 'indicators'
 
+# Índice para los test cases
+TEST_INDEX = 'test_indicators'
+
 # Único tipo asignado a las series de tiempo
 TS_DOC_TYPE = "doc"
 

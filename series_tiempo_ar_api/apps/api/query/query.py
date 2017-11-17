@@ -1,6 +1,7 @@
 #! coding: utf-8
 from collections import OrderedDict
 
+from django.conf import settings
 from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
@@ -15,8 +16,9 @@ class Query(object):
     Elasticsearch, y los metadatos guardados en la base de datos
     relacional
     """
-    def __init__(self):
-        self.es_query = ESQuery()
+    def __init__(self, index=settings.TS_INDEX):
+        self.es_index = index
+        self.es_query = ESQuery(index)
         self.series_models = []
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
 
@@ -74,7 +76,7 @@ class Query(object):
     def add_collapse(self, agg=None,
                      collapse=None):
         self._validate_collapse(collapse)
-        self.es_query = CollapseQuery(self.es_query)
+        self.es_query = CollapseQuery(index=self.es_index, other=self.es_query)
         self.es_query.add_collapse(agg, collapse)
 
     def set_metadata_config(self, how):

@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
 
@@ -28,7 +29,7 @@ class NameAndRepModeTest(TestCase):
 
     def setUp(self):
         self.cmd = NameAndRepMode()
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
 
     def test_invalid_series(self):
         invalid_series = 'invalid'
@@ -50,7 +51,7 @@ class NameAndRepModeTest(TestCase):
         self.query.sort('asc')
         data = self.query.run()['data']
 
-        other_query = Query()
+        other_query = Query(index=settings.TEST_INDEX)
         self.cmd.run(other_query, {'ids': self.single_series,
                                    'representation_mode': 'change'})
         other_query.sort('asc')
@@ -104,7 +105,7 @@ class CollapseTest(TestCase):
         super(cls, CollapseTest).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Collapse()
 
     def test_valid_aggregation(self):
@@ -133,7 +134,7 @@ class PaginationTests(TestCase):
         super(cls, PaginationTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Pagination()
 
     @classmethod
@@ -147,7 +148,7 @@ class PaginationTests(TestCase):
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
-        other_query = Query()
+        other_query = Query(index=settings.TEST_INDEX)
         other_query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(other_query, params)
         other_data = other_query.run()['data']
@@ -205,7 +206,7 @@ class DateFilterTests(TestCase):
         super(cls, DateFilterTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = DateFilter()
 
     @classmethod
@@ -281,7 +282,7 @@ class SortTests(TestCase):
         super(cls, SortTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Sort()
 
     def test_add_asc_sort(self):

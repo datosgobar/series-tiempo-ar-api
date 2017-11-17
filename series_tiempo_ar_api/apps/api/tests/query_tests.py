@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
@@ -18,7 +19,7 @@ class QueryTests(TestCase):
         super(cls, QueryTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
 
     def test_index_metadata_frequency(self):
         self.query.add_series(self.single_series, self.field)
