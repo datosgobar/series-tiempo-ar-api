@@ -77,6 +77,11 @@ class Query(object):
         self.es_query = CollapseQuery(self.es_query)
         self.es_query.add_collapse(agg, collapse)
 
+    def set_collapse_aggregation(self, agg):
+        if not hasattr(self.es_query, 'collapse_aggregation'):
+            raise CollapseError
+        self.es_query.add_collapse(agg=agg)
+
     def set_metadata_config(self, how):
         self.metadata_config = how
 
