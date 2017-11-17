@@ -1,5 +1,6 @@
 #! coding: utf-8
 from django.conf import settings
+from ..common.constants import *
 
 IDENTIFIER = "identifier"
 DATASET_IDENTIFIER = "dataset_identifier"
@@ -13,13 +14,6 @@ FIELD_ID = 'id'
 SPECIAL_TYPE = 'specialType'
 SPECIAL_TYPE_DETAIL = 'specialTypeDetail'
 TIME_INDEX = 'time_index'
-
-# Transformaciones a indexar
-VALUE = 'value'
-CHANGE = 'change'
-PCT_CHANGE = 'percent_change'
-CHANGE_YEAR_AGO = 'change_a_year_ago'
-PCT_CHANGE_YEAR_AGO = 'percent_change_a_year_ago'
 
 # JSON del mapping de series de tiempo
 MAPPING = {

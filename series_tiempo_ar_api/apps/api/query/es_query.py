@@ -267,15 +267,15 @@ class CollapseQuery(ESQuery):
         df, freq = self._init_df()
 
         for i, serie in enumerate(self.series, 1):
-            if serie.rep_mode == 'value':
+            if serie.rep_mode == constants.VALUE:
                 pass
-            elif serie.rep_mode == 'change':
+            elif serie.rep_mode == constants.CHANGE:
                 df[i] = df[i].diff(1)
-            elif serie.rep_mode == 'percent_change':
+            elif serie.rep_mode == constants.PCT_CHANGE:
                 df[i] = df[i].pct_change(1, fill_method=None)
-            elif serie.rep_mode == 'change_a_year_ago':
+            elif serie.rep_mode == constants.CHANGE_YEAR_AGO:
                 df[i] = change_a_year_ago(df[i], freq)
-            elif serie.rep_mode == 'percent_change_a_year_ago':
+            elif serie.rep_mode == constants.PCT_CHANGE_YEAR_AGO:
                 df[i] = pct_change_a_year_ago(df[i], freq)
 
         df = df.where((pd.notnull(df)), None)  # Reemplaza valores nulos (NaN) por None de python
