@@ -195,7 +195,6 @@ class CollapseQuery(ESQuery):
             .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
                     field=settings.TS_TIME_INDEX_FIELD,
-                    order={"_key": self.args[constants.PARAM_SORT]},
                     interval=self.collapse_interval) \
             .metric(constants.COLLAPSE_AGG_NAME,
                     self.collapse_aggregation,
@@ -265,24 +264,7 @@ class CollapseQuery(ESQuery):
     def _apply_transformations(self):
         """Aplica las transformaciones del modo de representación de las series pedidas"""
 
-        df = pd.DataFrame(data=self.data)
-
-        # Armado del índice de tiempo necesario para calcular transformaciones anuales
-        translation = {
-            'day': 'D',
-            'month': 'MS',
-            'quarter': 'QS',
-            'year': 'AS'
-        }
-        freq = translation[self.collapse_interval]
-        if self.args[constants.PARAM_SORT] == constants.SORT_ASCENDING:
-            index = pd.date_range(self.data[0][0], self.data[-1][0],
-                                  freq=freq)
-        else:
-            index = pd.date_range(self.data[-1][0], self.data[0][0],
-                                  freq=freq)[::-1]
-        df = df[df.columns[1:]]  # Index 0 == fecha, nuestras columnas de datos son de 1 en adelante
-        df = df.set_index(index)
+        df, freq = self._init_df()
 
         for i, serie in enumerate(self.series, 1):
             if serie.rep_mode == 'value':
@@ -300,6 +282,28 @@ class CollapseQuery(ESQuery):
         self.data = df.reset_index().values.tolist()
         for row in self.data:
             row[0] = str(row[0].date())  # conversión de pandas Timestamp a date de Python
+
+        if self.args[constants.PARAM_SORT] == constants.SORT_DESCENDING:
+            self.data.reverse()
+
+    def _init_df(self):
+        """Crea un pandas DataFrame de los datos obtenidos para facilitar el cálculo
+        de transformaciones
+        """
+        df = pd.DataFrame(data=self.data)
+        # Armado del índice de tiempo necesario para calcular transformaciones anuales
+        translation = {
+            'day': 'D',
+            'month': 'MS',
+            'quarter': 'QS',
+            'year': 'AS'
+        }
+        freq = translation[self.collapse_interval]
+        index = pd.date_range(self.data[0][0], self.data[-1][0],
+                              freq=freq)
+        df = df[df.columns[1:]]  # Index 0 == fecha, nuestras columnas de datos son de 1 en adelante
+        df = df.set_index(index)
+        return df, freq
 
     @staticmethod
     def _sort_responses(responses):
