@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
 
@@ -16,10 +17,10 @@ class NameAndRepModeTest(TestCase):
     query: el parseo de IDs de series y modos de representación de las
     mismas.
     """
-    single_series = 'random-0'
-    single_series_rep_mode = 'random-0:percent_change'
+    single_series = 'random_series-month-0'
+    single_series_rep_mode = 'random_series-month-0:percent_change'
 
-    multi_series = 'random-0,random-0'
+    multi_series = 'random_series-month-0,random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
@@ -28,7 +29,7 @@ class NameAndRepModeTest(TestCase):
 
     def setUp(self):
         self.cmd = NameAndRepMode()
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
 
     def test_invalid_series(self):
         invalid_series = 'invalid'
@@ -50,7 +51,7 @@ class NameAndRepModeTest(TestCase):
         self.query.sort('asc')
         data = self.query.run()['data']
 
-        other_query = Query()
+        other_query = Query(index=settings.TEST_INDEX)
         self.cmd.run(other_query, {'ids': self.single_series,
                                    'representation_mode': 'change'})
         other_query.sort('asc')
@@ -67,36 +68,36 @@ class NameAndRepModeTest(TestCase):
         self.assertTrue(len(data[0]), 3)
 
     def test_leading_comma(self):
-        self.cmd.run(self.query, {'ids': ',random-0'})
+        self.cmd.run(self.query, {'ids': ',random_series-month-0'})
         self.assertTrue(self.cmd.errors)
 
     def test_final_comma(self):
-        self.cmd.run(self.query, {'ids': 'random-0,'})
+        self.cmd.run(self.query, {'ids': 'random_series-month-0,'})
         self.assertTrue(self.cmd.errors)
 
     def test_one_valid_one_invalid(self):
-        self.cmd.run(self.query, {'ids': 'random-0,invalid'})
+        self.cmd.run(self.query, {'ids': 'random_series-month-0,invalid'})
         self.assertTrue(self.cmd.errors)
 
     def test_second_valid_first_invalid(self):
-        self.cmd.run(self.query, {'ids': 'invalid,random-0'})
+        self.cmd.run(self.query, {'ids': 'invalid,random_series-month-0'})
         self.assertTrue(self.cmd.errors)
 
     def test_invalid_rep_mode(self):
-        self.cmd.run(self.query, {'ids': 'random-0:random-0'})
+        self.cmd.run(self.query, {'ids': 'random_series-month-0:random_series-month-0'})
         self.assertTrue(self.cmd.errors)
 
     def test_leading_semicolon(self):
-        self.cmd.run(self.query, {'ids': ':random-0'})
+        self.cmd.run(self.query, {'ids': ':random_series-month-0'})
         self.assertTrue(self.cmd.errors)
 
     def test_final_semicolon(self):
-        self.cmd.run(self.query, {'ids': 'random-0:'})
+        self.cmd.run(self.query, {'ids': 'random_series-month-0:'})
         self.assertTrue(self.cmd.errors)
 
 
 class CollapseTest(TestCase):
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
@@ -104,7 +105,7 @@ class CollapseTest(TestCase):
         super(cls, CollapseTest).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Collapse()
 
     def test_valid_aggregation(self):
@@ -126,7 +127,7 @@ class CollapseAggregationTests(TestCase):
 
 
 class PaginationTests(TestCase):
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     limit = 1000
     start = 50
@@ -138,7 +139,7 @@ class PaginationTests(TestCase):
         super(cls, PaginationTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Pagination()
 
     @classmethod
@@ -152,7 +153,7 @@ class PaginationTests(TestCase):
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
-        other_query = Query()
+        other_query = Query(index=settings.TEST_INDEX)
         other_query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(other_query, params)
         other_data = other_query.run()['data']
@@ -198,10 +199,10 @@ class PaginationTests(TestCase):
 
 
 class DateFilterTests(TestCase):
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
-    start_date = '2010-01-01'
-    end_date = '2015-01-01'
+    start_date = '1980-01-01'
+    end_date = '1985-01-01'
 
     @classmethod
     def setUpClass(cls):
@@ -210,7 +211,7 @@ class DateFilterTests(TestCase):
         super(cls, DateFilterTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = DateFilter()
 
     @classmethod
@@ -264,29 +265,29 @@ class DateFilterTests(TestCase):
 
     def test_partial_end_date_is_inclusive(self):
         self.query.add_series(self.single_series, self.field, 'value')
-        self.cmd.run(self.query, {'end_date': '2005'})
+        self.cmd.run(self.query, {'end_date': '1985'})
 
         # Me aseguro de traer suficientes resultados
         self.query.add_pagination(start=0, limit=1000)
         data = self.query.run()['data']
         # Trajo resultados hasta 2005 inclusive
         last_date = iso8601.parse_date(data[-1][0])
-        self.assertEqual(last_date.year, 2005)
+        self.assertEqual(last_date.year, 1985)
         self.assertGreaterEqual(last_date.month, 4)
 
 
 class SortTests(TestCase):
 
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
         setup_database()
-        cls.field = Field.objects.get(series_id='random-0')
+        cls.field = Field.objects.get(series_id='random_series-month-0')
         super(cls, SortTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Sort()
 
     def test_add_asc_sort(self):

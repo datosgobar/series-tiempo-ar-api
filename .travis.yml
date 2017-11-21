@@ -21,8 +21,6 @@ install:
   - nvm use v7.4.0
   - npm install
 
-before_script:
-  - ./manage.py generate_data --years 300
 
 script:
   - npm run jsc

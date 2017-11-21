@@ -50,7 +50,7 @@ class ScrapperTests(TestCase):
 
 
 class IndexerTests(TestCase):
-    test_index = "test_indicators"
+    test_index = 'indexer_test_index'
 
     @classmethod
     def setUpClass(cls):

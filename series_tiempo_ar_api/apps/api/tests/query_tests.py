@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
@@ -9,7 +10,7 @@ from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
 
 class QueryTests(TestCase):
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
@@ -18,7 +19,7 @@ class QueryTests(TestCase):
         super(cls, QueryTests).setUpClass()
 
     def setUp(self):
-        self.query = Query()
+        self.query = Query(index=settings.TEST_INDEX)
 
     def test_index_metadata_frequency(self):
         self.query.add_series(self.single_series, self.field)

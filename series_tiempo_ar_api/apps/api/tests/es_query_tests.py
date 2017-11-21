@@ -1,6 +1,7 @@
 # coding=utf-8
 import iso8601
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
@@ -21,7 +22,7 @@ class QueryTest(TestCase):
     start_date = '2010-01-01'
     end_date = '2015-01-01'
 
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
@@ -29,7 +30,7 @@ class QueryTest(TestCase):
         super(QueryTest, cls).setUpClass()
 
     def setUp(self):
-        self.query = ESQuery()
+        self.query = ESQuery(settings.TEST_INDEX)
 
     def test_initially_no_series(self):
         self.assertFalse(self.query.series)
@@ -98,7 +99,7 @@ class CollapseQueryTests(TestCase):
     start = 10
     limit = 15
 
-    single_series = 'random-0'
+    single_series = 'random_series-month-0'
 
     @classmethod
     def setUpClass(cls):
@@ -106,7 +107,7 @@ class CollapseQueryTests(TestCase):
         super(CollapseQueryTests, cls).setUpClass()
 
     def setUp(self):
-        self.query = CollapseQuery()
+        self.query = CollapseQuery(index=settings.TEST_INDEX)
 
     @raises(QueryError)
     def test_execute_empty(self):
@@ -128,9 +129,9 @@ class CollapseQueryTests(TestCase):
         self.assertEqual(len(data), self.limit)
 
     def test_init_from_other(self):
-        other_query = ESQuery()
+        other_query = ESQuery(index=settings.TEST_INDEX)
         other_query.add_series(self.single_series)
-        self.query = CollapseQuery(other_query)
+        self.query = CollapseQuery(settings.TEST_INDEX, other=other_query)
         self.query.add_collapse()
         data = self.query.run()
         self.assertTrue(data)
@@ -187,8 +188,8 @@ class CollapseQueryTests(TestCase):
             prev_timestamp = parsed_timestamp
 
     def test_init_from_other_collapse_query(self):
-        other_query = CollapseQuery()
+        other_query = CollapseQuery(index=settings.TEST_INDEX)
         other_query.add_series(self.single_series)
-        self.query = CollapseQuery(other_query)
+        self.query = CollapseQuery(index=settings.TEST_INDEX, other=other_query)
         data = self.query.run()
         self.assertTrue(data)
