@@ -1,19 +1,23 @@
 #! coding: utf-8
+import requests
+import yaml
 from django.core.management import BaseCommand
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.api.indexing.catalog_reader import ReaderPipeline
+from series_tiempo_ar_api.apps.api.indexing.catalog_reader import index_catalog
+
+CATALOGS_INDEX = 'https://raw.githubusercontent.com/datosgobar/libreria-catalogos/master/indice.yml'
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
-        parser.add_argument('catalog')
-        parser.add_argument('--index', action='store_true')
-
     def handle(self, *args, **options):
-        catalog_url = options['catalog']
-        index_only = options.get('index')
+        catalogs = yaml.load(requests.get(CATALOGS_INDEX).text)
 
-        catalog = DataJson(catalog_url)
+        for catalog_id, values in catalogs.items():
+            if values['federado'] and values['formato'] == 'json':
+                try:
+                    catalog = DataJson(values['url'])
+                except (IOError, ValueError):
+                    continue
 
-        ReaderPipeline(catalog, index_only)
+                index_catalog(catalog, catalog_id)

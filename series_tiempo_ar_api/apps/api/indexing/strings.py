@@ -1,5 +1,7 @@
 #! coding: utf-8
 
+PIPELINE_START = u"Comienzo de la indexación del catálogo %s"
+
 # Scraping
 START_SCRAPING = u"Comienzo del scraping"
 END_SCRAPING = u"Fin del scraping"
