@@ -6,7 +6,7 @@ requests==2.18.2
 python-dateutil==2.6.1
 iso8601==0.1.12
 pydatajson>=0.3.13
-series-tiempo-ar==0.0.3
+series-tiempo-ar==0.0.5
 pandas
 numpy
 django-rq==0.9.6
