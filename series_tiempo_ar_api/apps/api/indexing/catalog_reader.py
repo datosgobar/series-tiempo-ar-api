@@ -14,7 +14,7 @@ logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
 
 
-def index_catalog(catalog, catalog_id):
+def index_catalog(catalog, catalog_id, read_local=False):
     """Ejecuta el pipeline de lectura, guardado e indexado de datos
     y metadatos sobre el catálogo especificado
 
@@ -23,7 +23,7 @@ def index_catalog(catalog, catalog_id):
         catalog_id (str): ID único del catálogo a parsear
     """
     logger.info(strings.PIPELINE_START, catalog_id)
-    scraper = get_scraper()
+    scraper = get_scraper(read_local)
     scraper.run(catalog)
     distributions = scraper.distributions
 
@@ -31,7 +31,7 @@ def index_catalog(catalog, catalog_id):
         logger.info(strings.NO_SERIES_SCRAPPED)
         return
 
-    loader = DatabaseLoader()
+    loader = DatabaseLoader(read_local)
     loader.run(catalog, catalog_id, distributions)
     distribution_models = loader.distribution_models
     Indexer().run(distribution_models)
