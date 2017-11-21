@@ -10,4 +10,4 @@ series-tiempo-ar==0.0.5
 pandas
 numpy
 django-rq==0.9.6
-yaml
+pyyaml
