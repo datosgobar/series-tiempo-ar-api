@@ -1,13 +1,14 @@
 #! coding: utf-8
 
+from ..common.constants import VALUE, CHANGE, PCT_CHANGE, CHANGE_YEAR_AGO, PCT_CHANGE_YEAR_AGO
 # Modos de representación de las series, calculados y guardados
 # en el proceso de indexación
 REP_MODES = [
-    'value',
-    'change',
-    'change_a_year_ago',
-    'percent_change',
-    'percent_change_a_year_ago'
+    VALUE,
+    CHANGE,
+    PCT_CHANGE,
+    CHANGE_YEAR_AGO,
+    PCT_CHANGE_YEAR_AGO
 ]
 
 AGGREGATIONS = [

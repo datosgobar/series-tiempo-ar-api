@@ -1,5 +1,6 @@
 #! coding: utf-8
 import iso8601
+import pandas as pd
 from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch
 
@@ -8,6 +9,7 @@ from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.api.common.operations import pct_change_a_year_ago, change_a_year_ago
 
 
 class ESQuery(object):
@@ -169,7 +171,7 @@ class CollapseQuery(ESQuery):
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
-        serie.search = self._add_aggregation(search, rep_mode)
+        serie.search = self._add_aggregation(search)
 
     def add_collapse(self, agg=None, interval=None):
         if agg:
@@ -183,22 +185,20 @@ class CollapseQuery(ESQuery):
             self.collapse_interval = interval
 
         for serie in self.series:
-            rep_mode = serie.rep_mode
             search = serie.search
-            serie.search = self._add_aggregation(search, rep_mode)
+            serie.search = self._add_aggregation(search)
 
-    def _add_aggregation(self, search, rep_mode):
+    def _add_aggregation(self, search):
         search = search[:0]
         # Agrega el collapse de los datos según intervalo de tiempo
         search.aggs \
             .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
                     field=settings.TS_TIME_INDEX_FIELD,
-                    order={"_key": self.args[constants.PARAM_SORT]},
                     interval=self.collapse_interval) \
             .metric(constants.COLLAPSE_AGG_NAME,
                     self.collapse_aggregation,
-                    field=rep_mode)
+                    field='value')
 
         return search
 
@@ -258,6 +258,52 @@ class CollapseQuery(ESQuery):
         for response in responses_sorted:
             # Smart solution
             self._format_single_response(response, start, limit)
+
+        self._apply_transformations()
+
+    def _apply_transformations(self):
+        """Aplica las transformaciones del modo de representación de las series pedidas"""
+
+        df, freq = self._init_df()
+
+        for i, serie in enumerate(self.series, 1):
+            if serie.rep_mode == constants.VALUE:
+                pass
+            elif serie.rep_mode == constants.CHANGE:
+                df[i] = df[i].diff(1)
+            elif serie.rep_mode == constants.PCT_CHANGE:
+                df[i] = df[i].pct_change(1, fill_method=None)
+            elif serie.rep_mode == constants.CHANGE_YEAR_AGO:
+                df[i] = change_a_year_ago(df[i], freq)
+            elif serie.rep_mode == constants.PCT_CHANGE_YEAR_AGO:
+                df[i] = pct_change_a_year_ago(df[i], freq)
+
+        df = df.where((pd.notnull(df)), None)  # Reemplaza valores nulos (NaN) por None de python
+        self.data = df.reset_index().values.tolist()
+        for row in self.data:
+            row[0] = str(row[0].date())  # conversión de pandas Timestamp a date de Python
+
+        if self.args[constants.PARAM_SORT] == constants.SORT_DESCENDING:
+            self.data.reverse()
+
+    def _init_df(self):
+        """Crea un pandas DataFrame de los datos obtenidos para facilitar el cálculo
+        de transformaciones
+        """
+        df = pd.DataFrame(data=self.data)
+        # Armado del índice de tiempo necesario para calcular transformaciones anuales
+        translation = {
+            'day': 'D',
+            'month': 'MS',
+            'quarter': 'QS',
+            'year': 'AS'
+        }
+        freq = translation[self.collapse_interval]
+        index = pd.date_range(self.data[0][0], self.data[-1][0],
+                              freq=freq)
+        df = df[df.columns[1:]]  # Index 0 == fecha, nuestras columnas de datos son de 1 en adelante
+        df = df.set_index(index)
+        return df, freq
 
     @staticmethod
     def _sort_responses(responses):

@@ -40,5 +40,3 @@ Esta API expone métodos para consultar series de tiempo abiertas por organismos
 
 [Descargar ejemplo](https://github.com/datosgobar/series-tiempo-ar-api/raw/master/docs/assets/data-example-1.csv)
 
-Ver más en *Comienzo rápido* (TODO: linkear a la sección de comienzo rápido)
-

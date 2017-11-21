@@ -5,7 +5,7 @@ from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.pipeline import \
-    NameAndRepMode, Collapse, Pagination, DateFilter, Sort
+    NameAndRepMode, Collapse, Pagination, DateFilter, Sort, CollapseAggregation
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from .helpers import setup_database
@@ -114,10 +114,15 @@ class CollapseTest(TestCase):
                                   'collapse_aggregation': 'sum'})
         self.assertFalse(self.cmd.errors)
 
+
+class CollapseAggregationTests(TestCase):
+
+    def setUp(self):
+        self.query = Query()
+        self.cmd = CollapseAggregation()
+
     def test_invalid_aggregation(self):
-        self.cmd.run(self.query, {'ids': self.single_series,
-                                  'collapse': 'year',
-                                  'collapse_aggregation': 'INVALID'})
+        self.cmd.run(self.query, {'collapse_aggregation': 'INVALID'})
         self.assertTrue(self.cmd.errors)
 
 
