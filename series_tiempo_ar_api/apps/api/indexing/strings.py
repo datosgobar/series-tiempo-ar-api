@@ -13,7 +13,7 @@ NO_SERIES_SCRAPPED = u"No fueron encontradas series de tiempo en este catálogo"
 # Database Loader
 DB_LOAD_START = u"Comienzo de la escritura a base de datos"
 DB_LOAD_END = u"Fin de la escritura a base de datos"
-
+DB_SERIES_ID_REPEATED = u"Serie ID %s en el catálogo %s ya existente. Desestimado"
 
 # Indexer
 INDEX_START = u"Inicio de la indexación"

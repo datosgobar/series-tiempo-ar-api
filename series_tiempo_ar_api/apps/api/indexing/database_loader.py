@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 import requests
 from django.conf import settings
 from django.core.files import File
+from django.db import IntegrityError
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 
@@ -171,11 +172,15 @@ class DatabaseLoader(object):
 
             series_id = field.get(constants.FIELD_ID)
             title = field.get(constants.FIELD_TITLE)
-            field_model, _ = Field.objects.get_or_create(
-                series_id=series_id,
-                title=title,
-                distribution=distribution_model
-            )
+            try:
+                field_model, _ = Field.objects.get_or_create(
+                    series_id=series_id,
+                    title=title,
+                    distribution=distribution_model
+                )
+            except IntegrityError:  # Series ID ya existía
+                logger.warn(strings.DB_SERIES_ID_REPEATED, series_id, self.catalog_id)
+                continue
             field = self._remove_blacklisted_fields(
                 field,
                 settings.FIELD_BLACKLIST
