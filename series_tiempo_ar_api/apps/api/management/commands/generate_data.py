@@ -21,7 +21,6 @@ class Command(BaseCommand):
     def __init__(self):
         BaseCommand.__init__(self)
         self.prev_values = []
-        self.ES_URL = settings.ES_CONFIGURATION["ES_URLS"][0]
         self.elastic = ElasticInstance()
         self.bulk_items = []
 
