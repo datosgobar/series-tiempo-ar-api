@@ -4,12 +4,12 @@ from datetime import datetime
 
 from elasticsearch.helpers import parallel_bulk
 from dateutil.relativedelta import relativedelta
-from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from django.conf import settings
 from django.core.management import BaseCommand
 
 from series_tiempo_ar_api.apps.api.indexing import constants
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
+from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 
 
 class Command(BaseCommand):
