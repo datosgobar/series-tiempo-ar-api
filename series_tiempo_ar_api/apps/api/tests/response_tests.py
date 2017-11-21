@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.conf import settings
 from django.test import TestCase
 
 from series_tiempo_ar_api.apps.api.models import Field
@@ -15,7 +16,7 @@ class ResponseTests(TestCase):
     @classmethod
     def setUpClass(cls):
         setup_database()
-        cls.query = Query()
+        cls.query = Query(index=settings.TEST_INDEX)
         field = Field.objects.get(series_id=cls.single_series)
         cls.query.add_series(cls.single_series, field)
         cls.series_name = field.title
