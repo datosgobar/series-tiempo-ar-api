@@ -68,5 +68,5 @@ class Scraper(object):
         return True
 
 
-def get_scraper():
-    return Scraper()
+def get_scraper(read_local=False):
+    return Scraper(read_local)

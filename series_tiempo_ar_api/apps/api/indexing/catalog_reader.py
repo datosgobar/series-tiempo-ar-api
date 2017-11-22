@@ -14,32 +14,24 @@ logger = logging.Logger(__name__)
 logger.addHandler(logging.StreamHandler())
 
 
-class ReaderPipeline(object):
-    def __init__(self, catalog, index_only=False):
-        """Ejecuta el pipeline de lectura, guardado e indexado de datos
-        y metadatos sobre el catálogo especificado
+def index_catalog(catalog, catalog_id, read_local=False):
+    """Ejecuta el pipeline de lectura, guardado e indexado de datos
+    y metadatos sobre el catálogo especificado
 
-        Args:
-            catalog (DataJson): DataJson del catálogo a parsear
-            index_only (bool): Correr sólo la indexación o no
-        """
+    Args:
+        catalog (DataJson): DataJson del catálogo a parsear
+        catalog_id (str): ID único del catálogo a parsear
+    """
+    logger.info(strings.PIPELINE_START, catalog_id)
+    scraper = get_scraper(read_local)
+    scraper.run(catalog)
+    distributions = scraper.distributions
 
-        self.catalog = catalog
-        self.index_only = index_only
-        self.run()
+    if not distributions:
+        logger.info(strings.NO_SERIES_SCRAPPED)
+        return
 
-    def run(self):
-        distribution_models = None
-        if not self.index_only:
-            scraper = get_scraper()
-            scraper.run(self.catalog)
-            distributions = scraper.distributions
-
-            if not distributions:
-                logger.info(strings.NO_SERIES_SCRAPPED)
-                return
-
-            loader = DatabaseLoader()
-            loader.run(self.catalog, distributions)
-            distribution_models = loader.distribution_models
-        Indexer().run(distribution_models)
+    loader = DatabaseLoader(read_local)
+    loader.run(catalog, catalog_id, distributions)
+    distribution_models = loader.distribution_models
+    Indexer().run(distribution_models)

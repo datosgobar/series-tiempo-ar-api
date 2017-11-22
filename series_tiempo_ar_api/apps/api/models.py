@@ -4,6 +4,7 @@ from django.db import models
 
 class Catalog(models.Model):
     title = models.CharField(max_length=2000)
+    identifier = models.CharField(max_length=200, default='sspm')
     metadata = models.TextField()
 
 
@@ -35,7 +36,7 @@ class Distribution(models.Model):
 
 
 class Field(models.Model):
-    series_id = models.CharField(max_length=200)
+    series_id = models.CharField(max_length=200, unique=True)
     title = models.CharField(max_length=200)
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)

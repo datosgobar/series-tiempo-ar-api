@@ -14,8 +14,10 @@ from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import Scraper
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.api.indexing.catalog_reader import index_catalog
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
+CATALOG_ID = 'test_catalog'
 
 
 class ScrapperTests(TestCase):
@@ -119,7 +121,7 @@ class IndexerTests(TestCase):
         catalog = os.path.join(SAMPLES_DIR, catalog_path)
         distributions = get_time_series_distributions(catalog)
         db_loader = DatabaseLoader(read_local=True)
-        db_loader.run(catalog, distributions)
+        db_loader.run(catalog, CATALOG_ID, distributions)
         Indexer(index=self.test_index). \
             run(distributions=db_loader.distribution_models)
 
@@ -133,7 +135,7 @@ class DatabaseLoaderTests(TestCase):
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
         distributions = get_time_series_distributions(catalog)
 
-        self.loader.run(catalog, distributions)
+        self.loader.run(catalog, CATALOG_ID, distributions)
         meta = self.loader.distribution_models[0].dataset.catalog.metadata
         meta = json.loads(meta)
         for field in settings.CATALOG_BLACKLIST:
@@ -143,7 +145,7 @@ class DatabaseLoaderTests(TestCase):
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
         distributions = get_time_series_distributions(catalog)
 
-        self.loader.run(catalog, distributions)
+        self.loader.run(catalog, CATALOG_ID, distributions)
         for distribution in self.loader.distribution_models:
             meta = distribution.dataset.metadata
             meta = json.loads(meta)
@@ -154,7 +156,7 @@ class DatabaseLoaderTests(TestCase):
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
         distributions = get_time_series_distributions(catalog)
 
-        self.loader.run(catalog, distributions)
+        self.loader.run(catalog, CATALOG_ID, distributions)
 
         for distribution in self.loader.distribution_models:
             meta = distribution.metadata
@@ -166,9 +168,21 @@ class DatabaseLoaderTests(TestCase):
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
         distributions = get_time_series_distributions(catalog)
 
-        self.loader.run(catalog, distributions)
+        self.loader.run(catalog, CATALOG_ID, distributions)
 
         for distribution in self.loader.distribution_models:
             for field_model in distribution.field_set.all():
                 for field in settings.FIELD_BLACKLIST:
                     self.assertTrue(field not in field_model.metadata)
+
+
+class ReaderTests(TestCase):
+    catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+
+    def test_index_same_series_different_catalogs(self):
+        index_catalog(self.catalog, 'one_catalog_id', read_local=True)
+        index_catalog(self.catalog, 'other_catalog_id', read_local=True)
+
+        count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
+
+        self.assertEqual(count, 1)

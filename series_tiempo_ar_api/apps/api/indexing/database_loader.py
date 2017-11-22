@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 import requests
 from django.conf import settings
 from django.core.files import File
+from django.db import IntegrityError
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 
@@ -28,16 +29,19 @@ class DatabaseLoader(object):
         self.dataset_cache = {}
         self.catalog_model = None
         self.read_local = read_local
+        self.catalog_id = None
 
-    def run(self, catalog, distributions):
+    def run(self, catalog, catalog_id, distributions):
         """Guarda las distribuciones de la lista 'distributions',
         asociadas al catálogo 'catalog, en la base de datos, junto con
         todos los metadatos de distinto nivel (catalog, dataset)
 
         Args:
             catalog (DataJson)
+            catalog_id (str): Identificador único del catalogo a guardar
             distributions (list)
         """
+        self.catalog_id = catalog_id
         logger.info(strings.DB_LOAD_START)
         catalog = DataJson(catalog)
         self.catalog_model = self._catalog_model(catalog)
@@ -92,14 +96,14 @@ class DatabaseLoader(object):
         catalog = catalog.copy()
         # Borro el dataset, de existir. Solo guardo metadatos
         catalog.pop(constants.DATASET, None)
-        title = catalog.get(constants.FIELD_TITLE)
-        catalog_model, _ = Catalog.objects.get_or_create(title=title)
+        catalog_model, _ = Catalog.objects.get_or_create(identifier=self.catalog_id)
 
         catalog = self._remove_blacklisted_fields(
             catalog,
             settings.CATALOG_BLACKLIST
         )
         catalog_model.metadata = json.dumps(catalog)
+        catalog_model.title = catalog.get(constants.FIELD_TITLE)
         catalog_model.save()
         return catalog_model
 
@@ -168,11 +172,15 @@ class DatabaseLoader(object):
 
             series_id = field.get(constants.FIELD_ID)
             title = field.get(constants.FIELD_TITLE)
-            field_model, _ = Field.objects.get_or_create(
-                series_id=series_id,
-                title=title,
-                distribution=distribution_model
-            )
+            try:
+                field_model, _ = Field.objects.get_or_create(
+                    series_id=series_id,
+                    title=title,
+                    distribution=distribution_model
+                )
+            except IntegrityError:  # Series ID ya existía
+                logger.warn(strings.DB_SERIES_ID_REPEATED, series_id, self.catalog_id)
+                continue
             field = self._remove_blacklisted_fields(
                 field,
                 settings.FIELD_BLACKLIST
