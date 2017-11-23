@@ -4,7 +4,7 @@ from django.db import models
 
 class Catalog(models.Model):
     title = models.CharField(max_length=2000)
-    identifier = models.CharField(max_length=200, default='sspm')
+    identifier = models.CharField(max_length=200, default='sspm', unique=True)
     metadata = models.TextField()
 
 
