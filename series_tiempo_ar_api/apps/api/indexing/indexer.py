@@ -165,7 +165,11 @@ class Indexer(object):
 
         for column, value in row.iteritems():
             if value is not None and np.isfinite(value):
-                source[column] = value
+                # Todo: buscar método más elegante para resolver precisión incorrecta de los valores
+                # Ver issue: https://github.com/datosgobar/series-tiempo-ar-api/issues/63
+                # Convertir el np.float64 a string logra evitar la pérdida de precision. Luego se
+                # convierte a float de Python para preservar el tipado numérico del valor
+                source[column] = float(str(value))
 
         action['_id'] = series_id + '-' + timestamp
         action['_source'] = source
