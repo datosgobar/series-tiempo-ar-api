@@ -294,6 +294,7 @@ class CollapseQuery(ESQuery):
         # Armado del índice de tiempo necesario para calcular transformaciones anuales
         translation = {
             'day': 'D',
+            'week': 'W-MON',
             'month': 'MS',
             'quarter': 'QS',
             'year': 'AS'

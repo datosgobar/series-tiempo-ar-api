@@ -48,6 +48,7 @@ def get_relative_delta(periodicity):
 
     deltas = {
         'day': relativedelta(days=1),
+        'week': relativedelta(days=7),
         'month': relativedelta(months=1),
         'quarter': relativedelta(months=3),
         'year': relativedelta(years=1)

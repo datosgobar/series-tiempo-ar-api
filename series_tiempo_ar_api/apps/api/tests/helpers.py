@@ -24,3 +24,19 @@ def setup_database():
         distribution=distrib,
         title='random_month_0_title'
     )
+
+    init_daily_series(dataset)
+
+
+def init_daily_series(dataset):
+    distrib = Distribution.objects.create(identifier='132.2',
+                                          metadata='{}',
+                                          download_url="invalid_url",
+                                          dataset=dataset,
+                                          periodicity='R/P1D')
+    Field.objects.create(
+        series_id='random_series-day-0',
+        metadata='{}',
+        distribution=distrib,
+        title='random_day_0_title'
+    )

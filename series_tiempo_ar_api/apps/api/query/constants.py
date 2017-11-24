@@ -20,6 +20,7 @@ AGGREGATIONS = [
 
 COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
     'day',
+    'week',
     'month',
     'quarter',
     'semester',

@@ -1,4 +1,5 @@
 #! coding: utf-8
+import iso8601
 from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
@@ -70,3 +71,18 @@ class QueryTests(TestCase):
         self.assertEqual(ids['id'], field.series_id)
         self.assertEqual(ids['distribution'], field.distribution.identifier)
         self.assertEqual(ids['dataset'], field.distribution.dataset.identifier)
+
+    def test_weekly_collapse(self):
+        field = Field.objects.get(series_id='random_series-day-0')
+
+        self.query.add_series('random_series-day-0', field)
+
+        self.query.add_collapse(collapse='week')
+
+        data = self.query.run()['data']
+
+        first_date = iso8601.parse_date(data[0][0])
+        second_date = iso8601.parse_date(data[1][0])
+
+        delta = second_date - first_date
+        self.assertEqual(delta.days, 7)
