@@ -60,7 +60,8 @@ class Query(object):
             periodicity = self.get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
 
-        self.es_query.add_series(name, rep_mode)
+        periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
+        self.es_query.add_series(name, rep_mode, periodicity=periodicity)
 
     @staticmethod
     def get_max_periodicity(periodicities):

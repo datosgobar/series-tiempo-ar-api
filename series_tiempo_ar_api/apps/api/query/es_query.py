@@ -9,7 +9,7 @@ from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query import constants
-from series_tiempo_ar_api.apps.api.common.operations import pct_change_a_year_ago, change_a_year_ago
+from ..common.operations import pct_change_a_year_ago, change_a_year_ago
 
 
 class ESQuery(object):
@@ -28,6 +28,7 @@ class ESQuery(object):
         self.elastic = ElasticInstance()
         self.data = []
 
+        self.periodicity = None
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
             constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
@@ -61,8 +62,11 @@ class ESQuery(object):
 
     def add_series(self,
                    series_id,
-                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
+                   **kwargs):
+        periodicity = kwargs['periodicity']
         self._init_series(series_id, rep_mode)
+        self.periodicity = periodicity
 
     def run(self):
         if not self.series:
@@ -83,18 +87,44 @@ class ESQuery(object):
     def _format_response(self, responses):
         for i, response in enumerate(responses):
             rep_mode = self.series[i].rep_mode
-            self._populate_data(response, rep_mode)
+            self._format_single_response(response, rep_mode=rep_mode)
 
-    def _populate_data(self, response, rep_mode):
+    def _format_single_response(self, response, **kwargs):
+        if not len(response):
+            return
+
+        first_date = self._get_first_date(response)
+
+        # Agrego rows necesarios vacíos para garantizar continuidad
+        self._make_date_index_continuous(date_up_to=first_date,
+                                         time_delta=get_relative_delta(periodicity=self.periodicity))
+
+        first_date_index = find_index(self.data, first_date)
+        if first_date_index < 0:
+            # indice no encontrado, vamos a appendear los resultados
+            first_date_index = 0
+
+        new_row_len = len(self.data[0]) + 1 if self.data else 2  # 1 timestamp + 1 dato = len 2
+        self.put_data(response, first_date_index, new_row_len, **kwargs)
+
+        # Consistencia del tamaño de las filas
+        self._fill_data_with_nulls(row_len=new_row_len)
+
+    def _get_first_date(self, response):
+        return self._format_timestamp(response[0].timestamp)
+
+    def put_data(self, response, start_index, row_len, **kwargs):
+        rep_mode = kwargs['rep_mode']
         for i, hit in enumerate(response):
-            if i == len(self.data):
-                data_row = [self._format_timestamp(hit.timestamp)]
-                self.data.append(data_row)
+            data = hit[rep_mode] if rep_mode in hit else None
+            data_offset = i  # Offset de la primera fecha donde va a ir el dato actual
+            data_index = start_index + data_offset
 
-            if rep_mode in hit:
-                self.data[i].append(hit[rep_mode])
+            if data_index == len(self.data):  # No hay row, inicializo
+                timestamp = self._format_timestamp(hit.timestamp)
+                self._init_row(timestamp, data, row_len)
             else:
-                self.data[i].append(None)
+                self.data[data_index].append(data)
 
     def _init_series(self, series_id=None,
                      rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
@@ -144,6 +174,49 @@ class ESQuery(object):
         # Guardo el parámetro, necesario en el evento de hacer un collapse
         self.args[constants.PARAM_SORT] = how
 
+    def _fill_data_with_nulls(self, row_len):
+        """Rellena los espacios faltantes de la respuesta rellenando
+        con nulls los datos faltantes hasta que toda fila tenga
+        longitud 'row_len'
+        """
+        for row in self.data:
+            while len(row) < row_len:
+                row.append(None)
+
+    def _make_date_index_continuous(self, date_up_to, time_delta):
+        """Hace el índice de tiempo de los resultados continuo (según
+        el intervalo de resultados), sin saltos, hasta la fecha
+        especificada
+        """
+
+        # Si no hay datos cargados no hay nada que hacer
+        if not len(self.data):
+            return
+
+        end_date = iso8601.parse_date(date_up_to)
+        last_date = iso8601.parse_date(self.data[-1][0])
+        delta = time_delta
+        row_len = len(self.data[0])
+        while last_date < end_date:
+            last_date = last_date + delta
+            date_str = self._format_timestamp(str(last_date.date()))
+            row = [date_str]
+            row.extend([None for _ in range(1, row_len)])
+            self.data.append(row)
+
+    def _init_row(self, timestamp, data, row_len):
+        """Inicializa una nueva fila de los datos de respuesta,
+        garantizando que tenga longitud row_len, que el primer valor
+        sea el índice de tiempo, y el último el dato.
+        """
+
+        row = [timestamp]
+        # Lleno de nulls el row menos 2 espacios (timestamp + el dato a agregar)
+        nulls = [None] * (row_len - 2)
+        row.extend(nulls)
+        row.append(data)
+        self.data.append(row)
+
 
 class CollapseQuery(ESQuery):
     """Calcula el promedio de una serie en base a una bucket
@@ -157,6 +230,7 @@ class CollapseQuery(ESQuery):
         self.collapse_aggregation = \
             constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
         self.collapse_interval = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE]
+        self.periodicity = self.collapse_interval
 
         if other:
             self.series = list(other.series)
@@ -166,12 +240,15 @@ class CollapseQuery(ESQuery):
 
     def add_series(self,
                    series_id,
-                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
-        super(CollapseQuery, self).add_series(series_id, rep_mode)
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
+                   **kwargs):
+        kwargs['periodicity'] = None
+        super(CollapseQuery, self).add_series(series_id, rep_mode, **kwargs)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
         serie.search = self._add_aggregation(search)
+        self.periodicity = self.collapse_interval
 
     def add_collapse(self, agg=None, interval=None):
         if agg:
@@ -183,6 +260,7 @@ class CollapseQuery(ESQuery):
                 interval = 'year'
 
             self.collapse_interval = interval
+            self.periodicity = self.collapse_interval
 
         for serie in self.series:
             search = serie.search
@@ -202,23 +280,10 @@ class CollapseQuery(ESQuery):
 
         return search
 
-    def _format_single_response(self, response, start, limit):
-        if not response.aggregations:
-            return
-
-        hits = response.aggregations.agg.buckets
-        first_date = self._format_timestamp(hits[0]['key_as_string'])
-
-        # Agrego rows necesarios vacíos para garantizar continuidad
-        self._make_date_index_continuous(date_up_to=first_date)
-
-        first_date_index = find_index(self.data, first_date)
-        if first_date_index < 0:
-            # indice no encontrado, vamos a appendear los resultados
-            first_date_index = 0
-
-        new_row_len = len(self.data[0]) + 1 if self.data else 2  # 1 timestamp + 1 dato = len 2
-        for i, hit in enumerate(hits):
+    def put_data(self, response, first_date_index, row_len, **kwargs):
+        start = self.args['start']
+        limit = self.args['limit']
+        for i, hit in enumerate(response):
             if i < start:
                 continue
 
@@ -229,35 +294,20 @@ class CollapseQuery(ESQuery):
                 break
             if data_index == len(self.data):  # No hay row, inicializo
                 timestamp = self._format_timestamp(hit['key_as_string'])
-                self._init_row(timestamp, data, new_row_len)
+                self._init_row(timestamp, data, row_len)
             else:
                 self.data[data_index].append(data)
 
-        # Consistencia del tamaño de las filas
-        self._fill_data_with_nulls(row_len=len(self.data[first_date_index]))
-
-    def _init_row(self, timestamp, data, row_len):
-        """Inicializa una nueva fila de los datos de respuesta,
-        garantizando que tenga longitud row_len, que el primer valor
-        sea el índice de tiempo, y el último el dato.
-        """
-
-        row = [timestamp]
-        # Lleno de nulls todo el row menos 2 espacios (timestamp + el dato a agregar)
-        nulls = [None] * (row_len - 2)
-        row.extend(nulls)
-        row.append(data)
-        self.data.append(row)
+    def _get_first_date(self, response):
+        return self._format_timestamp(response[0]['key_as_string'])
 
     def _format_response(self, responses):
-        start = self.args.get(constants.PARAM_START)
-        limit = self.args.get(constants.PARAM_LIMIT)
-
         responses_sorted = self._sort_responses(responses)
 
         for response in responses_sorted:
             # Smart solution
-            self._format_single_response(response, start, limit)
+            hits = response.aggregations.agg.buckets
+            self._format_single_response(hits)
 
         self._apply_transformations()
 
@@ -332,36 +382,6 @@ class CollapseQuery(ESQuery):
             return 1
 
         return sorted(responses, cmp=date_order_cmp)
-
-    def _fill_data_with_nulls(self, row_len):
-        """Rellena los espacios faltantes de la respuesta rellenando
-        con nulls los datos faltantes hasta que toda fila tenga
-        longitud 'row_len'
-        """
-        for row in self.data:
-            while len(row) < row_len:
-                row.append(None)
-
-    def _make_date_index_continuous(self, date_up_to):
-        """Hace el índice de tiempo de los resultados continuo (según
-        el intervalo de resultados), sin saltos, hasta la fecha
-        especificada
-        """
-
-        # Si no hay datos cargados no hay nada que hacer
-        if not len(self.data):
-            return
-
-        end_date = iso8601.parse_date(date_up_to)
-        last_date = iso8601.parse_date(self.data[-1][0])
-        delta = get_relative_delta(self.collapse_interval)
-        row_len = len(self.data[0])
-        while last_date < end_date:
-            last_date = last_date + delta
-            date_str = self._format_timestamp(str(last_date.date()))
-            row = [date_str]
-            row.extend([None for _ in range(1, row_len)])
-            self.data.append(row)
 
 
 class Series(object):
