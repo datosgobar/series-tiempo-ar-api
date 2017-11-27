@@ -7,57 +7,13 @@ from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
-from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.query.es_query.series import Series
+from .base_query import BaseQuery
 
 
-class ESQuery(object):
+class ESQuery(BaseQuery):
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
-
-    def __init__(self, index):
-        """
-        Instancia una nueva query
-
-        args:
-            index (str): Índice de Elasticsearch a ejecutar las queries.
-        """
-        self.index = index
-        self.series = []
-        self.elastic = ElasticInstance()
-        self.data = []
-
-        self.periodicity = None
-        # Parámetros que deben ser guardados y accedidos varias veces
-        self.args = {
-            constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
-            constants.PARAM_LIMIT: constants.API_DEFAULT_VALUES[constants.PARAM_LIMIT],
-            constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
-        }
-
-    def add_pagination(self, start, limit):
-        if not len(self.series):
-            raise QueryError(strings.EMPTY_QUERY_ERROR)
-
-        for serie in self.series:
-            serie.search = serie.search[start:limit]
-
-        # Guardo estos parámetros, necesarios en el evento de hacer un collapse
-        self.args[constants.PARAM_START] = start
-        self.args[constants.PARAM_LIMIT] = limit
-
-    def add_filter(self, start=None, end=None):
-        if not len(self.series):
-            raise QueryError(strings.EMPTY_QUERY_ERROR)
-
-        _filter = {
-            'lte': end,
-            'gte': start
-        }
-        for serie in self.series:
-            # Agrega un filtro de rango temporal a la query de ES
-            serie.search = serie.search.filter('range',
-                                               timestamp=_filter)
 
     def add_series(self,
                    series_id,
@@ -68,6 +24,10 @@ class ESQuery(object):
         self.periodicity = periodicity
 
     def run(self):
+        """Ejecuta la query de todas las series agregadas. Devuelve una
+        'tabla' (lista de listas) con los resultados, siendo cada columna
+        una serie.
+        """
         if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
@@ -89,6 +49,9 @@ class ESQuery(object):
             self._format_single_response(response, rep_mode=rep_mode)
 
     def _format_single_response(self, response, **kwargs):
+        """Formatea y agrega los datos de la respuesta de la búsqueda 'response'
+        a la lista de datos self.data
+        """
         if not len(response):
             return
 
@@ -113,6 +76,10 @@ class ESQuery(object):
         return self._format_timestamp(response[0].timestamp)
 
     def put_data(self, response, start_index, row_len, **kwargs):
+        """Carga todos los datos de la respuesta en el objeto data, a partir
+        del índice first_date_index de la misma, conformando una tabla con
+        'row_len' datos por fila, llenando con nulls de ser necesario
+        """
         rep_mode = kwargs['rep_mode']
         for i, hit in enumerate(response):
             data = hit[rep_mode] if rep_mode in hit else None

@@ -3,7 +3,8 @@ import pandas as pd
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
-from .es_query import ESQuery
+from series_tiempo_ar_api.apps.api.query.es_query.es_query import ESQuery
+from .base_query import BaseQuery
 from .. import constants
 
 
@@ -70,6 +71,12 @@ class CollapseQuery(ESQuery):
         return search
 
     def put_data(self, response, first_date_index, row_len, **kwargs):
+        """Carga todos los datos de la respuesta en el objeto data, a partir
+        del índice first_date_index de la misma, conformando una tabla con
+        'row_len' datos por fila, llenando con nulls de ser necesario. Como en
+        las queries de collapse no se puede filtrar previamente por offset de
+        start y limit, se hace el filtrado manualmente
+        """
         start = self.args['start']
         limit = self.args['limit']
         for i, hit in enumerate(response):
