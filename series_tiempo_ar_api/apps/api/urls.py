@@ -4,5 +4,5 @@ from django.conf.urls import url
 from series_tiempo_ar_api.apps.api.views import query_view
 
 urlpatterns = [
-    url('^series/$', query_view)
+    url('^series/$', query_view, name='series')
 ]

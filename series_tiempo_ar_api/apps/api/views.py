@@ -1,8 +1,13 @@
 #! coding: utf-8
-
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.pipeline import QueryPipeline
 
 
 def query_view(request):
     query = QueryPipeline()
-    return query.run(request.GET.copy())
+    # Formateo argumentos a lowercase, excepto ids
+    ids = request.GET.get(constants.PARAM_IDS)
+    args = {key: value.lower() for key, value in request.GET.items()}
+    args[constants.PARAM_IDS] = ids
+
+    return query.run(args)
