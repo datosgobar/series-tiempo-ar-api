@@ -7,7 +7,8 @@ from pandas import json
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
-from series_tiempo_ar_api.apps.api.query.es_query import ESQuery, CollapseQuery
+from .es_query.es_query import ESQuery
+from .es_query.collapse_query import CollapseQuery
 
 
 class Query(object):
