@@ -201,20 +201,18 @@ class DateFilter(BaseOperation):
 
 
 class IdsField(BaseOperation):
-    """Asigna el doc_type a la búsqueda, el identificador de cada
-    serie de tiempo individual, y rep_mode, el modo de representación,
-    a base de el parseo el parámetro 'ids', que contiene datos de
-    varias series a la vez
+    """Asigna las series_ids, con sus modos de representación y modos de agregación,
+    a base de el parseo el parámetro 'ids', que contiene datos de varias series a la vez
     """
 
     def __init__(self):
         BaseOperation.__init__(self)
 
     def run(self, query, args):
-        # Formato del parámetro 'ids':
-        # serie1:rep_mode1,serie2:repmode2,serie3,serie4:rep_mode3
-        # rep_mode es opcional, hay un valor default, dado por otro parámetro
-        # 'representation_mode'
+        # Ejemplo de formato del parámetro 'ids':
+        # serie1:rep_mode1:agg1,serie2:repmode2:agg2,serie3:agg3,serie4:rep_mode3
+        # rep_mode y agg son opcionales, hay un valor default, dado por otros parámetros
+        # 'representation_mode' y 'collapse_aggregation'
         # Parseamos esa string y agregamos a la query las series pedidas
         ids = args.get(constants.PARAM_IDS)
         rep_mode = args.get(constants.PARAM_REP_MODE,
@@ -250,7 +248,7 @@ class IdsField(BaseOperation):
         query.add_series(series_id, field_model, rep_mode)
 
     def _get_model(self, series_id, rep_mode):
-        """Valida si el 'doc_type' es válido, es decir, si la serie
+        """Valida si el 'series_id' es válido, es decir, si la serie
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
