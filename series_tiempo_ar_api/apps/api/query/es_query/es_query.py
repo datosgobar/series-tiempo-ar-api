@@ -61,7 +61,7 @@ class ESQuery(BaseQuery):
         # Guardo el parámetro, necesario en el evento de hacer un collapse
         self.args[constants.PARAM_SORT] = how
 
-    def add_collapse(self, agg, interval):
+    def add_collapse(self, interval):
         raise QueryError(strings.INVALID_QUERY_TYPE)
 
     def has_collapse(self):

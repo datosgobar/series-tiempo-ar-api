@@ -63,7 +63,6 @@ class QueryPipeline(object):
             Pagination,
             Sort,
             Collapse,
-            CollapseAggregation,
             Metadata,
             Format
         ]
@@ -312,21 +311,6 @@ class Collapse(BaseOperation):
         except CollapseError:
             msg = strings.INVALID_COLLAPSE.format(collapse)
             self._append_error(msg)
-
-
-class CollapseAggregation(BaseOperation):
-    def run(self, query, args):
-        agg = args.get(constants.PARAM_COLLAPSE_AGG)
-
-        if agg and agg not in constants.AGGREGATIONS:
-            msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE_AGG, agg)
-            self._append_error(msg)
-            return
-
-        try:
-            query.set_collapse_aggregation(agg)
-        except CollapseError:
-            pass  # Se especifica un collapse aggregation sin collapse, lo ignoro
 
 
 class Metadata(BaseOperation):

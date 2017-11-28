@@ -75,16 +75,10 @@ class Query(object):
 
         return order[index]
 
-    def add_collapse(self, agg=None,
-                     collapse=None):
+    def add_collapse(self, collapse=None):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(index=self.es_index, other=self.es_query)
-        self.es_query.add_collapse(agg, collapse)
-
-    def set_collapse_aggregation(self, agg):
-        if not hasattr(self.es_query, 'collapse_aggregation'):
-            raise CollapseError
-        self.es_query.add_collapse(agg=agg)
+        self.es_query.add_collapse(collapse)
 
     def set_metadata_config(self, how):
         self.metadata_config = how

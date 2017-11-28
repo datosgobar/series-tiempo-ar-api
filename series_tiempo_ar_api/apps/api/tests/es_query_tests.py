@@ -102,7 +102,7 @@ class QueryTest(TestCase):
 
     @raises(QueryError)
     def test_try_collapse(self):
-        self.query.add_collapse(interval='year', agg='avg')
+        self.query.add_collapse(interval='year')
 
     def test_preserve_query_order(self):
 

@@ -35,9 +35,7 @@ class CollapseQuery(BaseQuery):
         serie.search = self._add_aggregation(search)
         self.periodicity = self.collapse_interval
 
-    def add_collapse(self, agg=None, interval=None):
-        if agg:
-            self.collapse_aggregation = agg
+    def add_collapse(self, interval=None):
         if interval:
             # Temporalmente: convertir collapse semestral en anual,
             # Elasticsearch no los soporta

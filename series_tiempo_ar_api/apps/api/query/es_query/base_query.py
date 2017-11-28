@@ -193,7 +193,7 @@ class BaseQuery(object):
     def _format_response(self, responses):
         raise NotImplementedError
 
-    def add_collapse(self, agg, interval):
+    def add_collapse(self, interval):
         raise NotImplementedError
 
     def has_collapse(self):
