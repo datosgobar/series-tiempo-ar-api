@@ -1,13 +1,12 @@
 # coding=utf-8
 import iso8601
-from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
-from series_tiempo_ar_api.apps.api.query.query import ESQuery, CollapseQuery
+from series_tiempo_ar_api.apps.api.query.query import ESQuery
 from .helpers import setup_database
 
 SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
@@ -27,6 +26,7 @@ class QueryTest(TestCase):
     single_series = SERIES_NAME
     rep_mode = 'value'
     series_periodicity = 'month'  # Periodicidad de la serie anterior
+    delayed_series = settings.TEST_SERIES_NAME_DELAYED.format('month')
 
     @classmethod
     def setUpClass(cls):
@@ -102,3 +102,60 @@ class QueryTest(TestCase):
     @raises(QueryError)
     def test_try_collapse(self):
         self.query.add_collapse(interval='year', agg='avg')
+
+    def test_preserve_query_order(self):
+
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        first_date = query.run()[0][0]
+        self.query.sort('asc')
+        data = self.query.run()
+        self.assertEqual(data[0][0], first_date)
+
+    def test_query_fills_nulls(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        delayed_first_date = iso8601.parse_date(query.run()[0][0])
+        self.query.sort('asc')
+        data = self.query.run()
+
+        delayed_series_index = 1  # Primera serie agregada
+        for row in data:
+            current_date = iso8601.parse_date(row[0])
+            if current_date < delayed_first_date:
+                self.assertEqual(row[delayed_series_index], None)
+            else:
+                break
+
+    def test_query_fills_nulls_second_series(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        delayed_first_date = iso8601.parse_date(query.run()[0][0])
+        self.query.sort('asc')
+        data = self.query.run()
+
+        delayed_series_index = 2  # Segunda serie agregada
+        for row in data:
+            current_date = iso8601.parse_date(row[0])
+            if current_date < delayed_first_date:
+                self.assertEqual(row[delayed_series_index], None)
+            else:
+                break
