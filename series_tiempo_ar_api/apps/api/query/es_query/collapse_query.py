@@ -93,9 +93,7 @@ class CollapseQuery(BaseQuery):
         return self._format_timestamp(response[0]['key_as_string'])
 
     def _format_response(self, responses):
-        responses_sorted = self._sort_responses(responses)
-
-        for response in responses_sorted:
+        for response in responses:
             # Smart solution
             hits = response.aggregations.agg.buckets
             self._format_single_response(hits)
