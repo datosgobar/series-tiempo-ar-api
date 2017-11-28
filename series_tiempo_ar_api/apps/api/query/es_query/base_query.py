@@ -96,7 +96,7 @@ class BaseQuery(object):
             while len(row) < row_len:
                 row.append(None)
 
-    def _make_date_index_continuous(self, date_up_to, time_delta):
+    def _make_date_index_continuous(self, target_date, time_delta):
         """Hace el índice de tiempo de los resultados continuo (según
         el intervalo de resultados), sin saltos, hasta la fecha
         especificada
@@ -106,16 +106,31 @@ class BaseQuery(object):
         if not len(self.data):
             return
 
-        end_date = iso8601.parse_date(date_up_to)
+        # Caso fecha target > última fecha (rellenar al final)
+        target_date = iso8601.parse_date(target_date)
         last_date = iso8601.parse_date(self.data[-1][0])
         delta = time_delta
         row_len = len(self.data[0])
-        while last_date < end_date:
+        while last_date < target_date:
             last_date = last_date + delta
             date_str = self._format_timestamp(str(last_date.date()))
             row = [date_str]
             row.extend([None for _ in range(1, row_len)])
             self.data.append(row)
+
+        # Caso fecha target < primera fecha (rellenar al principio)
+        first_date = iso8601.parse_date(self.data[0][0])
+        lead_rows = []
+        current_date = target_date
+        while current_date < first_date:
+            date_str = self._format_timestamp(str(current_date.date()))
+            row = [date_str]
+            row.extend([None for _ in range(1, row_len)])
+            lead_rows.append(row)
+            current_date = current_date + delta
+
+        lead_rows.extend(self.data)
+        self.data = lead_rows
 
     def _init_row(self, timestamp, data, row_len):
         """Inicializa una nueva fila de los datos de respuesta,
@@ -146,7 +161,7 @@ class BaseQuery(object):
         first_date = self._get_first_date(response)
 
         # Agrego rows necesarios vacíos para garantizar continuidad
-        self._make_date_index_continuous(date_up_to=first_date,
+        self._make_date_index_continuous(target_date=first_date,
                                          time_delta=get_relative_delta(periodicity=self.periodicity))
 
         first_date_index = find_index(self.data, first_date)
