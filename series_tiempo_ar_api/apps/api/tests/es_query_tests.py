@@ -188,3 +188,6 @@ class QueryTest(TestCase):
             row_date = iso8601.parse_date(row[0])
             self.assertEqual(current_date + relativedelta(months=1), row_date)
             current_date = row_date
+
+    def test_has_collapse(self):
+        self.assertEqual(False, self.query.has_collapse())

@@ -228,3 +228,6 @@ class Query(object):
                 field.pop(meta_field)
 
         return meta
+
+    def has_collapse(self):
+        return self.es_query.has_collapse()

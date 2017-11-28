@@ -171,3 +171,6 @@ class CollapseQuery(BaseQuery):
             return 1
 
         return sorted(responses, cmp=date_order_cmp)
+
+    def has_collapse(self):
+        return True

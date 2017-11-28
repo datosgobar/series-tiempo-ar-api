@@ -195,3 +195,6 @@ class BaseQuery(object):
 
     def add_collapse(self, agg, interval):
         raise NotImplementedError
+
+    def has_collapse(self):
+        raise NotImplementedError

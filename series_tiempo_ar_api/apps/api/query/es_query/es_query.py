@@ -63,3 +63,6 @@ class ESQuery(BaseQuery):
 
     def add_collapse(self, agg, interval):
         raise QueryError(strings.INVALID_QUERY_TYPE)
+
+    def has_collapse(self):
+        return False
