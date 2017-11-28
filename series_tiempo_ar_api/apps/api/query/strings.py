@@ -17,3 +17,5 @@ EMPTY_QUERY_ERROR = u"Query vacía, primero agregue una serie"
 INVALID_SORT_PARAMETER = u'"how" debe ser "asc", o "desc", recibido {}'
 
 ES_NOT_INIT_ERROR = u"Instancia no inicializada. Pruebe con init(urls)"
+
+INVALID_QUERY_TYPE = u"Este tipo de Query no soporta operaciones de collapse"
