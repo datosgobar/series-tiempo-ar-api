@@ -10,6 +10,8 @@ from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery, CollapseQuery
 from .helpers import setup_database
 
+SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+
 
 class QueryTest(TestCase):
 
@@ -22,7 +24,7 @@ class QueryTest(TestCase):
     start_date = '2010-01-01'
     end_date = '2015-01-01'
 
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
     rep_mode = 'value'
     series_periodicity = 'month'  # Periodicidad de la serie anterior
 
@@ -107,7 +109,7 @@ class CollapseQueryTests(TestCase):
     start = 10
     limit = 15
 
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
     rep_mode = 'value'
     series_periodicity = 'month'
 

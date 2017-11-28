@@ -11,7 +11,7 @@ from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
 
 class ResponseTests(TestCase):
-    single_series = 'random_series-month-0'
+    single_series = settings.TEST_SERIES_NAME.format('month')
 
     @classmethod
     def setUpClass(cls):

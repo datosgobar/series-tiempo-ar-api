@@ -9,9 +9,11 @@ from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
 
+SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+
 
 class QueryTests(TestCase):
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
 
     @classmethod
     def setUpClass(cls):
@@ -73,9 +75,10 @@ class QueryTests(TestCase):
         self.assertEqual(ids['dataset'], field.distribution.dataset.identifier)
 
     def test_weekly_collapse(self):
-        field = Field.objects.get(series_id='random_series-day-0')
+        day_series_name = settings.TEST_SERIES_NAME.format('day')
+        field = Field.objects.get(series_id=day_series_name)
 
-        self.query.add_series('random_series-day-0', field)
+        self.query.add_series(day_series_name, field)
 
         self.query.add_collapse(collapse='week')
 

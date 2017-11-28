@@ -5,44 +5,50 @@ from datetime import datetime
 from elasticsearch.helpers import parallel_bulk
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.core.management import BaseCommand
 
-from series_tiempo_ar_api.apps.api.indexing import constants
+from series_tiempo_ar_api.apps.api.indexing.constants import INDEX_CREATION_BODY
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.api.common import constants
 
 
-class Command(BaseCommand):
+class TestDataGenerator(object):
     date_format = '%Y-%m-%d'
     start_date = datetime(1910, 1, 1)
     max_data = settings.MAX_ALLOWED_VALUES['limit']
-    series_per_interval = 2
 
     def __init__(self):
-        BaseCommand.__init__(self)
         self.prev_values = []
         self.elastic = ElasticInstance()
         self.bulk_items = []
 
-    def handle(self, *args, **options):
+    def run(self):
         # Chequeo si existe el índice, si no, lo creo
         if not self.elastic.indices.exists(settings.TEST_INDEX):
             self.elastic.indices.create(settings.TEST_INDEX,
-                                        body=constants.INDEX_CREATION_BODY)
+                                        body=INDEX_CREATION_BODY)
 
         for interval in COLLAPSE_INTERVALS:
-            for series_count in range(self.series_per_interval):
-                self.generate_random_series(interval, series_count)
+            self.init_series(interval)
 
         for success, info in parallel_bulk(self.elastic, self.bulk_items):
             if not success:
                 print("ERROR:", info)
 
-    def generate_random_series(self, interval, series_count):
+    def init_series(self, interval):
+        """Crea varias series con periodicidad del intervalo dado"""
+
+        start_date = self.start_date
+        name = settings.TEST_SERIES_NAME.format(interval)
+        self.generate_random_series(interval, name, self.start_date)
+        start_date += relativedelta(years=50)
+        delayed_name = settings.TEST_SERIES_NAME_DELAYED.format(interval)
+        self.generate_random_series(interval, delayed_name, start_date)
+
+    def generate_random_series(self, interval, series_name, start_date):
         self.prev_values = []
 
-        current_date = self.start_date
-        series_name = "random_series-{}-{}".format(interval, series_count)
+        current_date = start_date
 
         for _ in range(self.max_data):
             date_str = current_date.strftime(self.date_format)
@@ -79,20 +85,20 @@ class Command(BaseCommand):
         valores de cambio y porcentuales"""
         properties = {
             'timestamp': date_str,
-            'value': 100000 + random() * 10000,
-            'change': 1,
-            'percent_change': 1,
-            'change_a_year_ago': 1,
-            'percent_change_a_year_ago': 1,
+            constants.VALUE: 100000 + random() * 10000,
+            constants.CHANGE: 1,
+            constants.PCT_CHANGE: 1,
+            constants.CHANGE_YEAR_AGO: 1,
+            constants.PCT_CHANGE_YEAR_AGO: 1,
             'series_id': series_name
         }
 
         if len(self.prev_values):
             # Calculos relacionados al valor anterior
-            change = properties['value'] - self.prev_values[-1]['value']
-            properties['change'] = change
-            pct_change = properties['value'] / self.prev_values[-1]['value'] - 1
-            properties['percent_change'] = pct_change
+            change = properties[constants.VALUE] - self.prev_values[-1][constants.VALUE]
+            properties[constants.CHANGE] = change
+            pct_change = properties[constants.VALUE] / self.prev_values[-1][constants.VALUE] - 1
+            properties[constants.PCT_CHANGE] = pct_change
 
             date = datetime.strptime(date_str, self.date_format)
             for prev_value in self.prev_values:
@@ -101,11 +107,11 @@ class Command(BaseCommand):
 
                 if date - relativedelta(years=1) == prev_date:
                     # Cálculos relacionados al valor del año pasado
-                    change = properties['value'] - prev_value['value']
-                    properties['change_a_year_ago'] = change
+                    change = properties[constants.VALUE] - prev_value[constants.VALUE]
+                    properties[constants.CHANGE_YEAR_AGO] = change
 
-                    pct_change = properties['value'] / prev_value['value'] - 1
-                    properties['percent_change_a_year_ago'] = pct_change
+                    pct_change = properties[constants.VALUE] / prev_value[constants.VALUE] - 1
+                    properties[constants.PCT_CHANGE_YEAR_AGO] = pct_change
                     break
 
         self.prev_values.append(properties)
@@ -113,3 +119,7 @@ class Command(BaseCommand):
         # Me quedo sólo con esos valores como optimización
         self.prev_values = self.prev_values[-12:]
         return properties
+
+
+def get_generator():
+    return TestDataGenerator()

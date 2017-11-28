@@ -1,4 +1,5 @@
 #! coding: utf-8
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
@@ -11,16 +12,18 @@ from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from .helpers import setup_database
 from .support.pipeline import time_serie_name
 
+SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+
 
 class NameAndRepModeTest(TestCase):
     """Testea el comando que se encarga del parámetro 'ids' de la
     query: el parseo de IDs de series y modos de representación de las
     mismas.
     """
-    single_series = 'random_series-month-0'
-    single_series_rep_mode = 'random_series-month-0:percent_change'
+    single_series = SERIES_NAME
+    single_series_rep_mode = SERIES_NAME + ':percent_change'
 
-    multi_series = 'random_series-month-0,random_series-month-0'
+    multi_series = SERIES_NAME + ',' + SERIES_NAME
 
     @classmethod
     def setUpClass(cls):
@@ -68,36 +71,36 @@ class NameAndRepModeTest(TestCase):
         self.assertTrue(len(data[0]), 3)
 
     def test_leading_comma(self):
-        self.cmd.run(self.query, {'ids': ',random_series-month-0'})
+        self.cmd.run(self.query, {'ids': ',' + SERIES_NAME})
         self.assertTrue(self.cmd.errors)
 
     def test_final_comma(self):
-        self.cmd.run(self.query, {'ids': 'random_series-month-0,'})
+        self.cmd.run(self.query, {'ids': SERIES_NAME + ','})
         self.assertTrue(self.cmd.errors)
 
     def test_one_valid_one_invalid(self):
-        self.cmd.run(self.query, {'ids': 'random_series-month-0,invalid'})
+        self.cmd.run(self.query, {'ids': SERIES_NAME + ',invalid'})
         self.assertTrue(self.cmd.errors)
 
     def test_second_valid_first_invalid(self):
-        self.cmd.run(self.query, {'ids': 'invalid,random_series-month-0'})
+        self.cmd.run(self.query, {'ids': 'invalid,' + SERIES_NAME})
         self.assertTrue(self.cmd.errors)
 
     def test_invalid_rep_mode(self):
-        self.cmd.run(self.query, {'ids': 'random_series-month-0:random_series-month-0'})
+        self.cmd.run(self.query, {'ids': SERIES_NAME + ':' + SERIES_NAME})
         self.assertTrue(self.cmd.errors)
 
     def test_leading_semicolon(self):
-        self.cmd.run(self.query, {'ids': ':random_series-month-0'})
+        self.cmd.run(self.query, {'ids': ':' + SERIES_NAME})
         self.assertTrue(self.cmd.errors)
 
     def test_final_semicolon(self):
-        self.cmd.run(self.query, {'ids': 'random_series-month-0:'})
+        self.cmd.run(self.query, {'ids': SERIES_NAME + ':'})
         self.assertTrue(self.cmd.errors)
 
 
 class CollapseTest(TestCase):
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
 
     @classmethod
     def setUpClass(cls):
@@ -127,7 +130,7 @@ class CollapseAggregationTests(TestCase):
 
 
 class PaginationTests(TestCase):
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
 
     limit = 1000
     start = 50
@@ -199,7 +202,7 @@ class PaginationTests(TestCase):
 
 
 class DateFilterTests(TestCase):
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
 
     start_date = '1980-01-01'
     end_date = '1985-01-01'
@@ -278,12 +281,11 @@ class DateFilterTests(TestCase):
 
 class SortTests(TestCase):
 
-    single_series = 'random_series-month-0'
+    single_series = SERIES_NAME
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
-        cls.field = Field.objects.get(series_id='random_series-month-0')
+        cls.field = Field.objects.get(series_id=SERIES_NAME)
         super(cls, SortTests).setUpClass()
 
     def setUp(self):

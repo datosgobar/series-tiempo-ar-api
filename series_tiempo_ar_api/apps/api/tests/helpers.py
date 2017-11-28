@@ -1,5 +1,6 @@
 #! coding: utf-8
 
+from django.conf import settings
 from series_tiempo_ar_api.apps.api.models import \
     Catalog, Dataset, Distribution, Field
 
@@ -19,7 +20,7 @@ def setup_database():
                                           dataset=dataset,
                                           periodicity='R/P1M')
     Field.objects.create(
-        series_id='random_series-month-0',
+        series_id=settings.TEST_SERIES_NAME.format('month'),
         metadata='{}',
         distribution=distrib,
         title='random_month_0_title'
@@ -35,7 +36,7 @@ def init_daily_series(dataset):
                                           dataset=dataset,
                                           periodicity='R/P1D')
     Field.objects.create(
-        series_id='random_series-day-0',
+        series_id=settings.TEST_SERIES_NAME.format('day'),
         metadata='{}',
         distribution=distrib,
         title='random_day_0_title'
