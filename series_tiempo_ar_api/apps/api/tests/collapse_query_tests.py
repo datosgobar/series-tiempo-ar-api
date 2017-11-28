@@ -21,6 +21,9 @@ class CollapseQueryTests(TestCase):
     rep_mode = 'value'
     series_periodicity = 'month'
 
+    # Serie cuya primera fecha está mucho más tarde que la anterior
+    delayed_series = settings.TEST_SERIES_NAME_DELAYED.format('month')
+
     @classmethod
     def setUpClass(cls):
         super(CollapseQueryTests, cls).setUpClass()
@@ -112,3 +115,57 @@ class CollapseQueryTests(TestCase):
         self.query = CollapseQuery(index=settings.TEST_INDEX, other=other_query)
         data = self.query.run()
         self.assertTrue(data)
+
+    def test_preserve_query_order(self):
+
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        first_date = query.run()[0][0]
+        data = self.query.run()
+        self.assertEqual(data[0][0], first_date)
+
+    def test_query_fills_nulls(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        delayed_first_date = iso8601.parse_date(query.run()[0][0])
+        data = self.query.run()
+
+        delayed_series_index = 1  # Primera serie agregada
+        for row in data:
+            current_date = iso8601.parse_date(row[0])
+            if current_date < delayed_first_date:
+                self.assertEqual(row[delayed_series_index], None)
+            else:
+                break
+
+    def test_query_fills_nulls_second_series(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        delayed_first_date = iso8601.parse_date(query.run()[0][0])
+        data = self.query.run()
+
+        delayed_series_index = 2  # Segunda serie agregada
+        for row in data:
+            current_date = iso8601.parse_date(row[0])
+            if current_date < delayed_first_date:
+                self.assertEqual(row[delayed_series_index], None)
+            else:
+                break
