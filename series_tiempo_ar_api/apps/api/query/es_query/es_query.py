@@ -1,13 +1,9 @@
 #! coding: utf-8
-import iso8601
 from django.conf import settings
-from elasticsearch_dsl import Search, MultiSearch
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
-from series_tiempo_ar_api.apps.api.helpers import find_index, get_relative_delta
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
-from series_tiempo_ar_api.apps.api.query.es_query.series import Series
 from .base_query import BaseQuery
 
 
@@ -15,62 +11,14 @@ class ESQuery(BaseQuery):
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
 
-    def add_series(self,
-                   series_id,
-                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
-                   **kwargs):
-        periodicity = kwargs['periodicity']
+    def add_series(self, series_id, rep_mode, periodicity):
         self._init_series(series_id, rep_mode)
         self.periodicity = periodicity
-
-    def run(self):
-        """Ejecuta la query de todas las series agregadas. Devuelve una
-        'tabla' (lista de listas) con los resultados, siendo cada columna
-        una serie.
-        """
-        if not self.series:
-            raise QueryError(strings.EMPTY_QUERY_ERROR)
-
-        multi_search = MultiSearch(index=self.index,
-                                   doc_type=settings.TS_DOC_TYPE,
-                                   using=self.elastic)
-
-        for serie in self.series:
-            search = serie.search
-            multi_search = multi_search.add(search)
-
-        responses = multi_search.execute()
-        self._format_response(responses)
-        return self.data
 
     def _format_response(self, responses):
         for i, response in enumerate(responses):
             rep_mode = self.series[i].rep_mode
             self._format_single_response(response, rep_mode=rep_mode)
-
-    def _format_single_response(self, response, **kwargs):
-        """Formatea y agrega los datos de la respuesta de la búsqueda 'response'
-        a la lista de datos self.data
-        """
-        if not len(response):
-            return
-
-        first_date = self._get_first_date(response)
-
-        # Agrego rows necesarios vacíos para garantizar continuidad
-        self._make_date_index_continuous(date_up_to=first_date,
-                                         time_delta=get_relative_delta(periodicity=self.periodicity))
-
-        first_date_index = find_index(self.data, first_date)
-        if first_date_index < 0:
-            # indice no encontrado, vamos a appendear los resultados
-            first_date_index = 0
-
-        new_row_len = len(self.data[0]) + 1 if self.data else 2  # 1 timestamp + 1 dato = len 2
-        self.put_data(response, first_date_index, new_row_len, **kwargs)
-
-        # Consistencia del tamaño de las filas
-        self._fill_data_with_nulls(row_len=new_row_len)
 
     def _get_first_date(self, response):
         return self._format_timestamp(response[0].timestamp)
@@ -92,36 +40,9 @@ class ESQuery(BaseQuery):
             else:
                 self.data[data_index].append(data)
 
-    def _init_series(self, series_id=None,
-                     rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
-
-        search = Search(using=self.elastic, index=self.index)
-        if series_id:
-            # Filtra los resultados por la serie pedida
-            search = search.filter('match', series_id=series_id)
-
-        self.series.append(Series(series_id=series_id,
-                                  rep_mode=rep_mode,
-                                  search=search))
-
-    @staticmethod
-    def _format_timestamp(timestamp):
-        if timestamp.find('T') != -1:  # Borrado de la parte de tiempo
-            return timestamp[:timestamp.find('T')]
-        return timestamp
-
     def get_series_ids(self):
         """Devuelve una lista de series cargadas"""
         return [serie.series_id for serie in self.series]
-
-    def get_data_start_end_dates(self):
-        if not self.data:
-            return {}
-
-        return {
-            constants.PARAM_START_DATE: self.data[0][0],
-            constants.PARAM_END_DATE: self.data[-1][0]
-        }
 
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
@@ -140,45 +61,5 @@ class ESQuery(BaseQuery):
         # Guardo el parámetro, necesario en el evento de hacer un collapse
         self.args[constants.PARAM_SORT] = how
 
-    def _fill_data_with_nulls(self, row_len):
-        """Rellena los espacios faltantes de la respuesta rellenando
-        con nulls los datos faltantes hasta que toda fila tenga
-        longitud 'row_len'
-        """
-        for row in self.data:
-            while len(row) < row_len:
-                row.append(None)
-
-    def _make_date_index_continuous(self, date_up_to, time_delta):
-        """Hace el índice de tiempo de los resultados continuo (según
-        el intervalo de resultados), sin saltos, hasta la fecha
-        especificada
-        """
-
-        # Si no hay datos cargados no hay nada que hacer
-        if not len(self.data):
-            return
-
-        end_date = iso8601.parse_date(date_up_to)
-        last_date = iso8601.parse_date(self.data[-1][0])
-        delta = time_delta
-        row_len = len(self.data[0])
-        while last_date < end_date:
-            last_date = last_date + delta
-            date_str = self._format_timestamp(str(last_date.date()))
-            row = [date_str]
-            row.extend([None for _ in range(1, row_len)])
-            self.data.append(row)
-
-    def _init_row(self, timestamp, data, row_len):
-        """Inicializa una nueva fila de los datos de respuesta,
-        garantizando que tenga longitud row_len, que el primer valor
-        sea el índice de tiempo, y el último el dato.
-        """
-
-        row = [timestamp]
-        # Lleno de nulls el row menos 2 espacios (timestamp + el dato a agregar)
-        nulls = [None] * (row_len - 2)
-        row.extend(nulls)
-        row.append(data)
-        self.data.append(row)
+    def add_collapse(self, agg, interval):
+        raise QueryError(strings.INVALID_QUERY_TYPE)

@@ -2,13 +2,12 @@
 import pandas as pd
 from django.conf import settings
 
-from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
-from series_tiempo_ar_api.apps.api.query.es_query.es_query import ESQuery
 from .base_query import BaseQuery
-from .. import constants
+from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
+from series_tiempo_ar_api.apps.api.query import constants
 
 
-class CollapseQuery(ESQuery):
+class CollapseQuery(BaseQuery):
     """Calcula el promedio de una serie en base a una bucket
     aggregation
     """
@@ -28,12 +27,8 @@ class CollapseQuery(ESQuery):
             # Inicializo con collapse default a las series
             self.add_collapse()
 
-    def add_series(self,
-                   series_id,
-                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
-                   **kwargs):
-        kwargs['periodicity'] = None
-        super(CollapseQuery, self).add_series(series_id, rep_mode, **kwargs)
+    def add_series(self, series_id, rep_mode, periodicity):
+        self._init_series(series_id, rep_mode)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
@@ -70,7 +65,7 @@ class CollapseQuery(ESQuery):
 
         return search
 
-    def put_data(self, response, first_date_index, row_len, **kwargs):
+    def put_data(self, response, first_date_index, row_len, _=None):
         """Carga todos los datos de la respuesta en el objeto data, a partir
         del índice first_date_index de la misma, conformando una tabla con
         'row_len' datos por fila, llenando con nulls de ser necesario. Como en
