@@ -27,8 +27,9 @@ class CollapseQuery(BaseQuery):
             # Inicializo con collapse default a las series
             self.add_collapse()
 
-    def add_series(self, series_id, rep_mode, periodicity):
-        self._init_series(series_id, rep_mode)
+    def add_series(self, series_id, rep_mode, periodicity,
+                   collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
+        self._init_series(series_id, rep_mode, collapse_agg)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search

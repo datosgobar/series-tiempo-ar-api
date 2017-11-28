@@ -206,6 +206,8 @@ class IdsField(BaseOperation):
 
     def __init__(self):
         BaseOperation.__init__(self)
+        # Lista EN ORDEN de las operaciones de collapse a aplicar a las series
+        self.aggs = []
 
     def run(self, query, args):
         # Ejemplo de formato del parámetro 'ids':
@@ -226,25 +228,27 @@ class IdsField(BaseOperation):
             self.process_serie_string(query, serie_string, rep_mode)
 
     def process_serie_string(self, query, serie_string, default_rep_mode):
-        name, rep_mode = self._parse_single_series(serie_string)
+        name, rep_mode, collapse_agg = self._parse_single_series(serie_string)
 
         if not rep_mode:
             rep_mode = default_rep_mode
 
         if self.errors:
+            error = strings.INVALID_SERIES_IDS_FORMAT
+            self._append_error(error)
             return
 
-        self.add_series(query, name, rep_mode)
+        self.add_series(query, name, rep_mode, collapse_agg)
 
         if self.errors:
             return
 
-    def add_series(self, query, series_id, rep_mode):
+    def add_series(self, query, series_id, rep_mode, collapse_agg):
         field_model = self._get_model(series_id, rep_mode)
         if not field_model:
             return
 
-        query.add_series(series_id, field_model, rep_mode)
+        query.add_series(series_id, field_model, rep_mode, collapse_agg)
 
     def _get_model(self, series_id, rep_mode):
         """Valida si el 'series_id' es válido, es decir, si la serie
@@ -266,7 +270,7 @@ class IdsField(BaseOperation):
 
     def _parse_single_series(self, serie):
         """Parsea una serie invididual. Actualiza la lista de errores
-            en caso de encontrar alguno
+            en caso de encontrar alguno, y la lista de operaciones de collapse
         Args:
             serie (str): string con formato de tipo 'id:rep_mode'
 
@@ -276,21 +280,31 @@ class IdsField(BaseOperation):
 
         # rep_mode 'default', para todas las series, overrideado
         # si la serie individual especifica alguno
+        agg = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
         colon_index = serie.find(':')
         if colon_index < 0:
             name = serie
             rep_mode = None
         else:
+            rep_mode = None
             try:
-                name, rep_mode = serie.split(':')
-                if not rep_mode:
-                    error = strings.NO_REP_MODE_ERROR.format(name)
-                    self._append_error(error)
-                    return None, None
+                parts = serie.split(':')
+
+                if len(parts) > 3:
+                    return None, None, None
+                name = parts[0]
+                for part in parts[1:]:
+                    if part in constants.REP_MODES and rep_mode is None:
+                        rep_mode = part
+                    elif part in constants.AGGREGATIONS:
+                        agg = part
+                    else:
+                        return None, None, None
+
             except ValueError:
-                self._append_error(strings.INVALID_SERIES_IDS_FORMAT)
-                return None, None
-        return name, rep_mode
+                return None, None, None
+
+        return name, rep_mode, agg
 
 
 class Collapse(BaseOperation):
