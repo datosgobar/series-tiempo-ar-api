@@ -1,5 +1,6 @@
 # coding=utf-8
 import iso8601
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
@@ -159,3 +160,31 @@ class QueryTest(TestCase):
                 self.assertEqual(row[delayed_series_index], None)
             else:
                 break
+
+    def test_index_continuity(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+
+        self.query.sort('asc')
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        first_date = query.run()[0][0]
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.delayed_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        last_date = query.run()[-1][0]
+
+        self.query.sort('asc')
+        data = self.query.run()
+        self.assertEqual(data[0][0], first_date)
+        self.assertEqual(data[-1][0], last_date)
+        current_date = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            row_date = iso8601.parse_date(row[0])
+            self.assertEqual(current_date + relativedelta(months=1), row_date)
+            current_date = row_date

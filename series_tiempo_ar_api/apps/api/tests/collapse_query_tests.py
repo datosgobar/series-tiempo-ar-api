@@ -169,3 +169,31 @@ class CollapseQueryTests(TestCase):
                 self.assertEqual(row[delayed_series_index], None)
             else:
                 break
+
+    def test_index_continuity(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_pagination(0, 1000)
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.sort('asc')
+        first_date = query.run()[0][0]
+
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.delayed_series, self.rep_mode, self.series_periodicity)
+        query.sort('desc')
+        last_date = query.run()[0][0]
+
+        data = self.query.run()
+        self.assertEqual(iso8601.parse_date(data[0][0]).year,
+                         iso8601.parse_date(first_date).year)
+        self.assertEqual(iso8601.parse_date(data[-1][0]).year,
+                         iso8601.parse_date(last_date).year)
+        current_date = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            row_date = iso8601.parse_date(row[0])
+            self.assertEqual(current_date + relativedelta(years=1), row_date)
+            current_date = row_date
