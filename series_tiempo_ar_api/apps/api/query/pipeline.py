@@ -58,7 +58,7 @@ class QueryPipeline(object):
         comando que ejecute la búsqueda, que debería estar al final
         """
         return [
-            NameAndRepMode,
+            IdsField,
             DateFilter,
             Pagination,
             Sort,
@@ -200,7 +200,7 @@ class DateFilter(BaseOperation):
         return parsed_date
 
 
-class NameAndRepMode(BaseOperation):
+class IdsField(BaseOperation):
     """Asigna el doc_type a la búsqueda, el identificador de cada
     serie de tiempo individual, y rep_mode, el modo de representación,
     a base de el parseo el parámetro 'ids', que contiene datos de
