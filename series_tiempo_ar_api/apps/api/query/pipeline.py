@@ -218,6 +218,9 @@ class IdsField(BaseOperation):
         ids = args.get(constants.PARAM_IDS)
         rep_mode = args.get(constants.PARAM_REP_MODE,
                             constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE])
+
+        collapse_agg = args.get(constants.PARAM_COLLAPSE_AGG,
+                                constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG])
         if not ids:
             self._append_error(strings.NO_TIME_SERIES_ERROR)
             return
@@ -225,17 +228,20 @@ class IdsField(BaseOperation):
         delim = ids.find(',')
         series = ids.split(',') if delim > -1 else [ids]
         for serie_string in series:
-            self.process_serie_string(query, serie_string, rep_mode)
+            self.process_serie_string(query, serie_string, rep_mode, collapse_agg)
+            if self.errors:
+                return
 
-    def process_serie_string(self, query, serie_string, default_rep_mode):
+    def process_serie_string(self, query, serie_string, default_rep_mode, default_agg):
         name, rep_mode, collapse_agg = self._parse_single_series(serie_string)
 
         if not rep_mode:
             rep_mode = default_rep_mode
 
+        if not collapse_agg:
+            collapse_agg = default_agg
+
         if self.errors:
-            error = strings.INVALID_SERIES_IDS_FORMAT
-            self._append_error(error)
             return
 
         self.add_series(query, name, rep_mode, collapse_agg)
@@ -275,33 +281,36 @@ class IdsField(BaseOperation):
             serie (str): string con formato de tipo 'id:rep_mode'
 
         Returns:
-            nombre y rep_mode parseados
+            nombre, rep_mode y aggregation parseados, o None en el caso de los
+            dos últimos si el string no contenía valor alguno para ellos
         """
 
-        # rep_mode 'default', para todas las series, overrideado
-        # si la serie individual especifica alguno
-        agg = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
         colon_index = serie.find(':')
-        if colon_index < 0:
-            name = serie
-            rep_mode = None
-        else:
-            rep_mode = None
-            try:
-                parts = serie.split(':')
+        if colon_index < 0:  # Se asume que el valor es el serie ID, sin transformaciones
+            return serie, None, None
 
-                if len(parts) > 3:
-                    return None, None, None
-                name = parts[0]
-                for part in parts[1:]:
-                    if part in constants.REP_MODES and rep_mode is None:
-                        rep_mode = part
-                    elif part in constants.AGGREGATIONS:
-                        agg = part
-                    else:
-                        return None, None, None
+        return self.find_rep_mode_and_agg(serie)
 
-            except ValueError:
+    def find_rep_mode_and_agg(self, serie):
+        parts = serie.split(':')
+
+        if len(parts) > 3:
+            self.errors.append(strings.INVALID_SERIES_IDS_FORMAT)
+            return None, None, None
+        name = parts[0]
+        rep_mode = None
+        agg = None
+        for part in parts[1:]:
+            if not part:
+                self.errors.append(strings.INVALID_SERIES_IDS_FORMAT)
+                return None, None, None
+
+            if part in constants.REP_MODES and rep_mode is None:
+                rep_mode = part
+            elif part in constants.AGGREGATIONS:
+                agg = part
+            else:
+                self.errors.append(strings.INVALID_TRANSFORMATION.format(part))
                 return None, None, None
 
         return name, rep_mode, agg

@@ -16,8 +16,6 @@ class CollapseQuery(BaseQuery):
         super(CollapseQuery, self).__init__(index)
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
-        self.collapse_aggregation = \
-            constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
         self.collapse_interval = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE]
         self.periodicity = self.collapse_interval
 
@@ -33,7 +31,8 @@ class CollapseQuery(BaseQuery):
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
-        serie.search = self._add_aggregation(search)
+        agg = serie.collapse_agg
+        serie.search = self._add_aggregation(search, agg)
         self.periodicity = self.collapse_interval
 
     def add_collapse(self, interval=None):
@@ -48,9 +47,10 @@ class CollapseQuery(BaseQuery):
 
         for serie in self.series:
             search = serie.search
-            serie.search = self._add_aggregation(search)
+            agg = serie.collapse_agg
+            serie.search = self._add_aggregation(search, agg)
 
-    def _add_aggregation(self, search):
+    def _add_aggregation(self, search, collapse_agg):
         search = search[:0]
         # Agrega el collapse de los datos según intervalo de tiempo
         search.aggs \
@@ -59,7 +59,7 @@ class CollapseQuery(BaseQuery):
                     field=settings.TS_TIME_INDEX_FIELD,
                     interval=self.collapse_interval) \
             .metric(constants.COLLAPSE_AGG_NAME,
-                    self.collapse_aggregation,
+                    collapse_agg,
                     field='value')
 
         return search
