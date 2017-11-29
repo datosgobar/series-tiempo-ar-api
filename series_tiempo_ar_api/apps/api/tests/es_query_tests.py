@@ -31,7 +31,6 @@ class QueryTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         super(QueryTest, cls).setUpClass()
 
     def setUp(self):
