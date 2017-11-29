@@ -13,7 +13,7 @@ from ..support.pipeline import time_serie_name
 SERIES_NAME = get_series_id('month')
 
 
-class NameAndRepModeTest(TestCase):
+class IdsTest(TestCase):
     """Testea el comando que se encarga del parámetro 'ids' de la
     query: el parseo de IDs de series y modos de representación de las
     mismas.
@@ -26,7 +26,7 @@ class NameAndRepModeTest(TestCase):
     @classmethod
     def setUpClass(cls):
         setup_database()
-        super(cls, NameAndRepModeTest).setUpClass()
+        super(cls, IdsTest).setUpClass()
 
     def setUp(self):
         self.cmd = IdsField()
