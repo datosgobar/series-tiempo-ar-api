@@ -96,3 +96,8 @@ class QueryTests(TestCase):
         self.query.add_series(self.single_series, self.field)
         self.query.add_collapse()
         self.assertTrue(self.query.has_collapse(), True)
+
+    def add_series_with_aggregation(self):
+        # Aggregation sin haber definido collapse NO HACE NADA!
+        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
+        self.assertTrue(self.query.series_models)

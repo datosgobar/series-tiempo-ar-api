@@ -190,3 +190,17 @@ class QueryTest(TestCase):
 
     def test_has_collapse(self):
         self.assertEqual(False, self.query.has_collapse())
+
+    def test_query_add_aggregation(self):
+        avg_query = ESQuery(index=settings.TEST_INDEX)
+        avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
+        data = avg_query.run()
+
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+        sum_data = self.query.run()
+
+        for i, row in enumerate(data):
+            avg_value = data[i][1]
+            sum_value = row[1]
+            # En query común el parámetro collapse_agg NO TIENE EFECTO
+            self.assertEqual(avg_value, sum_value)
