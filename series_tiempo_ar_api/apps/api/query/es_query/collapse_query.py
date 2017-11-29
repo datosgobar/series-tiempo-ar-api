@@ -125,7 +125,7 @@ class CollapseQuery(BaseQuery):
             # Fix a issue #63 de precisión de floats
             # https://github.com/datosgobar/series-tiempo-ar-api/issues/63
             for i, data in enumerate(row[1:], 1):
-                row[i] = round(data, 12) if data is not None else data
+                row[i] = float(str(data)) if data is not None else data
 
         if self.args[constants.PARAM_SORT] == constants.SORT_DESCENDING:
             self.data.reverse()
