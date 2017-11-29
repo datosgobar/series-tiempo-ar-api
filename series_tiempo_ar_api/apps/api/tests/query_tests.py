@@ -7,9 +7,9 @@ from nose.tools import raises
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
-from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
+from .helpers import get_series_id
 
-SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+SERIES_NAME = get_series_id('month')
 
 
 class QueryTests(TestCase):
@@ -17,7 +17,6 @@ class QueryTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, QueryTests).setUpClass()
 

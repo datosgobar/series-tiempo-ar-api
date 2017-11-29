@@ -8,9 +8,9 @@ from nose.tools import raises
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery
-from .helpers import setup_database
+from .helpers import get_series_id
 
-SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+SERIES_NAME = get_series_id('month')
 
 
 class QueryTest(TestCase):

@@ -7,15 +7,16 @@ from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
-from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
+from .helpers import get_series_id
+
+SERIES_NAME = get_series_id('month')
 
 
 class ResponseTests(TestCase):
-    single_series = settings.TEST_SERIES_NAME.format('month')
+    single_series = SERIES_NAME
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         cls.query = Query(index=settings.TEST_INDEX)
         field = Field.objects.get(series_id=cls.single_series)
         cls.query.add_series(cls.single_series, field)
