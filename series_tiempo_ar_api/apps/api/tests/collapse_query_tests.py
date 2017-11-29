@@ -200,3 +200,16 @@ class CollapseQueryTests(TestCase):
 
     def test_has_collapse(self):
         self.assertEqual(True, self.query.has_collapse())
+
+    def test_sort(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.sort('desc')
+
+        data = self.query.run()
+        current_date = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            row_date = iso8601.parse_date(row[0])
+            self.assertGreater(current_date, row_date)
+            current_date = row_date

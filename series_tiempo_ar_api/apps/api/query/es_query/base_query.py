@@ -200,3 +200,6 @@ class BaseQuery(object):
 
     def has_collapse(self):
         raise NotImplementedError
+
+    def sort(self, how):
+        raise NotImplementedError

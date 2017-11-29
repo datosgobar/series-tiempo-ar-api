@@ -2,6 +2,7 @@
 import pandas as pd
 from django.conf import settings
 
+from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from .base_query import BaseQuery
 from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
 from series_tiempo_ar_api.apps.api.query import constants
@@ -173,3 +174,9 @@ class CollapseQuery(BaseQuery):
 
     def has_collapse(self):
         return True
+
+    def sort(self, how):
+        if how not in constants.SORT_VALUES:
+            raise QueryError
+
+        self.args[constants.PARAM_SORT] = how
