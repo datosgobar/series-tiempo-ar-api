@@ -95,3 +95,39 @@ class IdsTest(TestCase):
     def test_final_semicolon(self):
         self.cmd.run(self.query, {'ids': SERIES_NAME + ':'})
         self.assertTrue(self.cmd.errors)
+
+    def test_three_params(self):
+        ids = SERIES_NAME + ':value:sum'
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertListEqual(self.cmd.errors, [])
+
+    def test_only_agg(self):
+        ids = SERIES_NAME + ':sum'
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertListEqual(self.cmd.errors, [])
+
+    def test_invalid_collapse_agg(self):
+        ids = SERIES_NAME + ':change:invalid_agg'
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertTrue(self.cmd.errors)
+
+    def test_more_than_three_params(self):
+        ids = SERIES_NAME + ':value:sum:other'
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertTrue(self.cmd.errors)
+
+    def test_empty_param(self):
+        ids = SERIES_NAME + ':value::'
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertTrue(self.cmd.errors)
+
+    def test_no_series(self):
+        ids = 'value:sum'
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertTrue(self.cmd.errors)
