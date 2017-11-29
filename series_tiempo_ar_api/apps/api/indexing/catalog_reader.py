@@ -21,6 +21,8 @@ def index_catalog(catalog, catalog_id, read_local=False):
     Args:
         catalog (DataJson): DataJson del catálogo a parsear
         catalog_id (str): ID único del catálogo a parsear
+        read_local (bool): Lee las rutas a archivos fuente como archivo
+        local o como URL. Default False
     """
     logger.info(strings.PIPELINE_START, catalog_id)
     scraper = get_scraper(read_local)
