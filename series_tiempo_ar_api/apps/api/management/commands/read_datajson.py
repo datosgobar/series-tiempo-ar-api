@@ -1,4 +1,6 @@
 #! coding: utf-8
+import logging
+
 import requests
 import yaml
 from django.core.management import BaseCommand, CommandError
@@ -8,6 +10,10 @@ from series_tiempo_ar_api.apps.api.indexing.catalog_reader import index_catalog
 
 CATALOGS_INDEX = 'https://raw.githubusercontent.com/datosgobar/libreria-catalogos/master/indice.yml'
 MISSING_ARG_MSG = u"URL y name deben ser especificados a la vez"
+READ_ERROR = u"Error en la lectura del catálogo {}: {}"
+
+logger = logging.Logger(__name__)
+logger.addHandler(logging.StreamHandler())
 
 
 class Command(BaseCommand):
@@ -30,7 +36,8 @@ class Command(BaseCommand):
             if values['federado'] and values['formato'] == 'json':
                 try:
                     catalog = DataJson(values['url'])
-                except (IOError, ValueError):
+                except (IOError, ValueError) as e:
+                    logging.warn(READ_ERROR, catalog_id, e)
                     continue
 
                 index_catalog(catalog, catalog_id)
