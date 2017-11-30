@@ -1,5 +1,6 @@
 #! coding: utf-8
 import os
+import raven
 # noinspection PyUnresolvedReferences
 from .base import *
 
@@ -34,6 +35,9 @@ ALLOWED_HOSTS = ['*']
 
 RAVEN_CONFIG = {
     'dsn': env('RAVEN_DSN', default=""),
+   # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
 }
 
 INSTALLED_APPS += 'raven.contrib.django.raven_compat',
