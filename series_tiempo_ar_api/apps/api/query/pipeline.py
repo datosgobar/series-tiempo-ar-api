@@ -227,6 +227,11 @@ class IdsField(BaseOperation):
 
         delim = ids.find(',')
         series = ids.split(',') if delim > -1 else [ids]
+        limit = settings.MAX_ALLOWED_VALUES[constants.PARAM_IDS]
+        if len(series) > limit:
+            self._append_error(strings.SERIES_OVER_LIMIT.format(limit))
+            return
+
         for serie_string in series:
             self.process_serie_string(query, serie_string, rep_mode, collapse_agg)
             if self.errors:

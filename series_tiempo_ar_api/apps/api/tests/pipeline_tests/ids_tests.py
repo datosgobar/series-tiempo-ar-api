@@ -131,3 +131,14 @@ class IdsTest(TestCase):
         self.cmd.run(self.query, {'ids': ids})
 
         self.assertTrue(self.cmd.errors)
+
+    def test_series_over_limit(self):
+
+        ids_list = [SERIES_NAME] * (settings.MAX_ALLOWED_VALUES['ids'] + 1)
+        ids = ids_list[0]
+        for series_id in ids_list[1:]:
+            ids += ',' + series_id
+
+        self.cmd.run(self.query, {'ids': ids})
+
+        self.assertTrue(self.cmd.errors)

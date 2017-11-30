@@ -1,5 +1,6 @@
 #! coding: utf-8
 
+from django.conf import settings
 
 ELASTICSEARCH_ERROR = u"Error Fatal. Contacte un administrador"
 SERIES_DOES_NOT_EXIST = u"Serie inexistente: {}"
@@ -13,6 +14,7 @@ INVALID_SERIES_IDS_FORMAT = u"Formato de series a seleccionar inválido"
 # Para el parámetro de IDS: rep mode ó agregación no reconocida
 INVALID_TRANSFORMATION = u"Transformación inválida: {}"
 
+SERIES_OVER_LIMIT = u"Cantidad de series pedidas por encima del límite permitido ({})"
 
 EMPTY_QUERY_ERROR = u"Query vacía, primero agregue una serie"
 INVALID_SORT_PARAMETER = u'"how" debe ser "asc", o "desc", recibido {}'
