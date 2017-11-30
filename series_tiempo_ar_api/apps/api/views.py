@@ -16,5 +16,5 @@ def query_view(request):
     if response.status_code == 200:
         ip_address = get_ip(request)
         args_string = request.GET.urlencode()
-        analytics(ids, args_string, ip_address, args)
+        analytics.delay(ids, args_string, ip_address, args)
     return response
