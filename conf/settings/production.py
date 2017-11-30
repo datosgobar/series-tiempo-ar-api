@@ -35,9 +35,8 @@ ALLOWED_HOSTS = ['*']
 
 RAVEN_CONFIG = {
     'dsn': env('RAVEN_DSN', default=""),
-   # If you are using git, you can also automatically configure the
-    # release based on the git info.
     'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+    'environment': env("SENTRY_ENVIRONMENT", default=""),
 }
 
 INSTALLED_APPS += 'raven.contrib.django.raven_compat',
