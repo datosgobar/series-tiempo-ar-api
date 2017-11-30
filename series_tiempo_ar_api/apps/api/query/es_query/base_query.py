@@ -52,16 +52,18 @@ class BaseQuery(object):
         self._format_response(responses)
         return self.data
 
-    def add_series(self, series_id, rep_mode, periodicity):
+    def add_series(self, series_id, rep_mode, periodicity,
+                   collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         raise NotImplementedError
 
-    def _init_series(self, series_id, rep_mode):
+    def _init_series(self, series_id, rep_mode, collapse_agg):
         search = Search(using=self.elastic, index=self.index)
         # Filtra los resultados por la serie pedida
         search = search.filter('match', series_id=series_id)
         self.series.append(Series(series_id=series_id,
                                   rep_mode=rep_mode,
-                                  search=search))
+                                  search=search,
+                                  collapse_agg=collapse_agg))
 
     def add_pagination(self, start, limit):
         if not len(self.series):
@@ -193,5 +195,11 @@ class BaseQuery(object):
     def _format_response(self, responses):
         raise NotImplementedError
 
-    def add_collapse(self, agg, interval):
+    def add_collapse(self, interval):
+        raise NotImplementedError
+
+    def has_collapse(self):
+        raise NotImplementedError
+
+    def sort(self, how):
         raise NotImplementedError

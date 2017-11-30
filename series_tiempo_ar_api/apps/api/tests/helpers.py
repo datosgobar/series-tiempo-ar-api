@@ -41,3 +41,7 @@ def init_daily_series(dataset):
         distribution=distrib,
         title='random_day_0_title'
     )
+
+
+def get_series_id(periodicity):
+    return settings.TEST_SERIES_NAME.format(periodicity)

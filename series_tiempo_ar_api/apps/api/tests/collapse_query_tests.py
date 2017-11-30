@@ -197,3 +197,47 @@ class CollapseQueryTests(TestCase):
             row_date = iso8601.parse_date(row[0])
             self.assertEqual(current_date + relativedelta(years=1), row_date)
             current_date = row_date
+
+    def test_has_collapse(self):
+        self.assertEqual(True, self.query.has_collapse())
+
+    def test_sort(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.sort('desc')
+
+        data = self.query.run()
+        current_date = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            row_date = iso8601.parse_date(row[0])
+            self.assertGreater(current_date, row_date)
+            current_date = row_date
+
+    def test_add_query_aggregation(self):
+        avg_query = CollapseQuery(index=settings.TEST_INDEX)
+        avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
+        data = avg_query.run()
+
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+        sum_data = self.query.run()
+
+        for i, row in enumerate(sum_data):
+            # Suma debe ser siempre mayor que el promedio
+            sum_value = row[1]
+            avg_value = data[i][1]
+            self.assertGreater(sum_value, avg_value)
+
+    def test_take_agg_from_other_query(self):
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+
+        self.query = CollapseQuery(index=settings.TEST_INDEX, other=query)
+
+        sum_query = CollapseQuery(index=settings.TEST_INDEX)
+        sum_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+
+        data = self.query.run()
+        expected_data = sum_query.run()
+
+        self.assertListEqual(data, expected_data)

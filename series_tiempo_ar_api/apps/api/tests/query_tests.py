@@ -7,9 +7,9 @@ from nose.tools import raises
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
-from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
+from .helpers import get_series_id
 
-SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+SERIES_NAME = get_series_id('month')
 
 
 class QueryTests(TestCase):
@@ -17,7 +17,6 @@ class QueryTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, QueryTests).setUpClass()
 
@@ -89,3 +88,16 @@ class QueryTests(TestCase):
 
         delta = second_date - first_date
         self.assertEqual(delta.days, 7)
+
+    def default_query_is_not_collapsed(self):
+        self.assertEqual(False, self.query.has_collapse())
+
+    def collapse_query_has_collapse(self):
+        self.query.add_series(self.single_series, self.field)
+        self.query.add_collapse()
+        self.assertTrue(self.query.has_collapse(), True)
+
+    def add_series_with_aggregation(self):
+        # Aggregation sin haber definido collapse NO HACE NADA!
+        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
+        self.assertTrue(self.query.series_models)

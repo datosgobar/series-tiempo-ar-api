@@ -44,7 +44,8 @@ class Query(object):
         return self.es_query.add_filter(start_date, end_date)
 
     def add_series(self, name, field_model,
-                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]):
+                   rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
+                   collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         periodicities = [
             get_periodicity_human_format(field.distribution.periodicity)
             for field in self.series_models
@@ -62,7 +63,7 @@ class Query(object):
             self.add_collapse(collapse=periodicity)
 
         periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
-        self.es_query.add_series(name, rep_mode, periodicity)
+        self.es_query.add_series(name, rep_mode, periodicity, collapse_agg)
 
     @staticmethod
     def get_max_periodicity(periodicities):
@@ -75,16 +76,10 @@ class Query(object):
 
         return order[index]
 
-    def add_collapse(self, agg=None,
-                     collapse=None):
+    def add_collapse(self, collapse=None):
         self._validate_collapse(collapse)
         self.es_query = CollapseQuery(index=self.es_index, other=self.es_query)
-        self.es_query.add_collapse(agg, collapse)
-
-    def set_collapse_aggregation(self, agg):
-        if not hasattr(self.es_query, 'collapse_aggregation'):
-            raise CollapseError
-        self.es_query.add_collapse(agg=agg)
+        self.es_query.add_collapse(collapse)
 
     def set_metadata_config(self, how):
         self.metadata_config = how
@@ -228,3 +223,6 @@ class Query(object):
                 field.pop(meta_field)
 
         return meta
+
+    def has_collapse(self):
+        return self.es_query.has_collapse()

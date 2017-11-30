@@ -2,6 +2,7 @@
 import pandas as pd
 from django.conf import settings
 
+from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from .base_query import BaseQuery
 from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
 from series_tiempo_ar_api.apps.api.query import constants
@@ -16,8 +17,6 @@ class CollapseQuery(BaseQuery):
         super(CollapseQuery, self).__init__(index)
         # Datos guardados en la instancia para asegurar conmutabilidad
         # de operaciones
-        self.collapse_aggregation = \
-            constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
         self.collapse_interval = constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE]
         self.periodicity = self.collapse_interval
 
@@ -27,17 +26,17 @@ class CollapseQuery(BaseQuery):
             # Inicializo con collapse default a las series
             self.add_collapse()
 
-    def add_series(self, series_id, rep_mode, periodicity):
-        self._init_series(series_id, rep_mode)
+    def add_series(self, series_id, rep_mode, periodicity,
+                   collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
+        self._init_series(series_id, rep_mode, collapse_agg)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
         search = serie.search
-        serie.search = self._add_aggregation(search)
+        agg = serie.collapse_agg
+        serie.search = self._add_aggregation(search, agg)
         self.periodicity = self.collapse_interval
 
-    def add_collapse(self, agg=None, interval=None):
-        if agg:
-            self.collapse_aggregation = agg
+    def add_collapse(self, interval=None):
         if interval:
             # Temporalmente: convertir collapse semestral en anual,
             # Elasticsearch no los soporta
@@ -49,9 +48,10 @@ class CollapseQuery(BaseQuery):
 
         for serie in self.series:
             search = serie.search
-            serie.search = self._add_aggregation(search)
+            agg = serie.collapse_agg
+            serie.search = self._add_aggregation(search, agg)
 
-    def _add_aggregation(self, search):
+    def _add_aggregation(self, search, collapse_agg):
         search = search[:0]
         # Agrega el collapse de los datos según intervalo de tiempo
         search.aggs \
@@ -60,7 +60,7 @@ class CollapseQuery(BaseQuery):
                     field=settings.TS_TIME_INDEX_FIELD,
                     interval=self.collapse_interval) \
             .metric(constants.COLLAPSE_AGG_NAME,
-                    self.collapse_aggregation,
+                    collapse_agg,
                     field='value')
 
         return search
@@ -171,3 +171,12 @@ class CollapseQuery(BaseQuery):
             return 1
 
         return sorted(responses, cmp=date_order_cmp)
+
+    def has_collapse(self):
+        return True
+
+    def sort(self, how):
+        if how not in constants.SORT_VALUES:
+            raise QueryError
+
+        self.args[constants.PARAM_SORT] = how

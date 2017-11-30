@@ -58,12 +58,11 @@ class QueryPipeline(object):
         comando que ejecute la búsqueda, que debería estar al final
         """
         return [
-            NameAndRepMode,
+            IdsField,
             DateFilter,
             Pagination,
             Sort,
             Collapse,
-            CollapseAggregation,
             Metadata,
             Format
         ]
@@ -200,25 +199,28 @@ class DateFilter(BaseOperation):
         return parsed_date
 
 
-class NameAndRepMode(BaseOperation):
-    """Asigna el doc_type a la búsqueda, el identificador de cada
-    serie de tiempo individual, y rep_mode, el modo de representación,
-    a base de el parseo el parámetro 'ids', que contiene datos de
-    varias series a la vez
+class IdsField(BaseOperation):
+    """Asigna las series_ids, con sus modos de representación y modos de agregación,
+    a base de el parseo el parámetro 'ids', que contiene datos de varias series a la vez
     """
 
     def __init__(self):
         BaseOperation.__init__(self)
+        # Lista EN ORDEN de las operaciones de collapse a aplicar a las series
+        self.aggs = []
 
     def run(self, query, args):
-        # Formato del parámetro 'ids':
-        # serie1:rep_mode1,serie2:repmode2,serie3,serie4:rep_mode3
-        # rep_mode es opcional, hay un valor default, dado por otro parámetro
-        # 'representation_mode'
+        # Ejemplo de formato del parámetro 'ids':
+        # serie1:rep_mode1:agg1,serie2:repmode2:agg2,serie3:agg3,serie4:rep_mode3
+        # rep_mode y agg son opcionales, hay un valor default, dado por otros parámetros
+        # 'representation_mode' y 'collapse_aggregation'
         # Parseamos esa string y agregamos a la query las series pedidas
         ids = args.get(constants.PARAM_IDS)
         rep_mode = args.get(constants.PARAM_REP_MODE,
                             constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE])
+
+        collapse_agg = args.get(constants.PARAM_COLLAPSE_AGG,
+                                constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG])
         if not ids:
             self._append_error(strings.NO_TIME_SERIES_ERROR)
             return
@@ -226,31 +228,36 @@ class NameAndRepMode(BaseOperation):
         delim = ids.find(',')
         series = ids.split(',') if delim > -1 else [ids]
         for serie_string in series:
-            self.process_serie_string(query, serie_string, rep_mode)
+            self.process_serie_string(query, serie_string, rep_mode, collapse_agg)
+            if self.errors:
+                return
 
-    def process_serie_string(self, query, serie_string, default_rep_mode):
-        name, rep_mode = self._parse_single_series(serie_string)
+    def process_serie_string(self, query, serie_string, default_rep_mode, default_agg):
+        name, rep_mode, collapse_agg = self._parse_single_series(serie_string)
 
         if not rep_mode:
             rep_mode = default_rep_mode
 
-        if self.errors:
-            return
-
-        self.add_series(query, name, rep_mode)
+        if not collapse_agg:
+            collapse_agg = default_agg
 
         if self.errors:
             return
 
-    def add_series(self, query, series_id, rep_mode):
+        self.add_series(query, name, rep_mode, collapse_agg)
+
+        if self.errors:
+            return
+
+    def add_series(self, query, series_id, rep_mode, collapse_agg):
         field_model = self._get_model(series_id, rep_mode)
         if not field_model:
             return
 
-        query.add_series(series_id, field_model, rep_mode)
+        query.add_series(series_id, field_model, rep_mode, collapse_agg)
 
     def _get_model(self, series_id, rep_mode):
-        """Valida si el 'doc_type' es válido, es decir, si la serie
+        """Valida si el 'series_id' es válido, es decir, si la serie
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
@@ -269,31 +276,44 @@ class NameAndRepMode(BaseOperation):
 
     def _parse_single_series(self, serie):
         """Parsea una serie invididual. Actualiza la lista de errores
-            en caso de encontrar alguno
+            en caso de encontrar alguno, y la lista de operaciones de collapse
         Args:
             serie (str): string con formato de tipo 'id:rep_mode'
 
         Returns:
-            nombre y rep_mode parseados
+            nombre, rep_mode y aggregation parseados, o None en el caso de los
+            dos últimos si el string no contenía valor alguno para ellos
         """
 
-        # rep_mode 'default', para todas las series, overrideado
-        # si la serie individual especifica alguno
         colon_index = serie.find(':')
-        if colon_index < 0:
-            name = serie
-            rep_mode = None
-        else:
-            try:
-                name, rep_mode = serie.split(':')
-                if not rep_mode:
-                    error = strings.NO_REP_MODE_ERROR.format(name)
-                    self._append_error(error)
-                    return None, None
-            except ValueError:
-                self._append_error(strings.INVALID_SERIES_IDS_FORMAT)
-                return None, None
-        return name, rep_mode
+        if colon_index < 0:  # Se asume que el valor es el serie ID, sin transformaciones
+            return serie, None, None
+
+        return self.find_rep_mode_and_agg(serie)
+
+    def find_rep_mode_and_agg(self, serie):
+        parts = serie.split(':')
+
+        if len(parts) > 3:
+            self.errors.append(strings.INVALID_SERIES_IDS_FORMAT)
+            return None, None, None
+        name = parts[0]
+        rep_mode = None
+        agg = None
+        for part in parts[1:]:
+            if not part:
+                self.errors.append(strings.INVALID_SERIES_IDS_FORMAT)
+                return None, None, None
+
+            if part in constants.REP_MODES and rep_mode is None:
+                rep_mode = part
+            elif part in constants.AGGREGATIONS:
+                agg = part
+            else:
+                self.errors.append(strings.INVALID_TRANSFORMATION.format(part))
+                return None, None, None
+
+        return name, rep_mode, agg
 
 
 class Collapse(BaseOperation):
@@ -314,21 +334,6 @@ class Collapse(BaseOperation):
         except CollapseError:
             msg = strings.INVALID_COLLAPSE.format(collapse)
             self._append_error(msg)
-
-
-class CollapseAggregation(BaseOperation):
-    def run(self, query, args):
-        agg = args.get(constants.PARAM_COLLAPSE_AGG)
-
-        if agg and agg not in constants.AGGREGATIONS:
-            msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE_AGG, agg)
-            self._append_error(msg)
-            return
-
-        try:
-            query.set_collapse_aggregation(agg)
-        except CollapseError:
-            pass  # Se especifica un collapse aggregation sin collapse, lo ignoro
 
 
 class Metadata(BaseOperation):

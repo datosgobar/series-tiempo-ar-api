@@ -11,8 +11,9 @@ class ESQuery(BaseQuery):
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
 
-    def add_series(self, series_id, rep_mode, periodicity):
-        self._init_series(series_id, rep_mode)
+    def add_series(self, series_id, rep_mode, periodicity,
+                   collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
+        self._init_series(series_id, rep_mode, collapse_agg)
         self.periodicity = periodicity
 
     def _format_response(self, responses):
@@ -61,5 +62,8 @@ class ESQuery(BaseQuery):
         # Guardo el parámetro, necesario en el evento de hacer un collapse
         self.args[constants.PARAM_SORT] = how
 
-    def add_collapse(self, agg, interval):
+    def add_collapse(self, interval):
         raise QueryError(strings.INVALID_QUERY_TYPE)
+
+    def has_collapse(self):
+        return False

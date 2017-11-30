@@ -8,9 +8,9 @@ from nose.tools import raises
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery
-from .helpers import setup_database
+from .helpers import get_series_id
 
-SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
+SERIES_NAME = get_series_id('month')
 
 
 class QueryTest(TestCase):
@@ -31,7 +31,6 @@ class QueryTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         super(QueryTest, cls).setUpClass()
 
     def setUp(self):
@@ -102,7 +101,7 @@ class QueryTest(TestCase):
 
     @raises(QueryError)
     def test_try_collapse(self):
-        self.query.add_collapse(interval='year', agg='avg')
+        self.query.add_collapse(interval='year')
 
     def test_preserve_query_order(self):
 
@@ -188,3 +187,20 @@ class QueryTest(TestCase):
             row_date = iso8601.parse_date(row[0])
             self.assertEqual(current_date + relativedelta(months=1), row_date)
             current_date = row_date
+
+    def test_has_collapse(self):
+        self.assertEqual(False, self.query.has_collapse())
+
+    def test_query_add_aggregation(self):
+        avg_query = ESQuery(index=settings.TEST_INDEX)
+        avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
+        data = avg_query.run()
+
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+        sum_data = self.query.run()
+
+        for i, row in enumerate(data):
+            avg_value = data[i][1]
+            sum_value = row[1]
+            # En query común el parámetro collapse_agg NO TIENE EFECTO
+            self.assertEqual(avg_value, sum_value)

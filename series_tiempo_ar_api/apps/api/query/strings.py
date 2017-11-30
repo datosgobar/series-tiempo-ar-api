@@ -9,8 +9,9 @@ INVALID_COLLAPSE = u"Intervalo de collapse inválido para la(s) serie(s) selecci
 INVALID_DATE_FILTER = u"Filtro por rango temporal inválido (start > end)"
 INVALID_DATE = u"Fecha de {} inválida (no ISO 8601): {}"
 NO_TIME_SERIES_ERROR = u"No se especificó una serie de tiempo."
-NO_REP_MODE_ERROR = u"Modo de representación vacío para {}"
 INVALID_SERIES_IDS_FORMAT = u"Formato de series a seleccionar inválido"
+# Para el parámetro de IDS: rep mode ó agregación no reconocida
+INVALID_TRANSFORMATION = u"Transformación inválida: {}"
 
 
 EMPTY_QUERY_ERROR = u"Query vacía, primero agregue una serie"
