@@ -28,5 +28,6 @@ VALID_STATUS_CODES = (
 
 MAX_ALLOWED_VALUES = {
     'start': 100000,  # tbd
-    'limit': 1000
+    'limit': 1000,
+    'ids': 20  # Cantidad máxima de series que se pueden pedir
 }
