@@ -11,3 +11,4 @@ pandas
 numpy
 django-rq==0.9.6
 pyyaml
+django-ipware==1.1.6

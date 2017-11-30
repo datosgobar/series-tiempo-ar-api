@@ -1,4 +1,5 @@
 #! coding: utf-8
+from ipware.ip import get_ip
 from series_tiempo_ar_api.apps.api.query import constants
 from .query.pipeline import QueryPipeline
 from .query.analytics import analytics
@@ -13,6 +14,7 @@ def query_view(request):
 
     response = query.run(args)
     if response.status_code == 200:
-        args = request.GET.urlencode()
-        analytics.delay(ids, args)
+        ip_address = get_ip(request)
+        args_string = request.GET.urlencode()
+        analytics(ids, args_string, ip_address, args)
     return response

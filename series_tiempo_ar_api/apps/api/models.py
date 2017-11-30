@@ -48,6 +48,8 @@ class Query(models.Model):
     ids = models.CharField(max_length=2000)
     args = models.CharField(max_length=2000)
     timestamp = models.DateTimeField()
+    ip_address = models.CharField(max_length=200)
+    params = models.TextField()
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
