@@ -1,6 +1,7 @@
 #! coding: utf-8
 from series_tiempo_ar_api.apps.api.query import constants
-from series_tiempo_ar_api.apps.api.query.pipeline import QueryPipeline
+from .query.pipeline import QueryPipeline
+from .query.analytics import analytics
 
 
 def query_view(request):
@@ -10,4 +11,8 @@ def query_view(request):
     args = {key: value.lower() for key, value in request.GET.items()}
     args[constants.PARAM_IDS] = ids
 
-    return query.run(args)
+    response = query.run(args)
+    if response.status_code == 200:
+        args = request.GET.urlencode()
+        analytics.delay(ids, args)
+    return response

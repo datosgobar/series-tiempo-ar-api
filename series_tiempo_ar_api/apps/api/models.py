@@ -1,4 +1,5 @@
 #! coding: utf-8
+from django.utils import timezone
 from django.db import models
 
 
@@ -40,3 +41,15 @@ class Field(models.Model):
     title = models.CharField(max_length=200)
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
+
+
+class Query(models.Model):
+    """Registro de queries exitosas, guardadas con el propósito de analytics"""
+    ids = models.CharField(max_length=2000)
+    args = models.CharField(max_length=2000)
+    timestamp = models.DateTimeField()
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        self.timestamp = timezone.now()
+        super(Query, self).save(force_insert, force_update, using, update_fields)
