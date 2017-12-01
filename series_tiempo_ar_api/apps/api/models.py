@@ -8,11 +8,17 @@ class Catalog(models.Model):
     identifier = models.CharField(max_length=200, default='sspm', unique=True)
     metadata = models.TextField()
 
+    def __unicode__(self):
+        return u'%s (%s)' % (self.title, self.identifier)
+
 
 class Dataset(models.Model):
     identifier = models.CharField(max_length=200)
     metadata = models.TextField()
     catalog = models.ForeignKey(to=Catalog, on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return u'%s (%s)' % (self.identifier, self.catalog.identifier)
 
 
 def filepath(instance, _):
@@ -35,12 +41,18 @@ class Distribution(models.Model):
         blank=True
     )
 
+    def __unicode__(self):
+        return u'%s (%s)' % (self.identifier, self.dataset.catalog.identifier)
+
 
 class Field(models.Model):
     series_id = models.CharField(max_length=200, unique=True)
     title = models.CharField(max_length=200)
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return u'%s' % (self.series_id)
 
 
 class Query(models.Model):
