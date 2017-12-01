@@ -62,7 +62,7 @@ class CollapseQuery(BaseQuery):
                     field=settings.TS_TIME_INDEX_FIELD,
                     interval=self.collapse_interval)
 
-        if collapse_agg == 'end_of_period':
+        if collapse_agg == constants.AGG_END_OF_PERIOD:
             rep_mode = serie.rep_mode
             bucket.metric(constants.COLLAPSE_AGG_NAME, 'scripted_metric',
                           init_script=constants.EOP_INIT,
@@ -71,7 +71,7 @@ class CollapseQuery(BaseQuery):
         else:
             bucket.metric(constants.COLLAPSE_AGG_NAME,
                           collapse_agg,
-                          field='value')
+                          field=constants.VALUE)
 
         return search
 
