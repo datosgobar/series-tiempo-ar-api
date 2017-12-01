@@ -175,6 +175,12 @@ LOGGING = {
             "format": "%(asctime)s %(message)s",
             "datefmt": "%H:%M:%S",
         },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
     },
     'filters': {
         'require_debug_false': {
@@ -199,7 +205,18 @@ LOGGING = {
         },
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'INFO'
+            'level': 'INFO',
+        },
+        'apps': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+            "formatter": "simple",
+        },
+        'production': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            "formatter": "verbose",
         },
     },
     'loggers': {
@@ -212,10 +229,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'series_tiempo_ar_api.apps.api.query.catalog_reader': {
-            'handlers': ['console'],
+        'series_tiempo_ar_api': {
+            'handlers': ['apps', 'production'],
             'level': 'INFO',
-            'propagate': True
+            'propagate': False,
         },
         "rq.worker": {
             "handlers": ["rq_console", ],
