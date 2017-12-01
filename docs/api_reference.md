@@ -40,7 +40,7 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
     <tr>
         <td>representation_mode</a></td>
         <td>No</td>
-        <td>Uno de: value, change, percent_change</td>
+        <td>Uno de: value, change, percent_change, percent_change_a_year_ago</td>
         <td>value</td>
         <td>representation_mode=percent_change</td>
     </tr>
@@ -149,6 +149,7 @@ Los modos de representación disponibles son:
 * *value*: Es el modo de representación por defecto. Devuelve el valor medido en la serie.
 * *change*: Devuelve la diferencia absoluta entre el valor del período t y el de t-1.
 * *percent_change*: Devuelve la variación porcentual entre el valor del período t y el de t-1.
+* *percent_change_a_year_ago*: Devuelve la variación porcentual entre el valor del período t y el del período t equivalente de hace un año atrás.
 
 ## `collapse`
 
