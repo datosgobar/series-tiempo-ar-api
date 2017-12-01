@@ -185,6 +185,9 @@ LOGGING = {
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
         }
     },
     'handlers': {
@@ -210,6 +213,7 @@ LOGGING = {
         'apps': {
             'class': 'logging.StreamHandler',
             'level': 'INFO',
+            'filters': ['require_debug_true'],
             "formatter": "simple",
         },
         'production': {
