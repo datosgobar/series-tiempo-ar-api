@@ -17,8 +17,7 @@ from series_tiempo_ar_api.apps.api.indexing import strings
 from series_tiempo_ar_api.apps.api.indexing import constants
 
 
-logger = logging.Logger(__name__)
-logger.addHandler(logging.StreamHandler())
+logger = logging.getLogger(__name__)
 
 
 class DatabaseLoader(object):

@@ -17,8 +17,7 @@ from series_tiempo_ar_api.apps.api.indexing import constants
 # Ignora divisiones por cero, no nos molesta el NaN
 np.seterr(divide='ignore', invalid='ignore')
 
-logger = logging.Logger(__name__)
-logger.addHandler(logging.StreamHandler())
+logger = logging.getLogger(__name__)
 
 
 class Indexer(object):

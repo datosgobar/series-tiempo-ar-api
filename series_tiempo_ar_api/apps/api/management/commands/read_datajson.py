@@ -12,8 +12,7 @@ CATALOGS_INDEX = 'https://raw.githubusercontent.com/datosgobar/libreria-catalogo
 MISSING_ARG_MSG = u"URL y name deben ser especificados a la vez"
 READ_ERROR = u"Error en la lectura del catálogo %s: %s"
 
-logger = logging.Logger(__name__)
-logger.addHandler(logging.StreamHandler())
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
