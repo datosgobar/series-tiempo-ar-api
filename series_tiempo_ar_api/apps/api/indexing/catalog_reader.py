@@ -10,8 +10,7 @@ from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
 from series_tiempo_ar_api.apps.api.indexing import strings
 
-logger = logging.Logger(__name__)
-logger.addHandler(logging.StreamHandler())
+logger = logging.getLogger(__name__)
 
 
 def index_catalog(catalog, catalog_id, read_local=False):
