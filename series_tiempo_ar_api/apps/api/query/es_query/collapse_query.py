@@ -31,9 +31,8 @@ class CollapseQuery(BaseQuery):
         self._init_series(series_id, rep_mode, collapse_agg)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
-        search = serie.search
         agg = serie.collapse_agg
-        serie.search = self._add_aggregation(search, agg)
+        serie.search = self._add_aggregation(serie, agg)
         self.periodicity = self.collapse_interval
 
     def add_collapse(self, interval=None):
@@ -47,21 +46,32 @@ class CollapseQuery(BaseQuery):
             self.periodicity = self.collapse_interval
 
         for serie in self.series:
-            search = serie.search
             agg = serie.collapse_agg
-            serie.search = self._add_aggregation(search, agg)
+            serie.search = self._add_aggregation(serie, agg)
 
-    def _add_aggregation(self, search, collapse_agg):
+    def _add_aggregation(self, serie, collapse_agg):
+
+        search = serie.search
+        # Anula resultados de la búsqueda normal de ES, nos interesa solo resultados agregados
         search = search[:0]
+
         # Agrega el collapse de los datos según intervalo de tiempo
-        search.aggs \
+        bucket = search.aggs \
             .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
                     field=settings.TS_TIME_INDEX_FIELD,
-                    interval=self.collapse_interval) \
-            .metric(constants.COLLAPSE_AGG_NAME,
-                    collapse_agg,
-                    field='value')
+                    interval=self.collapse_interval)
+
+        if collapse_agg == 'end_of_period':
+            rep_mode = serie.rep_mode
+            bucket.metric(constants.COLLAPSE_AGG_NAME, 'scripted_metric',
+                          init_script=constants.EOP_INIT,
+                          map_script=constants.EOP_MAP % rep_mode,
+                          reduce_script=constants.EOP_REDUCE)
+        else:
+            bucket.metric(constants.COLLAPSE_AGG_NAME,
+                          collapse_agg,
+                          field='value')
 
         return search
 

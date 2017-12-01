@@ -15,7 +15,8 @@ AGGREGATIONS = [
     'avg',
     'min',
     'max',
-    'sum'
+    'sum',
+    'end_of_period'
 ]
 
 COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
@@ -118,3 +119,7 @@ RESPONSE_ERROR_CODE = 400
 COLLAPSE_AGG_NAME = 'agg'
 
 CSV_RESPONSE_FILENAME = 'data.csv'
+
+EOP_INIT = "params._agg.last_date = -1; params._agg.value = 0;"
+EOP_MAP = "if (doc.timestamp.value > params._agg.last_date) { params._agg.last_date = doc.timestamp.value; params._agg.value = doc.%s.value; }"
+EOP_REDUCE = "double value = -1; long last_date = 0; for (a in params._aggs) { if (a != null && a.last_date > last_date) { value = a.value; last_date = a.last_date; } } return value"
