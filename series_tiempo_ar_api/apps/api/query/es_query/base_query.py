@@ -32,6 +32,8 @@ class BaseQuery(object):
             constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
         }
 
+        self.has_end_of_period = False
+
     def run(self):
         """Ejecuta la query de todas las series agregadas. Devuelve una
         'tabla' (lista de listas) con los resultados, siendo cada columna
@@ -47,6 +49,8 @@ class BaseQuery(object):
         for serie in self.series:
             search = serie.search
             multi_search = multi_search.add(search)
+            if serie.collapse_agg == constants.AGG_END_OF_PERIOD:
+                self.has_end_of_period = True
 
         responses = multi_search.execute()
         self._format_response(responses)

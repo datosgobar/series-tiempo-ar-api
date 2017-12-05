@@ -8,7 +8,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from elasticsearch import TransportError
 
-from series_tiempo_ar_api.apps.api.exceptions import CollapseError
+from series_tiempo_ar_api.apps.api.exceptions import CollapseError, EndOfPeriodError
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
@@ -40,6 +40,8 @@ class QueryPipeline(object):
             return formatter.run(query, args)
         except TransportError:
             return self.generate_error_response([strings.ELASTICSEARCH_ERROR])
+        except EndOfPeriodError as e:
+            return self.generate_error_response([e.message])
 
     @staticmethod
     def generate_error_response(errors_list):

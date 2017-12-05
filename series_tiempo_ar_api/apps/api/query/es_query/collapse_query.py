@@ -1,8 +1,9 @@
 #! coding: utf-8
+import iso8601
 import pandas as pd
 from django.conf import settings
 
-from series_tiempo_ar_api.apps.api.exceptions import QueryError
+from series_tiempo_ar_api.apps.api.exceptions import QueryError, EndOfPeriodError
 from .base_query import BaseQuery
 from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
 from series_tiempo_ar_api.apps.api.query import constants
@@ -104,8 +105,11 @@ class CollapseQuery(BaseQuery):
 
     def _format_response(self, responses):
         for response in responses:
-            # Smart solution
             hits = response.aggregations.agg.buckets
+            if self.has_end_of_period and iso8601.parse_date(hits[0]['key_as_string']).year < 1970:
+                raise EndOfPeriodError
+
+            # Smart solution
             self._format_single_response(hits)
 
         self._apply_transformations()
