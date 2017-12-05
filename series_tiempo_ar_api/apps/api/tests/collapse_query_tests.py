@@ -241,3 +241,28 @@ class CollapseQueryTests(TestCase):
         expected_data = sum_query.run()
 
         self.assertListEqual(data, expected_data)
+
+    def test_end_of_period(self):
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.add_pagination(start=0, limit=1000)
+        query.sort('asc')
+        query.add_filter(start="1970")
+        orig_data = query.run()
+
+        self.query.add_series(self.single_series,
+                              self.rep_mode,
+                              self.series_periodicity,
+                              'end_of_period')
+        self.query.add_filter(start="1970")
+        self.query.add_collapse('year')
+        eop_data = self.query.run()
+
+        for eop_row in eop_data:
+            eop_value = eop_row[1]
+            year = iso8601.parse_date(eop_row[0]).year
+            for row in orig_data:
+                row_date = iso8601.parse_date(row[0])
+                if row_date.year == year and row_date.month == 12:
+                    self.assertAlmostEqual(eop_value, row[1], 5)  # EOP trae pérdida de precisión
+                    break
