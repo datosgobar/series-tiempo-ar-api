@@ -43,5 +43,19 @@ def init_daily_series(dataset):
     )
 
 
+def init_semester_series(dataset):
+    distrib = Distribution.objects.create(identifier='132.3',
+                                          metadata='{}',
+                                          download_url="invalid_url",
+                                          dataset=dataset,
+                                          periodicity='R/P6M')
+    Field.objects.create(
+        series_id=settings.TEST_SERIES_NAME.format('semester'),
+        metadata='{}',
+        distribution=distrib,
+        title='random_semester_0_title'
+    )
+
+
 def get_series_id(periodicity):
     return settings.TEST_SERIES_NAME.format(periodicity)

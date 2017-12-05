@@ -204,3 +204,11 @@ class QueryTest(TestCase):
             sum_value = row[1]
             # En query común el parámetro collapse_agg NO TIENE EFECTO
             self.assertEqual(avg_value, sum_value)
+
+    def test_semester_query(self):
+        self.query.add_series(get_series_id('semester'), self.rep_mode, 'semester')
+        data = self.query.run()
+
+        for row in data:
+            date = iso8601.parse_date(row[0])
+            self.assertTrue(date.month in (1, 7))
