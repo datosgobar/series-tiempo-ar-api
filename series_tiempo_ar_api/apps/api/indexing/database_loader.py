@@ -185,6 +185,9 @@ class DatabaseLoader(object):
                 settings.FIELD_BLACKLIST
             )
             field_model.metadata = json.dumps(field)
+
+            # Borra modelos viejos en caso de que haya habido un cambio de series id
+            distribution_model.field_set.filter(title=title).delete()
             field_model.save()
 
     @staticmethod
