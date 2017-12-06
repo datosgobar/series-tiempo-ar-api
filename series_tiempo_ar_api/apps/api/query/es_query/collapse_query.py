@@ -1,8 +1,9 @@
 #! coding: utf-8
+import iso8601
 import pandas as pd
 from django.conf import settings
 
-from series_tiempo_ar_api.apps.api.exceptions import QueryError
+from series_tiempo_ar_api.apps.api.exceptions import QueryError, EndOfPeriodError
 from .base_query import BaseQuery
 from series_tiempo_ar_api.apps.api.common.operations import change_a_year_ago, pct_change_a_year_ago
 from series_tiempo_ar_api.apps.api.query import constants
@@ -31,9 +32,8 @@ class CollapseQuery(BaseQuery):
         self._init_series(series_id, rep_mode, collapse_agg)
         # Instancio agregación de collapse con parámetros default
         serie = self.series[-1]
-        search = serie.search
         agg = serie.collapse_agg
-        serie.search = self._add_aggregation(search, agg)
+        serie.search = self._add_aggregation(serie, agg)
         self.periodicity = self.collapse_interval
 
     def add_collapse(self, interval=None):
@@ -47,21 +47,32 @@ class CollapseQuery(BaseQuery):
             self.periodicity = self.collapse_interval
 
         for serie in self.series:
-            search = serie.search
             agg = serie.collapse_agg
-            serie.search = self._add_aggregation(search, agg)
+            serie.search = self._add_aggregation(serie, agg)
 
-    def _add_aggregation(self, search, collapse_agg):
+    def _add_aggregation(self, serie, collapse_agg):
+
+        search = serie.search
+        # Anula resultados de la búsqueda normal de ES, nos interesa solo resultados agregados
         search = search[:0]
+
         # Agrega el collapse de los datos según intervalo de tiempo
-        search.aggs \
+        bucket = search.aggs \
             .bucket(constants.COLLAPSE_AGG_NAME,
                     'date_histogram',
                     field=settings.TS_TIME_INDEX_FIELD,
-                    interval=self.collapse_interval) \
-            .metric(constants.COLLAPSE_AGG_NAME,
-                    collapse_agg,
-                    field='value')
+                    interval=self.collapse_interval)
+
+        if collapse_agg == constants.AGG_END_OF_PERIOD:
+            rep_mode = serie.rep_mode
+            bucket.metric(constants.COLLAPSE_AGG_NAME, 'scripted_metric',
+                          init_script=constants.EOP_INIT,
+                          map_script=constants.EOP_MAP % rep_mode,
+                          reduce_script=constants.EOP_REDUCE)
+        else:
+            bucket.metric(constants.COLLAPSE_AGG_NAME,
+                          collapse_agg,
+                          field=constants.VALUE)
 
         return search
 
@@ -94,8 +105,11 @@ class CollapseQuery(BaseQuery):
 
     def _format_response(self, responses):
         for response in responses:
-            # Smart solution
             hits = response.aggregations.agg.buckets
+            if self.has_end_of_period and iso8601.parse_date(hits[0]['key_as_string']).year < 1970:
+                raise EndOfPeriodError
+
+            # Smart solution
             self._format_single_response(hits)
 
         self._apply_transformations()

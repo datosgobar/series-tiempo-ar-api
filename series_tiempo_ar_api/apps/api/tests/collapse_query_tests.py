@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
-from series_tiempo_ar_api.apps.api.exceptions import QueryError
+from series_tiempo_ar_api.apps.api.exceptions import QueryError, EndOfPeriodError
 from series_tiempo_ar_api.apps.api.query.es_query.collapse_query import CollapseQuery
 from series_tiempo_ar_api.apps.api.query.es_query.es_query import ESQuery
 
@@ -241,3 +241,41 @@ class CollapseQueryTests(TestCase):
         expected_data = sum_query.run()
 
         self.assertListEqual(data, expected_data)
+
+    def test_end_of_period(self):
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.add_pagination(start=0, limit=1000)
+        query.sort('asc')
+        query.add_filter(start="1970")
+        orig_data = query.run()
+
+        self.query.add_series(self.single_series,
+                              self.rep_mode,
+                              self.series_periodicity,
+                              'end_of_period')
+        self.query.add_filter(start="1970")
+        self.query.add_collapse('year')
+        eop_data = self.query.run()
+
+        for eop_row in eop_data:
+            eop_value = eop_row[1]
+            year = iso8601.parse_date(eop_row[0]).year
+            for row in orig_data:
+                row_date = iso8601.parse_date(row[0])
+                if row_date.year == year and row_date.month == 12:
+                    self.assertAlmostEqual(eop_value, row[1], 5)  # EOP trae pérdida de precisión
+                    break
+
+    @raises(EndOfPeriodError)
+    def test_end_of_period_before_1970(self):
+        """Si la serie tiene fechas menores a 1970, se lanza una excepción
+        La implementación actual de end of period depende de UNIX timestamps, cuyo
+        mínimo valor es 1970-01-01
+        """
+        self.query.add_series(self.single_series,
+                              self.rep_mode,
+                              self.series_periodicity,
+                              'end_of_period')
+        self.query.add_collapse('year')
+        self.query.run()

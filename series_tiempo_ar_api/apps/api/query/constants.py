@@ -11,11 +11,13 @@ REP_MODES = [
     PCT_CHANGE_YEAR_AGO
 ]
 
+AGG_END_OF_PERIOD = 'end_of_period'
 AGGREGATIONS = [
     'avg',
     'min',
     'max',
-    'sum'
+    'sum',
+    AGG_END_OF_PERIOD,
 ]
 
 COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
@@ -118,3 +120,29 @@ RESPONSE_ERROR_CODE = 400
 COLLAPSE_AGG_NAME = 'agg'
 
 CSV_RESPONSE_FILENAME = 'data.csv'
+
+
+# Scripts de map reduce para calcular End of Period en Elasticsearch
+EOP_INIT = """
+params._agg.last_date = -1;
+params._agg.value = 0;
+"""
+
+EOP_MAP = """
+if (doc.timestamp.value > params._agg.last_date) {
+    params._agg.last_date = doc.timestamp.value;
+    params._agg.value = doc.%s.value;
+}
+"""
+
+EOP_REDUCE = """
+double value = -1;
+long last_date = 0;
+for (a in params._aggs) {
+    if (a != null && a.last_date > last_date && a.value != 0.0) {
+        value = a.value;
+        last_date = a.last_date;
+        }
+    }
+return value
+"""
