@@ -67,3 +67,6 @@ class Query(models.Model):
              update_fields=None):
         self.timestamp = timezone.now()
         super(Query, self).save(force_insert, force_update, using, update_fields)
+
+    def __unicode__(self):
+        return u'Query at %s: %s' % (self.timestamp, self.ids)
