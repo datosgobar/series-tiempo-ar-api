@@ -184,6 +184,7 @@ class DatabaseLoader(object):
                 field,
                 settings.FIELD_BLACKLIST
             )
+            field_model.description = field[constants.FIELD_DESCRIPTION]
             field_model.metadata = json.dumps(field)
 
             # Borra modelos viejos en caso de que haya habido un cambio de series id
