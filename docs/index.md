@@ -1,4 +1,4 @@
-# API de Series de Tiempo
+# API de Series de Tiempo de la República Argentina
 
 Documentación de la API de Series de Tiempo del [Paquete de Apertura de Datos de la República Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/).
 
