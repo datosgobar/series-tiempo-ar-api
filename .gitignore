@@ -36,3 +36,4 @@ datajson_sample/
 # jupyter
 .ipynb_checkpoints
 
+.DS_Store

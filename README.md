@@ -1,204 +1,75 @@
-# Aplicación distribuible de la API de series de tiempo
+# API de Series de Tiempo
 
+[![Coverage Status](https://coveralls.io/repos/github/datosgobar/series-tiempo-ar-api/badge.svg?branch=master)](https://coveralls.io/github/datosgobar/series-tiempo-ar-api?branch=master)
 [![Build Status](https://travis-ci.org/datosgobar/series-tiempo-ar-api.svg?branch=master)](https://travis-ci.org/datosgobar/series-tiempo-ar-api)
+[![Stories in Ready](https://badge.waffle.io/datosgobar/series-tiempo-ar-api.png?label=ready&title=Ready)](https://waffle.io/datosgobar/series-tiempo-ar-api)
+[![GitHub tag](https://img.shields.io/github/tag/datosgobar/series-tiempo-ar-api.svg)]()
 
+Aplicación distribuible de la API de Series de Tiempo del [Paquete de Apertura de Datos de la República Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/).
 
+* Versión python: 2
+* Licencia: MIT license
+* Release status: `beta`
+* Documentación: *(TODO: documentación en proceso de construcción)*
 
-Spike de APIs de bases de datos de series de tiempo.
-Es necesario tener configurada una instancia de Elasticsearch>=5.4 corriendo en localhost:9200.
+## Instalación
 
-## Iniciando ES
+Ver documentación de [instalación de la aplicación](docs/development.md).
 
-```bash
-docker pull docker.elastic.co/elasticsearch/elasticsearch:5.5.0
-docker run -p 9200:9200 -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" docker.elastic.co/elasticsearch/elasticsearch:5.5.0
+## Uso rápido
+
+*Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales*
+
+```
+/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&collapse=month&format=csv&start_date=2016-01-01
 ```
 
-Usar como credenciales elastic:changeme
+<table>
+<tr><td>indice_tiempo</td><td>pesos_argentinos_por_dolar_estadounidense</td><td>ipc_2016_nucleo</td><td>ipc_2016_nivgeneral</td></tr>
+<tr><td>2016-01-01</td><td>13.6099238</td><td></td><td></td></tr>
+<tr><td>2016-02-01</td><td>14.7951857</td><td></td><td></td></tr>
+<tr><td>2016-03-01</td><td>14.8990696</td><td></td><td></td></tr>
+<tr><td>2016-04-01</td><td>14.3879762</td><td></td><td></td></tr>
+<tr><td>2016-05-01</td><td>14.1183   </td><td>0.0265777</td><td>0.0419337</td></tr>
+<tr><td>2016-06-01</td><td>14.1542409</td><td>0.0301247</td><td>0.0307591</td></tr>
+<tr><td>2016-07-01</td><td>14.8882952</td><td>0.0187154</td><td>0.0204675</td></tr>
+<tr><td>2016-08-01</td><td>14.8339304</td><td>0.0165157</td><td>0.0020196</td></tr>
+<tr><td>2016-09-01</td><td>15.1174273</td><td>0.0154869</td><td>0.0114914</td></tr>
+<tr><td>2016-10-01</td><td>15.1745429</td><td>0.0179986</td><td>0.0235933</td></tr>
+<tr><td>2016-11-01</td><td>15.3529636</td><td>0.0171879</td><td>0.0161842</td></tr>
+<tr><td>2016-12-01</td><td>15.8815   </td><td>0.0171243</td><td>0.0119757</td></tr>
+<tr><td>2017-01-01</td><td>15.9102773</td><td>0.013389 </td><td>0.01313</td></tr>
+<tr><td>2017-02-01</td><td>15.580245 </td><td>0.0184608</td><td>0.0246316</td></tr>
+<tr><td>2017-03-01</td><td>15.5240391</td><td>0.0182095</td><td>0.0236416</td></tr>
+<tr><td>2017-04-01</td><td>15.33552  </td><td>0.0229158</td><td>0.0263366</td></tr>
+<tr><td>2017-05-01</td><td>15.7173087</td><td>0.0160246</td><td>0.0128313</td></tr>
+<tr><td>2017-06-01</td><td>16.1231909</td><td>0.0152262</td><td>0.0138837</td></tr>
+<tr><td>2017-07-01</td><td>17.1859524</td><td>0.0176384</td><td>0.0171937</td></tr>
+<tr><td>2017-08-01</td><td>17.414913 </td><td>0.0150374</td><td>0.0147753</td></tr>
+<tr><td>2017-09-01</td><td>17.2411857</td><td>0.017578 </td><td>0.0204363</td></tr>
+<tr><td>2017-10-01</td><td>17.4550318</td><td></td><td></td></tr>
+</table>
 
-Ver: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+[Descargar ejemplo](https://github.com/datosgobar/series-tiempo-ar-api/raw/master/docs/assets/data-example-1.csv)
 
-### Carga de datos de muestra
-Primero hay que crear el índice de indicadores (si no existe anteriormente):
-`curl -XPUT "$ES_URL/indicators/`
+Ver [documentación completa]() *(TODO: documentación en proceso de construcción)*
 
-Siguiente, se generan los mappings de las series a cargar:
-```bash
-curl -XPUT "$ES_URL/indicators/_mapping/oferta_global_pbi/?pretty" -H 'Content-Type: application/json' -d '
-{
-  "properties": {
-    "timestamp":                    {"type": "date"},
-    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
-    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
-    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
-  },
-  "_all": {"enabled": false},
-  "dynamic": "strict"
-}'
-```
-```bash
-curl -XPUT "$ES_URL/indicators/_mapping/demanda_global_ibif_total/?pretty" -H 'Content-Type: application/json' -d '
-{
-  "properties": {
-    "timestamp":                    {"type": "date"},
-    "value":                        {"type": "scaled_float", "scaling_factor": 10000000},
-    "change":                       {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change":               {"type": "scaled_float", "scaling_factor": 10000000},
-    "change_a_year_ago":            {"type": "scaled_float", "scaling_factor": 10000000},
-    "percent_change_a_year_ago":    {"type": "scaled_float", "scaling_factor": 10000000}
-  },
-  "_all": {"enabled": false},
-  "dynamic": "strict"
-}'
-```
+## Términos y condiciones de uso
 
-Luego, cargamos los datos a partir del archivo `sample_data.json`. Desde el directorio raíz del proyecto:
-```bash 
-curl -XPOST "$ES_URL/_bulk?pretty" -H 'Content-Type: application/json' --data-binary "@samples/sample_data.json"
-```
+La aplicación se publica actualmente como una versión `beta`. Ver detalle del [acuerdo de nivel de servicio]() (*TODO: escribir versión inicial de SLA*).
 
+Tanto las funcionalidades e interfaz de la API como la arquitectura interna podrían sufrir modificaciones significativas en las próximas versiones.
 
-## Snippets de elastic search
+Todo el código e instrucciones de instalación se publican actualmente sin condiciones de uso más que la cita de la fuente, y sin garantías ni soporte por parte del equipo de [Datos Argentina](datosgobar.github.io) para cualquier actor gubernamental, civil o privado que quiera instalar su propio servicio web de series de tiempo.
 
-Todos los scripts siguientes son versiones "In progress" para validar el funcionamiento de las herramientas.
+Se aclara al usuario desarrollador que todo el modelo de datos y metadatos, así como la arquitectura de la aplicación, están estrechamente basados en la [versión 1.1 del Perfil de Metadatos](http://paquete-apertura-datos.readthedocs.io/es/0.2.0/guia_metadatos.html) de la Política de Apertura de Datos de la Administración Pública Nacional de Argentina.
 
-### Creación de índices con sus tipos
+## Contacto
 
-Crea el índice `indicators` con dos tipos: `demanda_global_ibif_total` y `oferta_global_pbi`, cada uno con sus atributos.
+Te invitamos a [crearnos un issue](https://github.com/datosgobar/series-tiempo-ar-api/issues/new?title=Encontre un bug en series-tiempo-ar-api) en caso de que encuentres algún bug o tengas feedback de alguna parte de `series-tiempo-ar-api` o sobre el servicio web.
 
-```bash
-curl -XPUT "$ES_URL/indicators?pretty" -H 'Content-Type: application/json' -d'
-{
-  "mappings": {
-    "oferta_global_pbi": {
-      "_all":       { "enabled": false  },
-      "dynamic":      "strict",
-      "properties": {
-        "timestamp":                    { "type": "date" },
-        "value":                        { "type": "scaled_float", "scaling_factor": 10000000 },
-        "change":                       { "type": "scaled_float", "scaling_factor": 10000000 },
-        "percent_change":               { "type": "scaled_float", "scaling_factor": 10000000 },
-        "change_a_year_ago":            { "type": "scaled_float", "scaling_factor": 10000000 },
-        "percent_change_a_year_ago":    { "type": "scaled_float", "scaling_factor": 10000000 }
-      }
-    },
-    "demanda_global_ibif_total": {
-      "_all":       { "enabled": false  },
-      "dynamic":      "strict",
-      "properties": {
-        "timestamp":                    { "type": "date" },
-        "value":                        { "type": "scaled_float", "scaling_factor": 10000000 },
-        "change":                       { "type": "scaled_float", "scaling_factor": 10000000 },
-        "percent_change":               { "type": "scaled_float", "scaling_factor": 10000000 },
-        "change_a_year_ago":            { "type": "scaled_float", "scaling_factor": 10000000 },
-        "percent_change_a_year_ago":    { "type": "scaled_float", "scaling_factor": 10000000 }
-      }
-    }
-  }
-}
-'
-```
-
-### Ejemplo de average usando date histogram
-
-Agrupa por año y devuelve el promedio del campo `value`.
-
-```bash
-curl -XGET "$ES_URL/indicators/oferta_global_pbi/_search?&pretty" -d '
-{
- "size": 0,
- "aggs": {
-   "average_value_by_year": {
-     "date_histogram": {
-       "field": "timestamp",
-       "interval": "year"
-     },
-     "aggs": {
-       "value": {
-         "avg": {
-           "field": "value"
-         }
-       }
-     }
-   }
- }
-}
-'
-Add Comment
-```
-
-### Ejemplo de "valor de cierre" agrupando por año
-
-Devuelve para cada año el campo `value` de la última medición (último trimestre)
-
-```bash
-curl -XGET "$ES_URL/indicators/oferta_global_pbi/_search?&pretty" -d '
-{
- "size": 0,
- "aggs": {
-   "last_value_by_year": {
-     "date_histogram": {
-       "field": "timestamp",
-       "interval": "year"
-     },
-     "aggs": {
-       "last": {
-         "scripted_metric": {
-           "init_script": "params._agg.last_date = -1; params._agg.value = 0;",
-           "map_script": "if (doc.timestamp.value > params._agg.last_date) { params._agg.last_date = doc.timestamp.value; params._agg.value = doc.value.value; }",
-           "reduce_script": "double value = -1; long last_date = 0; for (a in params._aggs) { if (a != null && a.last_date > last_date) { value = a.value; last_date = a.last_date; } } return value"
-
-         }
-       }
-     }
-   }
- }
-}
-'
-Add Comment
-```
+Para todo lo demás, podés mandarnos tu comentario o consulta a [datos@modernizacion.gob.ar](mailto:datos@modernizacion.gob.ar).
 
 
-## Ejemplo de uso de la API
-Todas las operaciones se pueden combinar entre sí.
-- Query simple de una serie:
-`http://127.0.0.1:8000/search/oferta_global_pbi/`
-- Cambio de agregación:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?field=percent_change`
-- Cambio de intervalo (_collapse_):
-`http://127.0.0.1:8000/search/oferta_global_pbi/?interval=quarter`
-- Operación de proporción entre dos series:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=proportion&series=demanda_global_ibif_total`
-- Filtro por fechas (desde, hasta)
-`http://127.0.0.1:8000/search/oferta_global_pbi/?from=2005&to=2010`
-- Filtro hasta fecha de hoy:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?to=now`
-- Operación de índice en base 100 en alguna fecha particular:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=index&base=2005&interval=quarter&from=2004&to=2015`
-Si no se completa la fecha, se asume que es el primer día del año especificado (en este caso, `2005-01-01`)
-#### Fields disponibles:
-`value`, `change`, `percent_change`, `change_a_year_ago`, `percent_change_a_year_ago`. Valor default: `value`
 
-#### Operaciones/agregaciones disponibles:
-`avg`, `sum`, `max`, `min`, `proportion`. Valor default: `avg`
 
-#### Intervalos disponibles:
-`year`, `quarter`. Valor default: `year`
-
-### Generación de datos aleatorios
-Correr `./manage.py generate_data`
-
-Parámetros opcionales: 
-- `--indicators`: Cantidad de series aleatorias a generar. Default: 1
-- `--years`: Cantidad de datos a generar. Default: 100 
-- `--interval`: Granularidad de los datos a generar. Acepta `month`, `year` o `quarter`. Default: `quarter`
-
-## Arquitectura propuesta
-
-Durante el desarrollo del spike pudimos comenzar a pensar en la arquitectura que tendrá la API basada en datos temporalizados y en evaluar tecnologías que nos permitirán atacar las funcionalidades a implementar.
-
-![Arquitectura](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/imgs/APIs%20y%20TS%20-%20Arquitectura.png)
-
-![Procesamiento de Requests](https://github.com/datosgobar/spike-series-de-tiempo/raw/master/docs/imgs/APIs%20y%20TS%20-%20Procesamiento%20de%20Request.png)
