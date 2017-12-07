@@ -45,7 +45,7 @@ class ResponseTests(TestCase):
 
     def test_csv_response_header(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
-        response = generator.run(self.query, {'header': 'names'})
+        response = generator.run(self.query, {'header': 'titles'})
         line_end = response.content.find('\n')
         header = response.content[:line_end]
         self.assertTrue(self.series_name in header)
