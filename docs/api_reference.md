@@ -151,6 +151,12 @@ Los modos de representación disponibles son:
 * *percent_change*: Devuelve la variación porcentual entre el valor del período t y el de t-1.
 * *percent_change_a_year_ago*: Devuelve la variación porcentual entre el valor del período t y el del período t equivalente de hace un año atrás.
 
+Las funciones de transformación disponibles en `representation_mode` también pueden especificarse para **series individuales** usando la notación `:percent_change` junto al id de la serie:
+
+    /series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+
+El parámetro `representation_mode` seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.
+
 ## `collapse`
 
 El parámetro collapse modifica la frecuencia de muestreo de los datos de la serie, permitiendo indicar un método para combinar los valores, cuando corresponda.
@@ -160,6 +166,7 @@ Los siguientes valores están disponibles para ser usados:
 * *year*: Muestra datos agregados anualmente.
 * *quarter*: Muestra datos agregados trimestralmente.
 * *month*: Muestra datos agregados mensualmente.
+* *week*: Muestra datos agregados semanalmente.
 * *day*: Muestra datos agregados diariamente.
 
 Si no se indica, se retornan los datos con la granularidad propia de la serie de datos.
@@ -170,14 +177,26 @@ El parámetro `collapse` afecta de la misma manera a todas las series selecciona
 
 ## `collapse_aggregation`
 
-El parámetro `collapse_aggregation` se utiliza sólo cuando el parámetro collapse es especificado. Indica qué operación realizar con las mediciones agrupadas de menor granularidad que la granularidad indicada por el parámetro `collapse`.
+El parámetro `collapse_aggregation` indica la función de agregación temporal que debe usarse para homogeneizar la frecuencia temporal de todas las series solicitadas (Ej.: qué operación realizar para convertir una serie mensual en anual).
+
+Esta función de agregación actuará sobre:
+
+* Las series agrupadas de mayor granularidad temporal (frecuencia más alta) que la granularidad indicada por el parámetro `collapse`
+* En caso de que no se especifique el parámetro `collapse`, las series agrupadas de mayor granularidad temporal que la de la serie de menor frecuencia temporal.
 
 Los valores disponibles para el parámetro son:
 
 * *avg*: Realiza el promedio de todos los valores agrupados. Es la opción por defecto si no se indica valor para `collapse_aggregation`.
 * *sum*: Suma todos los valores agrupados.
+* *end_of_period*: Último valor del período.
 * *min*: Mínimo entre los valores agrupados.
 * *max*: Máximo entre los valores agrupados.
+
+Las funciones de agregación temporal disponibles en `collapse_aggregation` también pueden especificarse para **series individuales** usando la notación `:sum` junto al id de la serie:
+
+    /series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+
+El parámetro `collapse_aggregation` seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.
 
 ## `limit`
 
@@ -195,7 +214,7 @@ El parámetro `start_date` indica la fecha menor a partir de la cual se comenzar
 
 ## `end_date`
 
-El parámetro `end_date indica la fecha mayor hasta la cual se recolectarán datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de `end_date se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.
+El parámetro `end_date` indica la fecha mayor hasta la cual se recolectarán datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de `end_date se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.
 
 ## `format`
 
