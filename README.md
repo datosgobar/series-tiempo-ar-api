@@ -10,7 +10,7 @@ Aplicación distribuible de la API de Series de Tiempo del [Paquete de Apertura 
 * Versión python: 2
 * Licencia: MIT license
 * Release status: `beta`
-* Documentación: *(TODO: documentación en proceso de construcción)*
+* Documentación: [https://series-tiempo-ar-api.readthedocs.io](https://series-tiempo-ar-api.readthedocs.io)
 
 ## Instalación
 

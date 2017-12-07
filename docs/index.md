@@ -4,6 +4,12 @@ Documentación de la API de Series de Tiempo del [Paquete de Apertura de Datos d
 
 Esta API expone métodos para consultar series de tiempo abiertas por organismos que cumplen con el Perfil de Metadatos de la Política de Apertura de Datos de la Administración Pública Nacional.
 
+La aplicación se publica actualmente como una versión `beta`. Tanto las funcionalidades e interfaz de la API como la arquitectura interna podrían sufrir modificaciones significativas en las próximas versiones.
+
+El uso está sujeto a restricciones y cuotas, para preservar la estabilidad de la infraestructura.
+
+Se alienta a los usuarios a [dejar comentarios, reportes de fallas o sugerencias](https://github.com/datosgobar/series-tiempo-ar-api/issues/new).
+
 ## Ejemplo de uso
 
 *Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales*

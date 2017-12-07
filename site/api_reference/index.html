@@ -167,7 +167,7 @@
     <tr>
         <td>representation_mode</a></td>
         <td>No</td>
-        <td>Uno de: value, change, percent_change</td>
+        <td>Uno de: value, change, percent_change, percent_change_a_year_ago</td>
         <td>value</td>
         <td>representation_mode=percent_change</td>
     </tr>
@@ -264,7 +264,12 @@
 <li><em>value</em>: Es el modo de representación por defecto. Devuelve el valor medido en la serie.</li>
 <li><em>change</em>: Devuelve la diferencia absoluta entre el valor del período t y el de t-1.</li>
 <li><em>percent_change</em>: Devuelve la variación porcentual entre el valor del período t y el de t-1.</li>
+<li><em>percent_change_a_year_ago</em>: Devuelve la variación porcentual entre el valor del período t y el del período t equivalente de hace un año atrás.</li>
 </ul>
+<p>Las funciones de transformación disponibles en <code>representation_mode</code> también pueden especificarse para <strong>series individuales</strong> usando la notación <code>:percent_change</code> junto al id de la serie:</p>
+<pre><code>/series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&amp;collapse=year&amp;start_date=2010
+</code></pre>
+<p>El parámetro <code>representation_mode</code> seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.</p>
 <h2 id="collapse"><code>collapse</code></h2>
 <p>El parámetro collapse modifica la frecuencia de muestreo de los datos de la serie, permitiendo indicar un método para combinar los valores, cuando corresponda.</p>
 <p>Los siguientes valores están disponibles para ser usados:</p>
@@ -272,20 +277,31 @@
 <li><em>year</em>: Muestra datos agregados anualmente.</li>
 <li><em>quarter</em>: Muestra datos agregados trimestralmente.</li>
 <li><em>month</em>: Muestra datos agregados mensualmente.</li>
+<li><em>week</em>: Muestra datos agregados semanalmente.</li>
 <li><em>day</em>: Muestra datos agregados diariamente.</li>
 </ul>
 <p>Si no se indica, se retornan los datos con la granularidad propia de la serie de datos.</p>
 <p>Si la granularidad solicitada en el valor de collapse es menor a la granularidad propia de la serie, la consulta devolverá un error.</p>
 <p>El parámetro <code>collapse</code> afecta de la misma manera a todas las series seleccionadas por el parámetro <code>ids</code>.</p>
 <h2 id="collapse_aggregation"><code>collapse_aggregation</code></h2>
-<p>El parámetro <code>collapse_aggregation</code> se utiliza sólo cuando el parámetro collapse es especificado. Indica qué operación realizar con las mediciones agrupadas de menor granularidad que la granularidad indicada por el parámetro <code>collapse</code>.</p>
+<p>El parámetro <code>collapse_aggregation</code> indica la función de agregación temporal que debe usarse para homogeneizar la frecuencia temporal de todas las series solicitadas (Ej.: qué operación realizar para convertir una serie mensual en anual).</p>
+<p>Esta función de agregación actuará sobre:</p>
+<ul>
+<li>Las series agrupadas de mayor granularidad temporal (frecuencia más alta) que la granularidad indicada por el parámetro <code>collapse</code></li>
+<li>En caso de que no se especifique el parámetro <code>collapse</code>, las series agrupadas de mayor granularidad temporal que la de la serie de menor frecuencia temporal.</li>
+</ul>
 <p>Los valores disponibles para el parámetro son:</p>
 <ul>
 <li><em>avg</em>: Realiza el promedio de todos los valores agrupados. Es la opción por defecto si no se indica valor para <code>collapse_aggregation</code>.</li>
 <li><em>sum</em>: Suma todos los valores agrupados.</li>
+<li><em>end_of_period</em>: Último valor del período.</li>
 <li><em>min</em>: Mínimo entre los valores agrupados.</li>
 <li><em>max</em>: Máximo entre los valores agrupados.</li>
 </ul>
+<p>Las funciones de agregación temporal disponibles en <code>collapse_aggregation</code> también pueden especificarse para <strong>series individuales</strong> usando la notación <code>:sum</code> junto al id de la serie:</p>
+<pre><code>/series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&amp;collapse=year&amp;start_date=2010
+</code></pre>
+<p>El parámetro <code>collapse_aggregation</code> seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.</p>
 <h2 id="limit"><code>limit</code></h2>
 <p>Este parámetro es utilizado junto a <code>start</code> para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo, no mayor que 1000, ya que esa es la cantidad máxima de resultados devueltos por la API. El valor por defecto si no se especifica valor alguno es 100.</p>
 <h2 id="start"><code>start</code></h2>
@@ -294,7 +310,7 @@
 <h2 id="start_date"><code>start_date</code></h2>
 <p>El parámetro <code>start_date</code> indica la fecha menor a partir de la cual se comenzarán a recolectar datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de <code>start_date</code> se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.</p>
 <h2 id="end_date"><code>end_date</code></h2>
-<p>El parámetro <code>end_date indica la fecha mayor hasta la cual se recolectarán datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de</code>end_date se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.</p>
+<p>El parámetro <code>end_date</code> indica la fecha mayor hasta la cual se recolectarán datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de `end_date se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.</p>
 <h2 id="format"><code>format</code></h2>
 <p>Especifica el formato de la respuesta, siendo json el valor por defecto.</p>
 <p>Las opciones disponibles para este parámetro son:</p>

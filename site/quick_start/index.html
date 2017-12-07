@@ -67,7 +67,11 @@
         
             <li><a class="toctree-l3" href="#cambiar-la-agregacion-temporal">Cambiar la agregación temporal</a></li>
         
+            <li><a class="toctree-l3" href="#cambiar-la-funcion-de-agregacion-temporal">Cambiar la función de agregación temporal</a></li>
+        
             <li><a class="toctree-l3" href="#aplicar-transformaciones">Aplicar transformaciones</a></li>
+        
+            <li><a class="toctree-l3" href="#aplicar-transformaciones-y-cambiar-la-funcion-de-agregacion-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</a></li>
         
         </ul>
     
@@ -121,7 +125,9 @@
 <li><a href="#descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</a></li>
 <li><a href="#filtrar-por-fechas">Filtrar por fechas</a></li>
 <li><a href="#cambiar-la-agregaci%C3%B3n-temporal">Cambiar la agregación temporal</a></li>
+<li><a href="#cambiar-la-funci%C3%B3n-de-agregaci%C3%B3n-temporal">Cambiar la función de agregación temporal</a></li>
 <li><a href="#aplicar-transformaciones">Aplicar transformaciones</a></li>
+<li><a href="#aplicar-transformaciones-y-cambiar-la-funci%C3%B3n-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -148,6 +154,15 @@
 <pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
 </code></pre>
 
+<h2 id="cambiar-la-funcion-de-agregacion-temporal">Cambiar la función de agregación temporal</h2>
+<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales a último valor del período</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter&amp;collapse_aggregation=end_of_period
+</code></pre>
+
+<p><em>Tipo de cambio (último valor del período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
+</code></pre>
+
 <h2 id="aplicar-transformaciones">Aplicar transformaciones</h2>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, en valores mensuales y variación porcentual</em></p>
 <pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change
@@ -155,6 +170,11 @@
 
 <p><em>Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales</em></p>
 <pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01
+</code></pre>
+
+<h2 id="aplicar-transformaciones-y-cambiar-la-funcion-de-agregacion-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</h2>
+<p><em>Tipo de cambio (variaciones porcentuales entre los últimos valores de cada período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
+<pre><code>/series/?ids=138.1_PAPDE_0_M_41:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
 </code></pre>
               
             </div>
