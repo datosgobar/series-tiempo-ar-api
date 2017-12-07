@@ -64,10 +64,9 @@ class CollapseQuery(BaseQuery):
                     interval=self.collapse_interval)
 
         if collapse_agg == constants.AGG_END_OF_PERIOD:
-            rep_mode = serie.rep_mode
             bucket.metric(constants.COLLAPSE_AGG_NAME, 'scripted_metric',
                           init_script=constants.EOP_INIT,
-                          map_script=constants.EOP_MAP % rep_mode,
+                          map_script=constants.EOP_MAP,
                           reduce_script=constants.EOP_REDUCE)
         else:
             bucket.metric(constants.COLLAPSE_AGG_NAME,

@@ -279,3 +279,26 @@ class CollapseQueryTests(TestCase):
                               'end_of_period')
         self.query.add_collapse('year')
         self.query.run()
+
+    def test_end_of_period_with_rep_mode(self):
+        self.query.add_series(self.single_series,
+                              'percent_change',
+                              self.series_periodicity,
+                              'end_of_period')
+        self.query.add_collapse('year')
+        self.query.add_filter(start="1970")
+        data = self.query.run()
+
+        orig_eop = CollapseQuery(index=settings.TEST_INDEX)
+        orig_eop.add_series(self.single_series,
+                            self.rep_mode,
+                            self.series_periodicity,
+                            'end_of_period')
+        orig_eop.add_filter(start="1970")
+        orig_eop.add_collapse('year')
+        end_of_period = orig_eop.run()
+
+        for i, row in enumerate(data[1:], 1):  # El primero es nulo en pct change
+            value = end_of_period[i][1] / end_of_period[i - 1][1] - 1
+
+            self.assertAlmostEqual(value, row[1])
