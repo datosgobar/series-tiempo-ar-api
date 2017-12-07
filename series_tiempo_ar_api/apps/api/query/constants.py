@@ -131,7 +131,7 @@ params._agg.value = 0;
 EOP_MAP = """
 if (doc.timestamp.value > params._agg.last_date) {
     params._agg.last_date = doc.timestamp.value;
-    params._agg.value = doc.%s.value;
+    params._agg.value = doc.value.value;
 }
 """
 
