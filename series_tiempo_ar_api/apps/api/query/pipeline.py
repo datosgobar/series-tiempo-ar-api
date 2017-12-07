@@ -66,7 +66,8 @@ class QueryPipeline(object):
             Sort,
             Collapse,
             Metadata,
-            Format
+            Format,
+            Header,
         ]
 
 

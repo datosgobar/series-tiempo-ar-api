@@ -21,6 +21,7 @@ class ResponseTests(TestCase):
         field = Field.objects.get(series_id=cls.single_series)
         cls.query.add_series(cls.single_series, field)
         cls.series_name = field.title
+        cls.series_desc = field.description
         super(ResponseTests, cls).setUpClass()
 
     def test_csv_response(self):
@@ -56,3 +57,10 @@ class ResponseTests(TestCase):
             response.get('Content-Disposition'),
             'attachment; filename="{}"'.format(constants.CSV_RESPONSE_FILENAME)
         )
+
+    def test_csv_response_header_description(self):
+        generator = ResponseFormatterGenerator('csv').get_formatter()
+        response = generator.run(self.query, {'header': 'descriptions'})
+        line_end = response.content.find('\n')
+        header = response.content[:line_end]
+        self.assertIn(self.series_desc, header)

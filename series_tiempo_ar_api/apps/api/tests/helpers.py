@@ -23,6 +23,7 @@ def setup_database():
         series_id=settings.TEST_SERIES_NAME.format('month'),
         metadata='{}',
         distribution=distrib,
+        description="random series description",
         title='random_month_0_title'
     )
 

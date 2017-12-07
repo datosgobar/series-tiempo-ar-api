@@ -35,6 +35,9 @@ class Query(object):
         if how == constants.HEADER_PARAM_NAMES:
             return [model.title for model in self.series_models]
 
+        if how == constants.HEADER_PARAM_DESCRIPTIONS:
+            return [model.description for model in self.series_models]
+
         return self.es_query.get_series_ids()
 
     def add_pagination(self, start, limit):
