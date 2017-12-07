@@ -154,33 +154,6 @@ curl -XGET "$ES_URL/indicators/oferta_global_pbi/_search?&pretty" -d '
 Add Comment
 ```
 
-
-## Ejemplo de uso de la API
-Todas las operaciones se pueden combinar entre sí.
-- Query simple de una serie:
-`http://127.0.0.1:8000/search/oferta_global_pbi/`
-- Cambio de agregación:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?field=percent_change`
-- Cambio de intervalo (_collapse_):
-`http://127.0.0.1:8000/search/oferta_global_pbi/?interval=quarter`
-- Operación de proporción entre dos series:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=proportion&series=demanda_global_ibif_total`
-- Filtro por fechas (desde, hasta)
-`http://127.0.0.1:8000/search/oferta_global_pbi/?from=2005&to=2010`
-- Filtro hasta fecha de hoy:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?to=now`
-- Operación de índice en base 100 en alguna fecha particular:
-`http://127.0.0.1:8000/search/oferta_global_pbi/?agg=index&base=2005&interval=quarter&from=2004&to=2015`
-Si no se completa la fecha, se asume que es el primer día del año especificado (en este caso, `2005-01-01`)
-#### Fields disponibles:
-`value`, `change`, `percent_change`, `change_a_year_ago`, `percent_change_a_year_ago`. Valor default: `value`
-
-#### Operaciones/agregaciones disponibles:
-`avg`, `sum`, `max`, `min`, `proportion`. Valor default: `avg`
-
-#### Intervalos disponibles:
-`year`, `quarter`. Valor default: `year`
-
 ### Generación de datos aleatorios
 Correr `./manage.py generate_data`
 
