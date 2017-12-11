@@ -31,6 +31,19 @@ def freq_pandas_to_index_offset(freq):
             return value
 
 
+def freq_pandas_to_interval(freq):
+    freqs = {
+        'AS': 'year',
+        'AS-JAN': 'year',
+        'QS': 'quarter',
+        'QS-JAN': 'quarter',
+        'MS': 'month',
+        'D': 'day'
+    }
+
+    return freqs[freq]
+
+
 def find_index(list_of_lists, element):
     """Devuelve el índice de la lista que contenga la primera
     ocurrencia de 'element' en la lista de listas. Si no se encuentra

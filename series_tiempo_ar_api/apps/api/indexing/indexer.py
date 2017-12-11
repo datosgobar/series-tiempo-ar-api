@@ -8,6 +8,7 @@ from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
+from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_interval
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.common.operations import pct_change_a_year_ago, change_a_year_ago
@@ -128,16 +129,34 @@ class Indexer(object):
         col = col[col.first_valid_index():col.last_valid_index()]
 
         freq = col.index.freq.freqstr
+        series_id = fields[col.name]
+
+        periods = ['AS', 'QS', 'MS', 'D']
+        for period in periods:
+            if freq == period:
+                break
+            avg_col = col.groupby(pd.TimeGrouper(period)).apply(lambda x: x.mean())
+            avg_df = self.generate_interval_transformations_df(avg_col, period)
+            avg_df.apply(self.elastic_index, axis='columns', args=(series_id, period, 'avg'))
+
+            sum_col = col.groupby(pd.TimeGrouper(period)).apply(sum)
+            sum_df = self.generate_interval_transformations_df(sum_col, period)
+            sum_df.apply(self.elastic_index, axis='columns', args=(series_id, period, 'sum'))
+
+        transformations = self.generate_interval_transformations_df(col, freq)
+        transformations.apply(self.elastic_index, axis='columns', args=(series_id, freq, 'avg'))
+
+    @staticmethod
+    def generate_interval_transformations_df(col, freq):
         df = pd.DataFrame()
         df[constants.VALUE] = col
         df[constants.CHANGE] = col.diff(1)
         df[constants.PCT_CHANGE] = col.pct_change(1, fill_method=None)
         df[constants.CHANGE_YEAR_AGO] = change_a_year_ago(col, freq)
         df[constants.PCT_CHANGE_YEAR_AGO] = pct_change_a_year_ago(col, freq)
+        return df
 
-        df.apply(self.elastic_index, axis='columns', args=(fields[col.name],))
-
-    def elastic_index(self, row, series_id):
+    def elastic_index(self, row, series_id, interval, agg):
         """Arma el JSON entendible por el bulk request de ES y lo
         agrega a la lista de bulk_actions
 
@@ -149,7 +168,7 @@ class Indexer(object):
         # Borrado de la parte de tiempo del timestamp
         timestamp = str(row.name)
         timestamp = timestamp[:timestamp.find('T')]
-
+        interval = freq_pandas_to_interval(interval)
         action = {
             "_index": self.index,
             "_type": settings.TS_DOC_TYPE,
@@ -159,7 +178,9 @@ class Indexer(object):
 
         source = {
             settings.TS_TIME_INDEX_FIELD: timestamp,
-            'series_id': series_id
+            'series_id': series_id,
+            "interval": interval,
+            "aggregation": agg
         }
 
         for column, value in row.iteritems():
@@ -170,7 +191,7 @@ class Indexer(object):
                 # convierte a float de Python para preservar el tipado numérico del valor
                 source[column] = float(str(value))
 
-        action['_id'] = series_id + '-' + timestamp
+        action['_id'] = series_id + '-' + interval + '-' + agg + '-' + timestamp
         action['_source'] = source
         self.bulk_actions.append(action)
         self.indexed_fields.add(series_id)

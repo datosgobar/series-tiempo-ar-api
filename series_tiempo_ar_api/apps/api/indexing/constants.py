@@ -25,7 +25,9 @@ MAPPING = {
         PCT_CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
         CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
         PCT_CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
-        "series_id": {"type": "keyword"}
+        "series_id": {"type": "keyword"},
+        "aggregation": {"type": "keyword"},
+        "interval": {"type": "keyword"},
     },
     "_all": {"enabled": False},
     "dynamic": "strict"
