@@ -92,7 +92,7 @@ class DistributionIndexer:
         for column in df.columns:
             if column not in fields:
                 df.drop(column, axis='columns', inplace=True)
-        columns = df.columns
+        columns = [fields[name] for name in df.columns]
 
         data = np.array(df)
         freq = freq_iso_to_pandas(distribution.periodicity)
@@ -107,7 +107,7 @@ class DistributionIndexer:
         return pd.DataFrame(index=new_index, data=data, columns=columns)
 
     def generate_properties(self, df, fields):
-        df.apply(self.process_column, args=[fields])
+        df.apply(self.process_column)
 
         # Manejo de series faltantes
         for series_id in fields.values():
@@ -115,7 +115,7 @@ class DistributionIndexer:
                 logger.info(strings.SERIES_NOT_FOUND, series_id)
                 self._handle_missing_series(series_id)
 
-    def process_column(self, col, fields):
+    def process_column(self, col):
         """Procesa una columna del DataFrame: calcula los valores de
         diferencias, porcentuales y anuales, los guarda en un DataFrame
         y luego indexa los valores fila por fila"""
@@ -124,7 +124,7 @@ class DistributionIndexer:
         col = col[col.first_valid_index():col.last_valid_index()]
 
         freq = col.index.freq.freqstr
-        series_id = fields[col.name]
+        series_id = col.name
 
         # Lista de intervalos temporales de pandas EN ORDEN
         periods = ['AS-JAN', 'QS-JAN', 'MS', 'W-SUN', 'D']

@@ -66,7 +66,7 @@ class IndexerTests(TestCase):
         fields = {field.title: field.series_id for field in fields}
         df = DistributionIndexer.init_df(distribution, fields)
 
-        for field in fields:
+        for field in fields.values():
             self.assertTrue(field in df.columns)
 
     def test_indexing(self):
