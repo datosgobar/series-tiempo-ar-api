@@ -149,8 +149,8 @@ Los modos de representación disponibles son:
 Las funciones de transformación disponibles en [`representation_mode`](#representation_mode) también pueden especificarse para **series individuales** usando la notación `:percent_change` junto al id de la serie:
 
 ```md
-/series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
-/series/?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
 ```
 
 El parámetro [`representation_mode`](#representation_mode) seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.
@@ -195,8 +195,8 @@ Los valores disponibles para el parámetro son:
 Las funciones de agregación temporal disponibles en [`collapse_aggregation`](#collapse_aggregation) también pueden especificarse para **series individuales** usando la notación `:sum` junto al id de la serie:
 
 ```md
-/series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
-/series/?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010
 ```
 
 El parámetro [`collapse_aggregation`](#collapse_aggregation) seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.
