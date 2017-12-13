@@ -5,7 +5,6 @@ import os
 from django.conf import settings
 from django.test import TestCase
 from elasticsearch_dsl import Search
-from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
@@ -91,23 +90,16 @@ class IndexerTests(TestCase):
             .filter('match', series_id=missing_field).execute()
 
         self.assertTrue(len(results))
-        self.assertTrue(Field.objects.filter(series_id=missing_field))
 
     def test_distribution_missing_column(self):
         missing_series_id = '212.1_PSCIOS_IOS_0_0_25'
         self._index_catalog('distribution_missing_column.json')
-        catalog_path = os.path.join(SAMPLES_DIR,
-                                    'distribution_missing_column.json')
-        catalog_title = DataJson(catalog_path)['title']
 
         results = Search(using=self.elastic,
                          index=self.test_index) \
             .filter('match', series_id=missing_series_id).execute()
 
         self.assertFalse(len(results))
-        self.assertFalse(Field.objects.filter(
-            distribution__dataset__catalog__title=catalog_title,
-            series_id=missing_series_id))
 
     @classmethod
     def tearDownClass(cls):

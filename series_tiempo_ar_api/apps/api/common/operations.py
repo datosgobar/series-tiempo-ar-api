@@ -5,8 +5,11 @@
 import pandas as pd
 import numpy as np
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 
-from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset
+from series_tiempo_ar_api.apps.api.common import constants
+from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset, \
+    freq_pandas_to_interval
 
 
 def get_value(df, col, index):
@@ -74,3 +77,110 @@ def pct_change_a_year_ago(col, freq):
         return (x - y) / y
 
     return year_ago_column(col, freq, _pct_change)
+
+
+def process_column(col, index):
+    """Procesa una columna del DataFrame: calcula los valores de
+    diferencias, porcentuales y anuales, los guarda en un DataFrame
+    y luego indexa los valores fila por fila"""
+
+    # Filtro de valores nulos iniciales/finales
+    col = col[col.first_valid_index():col.last_valid_index()]
+
+    freq = col.index.freq.freqstr
+    series_id = col.name
+
+    actions = []
+    # Lista de intervalos temporales de pandas EN ORDEN
+    periods = ['AS-JAN', 'QS-JAN', 'MS', 'W-SUN', 'D']
+    for period in periods:
+        if freq == period:
+            break
+
+        # Promedio
+        avg_col = col.groupby(pd.TimeGrouper(period)).apply(lambda x: x.mean())
+        avg_df = generate_interval_transformations_df(avg_col, period)
+        actions.extend(list(avg_df.apply(elastic_index,
+                                         axis='columns',
+                                         args=(index, series_id, period, 'avg'))))
+
+        # Suma
+        sum_col = col.groupby(pd.TimeGrouper(period)).apply(sum)
+        sum_df = generate_interval_transformations_df(sum_col, period)
+        actions.extend(list(sum_df.apply(elastic_index,
+                                         axis='columns',
+                                         args=(index, series_id, period, 'sum'))))
+
+        # End of period
+        eop_col = col.groupby(pd.TimeGrouper(period)).apply(end_of_period)
+        eop_df = generate_interval_transformations_df(eop_col, period)
+        actions.extend(list(eop_df.apply(elastic_index,
+                                         axis='columns',
+                                         args=(index, series_id, period, 'end_of_period'))))
+
+    # Valor directo, "asignado" como promedio de un único valor
+    transformations = generate_interval_transformations_df(col, freq)
+    actions.extend(list(transformations.apply(elastic_index,
+                                              axis='columns',
+                                              args=(index, series_id, freq, 'avg'))))
+    return actions
+
+
+def end_of_period(x):
+    """Itera hasta encontrarse con el último valor no nulo del data frame"""
+    value = np.nan
+    i = -1
+    while np.isnan(value):
+        value = x.iloc[i]
+        i -= 1
+    return value
+
+
+def generate_interval_transformations_df(col, freq):
+    df = pd.DataFrame()
+    df[constants.VALUE] = col
+    df[constants.CHANGE] = col.diff(1)
+    df[constants.PCT_CHANGE] = col.pct_change(1, fill_method=None)
+    df[constants.CHANGE_YEAR_AGO] = change_a_year_ago(col, freq)
+    df[constants.PCT_CHANGE_YEAR_AGO] = pct_change_a_year_ago(col, freq)
+    return df
+
+
+def elastic_index(row, index, series_id, interval, agg):
+    """Arma el JSON entendible por el bulk request de ES y lo
+    agrega a la lista de bulk_actions
+
+    la fila tiene forma de iterable con los datos de un único
+    valor de la serie: el valor real, su variación inmnediata,
+    porcentual, etc
+    """
+
+    # Borrado de la parte de tiempo del timestamp
+    timestamp = str(row.name)
+    timestamp = timestamp[:timestamp.find('T')]
+    interval = freq_pandas_to_interval(interval)
+    action = {
+        "_index": index,
+        "_type": settings.TS_DOC_TYPE,
+        "_id": None,
+        "_source": {}
+    }
+
+    source = {
+        settings.TS_TIME_INDEX_FIELD: timestamp,
+        'series_id': series_id,
+        "interval": interval,
+        "aggregation": agg
+    }
+
+    for column, value in row.iteritems():
+        if value is not None and np.isfinite(value):
+            # Todo: buscar método más elegante para resolver precisión incorrecta de los valores
+            # Ver issue: https://github.com/datosgobar/series-tiempo-ar-api/issues/63
+            # Convertir el np.float64 a string logra evitar la pérdida de precision. Luego se
+            # convierte a float de Python para preservar el tipado numérico del valor
+            source[column] = float(str(value))
+
+    action['_id'] = series_id + '-' + interval + '-' + agg + '-' + timestamp
+    action['_source'] = source
+    return action
