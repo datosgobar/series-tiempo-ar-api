@@ -89,14 +89,6 @@ class QueryTests(TestCase):
         delta = second_date - first_date
         self.assertEqual(delta.days, 7)
 
-    def default_query_is_not_collapsed(self):
-        self.assertEqual(False, self.query.has_collapse())
-
-    def collapse_query_has_collapse(self):
-        self.query.add_series(self.single_series, self.field)
-        self.query.add_collapse()
-        self.assertTrue(self.query.has_collapse(), True)
-
     def add_series_with_aggregation(self):
         # Aggregation sin haber definido collapse NO HACE NADA!
         self.query.add_series(self.single_series, self.field, collapse_agg='sum')

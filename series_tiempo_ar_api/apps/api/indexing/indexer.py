@@ -29,8 +29,6 @@ class Indexer(object):
     def __init__(self, index=settings.TS_INDEX):
         self.elastic = ElasticInstance()
         self.index = index
-        self.indexed_fields = set()
-        self.bulk_actions = []
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -39,39 +37,41 @@ class Indexer(object):
         """
         self.init_index()
 
-        # Optimización: Desactivo el refresh de los datos mientras indexo
-        self.elastic.indices.put_settings(
-            index=self.index,
-            body=constants.DEACTIVATE_REFRESH_BODY
-        )
-
         logger.info(strings.INDEX_START)
 
         for distribution in distributions:
-            fields = distribution.field_set.all()
-            fields = {field.title: field.series_id for field in fields}
-            df = self.init_df(distribution, fields)
+            DistributionIndexer(index=self.index).run(distribution)
 
-            self.generate_properties(df, fields)
-
-        logger.info(strings.BULK_REQUEST_START)
-
-        for success, info in parallel_bulk(self.elastic, self.bulk_actions):
-            if not success:
-                logger.warn(strings.BULK_REQUEST_ERROR, info)
-
-        logger.info(strings.BULK_REQUEST_END)
-
-        # Reactivo el proceso de replicado una vez finalizado
-        self.elastic.indices.put_settings(
-            index=self.index,
-            body=constants.REACTIVATE_REFRESH_BODY
-        )
+        # Fuerzo a que los datos estén disponibles para queries inmediatamente
         segments = constants.FORCE_MERGE_SEGMENTS
         self.elastic.indices.forcemerge(index=self.index,
                                         max_num_segments=segments)
 
         logger.info(strings.INDEX_END)
+
+    def init_index(self):
+        if not self.elastic.indices.exists(self.index):
+            self.elastic.indices.create(self.index,
+                                        body=constants.INDEX_CREATION_BODY)
+
+
+class DistributionIndexer:
+    def __init__(self, index):
+        self.elastic = ElasticInstance.get()
+        self.index = index
+        self.indexed_fields = set()
+        self.bulk_actions = []
+
+    def run(self, distribution):
+        fields = distribution.field_set.all()
+        fields = {field.title: field.series_id for field in fields}
+        df = self.init_df(distribution, fields)
+
+        self.generate_properties(df, fields)
+
+        for success, info in parallel_bulk(self.elastic, self.bulk_actions):
+            if not success:
+                logger.warn(strings.BULK_REQUEST_ERROR, info)
 
     @staticmethod
     def init_df(distribution, fields):
@@ -106,11 +106,6 @@ class Indexer(object):
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
 
-    def init_index(self):
-        if not self.elastic.indices.exists(self.index):
-            self.elastic.indices.create(self.index,
-                                        body=constants.INDEX_CREATION_BODY)
-
     def generate_properties(self, df, fields):
         df.apply(self.process_column, args=[fields])
 
@@ -131,20 +126,46 @@ class Indexer(object):
         freq = col.index.freq.freqstr
         series_id = fields[col.name]
 
-        periods = ['AS', 'QS', 'MS', 'D']
+        # Lista de intervalos temporales de pandas EN ORDEN
+        periods = ['AS-JAN', 'QS-JAN', 'MS', 'W-SUN', 'D']
         for period in periods:
             if freq == period:
                 break
+
+            # Promedio
             avg_col = col.groupby(pd.TimeGrouper(period)).apply(lambda x: x.mean())
             avg_df = self.generate_interval_transformations_df(avg_col, period)
-            avg_df.apply(self.elastic_index, axis='columns', args=(series_id, period, 'avg'))
+            avg_df.apply(self.elastic_index,
+                         axis='columns',
+                         args=(series_id, period, 'avg'))
 
+            # Suma
             sum_col = col.groupby(pd.TimeGrouper(period)).apply(sum)
             sum_df = self.generate_interval_transformations_df(sum_col, period)
-            sum_df.apply(self.elastic_index, axis='columns', args=(series_id, period, 'sum'))
+            sum_df.apply(self.elastic_index,
+                         axis='columns',
+                         args=(series_id, period, 'sum'))
 
+            # End of period
+            eop_col = col.groupby(pd.TimeGrouper(period)).apply(self.end_of_period)
+            eop_df = self.generate_interval_transformations_df(eop_col, period)
+            eop_df.apply(self.elastic_index,
+                         axis='columns',
+                         args=(series_id, period, 'end_of_period'))
+
+        # Valor directo, "asignado" como promedio de un único valor
         transformations = self.generate_interval_transformations_df(col, freq)
         transformations.apply(self.elastic_index, axis='columns', args=(series_id, freq, 'avg'))
+
+    @staticmethod
+    def end_of_period(x):
+        """Itera hasta encontrarse con el último valor no nulo del data frame"""
+        value = np.nan
+        i = -1
+        while np.isnan(value):
+            value = x.iloc[i]
+            i -= 1
+        return value
 
     @staticmethod
     def generate_interval_transformations_df(col, freq):

@@ -50,7 +50,7 @@ class SortTests(TestCase):
 
     def test_sort_desc_with_collapse(self):
         self.query.add_series(self.single_series, self.field, 'value')
-        self.cmd.run(self.query, {'sort': 'desc'})
+        # self.cmd.run(self.query, {'sort': 'desc'})
         self.query.add_collapse(collapse='year')
         data = self.query.run()['data']
 

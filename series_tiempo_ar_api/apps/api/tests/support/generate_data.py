@@ -6,7 +6,7 @@ from elasticsearch.helpers import parallel_bulk
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 
-from series_tiempo_ar_api.apps.api.indexing.constants import INDEX_CREATION_BODY
+from series_tiempo_ar_api.apps.api.indexing.constants import INDEX_CREATION_BODY, FORCE_MERGE_SEGMENTS
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.common import constants
@@ -35,6 +35,10 @@ class TestDataGenerator(object):
             if not success:
                 print("ERROR:", info)
 
+        segments = FORCE_MERGE_SEGMENTS
+        self.elastic.indices.forcemerge(index=settings.TEST_INDEX,
+                                        max_num_segments=segments)
+
     def init_series(self, interval):
         """Crea varias series con periodicidad del intervalo dado"""
 
@@ -55,9 +59,9 @@ class TestDataGenerator(object):
 
             index_data = {
                 "_index": settings.TEST_INDEX,
-                "_id": series_name + '-' + date_str,
+                "_id": series_name + '-' + date_str + '-' + interval + '-' + 'avg',
                 "_type": settings.TS_DOC_TYPE,
-                "_source": self.generate_properties(date_str, series_name)
+                "_source": self.generate_properties(date_str, series_name, interval)
             }
 
             self.bulk_items.append(index_data)
@@ -80,7 +84,7 @@ class TestDataGenerator(object):
             months_to_add = 1
         return date + relativedelta(months=months_to_add)
 
-    def generate_properties(self, date_str, series_name):
+    def generate_properties(self, date_str, series_name, interval):
         """ Genera los valores del indicador aleatoriamente, junto con los
         valores de cambio y porcentuales"""
         properties = {
@@ -90,7 +94,9 @@ class TestDataGenerator(object):
             constants.PCT_CHANGE: 1,
             constants.CHANGE_YEAR_AGO: 1,
             constants.PCT_CHANGE_YEAR_AGO: 1,
-            'series_id': series_name
+            'series_id': series_name,
+            'interval': interval,
+            'aggregation': 'avg'
         }
 
         if len(self.prev_values):

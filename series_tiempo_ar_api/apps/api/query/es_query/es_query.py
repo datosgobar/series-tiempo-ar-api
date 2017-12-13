@@ -63,7 +63,5 @@ class ESQuery(BaseQuery):
         self.args[constants.PARAM_SORT] = how
 
     def add_collapse(self, interval):
-        raise QueryError(strings.INVALID_QUERY_TYPE)
+        self.periodicity = interval
 
-    def has_collapse(self):
-        return False

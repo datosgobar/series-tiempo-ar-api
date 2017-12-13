@@ -81,7 +81,6 @@ class Query(object):
 
     def add_collapse(self, collapse=None):
         self._validate_collapse(collapse)
-        self.es_query = CollapseQuery(index=self.es_index, other=self.es_query)
         self.es_query.add_collapse(collapse)
 
     def set_metadata_config(self, how):
@@ -173,12 +172,7 @@ class Query(object):
         """Devuelve la periodicidad de la o las series pedidas. Si son
         muchas devuelve el intervalo de tiempo colapsado
         """
-        if hasattr(self.es_query, 'collapse_interval'):
-            # noinspection PyUnresolvedReferences
-            return self.es_query.collapse_interval
-        else:
-            periodicity = self.series_models[0].distribution.periodicity
-            return get_periodicity_human_format(periodicity)
+        return self.es_query.periodicity
 
     def sort(self, how):
         return self.es_query.sort(how)
@@ -226,6 +220,3 @@ class Query(object):
                 field.pop(meta_field)
 
         return meta
-
-    def has_collapse(self):
-        return self.es_query.has_collapse()

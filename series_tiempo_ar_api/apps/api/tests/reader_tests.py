@@ -10,7 +10,7 @@ from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
-from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
+from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer, DistributionIndexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import Scraper
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
@@ -64,7 +64,7 @@ class IndexerTests(TestCase):
         distribution = Distribution.objects.get(identifier="212.1")
         fields = distribution.field_set.all()
         fields = {field.title: field.series_id for field in fields}
-        df = Indexer.init_df(distribution, fields)
+        df = DistributionIndexer.init_df(distribution, fields)
 
         for field in fields:
             self.assertTrue(field in df.columns)
@@ -72,7 +72,7 @@ class IndexerTests(TestCase):
     def test_indexing(self):
         self._index_catalog('full_ts_data.json')
 
-        results = Search(using=ElasticInstance.get(),
+        results = Search(using=self.elastic,
                          index=self.test_index).execute()
         self.assertTrue(len(results))
 

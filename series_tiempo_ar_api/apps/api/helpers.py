@@ -38,6 +38,7 @@ def freq_pandas_to_interval(freq):
         'QS': 'quarter',
         'QS-JAN': 'quarter',
         'MS': 'month',
+        'W-SUN': 'week',
         'D': 'day'
     }
 

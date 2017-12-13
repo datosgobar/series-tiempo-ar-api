@@ -1,6 +1,6 @@
 #! coding: utf-8
 from django.conf import settings
-from elasticsearch_dsl import Search, MultiSearch
+from elasticsearch_dsl import Search, MultiSearch, Q
 from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.helpers import get_relative_delta, find_index
@@ -48,6 +48,8 @@ class BaseQuery(object):
 
         for serie in self.series:
             search = serie.search
+            search = search.filter('bool',
+                                   must=[Q('match', interval=self.periodicity)])
             multi_search = multi_search.add(search)
             if serie.collapse_agg == constants.AGG_END_OF_PERIOD:
                 self.has_end_of_period = True
@@ -63,7 +65,9 @@ class BaseQuery(object):
     def _init_series(self, series_id, rep_mode, collapse_agg):
         search = Search(using=self.elastic, index=self.index)
         # Filtra los resultados por la serie pedida
-        search = search.filter('match', series_id=series_id)
+        search = search.filter('bool',
+                               must=[Q('match', series_id=series_id),
+                                     Q('match', aggregation=collapse_agg)])
         self.series.append(Series(series_id=series_id,
                                   rep_mode=rep_mode,
                                   search=search,
@@ -200,9 +204,6 @@ class BaseQuery(object):
         raise NotImplementedError
 
     def add_collapse(self, interval):
-        raise NotImplementedError
-
-    def has_collapse(self):
         raise NotImplementedError
 
     def sort(self, how):
