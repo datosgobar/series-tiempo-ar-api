@@ -66,6 +66,9 @@ class DistributionIndexer:
         df = self.init_df(distribution, fields)
         result = list(df.apply(operations.process_column, args=(self.index,)))
 
+        if not result:  # Distribución sin series cargadas
+            return
+
         # List flatten
         actions = reduce(lambda x, y: x + y, result)
 
