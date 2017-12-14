@@ -246,8 +246,20 @@ class IdsField(BaseOperation):
         if not rep_mode:
             rep_mode = default_rep_mode
 
+        if rep_mode not in constants.REP_MODES:
+            error = strings.INVALID_PARAMETER.format(constants.PARAM_REP_MODE,
+                                                     rep_mode)
+            self._append_error(error)
+            return
+
         if not collapse_agg:
             collapse_agg = default_agg
+
+        if collapse_agg not in constants.AGGREGATIONS:
+            error = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE_AGG,
+                                                     collapse_agg)
+            self._append_error(error)
+            return
 
         if self.errors:
             return
@@ -258,13 +270,13 @@ class IdsField(BaseOperation):
             return
 
     def add_series(self, query, series_id, rep_mode, collapse_agg):
-        field_model = self._get_model(series_id, rep_mode)
+        field_model = self._get_model(series_id)
         if not field_model:
             return
 
         query.add_series(series_id, field_model, rep_mode, collapse_agg)
 
-    def _get_model(self, series_id, rep_mode):
+    def _get_model(self, series_id):
         """Valida si el 'series_id' es válido, es decir, si la serie
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
@@ -272,12 +284,6 @@ class IdsField(BaseOperation):
         field_model = Field.objects.filter(series_id=series_id)
         if not field_model:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
-            return
-
-        if rep_mode not in constants.REP_MODES:
-            error = strings.INVALID_PARAMETER.format(constants.PARAM_REP_MODE,
-                                                     rep_mode)
-            self._append_error(error)
             return
 
         return field_model[0]
