@@ -18,6 +18,7 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
     - [`format`](#format)
     - [`header`](#header)
     - [`sort`](#sort)
+    - [`metadata`](#metadata)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -107,6 +108,13 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
         <td>Uno de: <em>asc, desc</em></td>
         <td>asc</td>
         <td>sort=desc</td>
+    </tr>
+    <tr>
+        <td>metadata</td>
+        <td>No</td>
+        <td>Uno de: <em>none, simple, full, only</em></td>
+        <td>simple</td>
+        <td>metadata=none</td>
     </tr>
 </table>
 
@@ -248,7 +256,7 @@ Especifica los atributos de las series a utilizar como *headers* (cabeceras) de 
 
 Las opciones disponibles son:
 
-* *titles*: Títulos de las series, por ejemplo **oferta_global_pib**.
+* *titles*: Títulos de las series, por ejemplo **oferta_global_pib** (default).
 * *ids*: Identificadores únicos de las series, los mismos pasados al parámetro `ids`.
 * *descriptions*: Descripciones completas de las series, por ejemplo **Plazo fijo entre 60-89 días en millones de pesos. Categoría II-VI**
 
@@ -258,8 +266,19 @@ Especifica el orden temporal de los resultados devueltos, siendo *asc* el valor 
 
 Las opciones disponibles son:
 
-* *asc*: se devuelven los valores más antiguos primero (default).
-* *desc*: se devuelven los valores más recientes primero.
+* *asc*: Se devuelven los valores más antiguos primero (default).
+* *desc*: Se devuelven los valores más recientes primero.
+
+### `metadata`
+
+Especifica el nivel de detalle de metadatos requerido por el usuario, siendo *simple* el valor por defecto. Sólo aplica cuando `format=json`.
+
+Las opciones disponibles son:
+
+* *none*: No se devuelven metadatos, sólo datos.
+* *only*: No se devuelven datos, sólo metadatos.
+* *simple*: Se devuelven los metadatos más importantes para comprender y utilizar las series (default).
+* *full*: Se devuelven todos los metadatos disponibles que tengan relación con cada serie.
 
 
 
