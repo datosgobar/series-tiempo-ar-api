@@ -49,6 +49,7 @@ class QueryTest(TestCase):
     def test_pagination_limit(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(self.start, self.max_limit)
+        self.query.sort(how='asc')
         data = self.query.run()
         self.assertEqual(len(data), self.max_limit - self.start)
 
@@ -230,6 +231,7 @@ class QueryTest(TestCase):
         diferencia con su anterior"""
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_collapse(interval='year')
+        self.query.sort(how='asc')
         data = self.query.run()
         prev_timestamp = None
         for row in data:
@@ -245,6 +247,7 @@ class QueryTest(TestCase):
     def test_collapse_custom_params(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_collapse(interval='quarter')
+        self.query.sort(how='asc')
         data = self.query.run()
         prev_timestamp = None
         for row in data:
@@ -262,6 +265,7 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_collapse(interval='quarter')
         self.query.add_collapse(interval='year')
+        self.query.sort(how='asc')
         data = self.query.run()
 
         prev_timestamp = None
@@ -333,7 +337,7 @@ class QueryTest(TestCase):
                               self.series_periodicity,
                               'end_of_period')
         self.query.add_collapse('year')
-        self.query.add_filter(start="1970")
+        self.query.sort('asc')
         data = self.query.run()
 
         orig_eop = ESQuery(index=settings.TEST_INDEX)
@@ -341,8 +345,8 @@ class QueryTest(TestCase):
                             self.rep_mode,
                             self.series_periodicity,
                             'end_of_period')
-        orig_eop.add_filter(start="1970")
         orig_eop.add_collapse('year')
+        orig_eop.sort('asc')
         end_of_period = orig_eop.run()
 
         for i, row in enumerate(data[1:], 1):  # El primero es nulo en pct change

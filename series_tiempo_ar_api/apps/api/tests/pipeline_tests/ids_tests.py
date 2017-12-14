@@ -60,7 +60,7 @@ class IdsTest(TestCase):
 
         for index, row in enumerate(other_data[1:], start=1):
             change = data[index][1] - data[index - 1][1]
-            self.assertEqual(row[1], change)
+            self.assertAlmostEqual(row[1], change, places=6)
 
     def test_multiple_series(self):
         self.cmd.run(self.query, {'ids': self.multi_series})

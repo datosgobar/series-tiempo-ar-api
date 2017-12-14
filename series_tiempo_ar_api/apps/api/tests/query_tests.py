@@ -80,7 +80,7 @@ class QueryTests(TestCase):
         self.query.add_series(day_series_name, field)
 
         self.query.add_collapse(collapse='week')
-
+        self.query.sort(how='asc')
         data = self.query.run()['data']
 
         first_date = iso8601.parse_date(data[0][0])

@@ -92,7 +92,7 @@ def process_column(col, index):
 
     actions = []
     # Lista de intervalos temporales de pandas EN ORDEN
-    periods = ['AS-JAN', 'QS-JAN', 'MS', 'W-SUN', 'D']
+    periods = ['AS-JAN', '6M', 'QS-JAN', 'MS', 'W-SUN', 'D']
     for period in periods:
         if freq == period:
             break
