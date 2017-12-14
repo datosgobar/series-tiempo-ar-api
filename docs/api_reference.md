@@ -97,8 +97,8 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
     <tr>
         <td>header</td>
         <td>No</td>
-        <td>Uno de: <em>names, ids</em></td>
-        <td>names</td>
+        <td>Uno de: <em>titles, ids, descriptions</em></td>
+        <td>titles</td>
         <td>header=ids</td>
     </tr>
     <tr>
@@ -244,12 +244,13 @@ Las opciones disponibles son:
 
 ### `header`
 
-Especifica los atributos de las series a utilizar como *headers* (cabeceras) de las columnas del archivo CSV generado. Por defecto usa *names*, que son los títulos de las series.
+Especifica los atributos de las series a utilizar como *headers* (cabeceras) de las columnas del archivo CSV generado. Por defecto usa *titles*, que son los títulos de las series.
 
 Las opciones disponibles son:
 
-* *names*: títulos de las series, por ejemplo **oferta_global_pib**.
-* *ids*: identificadores únicos de las series, los mismos pasados al parámetro `ids`.
+* *titles*: Títulos de las series, por ejemplo **oferta_global_pib**.
+* *ids*: Identificadores únicos de las series, los mismos pasados al parámetro `ids`.
+* *descriptions*: Descripciones completas de las series, por ejemplo **Plazo fijo entre 60-89 días en millones de pesos. Categoría II-VI**
 
 ### `sort`
 
