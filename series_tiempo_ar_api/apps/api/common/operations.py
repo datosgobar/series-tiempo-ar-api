@@ -98,21 +98,21 @@ def process_column(col, index):
             break
 
         # Promedio
-        avg_col = col.groupby(pd.TimeGrouper(period)).apply(lambda x: x.mean())
+        avg_col = col.groupby(pd.Grouper(freq=period)).apply(lambda x: x.mean())
         avg_df = generate_interval_transformations_df(avg_col, period)
         actions.extend(list(avg_df.apply(elastic_index,
                                          axis='columns',
                                          args=(index, series_id, period, 'avg'))))
 
         # Suma
-        sum_col = col.groupby(pd.TimeGrouper(period)).apply(sum)
+        sum_col = col.groupby(pd.Grouper(freq=period)).apply(sum)
         sum_df = generate_interval_transformations_df(sum_col, period)
         actions.extend(list(sum_df.apply(elastic_index,
                                          axis='columns',
                                          args=(index, series_id, period, 'sum'))))
 
         # End of period
-        eop_col = col.groupby(pd.TimeGrouper(period)).apply(end_of_period)
+        eop_col = col.groupby(pd.Grouper(freq=period)).apply(end_of_period)
         eop_df = generate_interval_transformations_df(eop_col, period)
         actions.extend(list(eop_df.apply(elastic_index,
                                          axis='columns',
