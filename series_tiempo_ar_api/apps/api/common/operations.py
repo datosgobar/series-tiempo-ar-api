@@ -94,36 +94,30 @@ def process_column(col, index):
     # Lista de intervalos temporales de pandas EN ORDEN
     periods = ['AS-JAN', '6M', 'QS-JAN', 'MS', 'W-SUN', 'D']
     for period in periods:
+        # Promedio
+        avg = index_transform(col, lambda x: x.mean(), index, series_id, period, 'avg')
+        actions.extend(avg.values.flatten())
+
         if freq == period:
             break
 
-        # Promedio
-        avg_col = col.groupby(pd.Grouper(freq=period)).apply(lambda x: x.mean())
-        avg_df = generate_interval_transformations_df(avg_col, period)
-        actions.extend(list(avg_df.apply(elastic_index,
-                                         axis='columns',
-                                         args=(index, series_id, period, 'avg'))))
-
         # Suma
-        sum_col = col.groupby(pd.Grouper(freq=period)).apply(sum)
-        sum_df = generate_interval_transformations_df(sum_col, period)
-        actions.extend(list(sum_df.apply(elastic_index,
-                                         axis='columns',
-                                         args=(index, series_id, period, 'sum'))))
+        _sum = index_transform(col, sum, index, series_id, period, 'avg')
+        actions.extend(_sum.values.flatten())
 
         # End of period
-        eop_col = col.groupby(pd.Grouper(freq=period)).apply(end_of_period)
-        eop_df = generate_interval_transformations_df(eop_col, period)
-        actions.extend(list(eop_df.apply(elastic_index,
-                                         axis='columns',
-                                         args=(index, series_id, period, 'end_of_period'))))
+        eop = index_transform(col, end_of_period, index, series_id, period, 'end_of_period')
+        actions.extend(eop.values.flatten())
 
-    # Valor directo, "asignado" como promedio de un único valor
-    transformations = generate_interval_transformations_df(col, freq)
-    actions.extend(list(transformations.apply(elastic_index,
-                                              axis='columns',
-                                              args=(index, series_id, freq, 'avg'))))
     return actions
+
+
+def index_transform(col, transform_function, index, series_id, interval, name):
+    transform_col = col.groupby(pd.Grouper(freq=interval)).apply(transform_function)
+    transform_df = generate_interval_transformations_df(transform_col, interval)
+    return transform_df.apply(elastic_index,
+                              axis='columns',
+                              args=(index, series_id, interval, name))
 
 
 def end_of_period(x):

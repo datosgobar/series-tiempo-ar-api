@@ -64,13 +64,13 @@ class DistributionIndexer:
         fields = distribution.field_set.all()
         fields = {field.title: field.series_id for field in fields}
         df = self.init_df(distribution, fields)
-        result = list(df.apply(operations.process_column, args=(self.index,)))
+        result = df.apply(operations.process_column, args=(self.index,)).values.flatten()
 
-        if not result:  # Distribución sin series cargadas
+        if not len(result):  # Distribución sin series cargadas
             return
 
-        # List flatten
-        actions = reduce(lambda x, y: x + y, result)
+        # List flatten: si el resultado son múltiples listas las junto en una sola
+        actions = reduce(lambda x, y: x + y, result) if type(result[0]) == list else result
 
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
