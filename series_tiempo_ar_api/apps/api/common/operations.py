@@ -102,7 +102,7 @@ def process_column(col, index):
             break
 
         # Suma
-        _sum = index_transform(col, sum, index, series_id, period, 'avg')
+        _sum = index_transform(col, sum, index, series_id, period, 'sum')
         actions.extend(_sum.values.flatten())
 
         # End of period
