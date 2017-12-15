@@ -56,7 +56,8 @@ class BaseQuery(object):
 
         responses = multi_search.execute()
         self._format_response(responses)
-        return self.data
+        # Devuelvo hasta LIMIT values
+        return self.data[:self.args[constants.PARAM_LIMIT]]
 
     def add_series(self, series_id, rep_mode, periodicity,
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):

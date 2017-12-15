@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
-from series_tiempo_ar_api.apps.api.exceptions import QueryError, EndOfPeriodError
+from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery
 from .helpers import get_series_id
@@ -162,23 +162,16 @@ class QueryTest(TestCase):
                               self.rep_mode,
                               self.series_periodicity)
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-
+        self.query.add_filter(start="1910", end="1920")
         self.query.sort('asc')
 
         query = ESQuery(index=settings.TEST_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.add_filter(start="1921")  # Garantiza datos vacíos entre 1920-1921
+        query.add_pagination(start=0, limit=1000)
         query.sort('asc')
-        first_date = query.run()[0][0]
 
-        query = ESQuery(index=settings.TEST_INDEX)
-        query.add_series(self.delayed_series, self.rep_mode, self.series_periodicity)
-        query.sort('asc')
-        last_date = query.run()[-1][0]
-
-        self.query.sort('asc')
         data = self.query.run()
-        self.assertEqual(data[0][0], first_date)
-        self.assertEqual(data[-1][0], last_date)
         current_date = iso8601.parse_date(data[0][0])
         for row in data[1:]:
             row_date = iso8601.parse_date(row[0])
@@ -354,3 +347,16 @@ class QueryTest(TestCase):
 
             self.assertAlmostEqual(value, row[1])
 
+    def test_multiple_series_limit(self):
+        limit = 100
+        self.query.add_series(get_series_id('day'),
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.add_series(settings.TEST_SERIES_NAME_DELAYED.format('day'),
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.add_pagination(start=0, limit=limit)
+        self.query.sort('asc')
+
+        data = self.query.run()
+        self.assertEqual(len(data), limit)

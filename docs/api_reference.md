@@ -7,17 +7,18 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
  
 
 - [Tabla de parámetros](#tabla-de-parametros)
-  - [`ids`](#ids)
-  - [`representation_mode`](#representation_mode)
-  - [`collapse`](#collapse)
-  - [`collapse_aggregation`](#collapse_aggregation)
-  - [`limit`](#limit)
-  - [`start`](#start)
-  - [`start_date`](#start_date)
-  - [`end_date`](#end_date)
-  - [`format`](#format)
-  - [`header`](#header)
-  - [`sort`](#sort)
+    - [`ids`](#ids)
+    - [`representation_mode`](#representation_mode)
+    - [`collapse`](#collapse)
+    - [`collapse_aggregation`](#collapse_aggregation)
+    - [`limit`](#limit)
+    - [`start`](#start)
+    - [`start_date`](#start_date)
+    - [`end_date`](#end_date)
+    - [`format`](#format)
+    - [`header`](#header)
+    - [`sort`](#sort)
+    - [`metadata`](#metadata)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -97,8 +98,8 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
     <tr>
         <td>header</td>
         <td>No</td>
-        <td>Uno de: <em>names, ids</em></td>
-        <td>names</td>
+        <td>Uno de: <em>titles, ids, descriptions</em></td>
+        <td>titles</td>
         <td>header=ids</td>
     </tr>
     <tr>
@@ -107,6 +108,13 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
         <td>Uno de: <em>asc, desc</em></td>
         <td>asc</td>
         <td>sort=desc</td>
+    </tr>
+    <tr>
+        <td>metadata</td>
+        <td>No</td>
+        <td>Uno de: <em>none, simple, full, only</em></td>
+        <td>simple</td>
+        <td>metadata=none</td>
     </tr>
 </table>
 
@@ -149,9 +157,16 @@ Los modos de representación disponibles son:
 Las funciones de transformación disponibles en [`representation_mode`](#representation_mode) también pueden especificarse para **series individuales** usando la notación `:percent_change` junto al id de la serie:
 
 ```md
-/series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
-/series/?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
 ```
+[Descargar](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+)
+
+```md
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+```
+[Descargar](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
+)
 
 El parámetro [`representation_mode`](#representation_mode) seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.
 
@@ -195,9 +210,16 @@ Los valores disponibles para el parámetro son:
 Las funciones de agregación temporal disponibles en [`collapse_aggregation`](#collapse_aggregation) también pueden especificarse para **series individuales** usando la notación `:sum` junto al id de la serie:
 
 ```md
-/series/?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
-/series/?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
 ```
+[Descargar](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+)
+
+```md
+http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+```
+[Descargar](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010
+)
 
 El parámetro [`collapse_aggregation`](#collapse_aggregation) seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.
 
@@ -230,12 +252,13 @@ Las opciones disponibles son:
 
 ### `header`
 
-Especifica los atributos de las series a utilizar como *headers* (cabeceras) de las columnas del archivo CSV generado. Por defecto usa *names*, que son los títulos de las series.
+Especifica los atributos de las series a utilizar como *headers* (cabeceras) de las columnas del archivo CSV generado. Por defecto usa *titles*, que son los títulos de las series.
 
 Las opciones disponibles son:
 
-* *names*: títulos de las series, por ejemplo **oferta_global_pib**.
-* *ids*: identificadores únicos de las series, los mismos pasados al parámetro `ids`.
+* *titles*: Títulos de las series, por ejemplo **oferta_global_pib** (default).
+* *ids*: Identificadores únicos de las series, los mismos pasados al parámetro `ids`.
+* *descriptions*: Descripciones completas de las series, por ejemplo **Plazo fijo entre 60-89 días en millones de pesos. Categoría II-VI**
 
 ### `sort`
 
@@ -243,8 +266,19 @@ Especifica el orden temporal de los resultados devueltos, siendo *asc* el valor 
 
 Las opciones disponibles son:
 
-* *asc*: se devuelven los valores más antiguos primero (default).
-* *desc*: se devuelven los valores más recientes primero.
+* *asc*: Se devuelven los valores más antiguos primero (default).
+* *desc*: Se devuelven los valores más recientes primero.
+
+### `metadata`
+
+Especifica el nivel de detalle de metadatos requerido por el usuario, siendo *simple* el valor por defecto. Sólo aplica cuando `format=json`.
+
+Las opciones disponibles son:
+
+* *none*: No se devuelven metadatos, sólo datos.
+* *only*: No se devuelven datos, sólo metadatos.
+* *simple*: Se devuelven los metadatos más importantes para comprender y utilizar las series (default).
+* *full*: Se devuelven todos los metadatos disponibles que tengan relación con cada serie.
 
 
 
