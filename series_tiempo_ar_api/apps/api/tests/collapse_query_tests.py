@@ -302,3 +302,9 @@ class CollapseQueryTests(TestCase):
             value = end_of_period[i][1] / end_of_period[i - 1][1] - 1
 
             self.assertAlmostEqual(value, row[1])
+
+    def test_empty_collapse(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_filter(start='2200-01-01')  # Garantizo que no haya resultados
+        data = self.query.run()
+        self.assertEqual(len(data), 0)

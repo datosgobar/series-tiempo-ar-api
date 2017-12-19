@@ -157,10 +157,11 @@ class CollapseQuery(BaseQuery):
             'year': 'AS'
         }
         freq = translation[self.collapse_interval]
-        index = pd.date_range(self.data[0][0], self.data[-1][0],
-                              freq=freq)
-        df = df[df.columns[1:]]  # Index 0 == fecha, nuestras columnas de datos son de 1 en adelante
-        df = df.set_index(index)
+        if self.data:
+            index = pd.date_range(self.data[0][0], self.data[-1][0],
+                                  freq=freq)
+            df = df[df.columns[1:]]  # Index 0 == fecha, nuestras columnas de datos son de 1 en adelante
+            df = df.set_index(index)
         return df, freq
 
     @staticmethod
