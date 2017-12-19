@@ -92,7 +92,7 @@ def process_column(col, index):
 
     actions = []
     # Lista de intervalos temporales de pandas EN ORDEN
-    periods = ['AS-JAN', '6M', 'QS-JAN', 'MS', 'W-SUN', 'D']
+    periods = ['AS-JAN', '6M', 'QS-JAN', 'MS', '7D', 'D']
     for period in periods:
         # Promedio
         avg = index_transform(col, lambda x: x.mean(), index, series_id, period, 'avg')
@@ -113,7 +113,7 @@ def process_column(col, index):
 
 
 def index_transform(col, transform_function, index, series_id, interval, name):
-    transform_col = col.groupby(pd.Grouper(freq=interval)).apply(transform_function)
+    transform_col = col.resample(interval).apply(transform_function)
     transform_df = generate_interval_transformations_df(transform_col, interval)
     return transform_df.apply(elastic_index,
                               axis='columns',

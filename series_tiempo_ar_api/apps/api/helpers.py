@@ -40,7 +40,7 @@ def freq_pandas_to_interval(freq):
         'QS': 'quarter',
         'QS-JAN': 'quarter',
         'MS': 'month',
-        'W-SUN': 'week',
+        '7D': 'week',
         'D': 'day'
     }
 
@@ -53,7 +53,7 @@ def interval_to_freq_pandas(freq):
         'semester': '6M',
         'quarter': 'QS',
         'month': 'MS',
-        'week': 'W-SUN',
+        'week': '7D',
         'day': 'D'
     }
 
