@@ -64,4 +64,3 @@ class ESQuery(BaseQuery):
 
     def add_collapse(self, interval):
         self.periodicity = interval
-

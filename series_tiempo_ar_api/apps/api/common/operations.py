@@ -80,9 +80,10 @@ def pct_change_a_year_ago(col, freq):
 
 
 def process_column(col, index):
-    """Procesa una columna del DataFrame: calcula los valores de
-    diferencias, porcentuales y anuales, los guarda en un DataFrame
-    y luego indexa los valores fila por fila"""
+    """Procesa una columna de la serie, calculando los valores de todas las
+    transformaciones posibles para todos los intervalos de tiempo. Devuelve
+    la lista de acciones (dicts) a indexar en Elasticsearch
+    """
 
     # Filtro de valores nulos iniciales/finales
     col = col[col.first_valid_index():col.last_valid_index()]
@@ -124,7 +125,7 @@ def end_of_period(x):
     """Itera hasta encontrarse con el último valor no nulo del data frame"""
     value = np.nan
     i = -1
-    while np.isnan(value):
+    while np.isnan(value) and -i <= len(x):
         value = x.iloc[i]
         i -= 1
     return value
