@@ -275,4 +275,9 @@ RQ_QUEUES = {
         'DB': DEFAULT_REDIS_DB,
         'DEFAULT_TIMEOUT': 3600,
     },
+    'indexing': {
+        'HOST': DEFAULT_REDIS_HOST,
+        'PORT': DEFAULT_REDIS_PORT,
+        'DB': DEFAULT_REDIS_DB,
+    },
 }

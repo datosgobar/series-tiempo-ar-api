@@ -114,8 +114,8 @@ class IndexerTests(TestCase):
         distributions = get_time_series_distributions(catalog)
         db_loader = DatabaseLoader(read_local=True)
         db_loader.run(catalog, CATALOG_ID, distributions)
-        Indexer(index=self.test_index). \
-            run(distributions=db_loader.distribution_models)
+        for distribution in db_loader.distribution_models:
+            DistributionIndexer(index=self.test_index).run(distribution)
 
 
 class DatabaseLoaderTests(TestCase):

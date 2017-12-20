@@ -6,6 +6,7 @@ import pandas as pd
 from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
+from django_rq import job
 
 from series_tiempo_ar_api.apps.api.common import operations
 from series_tiempo_ar_api.apps.api.models import Distribution
@@ -38,12 +39,7 @@ class Indexer(object):
         logger.info(strings.INDEX_START)
 
         for distribution in distributions:
-            DistributionIndexer(index=self.index).run(distribution)
-
-        # Fuerzo a que los datos estén disponibles para queries inmediatamente
-        segments = constants.FORCE_MERGE_SEGMENTS
-        self.elastic.indices.forcemerge(index=self.index,
-                                        max_num_segments=segments)
+            index_distribution.delay(self.index, distribution.id)
 
         logger.info(strings.INDEX_END)
 
@@ -51,6 +47,13 @@ class Indexer(object):
         if not self.elastic.indices.exists(self.index):
             self.elastic.indices.create(self.index,
                                         body=constants.INDEX_CREATION_BODY)
+
+
+@job('indexing')
+def index_distribution(index, distribution_id):
+    distribution = Distribution.objects.get(id=distribution_id)
+
+    DistributionIndexer(index=index).run(distribution)
 
 
 class DistributionIndexer:
@@ -77,6 +80,11 @@ class DistributionIndexer:
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
                 logger.warn(strings.BULK_REQUEST_ERROR, info)
+
+        # Fuerzo a que los datos estén disponibles para queries inmediatamente
+        segments = constants.FORCE_MERGE_SEGMENTS
+        self.elastic.indices.forcemerge(index=self.index,
+                                        max_num_segments=segments)
 
     @staticmethod
     def init_df(distribution, fields):
