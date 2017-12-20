@@ -360,3 +360,15 @@ class QueryTest(TestCase):
 
         data = self.query.run()
         self.assertEqual(len(data), limit)
+
+    def test_aggregation_on_yearly_series(self):
+        """Esperado: Valores de la serie con y sin agregación son iguales, no
+        hay valores que colapsar"""
+        year_series = get_series_id('year')
+        self.query.add_series(year_series, self.rep_mode, 'year')
+        self.query.add_series(year_series, self.rep_mode, 'year', 'end_of_period')
+
+        data = self.query.run()
+
+        for row in data:
+            self.assertEqual(row[1], row[2])

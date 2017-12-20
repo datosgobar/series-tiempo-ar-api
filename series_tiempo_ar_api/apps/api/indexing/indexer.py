@@ -83,8 +83,7 @@ class DistributionIndexer:
 
         # Fuerzo a que los datos estén disponibles para queries inmediatamente
         segments = constants.FORCE_MERGE_SEGMENTS
-        self.elastic.indices.forcemerge(index=self.index,
-                                        max_num_segments=segments)
+        self.elastic.indices.forcemerge(index=self.index, params={'max_num_segments': segments})
 
     @staticmethod
     def init_df(distribution, fields):

@@ -13,6 +13,11 @@ class ESQuery(BaseQuery):
 
     def add_series(self, series_id, rep_mode, periodicity,
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
+        # Fix a casos en donde collapse agg no es avg pero los valores serían iguales a avg
+        # Estos valores no son indexados! Entonces seteamos la aggregation a avg manualmente
+        if periodicity == constants.COLLAPSE_INTERVALS[-1]:
+            collapse_agg = constants.AGG_DEFAULT
+
         self._init_series(series_id, rep_mode, collapse_agg)
         self.periodicity = periodicity
 
