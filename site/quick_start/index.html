@@ -81,6 +81,11 @@
           
             <li class="toctree-l1">
 		
+    <a class="" href="../spreadsheet_integration/">Integración con planillas de cálculo</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
     <a class="" href="../api_reference/">Referencia API</a>
 	    </li>
           
@@ -124,58 +129,69 @@
 <ul>
 <li><a href="#descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</a></li>
 <li><a href="#filtrar-por-fechas">Filtrar por fechas</a></li>
-<li><a href="#cambiar-la-agregaci%C3%B3n-temporal">Cambiar la agregación temporal</a></li>
-<li><a href="#cambiar-la-funci%C3%B3n-de-agregaci%C3%B3n-temporal">Cambiar la función de agregación temporal</a></li>
+<li><a href="#cambiar-la-agregacion-temporal">Cambiar la agregación temporal</a></li>
+<li><a href="#cambiar-la-funcion-de-agregaci%C3%B3n-temporal">Cambiar la función de agregación temporal</a></li>
 <li><a href="#aplicar-transformaciones">Aplicar transformaciones</a></li>
-<li><a href="#aplicar-transformaciones-y-cambiar-la-funci%C3%B3n-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</a></li>
+<li><a href="#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 <h2 id="descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</h2>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15&amp;format=csv
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15&amp;format=csv
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15&amp;format=csv">Descargar</a></p>
 <h2 id="filtrar-por-fechas">Filtrar por fechas</h2>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01">Descargar</a></p>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general hasta Diciembre de 2016</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;end_date=2016-12-01
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;end_date=2016-12-01
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;end_date=2016-12-01">Descargar</a></p>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, hasta Diciembre de 2016</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01&amp;end_date=2016-12-01
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01&amp;end_date=2016-12-01
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01&amp;end_date=2016-12-01">Descargar</a></p>
 <h2 id="cambiar-la-agregacion-temporal">Cambiar la agregación temporal</h2>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter">Descargar</a></p>
 <h2 id="cambiar-la-funcion-de-agregacion-temporal">Cambiar la función de agregación temporal</h2>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales a último valor del período</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter&amp;collapse_aggregation=end_of_period
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter&amp;collapse_aggregation=end_of_period
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter&amp;collapse_aggregation=end_of_period">Descargar</a></p>
 <p><em>Tipo de cambio (último valor del período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter">Descargar</a></p>
 <h2 id="aplicar-transformaciones">Aplicar transformaciones</h2>
 <p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, en valores mensuales y variación porcentual</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change">Descargar</a></p>
 <p><em>Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01
 </code></pre>
 
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01">Descargar</a></p>
 <h2 id="aplicar-transformaciones-y-cambiar-la-funcion-de-agregacion-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</h2>
 <p><em>Tipo de cambio (variaciones porcentuales entre los últimos valores de cada período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
-<pre><code>/series/?ids=138.1_PAPDE_0_M_41:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
+<pre><code class="md">http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter
 </code></pre>
+
+<p><a href="http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter">Descargar</a></p>
               
             </div>
           </div>
@@ -183,7 +199,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../api_reference/" class="btn btn-neutral float-right" title="Referencia API">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../spreadsheet_integration/" class="btn btn-neutral float-right" title="Integración con planillas de cálculo">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href=".." class="btn btn-neutral" title="Inicio"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -215,7 +231,7 @@
         <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../api_reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../spreadsheet_integration/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
