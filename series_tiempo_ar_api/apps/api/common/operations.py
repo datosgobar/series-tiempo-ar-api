@@ -2,6 +2,8 @@
 
 """Operaciones de cálculos de variaciones absolutas y porcentuales anuales"""
 
+from calendar import monthrange
+
 import pandas as pd
 import numpy as np
 from dateutil.relativedelta import relativedelta
@@ -29,7 +31,7 @@ def year_ago_column(col, freq, operation):
     un año antes. Devuelve una nueva serie de pandas.
     """
     array = []
-    offset = freq_pandas_to_index_offset(freq) or 0
+    offset = freq_pandas_to_index_offset(freq.freqstr) or 0
     if offset:
         values = col.values
         array = operation(values[offset:], values[:-offset])
@@ -88,37 +90,87 @@ def process_column(col, index):
     # Filtro de valores nulos iniciales/finales
     col = col[col.first_valid_index():col.last_valid_index()]
 
-    freq = col.index.freq.freqstr
+    orig_freq = col.index.freq
     series_id = col.name
 
     actions = []
     # Lista de intervalos temporales de pandas EN ORDEN
-    periods = ['AS-JAN', '6M', 'QS-JAN', 'MS', '7D', 'D']
-    for period in periods:
+    freqs = constants.PANDAS_FREQS
+    for freq in freqs:
         # Promedio
-        avg = index_transform(col, lambda x: x.mean(), index, series_id, period, 'avg')
+        avg = index_transform(col, lambda x: x.mean(), index, series_id, freq, 'avg')
         actions.extend(avg.values.flatten())
 
-        if freq == period:
+        if orig_freq == freq:
             break
 
         # Suma
-        _sum = index_transform(col, sum, index, series_id, period, 'sum')
+        _sum = index_transform(col, sum, index, series_id, freq, 'sum')
         actions.extend(_sum.values.flatten())
 
         # End of period
-        eop = index_transform(col, end_of_period, index, series_id, period, 'end_of_period')
+        eop = index_transform(col, end_of_period, index, series_id, freq, 'end_of_period')
         actions.extend(eop.values.flatten())
 
     return actions
 
 
-def index_transform(col, transform_function, index, series_id, interval, name):
-    transform_col = col.resample(interval).apply(transform_function)
-    transform_df = generate_interval_transformations_df(transform_col, interval)
-    return transform_df.apply(elastic_index,
-                              axis='columns',
-                              args=(index, series_id, interval, name))
+def index_transform(col, transform_function, index, series_id, freq, name):
+    transform_col = col.resample(freq).apply(transform_function)
+    transform_df = generate_interval_transformations_df(transform_col, freq)
+    result = transform_df.apply(elastic_index,
+                                axis='columns',
+                                args=(index, series_id, freq, name))
+
+    handle_last_value(col, freq, result)
+
+    return result
+
+
+def handle_last_value(col, target_freq, result):
+    """Borra el último valor a indexar si este no cumple con un intervalo completo de collapse
+    Se considera intervalo completo al que tenga todos los valores posibles del intervalo
+    target, ej: un collapse mensual -> anual debe tener valores para los 12 meses del año
+    """
+    last = col.index[-1]
+    orig_freq = col.index.freq
+    result_last = result.index[-1]
+    if orig_freq == constants.PANDAS_QUARTER:
+        # Colapso quarter -> year: debe estar presente el último quarter (mes 10)
+        if target_freq == constants.PANDAS_YEAR and last.month != 10:
+            handle_incomplete_value(result)
+
+    elif orig_freq == constants.PANDAS_MONTH:
+        if target_freq == constants.PANDAS_YEAR and last.month != 12:
+            # Colapso month -> year: debe estar presente el último mes (12)
+            handle_incomplete_value(result)
+        elif target_freq == constants.PANDAS_QUARTER:
+            # Colapso month -> quarter: debe estar presente el último mes del quarter
+            # Ese mes se puede calcular como quarter * 3 (03, 06, 09, 12)
+            if last.month != result_last.quarter * 3:
+                handle_incomplete_value(result)
+
+    elif orig_freq == constants.PANDAS_DAY:
+        if target_freq == constants.PANDAS_YEAR:
+            # Colapso day -> year: debe haber valores hasta el 31/12
+            if last.month != 12 or last.day != 31:
+                handle_incomplete_value(result)
+
+        elif target_freq == constants.PANDAS_QUARTER:
+            # Colapso day -> quarter: debe haber valores hasta 31/03, 30/06, 30/09 o 31/12
+            # El último mes del quarter se puede calcular como quarter * 3
+            _, last_day = monthrange(result_last.year, result_last.quarter * 3)
+            if last.day != last_day or last.month != result_last.quarter * 3:
+                handle_incomplete_value(result)
+        elif target_freq == constants.PANDAS_MONTH:
+            # Colapso day -> month: debe haber valores hasta el último día del mes
+            _, last_day = monthrange(result_last.year, result_last.month)
+            if last.day != last_day:
+                handle_incomplete_value(result)
+
+
+def handle_incomplete_value(col):
+    del col[col.index[-1]]
 
 
 def end_of_period(x):
@@ -141,7 +193,7 @@ def generate_interval_transformations_df(col, freq):
     return df
 
 
-def elastic_index(row, index, series_id, interval, agg):
+def elastic_index(row, index, series_id, freq, agg):
     """Arma el JSON entendible por el bulk request de ES y lo
     agrega a la lista de bulk_actions
 
@@ -153,7 +205,7 @@ def elastic_index(row, index, series_id, interval, agg):
     # Borrado de la parte de tiempo del timestamp
     timestamp = str(row.name)
     timestamp = timestamp[:timestamp.find('T')]
-    interval = freq_pandas_to_interval(interval)
+    freq = freq_pandas_to_interval(freq.freqstr)
     action = {
         "_index": index,
         "_type": settings.TS_DOC_TYPE,
@@ -164,7 +216,7 @@ def elastic_index(row, index, series_id, interval, agg):
     source = {
         settings.TS_TIME_INDEX_FIELD: timestamp,
         'series_id': series_id,
-        "interval": interval,
+        "interval": freq,
         "aggregation": agg
     }
 
@@ -176,6 +228,6 @@ def elastic_index(row, index, series_id, interval, agg):
             # convierte a float de Python para preservar el tipado numérico del valor
             source[column] = float(str(value))
 
-    action['_id'] = series_id + '-' + interval + '-' + agg + '-' + timestamp
+    action['_id'] = series_id + '-' + freq + '-' + agg + '-' + timestamp
     action['_source'] = source
     return action
