@@ -35,9 +35,8 @@ class CollapseTest(TestCase):
 
         self.assertTrue(self.cmd.errors)
 
-    def test_semester_invalid_aggregation(self):
+    def test_semester_valid_aggregation(self):
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'collapse': 'semester'})
 
-        # Temporal hasta que se implemente el colapso de datos semestral
-        self.assertTrue(self.cmd.errors)
+        self.assertFalse(self.cmd.errors)
