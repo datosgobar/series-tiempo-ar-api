@@ -1,4 +1,5 @@
 #! coding: utf-8
+# pylint: disable=W0613
 
 """Operaciones de cálculos de variaciones absolutas y porcentuales anuales"""
 
@@ -133,6 +134,7 @@ def handle_last_value(col, target_freq, result):
     target, ej: un collapse mensual -> anual debe tener valores para los 12 meses del año
     """
     handlers = {
+        constants.PANDAS_SEMESTER: handle_last_value_semester,
         constants.PANDAS_QUARTER: handle_last_value_quarter,
         constants.PANDAS_MONTH: handle_last_value_month,
         constants.PANDAS_DAY: handle_last_value_daily,
@@ -148,10 +150,19 @@ def handle_last_value(col, target_freq, result):
     handlers[orig_freq](last_date, result, result_last_date, target_freq)
 
 
-# pylint: disable=W0613
 def handle_last_value_quarter(last_date, result, result_last_date, target_freq):
     # Colapso quarter -> year: debe estar presente el último quarter (mes 10)
     if target_freq == constants.PANDAS_YEAR and last_date.month != 10:
+        handle_incomplete_value(result)
+    if target_freq == constants.PANDAS_SEMESTER:
+        if (result_last_date.month == 1 and last_date.quarter != 2) or \
+        (result_last_date.month == 7 and last_date.quarter != 4):
+            handle_incomplete_value(result)
+
+
+def handle_last_value_semester(last_date, result, result_last_date, target_freq):
+    # Colapso semester -> year: debe estar presente el último semestre (mes 7)
+    if target_freq == constants.PANDAS_YEAR and last_date.month != 7:
         handle_incomplete_value(result)
 
 
@@ -159,6 +170,10 @@ def handle_last_value_month(last_date, result, result_last_date, target_freq):
     if target_freq == constants.PANDAS_YEAR and last_date.month != 12:
         # Colapso month -> year: debe estar presente el último mes (12)
         handle_incomplete_value(result)
+    if target_freq == constants.PANDAS_SEMESTER:
+        if (result_last_date.month == 1 and last_date.month != 6) or \
+        (result_last_date.month == 7 and last_date.month != 12):
+            handle_incomplete_value(result)
     elif target_freq == constants.PANDAS_QUARTER:
         # Colapso month -> quarter: debe estar presente el último mes del quarter
         # Ese mes se puede calcular como quarter * 3 (03, 06, 09, 12)
@@ -171,7 +186,10 @@ def handle_last_value_daily(last_date, result, result_last_date, target_freq):
         # Colapso day -> year: debe haber valores hasta el 31/12
         if last_date.month != 12 or last_date.day != 31:
             handle_incomplete_value(result)
-
+    if target_freq == constants.PANDAS_SEMESTER:
+        _, last_day = monthrange(result_last_date.year, result_last_date.month - 1)
+        if result_last_date.month -1 != last_day.month or last_date.day != last_day:
+            handle_incomplete_value(result)
     elif target_freq == constants.PANDAS_QUARTER:
         # Colapso day -> quarter: debe haber valores hasta 31/03, 30/06, 30/09 o 31/12
         # El último mes del quarter se puede calcular como quarter * 3
@@ -181,7 +199,7 @@ def handle_last_value_daily(last_date, result, result_last_date, target_freq):
     elif target_freq == constants.PANDAS_MONTH:
         # Colapso day -> month: debe haber valores hasta el último día del mes
         _, last_day = monthrange(result_last_date.year, result_last_date.month)
-        if last_date.day != last_day:
+        if result_last_date.month -1 != last_day.month or last_date.day != last_day:
             handle_incomplete_value(result)
 
 

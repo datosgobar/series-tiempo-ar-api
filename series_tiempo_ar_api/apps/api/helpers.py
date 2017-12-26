@@ -35,7 +35,7 @@ def freq_pandas_to_interval(freq):
     freqs = {
         'AS': 'year',
         'AS-JAN': 'year',
-        '6M': 'semester',
+        '6MS': 'semester',
         '6M-JAN': 'semester',
         'QS': 'quarter',
         'QS-JAN': 'quarter',

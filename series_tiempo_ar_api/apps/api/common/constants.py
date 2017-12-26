@@ -10,9 +10,11 @@ PCT_CHANGE_YEAR_AGO = 'percent_change_a_year_ago'
 
 # Pandas freqs
 PANDAS_YEAR = YearBegin()
+PANDAS_SEMESTER = MonthBegin(6)
 PANDAS_QUARTER = QuarterBegin(startingMonth=1)
 PANDAS_MONTH = MonthBegin()
 PANDAS_WEEK = Day(7)
 PANDAS_DAY = Day()
 
-PANDAS_FREQS = [PANDAS_YEAR, PANDAS_QUARTER, PANDAS_MONTH, PANDAS_WEEK, PANDAS_DAY]
+# Frecuencias *en orden* de mayor a menor
+PANDAS_FREQS = [PANDAS_YEAR, PANDAS_SEMESTER, PANDAS_QUARTER, PANDAS_MONTH, PANDAS_WEEK, PANDAS_DAY]
