@@ -132,40 +132,40 @@ def handle_last_value(col, target_freq, result):
     Se considera intervalo completo al que tenga todos los valores posibles del intervalo
     target, ej: un collapse mensual -> anual debe tener valores para los 12 meses del año
     """
-    last = col.index[-1]
+    last_date = col.index[-1]
     orig_freq = col.index.freq
     result_last = result.index[-1]
     if orig_freq == constants.PANDAS_QUARTER:
         # Colapso quarter -> year: debe estar presente el último quarter (mes 10)
-        if target_freq == constants.PANDAS_YEAR and last.month != 10:
+        if target_freq == constants.PANDAS_YEAR and last_date.month != 10:
             handle_incomplete_value(result)
 
     elif orig_freq == constants.PANDAS_MONTH:
-        if target_freq == constants.PANDAS_YEAR and last.month != 12:
+        if target_freq == constants.PANDAS_YEAR and last_date.month != 12:
             # Colapso month -> year: debe estar presente el último mes (12)
             handle_incomplete_value(result)
         elif target_freq == constants.PANDAS_QUARTER:
             # Colapso month -> quarter: debe estar presente el último mes del quarter
             # Ese mes se puede calcular como quarter * 3 (03, 06, 09, 12)
-            if last.month != result_last.quarter * 3:
+            if last_date.month != result_last.quarter * 3:
                 handle_incomplete_value(result)
 
     elif orig_freq == constants.PANDAS_DAY:
         if target_freq == constants.PANDAS_YEAR:
             # Colapso day -> year: debe haber valores hasta el 31/12
-            if last.month != 12 or last.day != 31:
+            if last_date.month != 12 or last_date.day != 31:
                 handle_incomplete_value(result)
 
         elif target_freq == constants.PANDAS_QUARTER:
             # Colapso day -> quarter: debe haber valores hasta 31/03, 30/06, 30/09 o 31/12
             # El último mes del quarter se puede calcular como quarter * 3
             _, last_day = monthrange(result_last.year, result_last.quarter * 3)
-            if last.day != last_day or last.month != result_last.quarter * 3:
+            if last_date.day != last_day or last_date.month != result_last.quarter * 3:
                 handle_incomplete_value(result)
         elif target_freq == constants.PANDAS_MONTH:
             # Colapso day -> month: debe haber valores hasta el último día del mes
             _, last_day = monthrange(result_last.year, result_last.month)
-            if last.day != last_day:
+            if last_date.day != last_day:
                 handle_incomplete_value(result)
 
 
