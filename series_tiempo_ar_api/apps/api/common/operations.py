@@ -148,6 +148,7 @@ def handle_last_value(col, target_freq, result):
     handlers[orig_freq](last_date, result, result_last_date, target_freq)
 
 
+# pylint: disable=W0613
 def handle_last_value_quarter(last_date, result, result_last_date, target_freq):
     # Colapso quarter -> year: debe estar presente el último quarter (mes 10)
     if target_freq == constants.PANDAS_YEAR and last_date.month != 10:
