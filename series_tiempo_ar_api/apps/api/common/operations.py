@@ -156,7 +156,7 @@ def handle_last_value_quarter(last_date, result, result_last_date, target_freq):
         handle_incomplete_value(result)
     if target_freq == constants.PANDAS_SEMESTER:
         if (result_last_date.month == 1 and last_date.quarter != 2) or \
-        (result_last_date.month == 7 and last_date.quarter != 4):
+                (result_last_date.month == 7 and last_date.quarter != 4):
             handle_incomplete_value(result)
 
 
@@ -172,7 +172,7 @@ def handle_last_value_month(last_date, result, result_last_date, target_freq):
         handle_incomplete_value(result)
     if target_freq == constants.PANDAS_SEMESTER:
         if (result_last_date.month == 1 and last_date.month != 6) or \
-        (result_last_date.month == 7 and last_date.month != 12):
+                (result_last_date.month == 7 and last_date.month != 12):
             handle_incomplete_value(result)
     elif target_freq == constants.PANDAS_QUARTER:
         # Colapso month -> quarter: debe estar presente el último mes del quarter
@@ -188,7 +188,7 @@ def handle_last_value_daily(last_date, result, result_last_date, target_freq):
             handle_incomplete_value(result)
     if target_freq == constants.PANDAS_SEMESTER:
         _, last_day = monthrange(result_last_date.year, result_last_date.month - 1)
-        if result_last_date.month -1 != last_day.month or last_date.day != last_day:
+        if result_last_date.month - 1 != last_day.month or last_date.day != last_day:
             handle_incomplete_value(result)
     elif target_freq == constants.PANDAS_QUARTER:
         # Colapso day -> quarter: debe haber valores hasta 31/03, 30/06, 30/09 o 31/12
@@ -199,7 +199,7 @@ def handle_last_value_daily(last_date, result, result_last_date, target_freq):
     elif target_freq == constants.PANDAS_MONTH:
         # Colapso day -> month: debe haber valores hasta el último día del mes
         _, last_day = monthrange(result_last_date.year, result_last_date.month)
-        if result_last_date.month -1 != last_day.month or last_date.day != last_day:
+        if result_last_date.month - 1 != last_day.month or last_date.day != last_day:
             handle_incomplete_value(result)
 
 

@@ -39,7 +39,7 @@ class Indexer(object):
         logger.info(strings.INDEX_START)
 
         for distribution in distributions:
-            index_distribution(self.index, distribution.id)
+            index_distribution.delay(self.index, distribution.id)
 
         logger.info(strings.INDEX_END)
 
