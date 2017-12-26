@@ -58,13 +58,13 @@ class Query(object):
         series_periodicity = get_periodicity_human_format(
             field_model.distribution.periodicity)
 
+        periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
         if periodicities and series_periodicity not in periodicities:
             # Hay varias series con distintas periodicities, colapso los datos
             periodicities.append(series_periodicity)
             periodicity = self.get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
 
-        periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
         self.es_query.add_series(name, rep_mode, periodicity, collapse_agg)
 
     @staticmethod
