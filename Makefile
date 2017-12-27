@@ -1,4 +1,8 @@
-docs: ## generate Sphinx HTML documentation, including API docs
+SHELL = bash
+
+.PHONY: docs servedocs doctoc
+
+docs:
 	mkdocs build
 	$(BROWSER) site/index.html
 

@@ -194,6 +194,21 @@
             "location": "/api_reference/#metadata", 
             "text": "Especifica el nivel de detalle de metadatos requerido por el usuario, siendo  simple  el valor por defecto. S\u00f3lo aplica cuando  format=json .  Las opciones disponibles son:   none : No se devuelven metadatos, s\u00f3lo datos.  only : No se devuelven datos, s\u00f3lo metadatos.  simple : Se devuelven los metadatos m\u00e1s importantes para comprender y utilizar las series (default).  full : Se devuelven todos los metadatos disponibles que tengan relaci\u00f3n con cada serie.", 
             "title": "metadata"
+        }, 
+        {
+            "location": "/third_party/", 
+            "text": "Proyectos de terceros\n\n\nLista de proyectos de terceros que utilizan, extienden o documentan la API de Series de Tiempo.\n\n\n\n\nfmgarciadiaz/PortalHacienda\n: Interface en R para usar la API.\n\n\n\n\nContacto\n\n\n\u00bfDesarrollaste una librer\u00eda o ten\u00e9s un proyecto que usa la API? Te \ninvitamos a contarnos\n as\u00ed la agregamos a esta lista.\n\n\nPara todo lo dem\u00e1s, pod\u00e9s mandarnos tu comentario o consulta a \ndatos@modernizacion.gob.ar\n.", 
+            "title": "Librer\u00edas de terceros"
+        }, 
+        {
+            "location": "/third_party/#proyectos-de-terceros", 
+            "text": "Lista de proyectos de terceros que utilizan, extienden o documentan la API de Series de Tiempo.   fmgarciadiaz/PortalHacienda : Interface en R para usar la API.", 
+            "title": "Proyectos de terceros"
+        }, 
+        {
+            "location": "/third_party/#contacto", 
+            "text": "\u00bfDesarrollaste una librer\u00eda o ten\u00e9s un proyecto que usa la API? Te  invitamos a contarnos  as\u00ed la agregamos a esta lista.  Para todo lo dem\u00e1s, pod\u00e9s mandarnos tu comentario o consulta a  datos@modernizacion.gob.ar .", 
+            "title": "Contacto"
         }
     ]
 }
