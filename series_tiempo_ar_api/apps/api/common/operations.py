@@ -187,8 +187,9 @@ def handle_last_value_daily(last_date, result, result_last_date, target_freq):
         if last_date.month != 12 or last_date.day != 31:
             handle_incomplete_value(result)
     if target_freq == constants.PANDAS_SEMESTER:
-        _, last_day = monthrange(result_last_date.year, result_last_date.month - 1)
-        if result_last_date.month - 1 != last_day.month or last_date.day != last_day:
+        last_date_prev_month = result_last_date - relativedelta(months=1)
+        _, last_day = monthrange(last_date_prev_month.year, last_date_prev_month.month)
+        if last_date_prev_month.month != last_date.month or last_day != last_date.day:
             handle_incomplete_value(result)
     elif target_freq == constants.PANDAS_QUARTER:
         # Colapso day -> quarter: debe haber valores hasta 31/03, 30/06, 30/09 o 31/12
@@ -199,7 +200,7 @@ def handle_last_value_daily(last_date, result, result_last_date, target_freq):
     elif target_freq == constants.PANDAS_MONTH:
         # Colapso day -> month: debe haber valores hasta el último día del mes
         _, last_day = monthrange(result_last_date.year, result_last_date.month)
-        if result_last_date.month - 1 != last_day.month or last_date.day != last_day:
+        if result_last_date.month != result_last_date.month or last_date.day != last_day:
             handle_incomplete_value(result)
 
 

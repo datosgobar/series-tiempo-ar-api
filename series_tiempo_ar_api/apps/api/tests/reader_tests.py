@@ -2,6 +2,7 @@
 import json
 import os
 
+import time
 from django.conf import settings
 from django.test import TestCase
 from elasticsearch_dsl import Search
@@ -9,7 +10,7 @@ from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
-from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer, DistributionIndexer
+from series_tiempo_ar_api.apps.api.indexing.indexer import DistributionIndexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import Scraper
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
@@ -98,7 +99,7 @@ class IndexerTests(TestCase):
         results = Search(using=self.elastic,
                          index=self.test_index) \
             .filter('match', series_id=missing_series_id).execute()
-
+        time.sleep(1)
         self.assertFalse(len(results))
 
     @classmethod
