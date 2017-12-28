@@ -8,7 +8,7 @@ La aplicación se publica actualmente como una versión `beta`. Tanto las funcio
 
 El uso está sujeto a restricciones y cuotas, para preservar la estabilidad de la infraestructura.
 
-Si querés la base completa en lugar de consultar la API, la podés descargar desde [acá](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional). También podés descargar la lista de series disponibles, sus metadatos y sus identificadores para armar tus consultas a la API.
+Si querés **la base completa en lugar de consultar la API**, la [podés descargar desde acá](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional). También podés descargar la [lista de series disponibles, sus metadatos y sus identificadores](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv) para armar tus consultas a la API.
 
 Se alienta a los usuarios a [dejar comentarios, reportes de fallas o sugerencias](https://github.com/datosgobar/series-tiempo-ar-api/issues/new?labels=pedido-comunidad).
 
