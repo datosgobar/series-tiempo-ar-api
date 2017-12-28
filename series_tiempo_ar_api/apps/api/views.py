@@ -25,4 +25,4 @@ def query_view(request):
 def save_request(request):
     query = Query(ids="test", args="test", ip_address="127.0.0.1", params=request.POST)
     query.save()
-    return HttpResponse(request.POST)
+    return HttpResponse("OK: " + request.POST)
