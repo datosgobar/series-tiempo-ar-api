@@ -8,7 +8,7 @@ La aplicación se publica actualmente como una versión `beta`. Tanto las funcio
 
 El uso está sujeto a restricciones y cuotas, para preservar la estabilidad de la infraestructura.
 
-Se alienta a los usuarios a [dejar comentarios, reportes de fallas o sugerencias](https://github.com/datosgobar/series-tiempo-ar-api/issues/new).
+Se alienta a los usuarios a [dejar comentarios, reportes de fallas o sugerencias](https://github.com/datosgobar/series-tiempo-ar-api/issues/new?labels=pedido-comunidad).
 
 ## Ejemplo de uso
 
