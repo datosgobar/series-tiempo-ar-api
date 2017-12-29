@@ -54,6 +54,12 @@ Ver documentación de [instalación de la aplicación](docs/development.md).
 
 Ver [documentación completa]() *(TODO: documentación en proceso de construcción)*
 
+## ¿Dónde encontrar los ids y otros metadatos de las series?
+
+En http://www.datos.gob.ar podés encontrar la [base completa de series de tiempo](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional) y [descargar la lista de series](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv) disponibles para buscar cuáles consultar a la API.
+
+También podés descargarte de ahí [todos los valores de la base completa](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.3/download/series-tiempo-valores.csv), en lugar de usar la API.
+
 ## Términos y condiciones de uso
 
 La aplicación se publica actualmente como una versión `beta`. Ver detalle del [acuerdo de nivel de servicio]() (*TODO: escribir versión inicial de SLA*).
