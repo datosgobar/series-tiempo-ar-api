@@ -32,7 +32,7 @@ MANAGERS = ADMINS
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', u'192.168.0.122']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -151,10 +151,12 @@ DJANGO_BASE_APPS = (
 
 VENDOR_APPS = (
     "django_rq",
+    'import_export',
 )
 
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
+    'series_tiempo_ar_api.apps.analytics',
     'series_tiempo_ar_api.libs.indexing',
 )
 

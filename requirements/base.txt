@@ -12,3 +12,4 @@ numpy
 django-rq==1.0.0
 pyyaml
 django-ipware==1.1.6
+django-import-export==0.5.1
