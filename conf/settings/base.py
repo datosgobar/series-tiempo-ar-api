@@ -151,6 +151,7 @@ DJANGO_BASE_APPS = (
 
 VENDOR_APPS = (
     "django_rq",
+    'import_export',
 )
 
 APPS = (
