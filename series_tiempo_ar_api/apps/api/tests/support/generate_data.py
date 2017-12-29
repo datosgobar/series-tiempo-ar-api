@@ -6,7 +6,8 @@ from elasticsearch.helpers import parallel_bulk
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 
-from series_tiempo_ar_api.apps.api.indexing.constants import INDEX_CREATION_BODY
+from series_tiempo_ar_api.apps.api.indexing.constants import INDEX_CREATION_BODY, \
+    FORCE_MERGE_SEGMENTS
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.common import constants
@@ -34,6 +35,10 @@ class TestDataGenerator(object):
         for success, info in parallel_bulk(self.elastic, self.bulk_items):
             if not success:
                 print("ERROR:", info)
+
+        segments = FORCE_MERGE_SEGMENTS
+        self.elastic.indices.forcemerge(index=settings.TEST_INDEX,
+                                        max_num_segments=segments)
 
     def init_series(self, interval):
         """Crea varias series con periodicidad del intervalo dado"""

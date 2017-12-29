@@ -3,8 +3,8 @@ import json
 
 from django.test import TestCase
 
-from series_tiempo_ar_api.apps.api.query.analytics import analytics
-from series_tiempo_ar_api.apps.api.models import Query
+from .analytics import analytics
+from .models import Query
 
 
 class AnalyticsTests(TestCase):
