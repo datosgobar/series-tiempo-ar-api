@@ -13,6 +13,12 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## ¿Dónde encontrar los ids y otros metadatos de las series?
+
+En http://www.datos.gob.ar podés encontrar la [base completa de series de tiempo](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional) y [descargar la lista de series](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv) disponibles para buscar cuáles consultar a la API.
+
+También podés descargarte de ahí [todos los valores de la base completa](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.3/download/series-tiempo-valores.csv), en lugar de usar la API.
+
 ## Descargar una tabla con una o varias series
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general*
