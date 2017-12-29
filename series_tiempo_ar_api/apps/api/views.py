@@ -1,8 +1,9 @@
 #! coding: utf-8
 from ipware.ip import get_ip
+
+from series_tiempo_ar_api.apps.analytics.analytics import analytics
 from series_tiempo_ar_api.apps.api.query import constants
 from .query.pipeline import QueryPipeline
-from .query.analytics import analytics
 
 
 def query_view(request):
