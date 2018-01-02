@@ -343,11 +343,6 @@ class Collapse(BaseOperation):
             self._append_error(msg)
             return
 
-        if collapse == 'semester':  # Temporal hasta que se implemente collapse semestral
-            msg = strings.INVALID_PARAMETER.format(constants.PARAM_COLLAPSE, collapse)
-            self._append_error(msg)
-            return
-
         try:
             query.add_collapse(collapse=collapse)
         except CollapseError:

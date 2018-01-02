@@ -5,12 +5,12 @@ import numpy as np
 import pandas as pd
 from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
-from elasticsearch_dsl import Search
 from series_tiempo_ar.helpers import freq_iso_to_pandas
+from django_rq import job
 
-from series_tiempo_ar_api.apps.api.models import Distribution, Field
+from series_tiempo_ar_api.apps.api.common import operations
+from series_tiempo_ar_api.apps.api.models import Distribution
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-from series_tiempo_ar_api.apps.api.common.operations import pct_change_a_year_ago, change_a_year_ago
 from series_tiempo_ar_api.apps.api.indexing import strings
 from series_tiempo_ar_api.apps.api.indexing import constants
 
@@ -28,8 +28,6 @@ class Indexer(object):
     def __init__(self, index=settings.TS_INDEX):
         self.elastic = ElasticInstance()
         self.index = index
-        self.indexed_fields = set()
-        self.bulk_actions = []
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -38,39 +36,54 @@ class Indexer(object):
         """
         self.init_index()
 
-        # Optimización: Desactivo el refresh de los datos mientras indexo
-        self.elastic.indices.put_settings(
-            index=self.index,
-            body=constants.DEACTIVATE_REFRESH_BODY
-        )
-
         logger.info(strings.INDEX_START)
 
         for distribution in distributions:
-            fields = distribution.field_set.all()
-            fields = {field.title: field.series_id for field in fields}
-            df = self.init_df(distribution, fields)
+            index_distribution.delay(self.index, distribution.id)
 
-            self.generate_properties(df, fields)
+        logger.info(strings.INDEX_END)
 
-        logger.info(strings.BULK_REQUEST_START)
+    def init_index(self):
+        if not self.elastic.indices.exists(self.index):
+            self.elastic.indices.create(self.index,
+                                        body=constants.INDEX_CREATION_BODY)
 
-        for success, info in parallel_bulk(self.elastic, self.bulk_actions):
+
+@job('indexing')
+def index_distribution(index, distribution_id):
+    distribution = Distribution.objects.get(id=distribution_id)
+
+    DistributionIndexer(index=index).run(distribution)
+
+
+class DistributionIndexer:
+    def __init__(self, index):
+        self.elastic = ElasticInstance.get()
+        self.index = index
+        self.indexed_fields = set()
+        self.bulk_actions = []
+
+    def run(self, distribution):
+        fields = distribution.field_set.all()
+        fields = {field.title: field.series_id for field in fields}
+        df = self.init_df(distribution, fields)
+
+        # Aplica la operación de procesamiento e indexado a cada columna
+        result = [operations.process_column(df[col], self.index) for col in df.columns]
+
+        if not len(result):  # Distribución sin series cargadas
+            return
+
+        # List flatten: si el resultado son múltiples listas las junto en una sola
+        actions = reduce(lambda x, y: x + y, result) if isinstance(result[0], list) else result
+
+        for success, info in parallel_bulk(self.elastic, actions):
             if not success:
                 logger.warn(strings.BULK_REQUEST_ERROR, info)
 
-        logger.info(strings.BULK_REQUEST_END)
-
-        # Reactivo el proceso de replicado una vez finalizado
-        self.elastic.indices.put_settings(
-            index=self.index,
-            body=constants.REACTIVATE_REFRESH_BODY
-        )
+        # Fuerzo a que los datos estén disponibles para queries inmediatamente
         segments = constants.FORCE_MERGE_SEGMENTS
-        self.elastic.indices.forcemerge(index=self.index,
-                                        max_num_segments=segments)
-
-        logger.info(strings.INDEX_END)
+        self.elastic.indices.forcemerge(index=self.index, params={'max_num_segments': segments})
 
     @staticmethod
     def init_df(distribution, fields):
@@ -91,7 +104,7 @@ class Indexer(object):
         for column in df.columns:
             if column not in fields:
                 df.drop(column, axis='columns', inplace=True)
-        columns = df.columns
+        columns = [fields[name] for name in df.columns]
 
         data = np.array(df)
         freq = freq_iso_to_pandas(distribution.periodicity)
@@ -104,81 +117,3 @@ class Indexer(object):
                                       freq=constants.BUSINESS_DAILY_FREQ)
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
-
-    def init_index(self):
-        if not self.elastic.indices.exists(self.index):
-            self.elastic.indices.create(self.index,
-                                        body=constants.INDEX_CREATION_BODY)
-
-    def generate_properties(self, df, fields):
-        df.apply(self.process_column, args=[fields])
-
-        # Manejo de series faltantes
-        for series_id in fields.values():
-            if series_id not in self.indexed_fields:
-                logger.info(strings.SERIES_NOT_FOUND, series_id)
-                self._handle_missing_series(series_id)
-
-    def process_column(self, col, fields):
-        """Procesa una columna del DataFrame: calcula los valores de
-        diferencias, porcentuales y anuales, los guarda en un DataFrame
-        y luego indexa los valores fila por fila"""
-
-        # Filtro de valores nulos iniciales/finales
-        col = col[col.first_valid_index():col.last_valid_index()]
-
-        freq = col.index.freq.freqstr
-        df = pd.DataFrame()
-        df[constants.VALUE] = col
-        df[constants.CHANGE] = col.diff(1)
-        df[constants.PCT_CHANGE] = col.pct_change(1, fill_method=None)
-        df[constants.CHANGE_YEAR_AGO] = change_a_year_ago(col, freq)
-        df[constants.PCT_CHANGE_YEAR_AGO] = pct_change_a_year_ago(col, freq)
-
-        df.apply(self.elastic_index, axis='columns', args=(fields[col.name],))
-
-    def elastic_index(self, row, series_id):
-        """Arma el JSON entendible por el bulk request de ES y lo
-        agrega a la lista de bulk_actions
-
-        la fila tiene forma de iterable con los datos de un único
-        valor de la serie: el valor real, su variación inmnediata,
-        porcentual, etc
-        """
-
-        # Borrado de la parte de tiempo del timestamp
-        timestamp = str(row.name)
-        timestamp = timestamp[:timestamp.find('T')]
-
-        action = {
-            "_index": self.index,
-            "_type": settings.TS_DOC_TYPE,
-            "_id": None,
-            "_source": {}
-        }
-
-        source = {
-            settings.TS_TIME_INDEX_FIELD: timestamp,
-            'series_id': series_id
-        }
-
-        for column, value in row.iteritems():
-            if value is not None and np.isfinite(value):
-                # Todo: buscar método más elegante para resolver precisión incorrecta de los valores
-                # Ver issue: https://github.com/datosgobar/series-tiempo-ar-api/issues/63
-                # Convertir el np.float64 a string logra evitar la pérdida de precision. Luego se
-                # convierte a float de Python para preservar el tipado numérico del valor
-                source[column] = float(str(value))
-
-        action['_id'] = series_id + '-' + timestamp
-        action['_source'] = source
-        self.bulk_actions.append(action)
-        self.indexed_fields.add(series_id)
-
-    def _handle_missing_series(self, series_id):
-        # Si no hay datos previos indexados, borro la entrada de la DB
-        search = Search(using=self.elastic,
-                        index=self.index).filter('match', series_id=series_id)
-        results = search.execute()
-        if not results:
-            Field.objects.get(series_id=series_id).delete()
