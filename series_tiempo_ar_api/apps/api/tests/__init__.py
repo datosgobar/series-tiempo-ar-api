@@ -12,3 +12,7 @@ def setup():
         generator = get_generator()
         generator.run()
         setup_database()
+
+
+def teardown():
+    elastic.indices.delete(settings.TEST_INDEX)

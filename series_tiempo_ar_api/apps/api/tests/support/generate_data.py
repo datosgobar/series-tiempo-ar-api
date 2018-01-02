@@ -1,4 +1,6 @@
 #! coding: utf-8
+import os
+import json
 from random import random
 from datetime import datetime
 
@@ -14,6 +16,9 @@ from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.common import operations
 
+DATA_FILE_NAME = 'data.csv'
+DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), DATA_FILE_NAME)
+
 
 class TestDataGenerator(object):
     date_format = '%Y-%m-%d'
@@ -26,10 +31,28 @@ class TestDataGenerator(object):
         self.bulk_items = []
 
     def run(self):
-        # Chequeo si existe el índice, si no, lo creo
-        if not self.elastic.indices.exists(settings.TEST_INDEX):
+        try:
+            self.index_data()
+        except IOError:  # No hay data precargada, la generamos
+            self.init_data()
+            self.index_data()
+
+    def index_data(self):
+        """Indexa la data leía desde el archivo de datos"""
+        with open(DATA_FILE_PATH) as f:
             self.elastic.indices.create(settings.TEST_INDEX,
                                         body=INDEX_CREATION_BODY)
+
+            actions = [json.loads(row) for row in f.readlines()]
+            for success, info in parallel_bulk(self.elastic, actions):
+                if not success:
+                    print("ERROR:", info)
+
+            segments = FORCE_MERGE_SEGMENTS
+            self.elastic.indices.forcemerge(index=settings.TEST_INDEX,
+                                            max_num_segments=segments)
+
+    def init_data(self):
 
         result = []
         for interval in COLLAPSE_INTERVALS:
@@ -39,13 +62,8 @@ class TestDataGenerator(object):
             delayed_date = self.start_date + relativedelta(years=50)
             result.extend(self.init_series(delayed_name, interval, delayed_date))
 
-        for success, info in parallel_bulk(self.elastic, result):
-            if not success:
-                print("ERROR:", info)
-
-        segments = FORCE_MERGE_SEGMENTS
-        self.elastic.indices.forcemerge(index=settings.TEST_INDEX,
-                                        max_num_segments=segments)
+        with open(DATA_FILE_PATH, 'w') as f:
+            f.writelines([json.dumps(row) + '\n' for row in result])
 
     def init_series(self, name, interval, start_date):
         """Crea varias series con periodicidad del intervalo dado"""

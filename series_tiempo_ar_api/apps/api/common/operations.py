@@ -97,6 +97,9 @@ def process_column(col, index):
     actions = []
     # Lista de intervalos temporales de pandas EN ORDEN
     freqs = constants.PANDAS_FREQS
+    if orig_freq not in freqs:
+        raise ValueError
+
     for freq in freqs:
         # Promedio
         avg = index_transform(col, lambda x: x.mean(), index, series_id, freq, 'avg')
