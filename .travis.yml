@@ -21,7 +21,6 @@ install:
   - nvm use v7.4.0
   - npm install
 
-
 script:
   - npm run jsc
   - scripts/tests.sh
@@ -30,3 +29,10 @@ script:
 
 after_success:
 - coveralls
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: scripts/deploy.sh $DEPLOY_TARGET_IP $DEPLOY_TARGET_SSH_PORT $DEPLOY_TARGET_USERNAME $DEPLOY_TARGET_PUBKEY
+  on:
+    branch: 79-agregar-cd
