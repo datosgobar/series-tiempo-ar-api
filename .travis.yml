@@ -30,6 +30,12 @@ script:
 after_success:
 - coveralls
 
+before_deploy:
+ - openssl aes-256-cbc -K $encrypted_ae74091d1bce_key -iv $encrypted_ae74091d1bce_iv -in deploy/build\+ts-api@travis-ci.org.enc -out /tmp/build\+ts-api@travis-ci.org -d
+ - eval "$(ssh-agent -s)"
+ - chmod 600 /tmp/build\+ts-api@travis-ci.org
+ - ssh-add /tmp/build\+ts-api@travis-ci.org
+
 deploy:
   skip_cleanup: true
   provider: script
