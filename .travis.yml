@@ -33,4 +33,6 @@ after_success:
 deploy:
   skip_cleanup: true
   provider: script
-  script: scripts/deploy.sh $DEPLOY_TARGET_IP $DEPLOY_TARGET_SSH_PORT $DEPLOY_TARGET_USERNAME $DEPLOY_TARGET_PUBKEY
+  script: scripts/deploy.sh
+  on:
+    all_branches: true
