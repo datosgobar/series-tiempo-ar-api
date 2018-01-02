@@ -88,7 +88,7 @@ class DateFilterTests(TestCase):
         self.query.add_pagination(start=0, limit=1000)
         self.query.sort('asc')
         data = self.query.run()['data']
-        # Trajo resultados hasta 2005 inclusive
+
         last_date = iso8601.parse_date(data[-1][0])
         self.assertEqual(last_date.year, end_date.year)
         self.assertGreaterEqual(last_date.month, end_date.month)

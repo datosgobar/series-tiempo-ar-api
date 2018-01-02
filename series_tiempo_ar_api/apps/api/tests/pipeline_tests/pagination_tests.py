@@ -18,7 +18,6 @@ class PaginationTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         cls.field = Field.objects.get(series_id=cls.single_series)
         super(cls, PaginationTests).setUpClass()
 
@@ -54,6 +53,7 @@ class PaginationTests(TestCase):
         self.query.add_series(self.single_series, self.field, 'value')
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'limit': self.limit})
+        self.query.sort(how='asc')
         data = self.query.run()['data']
         self.assertEqual(len(data), self.limit)
 

@@ -151,10 +151,12 @@ DJANGO_BASE_APPS = (
 
 VENDOR_APPS = (
     "django_rq",
+    'import_export',
 )
 
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
+    'series_tiempo_ar_api.apps.analytics',
     'series_tiempo_ar_api.libs.indexing',
 )
 
@@ -274,5 +276,10 @@ RQ_QUEUES = {
         'PORT': DEFAULT_REDIS_PORT,
         'DB': DEFAULT_REDIS_DB,
         'DEFAULT_TIMEOUT': 3600,
+    },
+    'indexing': {
+        'HOST': DEFAULT_REDIS_HOST,
+        'PORT': DEFAULT_REDIS_PORT,
+        'DB': DEFAULT_REDIS_DB,
     },
 }
