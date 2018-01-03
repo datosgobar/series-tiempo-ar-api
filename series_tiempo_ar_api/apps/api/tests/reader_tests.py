@@ -99,8 +99,18 @@ class IndexerTests(TestCase):
         results = Search(using=self.elastic,
                          index=self.test_index) \
             .filter('match', series_id=missing_series_id).execute()
-        time.sleep(1)
+
         self.assertFalse(len(results))
+
+    def test_index_daily_distribution(self):
+        series_id = '89.2_TS_INTELAR_0_D_20'
+        self._index_catalog('distribution_daily_periodicity.json')
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertTrue(len(results))
 
     @classmethod
     def tearDownClass(cls):
