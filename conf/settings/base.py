@@ -157,6 +157,7 @@ VENDOR_APPS = (
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
     'series_tiempo_ar_api.apps.analytics',
+    'series_tiempo_ar_api.apps.management',
     'series_tiempo_ar_api.libs.indexing',
 )
 

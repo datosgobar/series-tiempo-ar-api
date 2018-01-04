@@ -31,6 +31,7 @@ node_modules/
 # Archivos fuente de las distribuciones
 media/distribution_raw
 datajson_sample/
+media/datasets_indexing_files
 .nvmrc
 
 # jupyter
