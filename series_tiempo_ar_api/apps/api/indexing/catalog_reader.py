@@ -9,6 +9,7 @@ from series_tiempo_ar_api.apps.api.indexing.database_loader import \
 from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
 from series_tiempo_ar_api.apps.api.indexing import strings
+from series_tiempo_ar_api.apps.api.models import Dataset, Distribution
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +29,11 @@ def index_catalog(catalog, catalog_id, read_local=False):
     scraper.run(catalog)
     distributions = scraper.distributions
 
-    if not distributions:
-        logger.info(strings.NO_SERIES_SCRAPPED)
-        return
-
     loader = DatabaseLoader(read_local)
     loader.run(catalog, catalog_id, distributions)
-    distribution_models = loader.distribution_models
+
+    # Indexo todos los datasets whitelisteados, independientemente de cuales fueron
+    # scrapeados / cargados
+    datasets = Dataset.objects.filter(indexable=True)
+    distribution_models = Distribution.objects.filter(dataset__in=datasets.values('id'))
     Indexer().run(distribution_models)
