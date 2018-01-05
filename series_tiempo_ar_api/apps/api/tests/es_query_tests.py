@@ -49,6 +49,7 @@ class QueryTest(TestCase):
     def test_pagination_limit(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(self.start, self.max_limit)
+        self.query.sort(how='asc')
         data = self.query.run()
         self.assertEqual(len(data), self.max_limit - self.start)
 
@@ -98,10 +99,6 @@ class QueryTest(TestCase):
         self.assertTrue(data)
         # Expected: rows de 3 datos: timestamp, serie 1, serie 2
         self.assertTrue(len(data[0]) == 3)
-
-    @raises(QueryError)
-    def test_try_collapse(self):
-        self.query.add_collapse(interval='year')
 
     def test_preserve_query_order(self):
 
@@ -181,16 +178,12 @@ class QueryTest(TestCase):
             self.assertEqual(current_date + relativedelta(months=1), row_date)
             current_date = row_date
 
-    def test_has_collapse(self):
-        self.assertEqual(False, self.query.has_collapse())
-
     def test_query_add_aggregation(self):
         avg_query = ESQuery(index=settings.TEST_INDEX)
         avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
         data = avg_query.run()
 
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
-        sum_data = self.query.run()
 
         for i, row in enumerate(data):
             avg_value = data[i][1]
@@ -206,6 +199,154 @@ class QueryTest(TestCase):
             date = iso8601.parse_date(row[0])
             self.assertTrue(date.month in (1, 7))
 
+    @raises(QueryError)
+    def test_execute_empty(self):
+        data = self.query.run()
+
+        self.assertFalse(data)
+
+    def test_execute_single(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+
+        data = self.query.run()
+        self.assertTrue(data)
+
+    def test_start_limit(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_pagination(self.start, self.limit)
+        data = self.query.run()
+
+        self.assertEqual(len(data), self.limit)
+
+    def test_add_collapse(self):
+        """Testea que luego de agregar un collapse default, los
+        resultados sean anuales, es decir cada uno a un año de
+        diferencia con su anterior"""
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_collapse(interval='year')
+        self.query.sort(how='asc')
+        data = self.query.run()
+        prev_timestamp = None
+        for row in data:
+            timestamp = row[0]
+            parsed_timestamp = iso8601.parse_date(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.years == 1, timestamp)
+            prev_timestamp = parsed_timestamp
+
+    def test_collapse_custom_params(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_collapse(interval='quarter')
+        self.query.sort(how='asc')
+        data = self.query.run()
+        prev_timestamp = None
+        for row in data:
+            timestamp = row[0]
+            parsed_timestamp = iso8601.parse_date(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.months == 3, timestamp)
+            prev_timestamp = parsed_timestamp
+
+    def test_add_two_collapses(self):
+        """Esperado: El segundo collapse overridea el primero"""
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_collapse(interval='quarter')
+        self.query.add_collapse(interval='year')
+        self.query.sort(how='asc')
+        data = self.query.run()
+
+        prev_timestamp = None
+        for row in data:
+            timestamp = row[0]
+            parsed_timestamp = iso8601.parse_date(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.years == 1, timestamp)
+            prev_timestamp = parsed_timestamp
+
+    def test_sort(self):
+        self.query.add_series(self.delayed_series,
+                              self.rep_mode,
+                              self.series_periodicity)
+        self.query.sort('desc')
+
+        data = self.query.run()
+        current_date = iso8601.parse_date(data[0][0])
+        for row in data[1:]:
+            row_date = iso8601.parse_date(row[0])
+            self.assertGreater(current_date, row_date)
+            current_date = row_date
+
+    def test_add_query_aggregation(self):
+        avg_query = ESQuery(index=settings.TEST_INDEX)
+        avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
+        data = avg_query.run()
+
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+        sum_data = self.query.run()
+
+        for i, row in enumerate(sum_data):
+            # Suma debe ser siempre mayor que el promedio
+            sum_value = row[1]
+            avg_value = data[i][1]
+            self.assertGreater(sum_value, avg_value)
+
+    def test_end_of_period(self):
+        query = ESQuery(index=settings.TEST_INDEX)
+        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        query.add_pagination(start=0, limit=1000)
+        query.sort('asc')
+        query.add_filter(start="1970")
+        orig_data = query.run()
+
+        self.query.add_series(self.single_series,
+                              self.rep_mode,
+                              self.series_periodicity,
+                              'end_of_period')
+        self.query.add_filter(start="1970")
+        self.query.add_collapse('year')
+        eop_data = self.query.run()
+
+        for eop_row in eop_data:
+            eop_value = eop_row[1]
+            year = iso8601.parse_date(eop_row[0]).year
+            for row in orig_data:
+                row_date = iso8601.parse_date(row[0])
+                if row_date.year == year and row_date.month == 12:
+                    self.assertAlmostEqual(eop_value, row[1], 5)  # EOP trae pérdida de precisión
+                    break
+
+    def test_end_of_period_with_rep_mode(self):
+        self.query.add_series(self.single_series,
+                              'percent_change',
+                              self.series_periodicity,
+                              'end_of_period')
+        self.query.add_collapse('year')
+        self.query.sort('asc')
+        data = self.query.run()
+
+        orig_eop = ESQuery(index=settings.TEST_INDEX)
+        orig_eop.add_series(self.single_series,
+                            self.rep_mode,
+                            self.series_periodicity,
+                            'end_of_period')
+        orig_eop.add_collapse('year')
+        orig_eop.sort('asc')
+        end_of_period = orig_eop.run()
+
+        for i, row in enumerate(data[1:], 1):  # El primero es nulo en pct change
+            value = end_of_period[i][1] / end_of_period[i - 1][1] - 1
+
+            self.assertAlmostEqual(value, row[1])
+
     def test_multiple_series_limit(self):
         limit = 100
         self.query.add_series(get_series_id('day'),
@@ -219,3 +360,15 @@ class QueryTest(TestCase):
 
         data = self.query.run()
         self.assertEqual(len(data), limit)
+
+    def test_aggregation_on_yearly_series(self):
+        """Esperado: Valores de la serie con y sin agregación son iguales, no
+        hay valores que colapsar"""
+        year_series = get_series_id('year')
+        self.query.add_series(year_series, self.rep_mode, 'year')
+        self.query.add_series(year_series, self.rep_mode, 'year', 'end_of_period')
+
+        data = self.query.run()
+
+        for row in data:
+            self.assertEqual(row[1], row[2])

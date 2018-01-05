@@ -2,15 +2,15 @@
 import json
 import os
 
+import time
 from django.conf import settings
 from django.test import TestCase
 from elasticsearch_dsl import Search
-from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
-from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
+from series_tiempo_ar_api.apps.api.indexing.indexer import DistributionIndexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import Scraper
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
@@ -64,15 +64,15 @@ class IndexerTests(TestCase):
         distribution = Distribution.objects.get(identifier="212.1")
         fields = distribution.field_set.all()
         fields = {field.title: field.series_id for field in fields}
-        df = Indexer.init_df(distribution, fields)
+        df = DistributionIndexer.init_df(distribution, fields)
 
-        for field in fields:
+        for field in fields.values():
             self.assertTrue(field in df.columns)
 
     def test_indexing(self):
         self._index_catalog('full_ts_data.json')
 
-        results = Search(using=ElasticInstance.get(),
+        results = Search(using=self.elastic,
                          index=self.test_index).execute()
         self.assertTrue(len(results))
 
@@ -91,23 +91,26 @@ class IndexerTests(TestCase):
             .filter('match', series_id=missing_field).execute()
 
         self.assertTrue(len(results))
-        self.assertTrue(Field.objects.filter(series_id=missing_field))
 
     def test_distribution_missing_column(self):
         missing_series_id = '212.1_PSCIOS_IOS_0_0_25'
         self._index_catalog('distribution_missing_column.json')
-        catalog_path = os.path.join(SAMPLES_DIR,
-                                    'distribution_missing_column.json')
-        catalog_title = DataJson(catalog_path)['title']
 
         results = Search(using=self.elastic,
                          index=self.test_index) \
             .filter('match', series_id=missing_series_id).execute()
 
         self.assertFalse(len(results))
-        self.assertFalse(Field.objects.filter(
-            distribution__dataset__catalog__title=catalog_title,
-            series_id=missing_series_id))
+
+    def test_index_daily_distribution(self):
+        series_id = '89.2_TS_INTELAR_0_D_20'
+        self._index_catalog('distribution_daily_periodicity.json')
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertTrue(len(results))
 
     @classmethod
     def tearDownClass(cls):
@@ -122,8 +125,8 @@ class IndexerTests(TestCase):
         distributions = get_time_series_distributions(catalog)
         db_loader = DatabaseLoader(read_local=True)
         db_loader.run(catalog, CATALOG_ID, distributions)
-        Indexer(index=self.test_index). \
-            run(distributions=db_loader.distribution_models)
+        for distribution in db_loader.distribution_models:
+            DistributionIndexer(index=self.test_index).run(distribution)
 
 
 class DatabaseLoaderTests(TestCase):

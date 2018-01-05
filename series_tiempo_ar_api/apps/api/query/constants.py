@@ -11,12 +11,12 @@ REP_MODES = [
     PCT_CHANGE_YEAR_AGO
 ]
 
+AGG_DEFAULT = 'avg'
+AGG_SUM = 'sum'
 AGG_END_OF_PERIOD = 'end_of_period'
 AGGREGATIONS = [
-    'avg',
-    'min',
-    'max',
-    'sum',
+    AGG_DEFAULT,
+    AGG_SUM,
     AGG_END_OF_PERIOD,
 ]
 

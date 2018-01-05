@@ -8,7 +8,6 @@ from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
 from .es_query.es_query import ESQuery
-from .es_query.collapse_query import CollapseQuery
 
 
 class Query(object):
@@ -59,13 +58,13 @@ class Query(object):
         series_periodicity = get_periodicity_human_format(
             field_model.distribution.periodicity)
 
+        periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
         if periodicities and series_periodicity not in periodicities:
             # Hay varias series con distintas periodicities, colapso los datos
             periodicities.append(series_periodicity)
             periodicity = self.get_max_periodicity(periodicities)
             self.add_collapse(collapse=periodicity)
 
-        periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
         self.es_query.add_series(name, rep_mode, periodicity, collapse_agg)
 
     @staticmethod
@@ -81,7 +80,6 @@ class Query(object):
 
     def add_collapse(self, collapse=None):
         self._validate_collapse(collapse)
-        self.es_query = CollapseQuery(index=self.es_index, other=self.es_query)
         self.es_query.add_collapse(collapse)
 
     def set_metadata_config(self, how):
@@ -173,12 +171,7 @@ class Query(object):
         """Devuelve la periodicidad de la o las series pedidas. Si son
         muchas devuelve el intervalo de tiempo colapsado
         """
-        if hasattr(self.es_query, 'collapse_interval'):
-            # noinspection PyUnresolvedReferences
-            return self.es_query.collapse_interval
-        else:
-            periodicity = self.series_models[0].distribution.periodicity
-            return get_periodicity_human_format(periodicity)
+        return self.es_query.periodicity
 
     def sort(self, how):
         return self.es_query.sort(how)
@@ -226,6 +219,3 @@ class Query(object):
                 field.pop(meta_field)
 
         return meta
-
-    def has_collapse(self):
-        return self.es_query.has_collapse()

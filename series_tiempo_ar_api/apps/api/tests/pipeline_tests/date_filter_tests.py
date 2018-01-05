@@ -76,19 +76,21 @@ class DateFilterTests(TestCase):
         self.assertTrue(self.cmd.errors)
 
     def test_partial_end_date_is_inclusive(self):
+        year_series = get_series_id('year')
+        field = Field.objects.get(series_id=year_series)
         query = Query(index=settings.TEST_INDEX)
-        query.add_series(self.single_series, self.field, 'value')
+        query.add_series(year_series, field, 'value')
         first_date = query.run()['data'][0][0]
 
         end_date = iso8601.parse_date(first_date) + relativedelta(years=10)
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(year_series, field, 'value')
         self.cmd.run(self.query, {'end_date': str(end_date)})
 
         # Me aseguro de traer suficientes resultados
         self.query.add_pagination(start=0, limit=1000)
         self.query.sort('asc')
         data = self.query.run()['data']
-        # Trajo resultados hasta 2005 inclusive
+
         last_date = iso8601.parse_date(data[-1][0])
         self.assertEqual(last_date.year, end_date.year)
         self.assertGreaterEqual(last_date.month, end_date.month)

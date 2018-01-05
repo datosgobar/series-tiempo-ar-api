@@ -8,11 +8,11 @@ elastic = ElasticInstance.get()
 
 
 def setup():
-    generator = get_generator()
-    generator.run()
-    setup_database()
+    if not elastic.indices.exists(settings.TEST_INDEX):
+        generator = get_generator()
+        generator.run()
+        setup_database()
 
 
 def teardown():
     elastic.indices.delete(settings.TEST_INDEX)
-

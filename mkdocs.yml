@@ -4,5 +4,5 @@ pages:
 - Comienzo rápido: quick_start.md
 - Integración con planillas de cálculo: spreadsheet_integration.md
 - Referencia API: api_reference.md
-- Librerías de terceros: third_party.md
+- Proyectos de terceros: third_party.md
 theme: readthedocs

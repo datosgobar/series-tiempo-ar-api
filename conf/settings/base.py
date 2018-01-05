@@ -32,7 +32,7 @@ MANAGERS = ADMINS
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['0.0.0.0', u'192.168.0.122']
+ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -276,5 +276,10 @@ RQ_QUEUES = {
         'PORT': DEFAULT_REDIS_PORT,
         'DB': DEFAULT_REDIS_DB,
         'DEFAULT_TIMEOUT': 3600,
+    },
+    'indexing': {
+        'HOST': DEFAULT_REDIS_HOST,
+        'PORT': DEFAULT_REDIS_PORT,
+        'DB': DEFAULT_REDIS_DB,
     },
 }
