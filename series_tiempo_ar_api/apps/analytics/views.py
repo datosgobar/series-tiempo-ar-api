@@ -28,3 +28,4 @@ def save(request):
     if params_start > 0:
         args = args[params_start:]
     analytics.delay(ids, args, ip_address, params)
+    return HttpResponse()
