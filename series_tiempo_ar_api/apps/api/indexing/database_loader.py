@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.core.files import File
 from django.db import IntegrityError
+from django.db.models.query_utils import Q
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 
@@ -60,6 +61,7 @@ class DatabaseLoader(object):
                                                               periodicity)
 
                 self._save_fields(distribution_model, fields)
+        self._update_present_datasets(catalog_id)
         logger.info(strings.DB_LOAD_END)
 
     def _dataset_model(self, dataset):
@@ -200,3 +202,11 @@ class DatabaseLoader(object):
         for field in blacklist:
             metadata.pop(field, None)
         return metadata
+
+    def _update_present_datasets(self, catalog_id):
+        """Actualiza la lista de datasets marcando los datasets encontrados como presentes"""
+
+        present_ids = self.dataset_cache.keys()
+        datasets = Dataset.objects.filter(~Q(identifier__in=present_ids),
+                                          Q(catalog__identifier=catalog_id))
+        datasets.update(present=False)

@@ -4,8 +4,8 @@ from .models import Catalog, Dataset, Distribution, Field
 
 
 class DatasetAdmin(admin.ModelAdmin):
-    list_display = ('identifier', 'catalog', 'indexable')
-    search_fields = ('identifier', 'catalog__identifier', 'indexable')
+    list_display = ('identifier', 'catalog', 'present', 'indexable')
+    search_fields = ('identifier', 'catalog__identifier', 'present', 'indexable')
     readonly_fields = ('identifier', 'catalog')
     actions = ['make_indexable', 'make_unindexable']
 
