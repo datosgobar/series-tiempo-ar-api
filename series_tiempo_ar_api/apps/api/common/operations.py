@@ -3,7 +3,6 @@
 
 """Operaciones de cálculos de variaciones absolutas y porcentuales anuales"""
 
-from calendar import monthrange
 
 import pandas as pd
 import numpy as np
@@ -11,20 +10,9 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 
 from series_tiempo_ar_api.apps.api.common import constants
+from .incomplete_periods import handle_missing_values
 from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset, \
     freq_pandas_to_interval
-
-
-def get_value(df, col, index):
-    """Devuelve el valor del df[col][index] o 0 si no es válido.
-    Evita Cargar Infinity y NaN en Elasticsearch
-    """
-    series = df[col]
-    if index not in series:
-        return 0
-
-    value = series[index]
-    return value if np.isfinite(value) else 0
 
 
 def year_ago_column(col, freq, operation):
@@ -121,94 +109,23 @@ def process_column(col, index):
 
 def index_transform(col, transform_function, index, series_id, freq, name):
     transform_col = col.resample(freq).apply(transform_function)
+
+    # Fix a colapsos fuera de fase:
+    if freq == constants.PANDAS_SEMESTER:
+        months_offset = transform_col.index[0].month - 1
+        if months_offset:
+            transform_col.drop(transform_col.index[0], inplace=True)
+        offset = pd.DateOffset(months=months_offset)
+        transform_col.index = transform_col.index - offset
+        transform_col.index.freq = constants.PANDAS_SEMESTER
+
+    handle_missing_values(col, transform_col)
     transform_df = generate_interval_transformations_df(transform_col, freq)
     result = transform_df.apply(elastic_index,
                                 axis='columns',
                                 args=(index, series_id, freq, name))
 
-    handle_last_value(col, freq, result)
-
     return result
-
-
-def handle_last_value(col, target_freq, result):
-    """Borra el último valor a indexar si este no cumple con un intervalo completo de collapse
-    Se considera intervalo completo al que tenga todos los valores posibles del intervalo
-    target, ej: un collapse mensual -> anual debe tener valores para los 12 meses del año
-    """
-    handlers = {
-        constants.PANDAS_SEMESTER: handle_last_value_semester,
-        constants.PANDAS_QUARTER: handle_last_value_quarter,
-        constants.PANDAS_MONTH: handle_last_value_month,
-        constants.PANDAS_DAY: handle_last_value_daily,
-    }
-    orig_freq = col.index.freq
-    # Si no hay handler, no hacemos nada
-    if orig_freq not in handlers.keys():
-        return
-
-    last_date = col.index[-1]
-    result_last_date = result.index[-1]
-
-    handlers[orig_freq](last_date, result, result_last_date, target_freq)
-
-
-def handle_last_value_quarter(last_date, result, result_last_date, target_freq):
-    # Colapso quarter -> year: debe estar presente el último quarter (mes 10)
-    if target_freq == constants.PANDAS_YEAR and last_date.month != 10:
-        handle_incomplete_value(result)
-    if target_freq == constants.PANDAS_SEMESTER:
-        if (result_last_date.month == 1 and last_date.quarter != 2) or \
-                (result_last_date.month == 7 and last_date.quarter != 4):
-            handle_incomplete_value(result)
-
-
-def handle_last_value_semester(last_date, result, result_last_date, target_freq):
-    # Colapso semester -> year: debe estar presente el último semestre (mes 7)
-    if target_freq == constants.PANDAS_YEAR and last_date.month != 7:
-        handle_incomplete_value(result)
-
-
-def handle_last_value_month(last_date, result, result_last_date, target_freq):
-    if target_freq == constants.PANDAS_YEAR and last_date.month != 12:
-        # Colapso month -> year: debe estar presente el último mes (12)
-        handle_incomplete_value(result)
-    if target_freq == constants.PANDAS_SEMESTER:
-        if (result_last_date.month == 1 and last_date.month != 6) or \
-                (result_last_date.month == 7 and last_date.month != 12):
-            handle_incomplete_value(result)
-    elif target_freq == constants.PANDAS_QUARTER:
-        # Colapso month -> quarter: debe estar presente el último mes del quarter
-        # Ese mes se puede calcular como quarter * 3 (03, 06, 09, 12)
-        if last_date.month != result_last_date.quarter * 3:
-            handle_incomplete_value(result)
-
-
-def handle_last_value_daily(last_date, result, result_last_date, target_freq):
-    if target_freq == constants.PANDAS_YEAR:
-        # Colapso day -> year: debe haber valores hasta el 31/12
-        if last_date.month != 12 or last_date.day != 31:
-            handle_incomplete_value(result)
-    if target_freq == constants.PANDAS_SEMESTER:
-        last_date_prev_month = result_last_date - relativedelta(months=1)
-        _, last_day = monthrange(last_date_prev_month.year, last_date_prev_month.month)
-        if last_date_prev_month.month != last_date.month or last_day != last_date.day:
-            handle_incomplete_value(result)
-    elif target_freq == constants.PANDAS_QUARTER:
-        # Colapso day -> quarter: debe haber valores hasta 31/03, 30/06, 30/09 o 31/12
-        # El último mes del quarter se puede calcular como quarter * 3
-        _, last_day = monthrange(result_last_date.year, result_last_date.quarter * 3)
-        if last_date.day != last_day or last_date.month != result_last_date.quarter * 3:
-            handle_incomplete_value(result)
-    elif target_freq == constants.PANDAS_MONTH:
-        # Colapso day -> month: debe haber valores hasta el último día del mes
-        _, last_day = monthrange(result_last_date.year, result_last_date.month)
-        if result_last_date.month != result_last_date.month or last_date.day != last_day:
-            handle_incomplete_value(result)
-
-
-def handle_incomplete_value(col):
-    del col[col.index[-1]]
 
 
 def end_of_period(x):
