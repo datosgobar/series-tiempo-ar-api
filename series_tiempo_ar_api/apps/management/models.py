@@ -5,7 +5,8 @@ from django.db import models
 from django.utils import timezone
 
 
-class DatasetIndexingFile(models.Model):
+class BaseRegisterFile(models.Model):
+
     UPLOADED = "UPLOADED"
     PROCESSING = "PROCESSING"
     PROCESSED = "PROCESSED"
@@ -20,7 +21,7 @@ class DatasetIndexingFile(models.Model):
 
     created = models.DateTimeField()
     modified = models.DateTimeField(null=True)
-    indexing_file = models.FileField(upload_to='datasets_indexing_files/')
+    indexing_file = models.FileField(upload_to='register_files/')
     uploader = models.ForeignKey(User)
     state = models.CharField(max_length=20, choices=STATE_CHOICES)
     logs = models.TextField(default=u'-')
@@ -31,8 +32,10 @@ class DatasetIndexingFile(models.Model):
             self.created = timezone.now()
             self.state = self.UPLOADED
 
-        super(DatasetIndexingFile, self).save(force_insert, force_update, using, update_fields)
+        super(BaseRegisterFile, self).save(force_insert, force_update, using, update_fields)
 
+
+class DatasetIndexingFile(BaseRegisterFile):
     def __unicode__(self):
         return "Indexing file: {}".format(self.created)
 
@@ -45,3 +48,8 @@ class Node(models.Model):
 
     def __unicode__(self):
         return self.catalog_id
+
+
+class NodeRegisterFile(BaseRegisterFile):
+    def __unicode__(self):
+        return "Node register file: {}".format(self.created)
