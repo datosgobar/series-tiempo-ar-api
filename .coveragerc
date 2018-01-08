@@ -2,4 +2,7 @@
 omit =
     *tests/
     *_tests.py
+    *admin.py
+    *strings.py
+    *constants.py
 
