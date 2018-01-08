@@ -8,12 +8,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # pero usando otros prefijos (en testing es TESTING_* )
 
 if [ "$ENVIRONMENT" == "testing" ]; then
+    # Las siguientes variables definen cuales variables buscar para desencriptar
+    # algunos valores de travis.
     export vault_key_var_name="encrypted_f201276fd578_key"
     export vault_iv_var_name="encrypted_f201276fd578_iv"
 
     export ssh_key_var_name="encrypted_ae74091d1bce_key"
     export ssh_iv_var_name="encrypted_ae74091d1bce_iv"
 
+    # Las siguientes variables son de conexion ssh
     export DEPLOY_TARGET_SSH_PORT="$TESTING_DEPLOY_TARGET_SSH_PORT"
     export DEPLOY_TARGET_USERNAME="$TESTING_DEPLOY_TARGET_USERNAME"
     export DEPLOY_TARGET_IP="$TESTING_DEPLOY_TARGET_IP"
