@@ -30,19 +30,9 @@ script:
 after_success:
 - coveralls
 
-before_deploy:
-- ssh-keyscan -p $DEPLOY_TARGET_SSH_PORT -t 'rsa,dsa,ecdsa' -H $DEPLOY_TARGET_IP 2>&1 | tee -a $HOME/.ssh/known_hosts
-- openssl aes-256-cbc -K $encrypted_ae74091d1bce_key -iv $encrypted_ae74091d1bce_iv -in deploy/build\+ts-api@travis-ci.org.enc -out /tmp/build\+ts-api@travis-ci.org -d
-- eval "$(ssh-agent -s)"
-- chmod 600 /tmp/build\+ts-api@travis-ci.org
-- ssh-add /tmp/build\+ts-api@travis-ci.org
-- openssl aes-256-cbc -K $encrypted_f201276fd578_key -iv $encrypted_f201276fd578_iv -in deploy/vault_pass.txt.enc -out /tmp/vault_pass.txt -d
-- scp -P $DEPLOY_TARGET_SSH_PORT /tmp/vault_pass.txt $DEPLOY_TARGET_USERNAME@$DEPLOY_TARGET_IP:~/series-tiempo-ar-deploy/
-- rm /tmp/vault_pass.txt
-
 deploy:
   skip_cleanup: true
   provider: script
-  script: scripts/deploy.sh
+  script: scripts/deploy/run_deploy.sh testing
   on:
     branch: master
