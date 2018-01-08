@@ -35,3 +35,13 @@ class DatasetIndexingFile(models.Model):
 
     def __unicode__(self):
         return "Indexing file: {}".format(self.created)
+
+
+class Node(models.Model):
+
+    catalog_id = models.CharField(max_length=100, unique=True)
+    catalog_url = models.URLField()
+    indexable = models.BooleanField()
+
+    def __unicode__(self):
+        return self.catalog_id

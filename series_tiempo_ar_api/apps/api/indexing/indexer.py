@@ -49,7 +49,7 @@ class Indexer(object):
                                         body=constants.INDEX_CREATION_BODY)
 
 
-@job('indexing')
+@job('indexing', timeout=300)
 def index_distribution(index, distribution_id):
     distribution = Distribution.objects.get(id=distribution_id)
 

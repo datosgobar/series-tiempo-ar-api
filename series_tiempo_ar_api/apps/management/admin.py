@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from .bulk_index import bulk_index
-from .models import DatasetIndexingFile
+from .models import DatasetIndexingFile, Node
 
 
 class DatasetsIndexingFileAdmin(admin.ModelAdmin):
@@ -28,4 +28,19 @@ class DatasetsIndexingFileAdmin(admin.ModelAdmin):
         return super(DatasetsIndexingFileAdmin, self).save_form(request, form, change)
 
 
+class NodeAdmin(admin.ModelAdmin):
+
+    list_display = ('catalog_id', 'indexable')
+    actions =  ('make_indexable', 'make_unindexable')
+
+    def make_unindexable(self, _, queryset):
+        queryset.update(indexable=False)
+    make_unindexable.short_description = 'Marcar como no indexable'
+
+    def make_indexable(self, _, queryset):
+        queryset.update(indexable=True)
+    make_indexable.short_description = 'Marcar como indexable'
+
+
 admin.site.register(DatasetIndexingFile, DatasetsIndexingFileAdmin)
+admin.site.register(Node, NodeAdmin)
