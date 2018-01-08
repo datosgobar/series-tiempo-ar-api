@@ -3,6 +3,8 @@
 set -e;
 
 # Nota: Las variables no definidas aqui deben ser seteadas en ./variables.sh
+# si tenes dudas sobre la sintaxis ${!variable}, mira https://stackoverflow.com/a/1921337/2355756
+
 
 deployment_files="scripts/deploy/files/$DEPLOY_ENVIRONMENT"
 

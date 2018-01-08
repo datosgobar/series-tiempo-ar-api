@@ -9,7 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ "$ENVIRONMENT" == "testing" ]; then
     # Las siguientes variables definen cuales variables buscar para desencriptar
-    # algunos valores de travis.
+    # algunos valores de travis. Ver ./prepare.sh para mas info
     export vault_key_var_name="encrypted_f201276fd578_key"
     export vault_iv_var_name="encrypted_f201276fd578_iv"
 
