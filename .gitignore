@@ -37,3 +37,7 @@ datajson_sample/
 .ipynb_checkpoints
 
 .DS_Store
+
+.vagrant
+.ruby-version
+.rbenv-gemsets
