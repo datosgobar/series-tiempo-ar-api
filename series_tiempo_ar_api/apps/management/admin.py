@@ -2,13 +2,13 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .actions import bulk_index, process_node_register_file
+from .actions import bulk_index, process_node_register_file, confirm_delete
 from .models import DatasetIndexingFile, NodeRegisterFile, Node
 
 
 class BaseRegisterFileAdmin(admin.ModelAdmin):
-    actions = ['run']
-
+    actions = ['process_register_file']
+    list_display = ('__unicode__', 'state', )
     readonly_fields = ('created', 'modified', 'state', 'logs')
 
     def process_register_file(self, _, queryset):
@@ -34,8 +34,6 @@ class DatasetIndexingFileAdmin(BaseRegisterFileAdmin):
 
 
 class NodeRegisterFileAdmin(BaseRegisterFileAdmin):
-
-    list_display = ('__unicode__', 'state', )
 
     def process_register_file(self, _, queryset):
         for model in queryset:
@@ -69,7 +67,7 @@ class NodeAdmin(admin.ModelAdmin):
         register_files = NodeRegisterFile.objects.all()
         for node in queryset:
             if node.indexable:
-                self.confirm_delete(node, register_files)
+                confirm_delete(node, register_files)
 
 
 admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
