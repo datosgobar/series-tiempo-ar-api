@@ -12,9 +12,10 @@ from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
 from series_tiempo_ar_api.apps.api.indexing.indexer import DistributionIndexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import Scraper
-from series_tiempo_ar_api.apps.api.models import Distribution, Field
+from series_tiempo_ar_api.apps.api.models import Dataset, Distribution, Field, Catalog
 from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.indexing.catalog_reader import index_catalog
+from series_tiempo_ar_api.apps.api.tests import setup_database
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
@@ -132,7 +133,11 @@ class IndexerTests(TestCase):
 class DatabaseLoaderTests(TestCase):
 
     def setUp(self):
+        setup_database()
         self.loader = DatabaseLoader(read_local=True)
+
+    def tearDown(self):
+        Catalog.objects.all().delete()
 
     def test_blacklisted_catalog_meta(self):
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
@@ -177,6 +182,16 @@ class DatabaseLoaderTests(TestCase):
             for field_model in distribution.field_set.all():
                 for field in settings.FIELD_BLACKLIST:
                     self.assertTrue(field not in field_model.metadata)
+
+    def test_datasets_loaded_are_not_indexable(self):
+
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+        distributions = get_time_series_distributions(catalog)
+        self.loader.run(catalog, CATALOG_ID, distributions)
+        dataset = Catalog.objects.get(identifier=CATALOG_ID).dataset_set
+
+        self.assertEqual(dataset.count(), 1)
+        self.assertFalse(dataset.first().indexable)
 
 
 class ReaderTests(TestCase):

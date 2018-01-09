@@ -16,6 +16,8 @@ class Dataset(models.Model):
     identifier = models.CharField(max_length=200)
     metadata = models.TextField()
     catalog = models.ForeignKey(to=Catalog, on_delete=models.CASCADE)
+    indexable = models.BooleanField(default=False)
+    present = models.BooleanField(default=True)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.identifier, self.catalog.identifier)

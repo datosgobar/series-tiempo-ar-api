@@ -12,14 +12,11 @@ coverage.xml
 .directory
 
 #Media
-series_tiempo_ar_api/media/*
+media/*
 
 #Autoenv files
 .autoenv.zsh
 .autoenv_leave.zsh
-
-#Workspaces
-wks.*
 
 cpd-report.xml
 npm-debug.log
@@ -28,9 +25,6 @@ node_modules/
 .python-version
 .env
 
-# Archivos fuente de las distribuciones
-media/distribution_raw
-datajson_sample/
 .nvmrc
 
 # jupyter
