@@ -21,6 +21,7 @@ if [ "$ENVIRONMENT" == "testing" ]; then
     export DEPLOY_TARGET_USERNAME="$TESTING_DEPLOY_TARGET_USERNAME"
     export DEPLOY_TARGET_IP="$TESTING_DEPLOY_TARGET_IP"
     export DEPLOY_ENVIRONMENT="$ENVIRONMENT"
+    export DEPLOY_REVISION="master"
 else
     echo "Ambiente '$ENVIRONMENT' desconocido";
     exit 1;
