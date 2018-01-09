@@ -35,5 +35,5 @@ def index_catalog(catalog, catalog_id, read_local=False):
     # Indexo todos los datasets whitelisteados, independientemente de cuales fueron
     # scrapeados / cargados
     datasets = Dataset.objects.filter(indexable=True)
-    distribution_models = Distribution.objects.filter(dataset__in=datasets.values('id'))
+    distribution_models = Distribution.objects.filter(dataset__in=datasets)
     Indexer().run(distribution_models)
