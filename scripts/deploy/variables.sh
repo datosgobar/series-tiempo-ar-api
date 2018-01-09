@@ -22,6 +22,19 @@ if [ "$ENVIRONMENT" == "testing" ]; then
     export DEPLOY_TARGET_IP="$TESTING_DEPLOY_TARGET_IP"
     export DEPLOY_ENVIRONMENT="$ENVIRONMENT"
     export DEPLOY_REVISION="master"
+elif [ "$ENVIRONMENT" == "staging" ]; then
+    #export vault_key_var_name=""
+    #export vault_iv_var_name=""
+
+    #export ssh_key_var_name=""
+    #export ssh_iv_var_name=""
+
+    # Las siguientes variables son de conexion ssh
+    export DEPLOY_TARGET_SSH_PORT="$STAGING_DEPLOY_TARGET_SSH_PORT"
+    export DEPLOY_TARGET_USERNAME="$STAGING_DEPLOY_TARGET_USERNAME"
+    export DEPLOY_TARGET_IP="$STAGING_DEPLOY_TARGET_IP"
+    export DEPLOY_ENVIRONMENT="$ENVIRONMENT"
+    export DEPLOY_REVISION="${TRAVIS_TAG:-$TRAVIS_COMMIT}" # Desde el tag o el hash del commit
 else
     echo "Ambiente '$ENVIRONMENT' desconocido";
     exit 1;
