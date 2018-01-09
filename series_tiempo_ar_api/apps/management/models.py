@@ -6,7 +6,9 @@ from django.utils import timezone
 
 
 class BaseRegisterFile(models.Model):
-
+    """Base de los archivos de registro de datasets y de nodos.
+    Contiene atributos de estado del archivo y fechas de creado / modificado
+    """
     UPLOADED = "UPLOADED"
     PROCESSING = "PROCESSING"
     PROCESSED = "PROCESSED"
