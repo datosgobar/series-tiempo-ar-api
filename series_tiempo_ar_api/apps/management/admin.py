@@ -7,18 +7,17 @@ from .models import DatasetIndexingFile
 
 
 class DatasetsIndexingFileAdmin(admin.ModelAdmin):
-    actions = ['run']
+    actions = ['bulk_index_datasets']
 
     readonly_fields = ('created', 'modified', 'state', 'logs')
 
-    def run(self, _, queryset):
+    def bulk_index_datasets(self, _, queryset):
         for model in queryset:
             model.state = DatasetIndexingFile.state = DatasetIndexingFile.PROCESSING
-            model.logs = u'-'
+            model.logs = u'-'  # Valor default mientras se ejecuta
             model.save()
             bulk_index.delay(model.id)
-
-    run.short_description = 'Ejecutar'
+    bulk_index_datasets.short_description = 'Ejecutar'
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(DatasetsIndexingFileAdmin, self).get_form(request, obj, **kwargs)
