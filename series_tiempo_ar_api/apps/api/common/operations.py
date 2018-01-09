@@ -119,6 +119,9 @@ def index_transform(col, transform_function, index, series_id, freq, name):
         transform_col.index = transform_col.index - offset
         transform_col.index.freq = constants.PANDAS_SEMESTER
 
+    if not len(transform_col):
+        return pd.Series()
+
     handle_missing_values(col, transform_col)
     transform_df = generate_interval_transformations_df(transform_col, freq)
     result = transform_df.apply(elastic_index,
