@@ -2,8 +2,9 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.contrib.admin.actions import delete_selected
 from .actions import bulk_index, process_node_register_file, confirm_delete
-from .models import DatasetIndexingFile, NodeRegisterFile, Node
+from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTask
 
 
 class BaseRegisterFileAdmin(admin.ModelAdmin):
@@ -70,6 +71,25 @@ class NodeAdmin(admin.ModelAdmin):
                 confirm_delete(node, register_files)
 
 
+class IndexingTaskAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'enabled', 'weekdays_only')
+
+    actions = ('delete_model',)
+
+    def get_actions(self, request):
+        # Borro la acción de borrado default
+        actions = super(IndexingTaskAdmin, self).get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+    def delete_model(self, request, obj):
+        super(IndexingTaskAdmin, self).delete_model(request, obj)
+        # Actualizo los crons del sistema para reflejar el cambio de modelos
+        IndexingTask.update_crontab()
+
+
 admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
 admin.site.register(NodeRegisterFile, NodeRegisterFileAdmin)
 admin.site.register(Node, NodeAdmin)
+admin.site.register(IndexingTask, IndexingTaskAdmin)
