@@ -1,11 +1,12 @@
 #! coding: utf-8
 import unicodecsv
+import yaml
 
 from django_rq import job
 from django.utils import timezone
 
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
-from .models import DatasetIndexingFile
+from .models import DatasetIndexingFile, Node, NodeRegisterFile
 from .strings import DATASET_STATUS, READ_ERROR
 
 CATALOG_HEADER = u'catalog_id'
@@ -76,3 +77,34 @@ class DatasetIndexableToggler(object):
                     status = 'ERROR'
 
                 self.logs.append(DATASET_STATUS.format(catalog, dataset, status))
+
+
+def process_node_register_file(register_file):
+    """Registra (crea objetos Node) los nodos marcados como federado en el registro"""
+    indexing_file = register_file.indexing_file
+    yml = indexing_file.read()
+    nodes = yaml.load(yml)
+    for node, values in nodes.items():
+        if bool(values['federado']) is True:  # evitar entrar al branch con un valor truthy
+            Node.objects.get_or_create(catalog_id=node,
+                                       catalog_url=values['url'],
+                                       indexable=True)
+
+    register_file.state = NodeRegisterFile.PROCESSED
+    register_file.save()
+
+
+def confirm_delete(node, register_files):
+    """Itera sobre todos los registros y solo borra el nodo si no está registrado
+    como federado en ninguno de ellos"""
+    found = False
+    for register_file in register_files:
+        indexing_file = register_file.indexing_file
+        yml = indexing_file.read()
+        nodes = yaml.load(yml)
+        if node.catalog_id in nodes and nodes[node.catalog_id].get('federado'):
+            found = True
+            break
+
+    if not found:
+        node.delete()

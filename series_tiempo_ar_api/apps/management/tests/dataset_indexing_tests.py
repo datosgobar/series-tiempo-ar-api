@@ -6,13 +6,12 @@ import os
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from nose.tools import raises
 
 from ..models import DatasetIndexingFile
-from ..bulk_index import bulk_index
+from ..actions import bulk_index
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
 
 class BulkIndexingTests(TestCase):
@@ -23,14 +22,10 @@ class BulkIndexingTests(TestCase):
     catalogs = (test_catalog, other_catalog)
     datasets_per_catalog = 3
 
-    @classmethod
-    def setUpClass(cls):
-        cls.user = User(username='test_user', password='test_pass', email='test@email.com')
-        cls.user.save()
-
-        super(BulkIndexingTests, cls).setUpClass()
-
     def setUp(self):
+        self.user = User(username='test_user', password='test_pass', email='test@email.com')
+        self.user.save()
+
         for catalog in self.catalogs:
             catalog_model = Catalog(identifier=catalog, title='', metadata='')
             catalog_model.save()
@@ -95,3 +90,4 @@ class BulkIndexingTests(TestCase):
     def tearDown(self):
         for catalog in self.catalogs:
             Catalog.objects.get(identifier=catalog).delete()
+        self.user.delete()
