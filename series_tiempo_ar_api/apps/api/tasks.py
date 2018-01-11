@@ -6,7 +6,7 @@ from .models import Distribution
 from .indexing.distribution_indexer import DistributionIndexer
 
 
-@job('indexing')
+@job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(index, distribution_id):
     distribution = Distribution.objects.get(id=distribution_id)
 
