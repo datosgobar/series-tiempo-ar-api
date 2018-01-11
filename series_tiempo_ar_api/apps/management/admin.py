@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import time
 from django.contrib import admin
-from django.contrib.admin.actions import delete_selected
-from .actions import bulk_index, process_node_register_file, confirm_delete
-from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTask, ReadDataJsonTask
+from .actions import process_node_register_file, confirm_delete
+from .tasks import bulk_index, read_datajson
+from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTaskCron, ReadDataJsonTask
 
 
 class BaseRegisterFileAdmin(admin.ModelAdmin):
@@ -86,16 +87,20 @@ class IndexingTaskAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         super(IndexingTaskAdmin, self).delete_model(request, obj)
         # Actualizo los crons del sistema para reflejar el cambio de modelos
-        IndexingTask.update_crontab()
+        IndexingTaskCron.update_crontab()
 
 
 class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs')
+    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs')
     list_display = ('__unicode__', 'status')
+
+    def save_model(self, request, obj, form, change):
+        super(DataJsonAdmin, self).save_model(request, obj, form, change)
+        read_datajson.delay(obj)
 
 
 admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
 admin.site.register(NodeRegisterFile, NodeRegisterFileAdmin)
 admin.site.register(Node, NodeAdmin)
-admin.site.register(IndexingTask, IndexingTaskAdmin)
+admin.site.register(IndexingTaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)

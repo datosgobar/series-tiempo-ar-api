@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+from series_tiempo_ar_api.apps.api.models import Catalog
+
 
 class BaseRegisterFile(models.Model):
     """Base de los archivos de registro de datasets y de nodos.
@@ -62,7 +64,7 @@ class NodeRegisterFile(BaseRegisterFile):
         return "Node register file: {}".format(self.created)
 
 
-class IndexingTask(models.Model):
+class IndexingTaskCron(models.Model):
 
     time = models.TimeField(help_text='Los segundos serán ignorados')
     enabled = models.BooleanField(default=True)
@@ -70,11 +72,11 @@ class IndexingTask(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        super(IndexingTask, self).save(force_insert, force_update, using, update_fields)
+        super(IndexingTaskCron, self).save(force_insert, force_update, using, update_fields)
         self.update_crontab()
 
     def delete(self, using=None, keep_parents=False):
-        super(IndexingTask, self).delete(using, keep_parents)
+        super(IndexingTaskCron, self).delete(using, keep_parents)
         self.update_crontab()
 
     def __unicode__(self):
@@ -92,7 +94,7 @@ class IndexingTask(models.Model):
         for job in cron.find_comment(job_id):
             job.delete()
 
-        tasks = IndexingTask.objects.filter(enabled=True)
+        tasks = IndexingTaskCron.objects.filter(enabled=True)
         for task in tasks:
             job = cron.new(command=command, comment=job_id)
 
@@ -121,12 +123,13 @@ class ReadDataJsonTask(models.Model):
     created = models.DateTimeField()
     finished = models.DateTimeField(null=True)
     logs = models.TextField(default='-')
+    catalogs = models.ManyToManyField(to=Node, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.pk:  # first time only
             self.created = timezone.now()
-            self.state = self.RUNNING
+            self.status = self.RUNNING
 
         super(ReadDataJsonTask, self).save(force_insert, force_update, using, update_fields)
 
