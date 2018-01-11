@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.admin.actions import delete_selected
 from .actions import bulk_index, process_node_register_file, confirm_delete
-from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTask
+from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTask, ReadDataJsonTask
 
 
 class BaseRegisterFileAdmin(admin.ModelAdmin):
@@ -89,7 +89,13 @@ class IndexingTaskAdmin(admin.ModelAdmin):
         IndexingTask.update_crontab()
 
 
+class DataJsonAdmin(admin.ModelAdmin):
+    readonly_fields = ('status', 'created', 'finished', 'logs')
+    list_display = ('__unicode__', 'status')
+
+
 admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
 admin.site.register(NodeRegisterFile, NodeRegisterFileAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(IndexingTask, IndexingTaskAdmin)
+admin.site.register(ReadDataJsonTask, DataJsonAdmin)

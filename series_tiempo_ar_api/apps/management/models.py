@@ -102,3 +102,33 @@ class IndexingTask(models.Model):
                 job.dow.during('MON', 'FRI')
 
         cron.write()
+
+
+class ReadDataJsonTask(models.Model):
+    RUNNING = "RUNNING"
+    INDEXING = "INDEXING"
+    FINISHED = "FINISHED"
+    ERROR = "ERROR"
+
+    STATUS_CHOICES = (
+        (RUNNING, "Procesando catálogos"),
+        (INDEXING, "Indexando series"),
+        (FINISHED, "Finalizada"),
+        (ERROR, "Error"),
+    )
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    created = models.DateTimeField()
+    finished = models.DateTimeField(null=True)
+    logs = models.TextField(default='-')
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.pk:  # first time only
+            self.created = timezone.now()
+            self.state = self.RUNNING
+
+        super(ReadDataJsonTask, self).save(force_insert, force_update, using, update_fields)
+
+    def __unicode__(self):
+        return "Task at %s" % self.created
