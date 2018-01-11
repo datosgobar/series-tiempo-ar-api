@@ -14,6 +14,9 @@ from .incomplete_periods import handle_missing_values
 from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset, \
     freq_pandas_to_interval
 
+# Ignora divisiones por cero, no nos molesta el NaN
+np.seterr(divide='ignore', invalid='ignore')
+
 
 def year_ago_column(col, freq, operation):
     """Aplica operación entre los datos de una columna y su valor
