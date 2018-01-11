@@ -96,7 +96,7 @@ class DataJsonAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super(DataJsonAdmin, self).save_model(request, obj, form, change)
-        read_datajson.delay(obj)
+        read_datajson.delay(obj)  # Ejecuta indexación
 
 
 admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
