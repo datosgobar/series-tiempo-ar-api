@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
+from . import strings
 from series_tiempo_ar_api.apps.api.models import Catalog
 
 
@@ -87,10 +88,10 @@ class IndexingTaskCron(models.Model):
         python_exec = sys.executable
         cwd = os.getcwd()
 
-        command = '%s %s/manage.py read_datajson' % (python_exec, cwd)
+        command = strings.INDEXING_COMMAND.format(python_exec, cwd)
         cron = CronTab(user=getpass.getuser())
 
-        job_id = "API series tiempo: indexing de datos"
+        job_id = strings.CRONTAB_COMMENT
         for job in cron.find_comment(job_id):
             job.delete()
 
