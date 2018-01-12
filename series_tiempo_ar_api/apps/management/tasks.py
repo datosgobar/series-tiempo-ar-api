@@ -38,6 +38,10 @@ def read_datajson(task, async=True):
         task.logs = logs_string
         task.save()
 
+    if not nodes:
+        task.status = task.FINISHED
+        task.save()
+
 
 @job('indexing', timeout=1500)
 def start_index_catalog(catalog_id, catalog_url, task_id):
