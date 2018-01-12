@@ -10,7 +10,6 @@ from django.db import models
 from django.utils import timezone
 
 from . import strings
-from series_tiempo_ar_api.apps.api.models import Catalog
 
 
 class BaseRegisterFile(models.Model):
@@ -71,6 +70,10 @@ class IndexingTaskCron(models.Model):
     enabled = models.BooleanField(default=True)
     weekdays_only = models.BooleanField(default=False)
 
+    def __init__(self, *args, **kwargs):
+        self.cron_client = CronTab(user=getpass.getuser())
+        super(IndexingTaskCron, self).__init__(*args, **kwargs)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(IndexingTaskCron, self).save(force_insert, force_update, using, update_fields)
@@ -83,13 +86,12 @@ class IndexingTaskCron(models.Model):
     def __unicode__(self):
         return u'Indexing task at %s' % self.time
 
-    @staticmethod
-    def update_crontab():
+    def update_crontab(self):
         python_exec = sys.executable
         cwd = os.getcwd()
 
         command = strings.INDEXING_COMMAND.format(python_exec, cwd)
-        cron = CronTab(user=getpass.getuser())
+        cron = self.cron_client
 
         job_id = strings.CRONTAB_COMMENT
         for job in cron.find_comment(job_id):

@@ -87,7 +87,7 @@ class IndexingTaskAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         super(IndexingTaskAdmin, self).delete_model(request, obj)
         # Actualizo los crons del sistema para reflejar el cambio de modelos
-        IndexingTaskCron.update_crontab()
+        obj.update_crontab()
 
 
 class DataJsonAdmin(admin.ModelAdmin):
