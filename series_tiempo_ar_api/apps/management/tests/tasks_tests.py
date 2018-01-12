@@ -20,5 +20,4 @@ class ReadDataJsonTest(TestCase):
         task = ReadDataJsonTask()
         task.save()
         read_datajson(task, async=False)
-        task = ReadDataJsonTask.objects.get(id=1)
         self.assertTrue(Field.objects.filter(distribution__dataset__catalog__identifier=identifier))
