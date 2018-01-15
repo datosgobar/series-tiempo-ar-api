@@ -2,36 +2,12 @@
 import unicodecsv
 import yaml
 
-from django_rq import job
-from django.utils import timezone
-
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
-from .models import DatasetIndexingFile, Node, NodeRegisterFile
-from .strings import DATASET_STATUS, READ_ERROR
+from .models import Node, NodeRegisterFile
+from .strings import DATASET_STATUS
 
 CATALOG_HEADER = u'catalog_id'
 DATASET_ID_HEADER = u'dataset_identifier'
-
-
-@job('indexing')
-def bulk_index(indexing_file_id):
-    indexing_file_model = DatasetIndexingFile.objects.get(id=indexing_file_id)
-    toggler = DatasetIndexableToggler()
-    try:
-        logs_list = toggler.process(indexing_file_model.indexing_file)
-        logs = ''
-        for log in logs_list:
-            logs += log + '\n'
-
-        state = DatasetIndexingFile.PROCESSED
-    except ValueError:
-        logs = READ_ERROR
-        state = DatasetIndexingFile.FAILED
-
-    indexing_file_model.state = state
-    indexing_file_model.logs = logs
-    indexing_file_model.modified = timezone.now()
-    indexing_file_model.save()
 
 
 class DatasetIndexableToggler(object):

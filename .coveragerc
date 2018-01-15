@@ -5,4 +5,5 @@ omit =
     *admin.py
     *strings.py
     *constants.py
+    *models.py
 

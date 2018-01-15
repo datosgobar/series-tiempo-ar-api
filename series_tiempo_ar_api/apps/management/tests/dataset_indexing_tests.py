@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from ..models import DatasetIndexingFile
-from ..actions import bulk_index
+from series_tiempo_ar_api.apps.management.tasks import bulk_index
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
 
 dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
