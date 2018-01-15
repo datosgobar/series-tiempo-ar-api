@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import time
 from django.contrib import admin
-from .actions import bulk_index, process_node_register_file, confirm_delete
-from .models import DatasetIndexingFile, NodeRegisterFile, Node
+from .actions import process_node_register_file, confirm_delete
+from .tasks import bulk_index, read_datajson
+from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTaskCron, ReadDataJsonTask
 
 
 class BaseRegisterFileAdmin(admin.ModelAdmin):
@@ -70,6 +72,35 @@ class NodeAdmin(admin.ModelAdmin):
                 confirm_delete(node, register_files)
 
 
+class IndexingTaskAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'enabled', 'weekdays_only')
+
+    actions = ('delete_model',)
+
+    def get_actions(self, request):
+        # Borro la acción de borrado default
+        actions = super(IndexingTaskAdmin, self).get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+    def delete_model(self, request, obj):
+        super(IndexingTaskAdmin, self).delete_model(request, obj)
+        # Actualizo los crons del sistema para reflejar el cambio de modelos
+        obj.update_crontab()
+
+
+class DataJsonAdmin(admin.ModelAdmin):
+    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs')
+    list_display = ('__unicode__', 'status')
+
+    def save_model(self, request, obj, form, change):
+        super(DataJsonAdmin, self).save_model(request, obj, form, change)
+        read_datajson.delay(obj)  # Ejecuta indexación
+
+
 admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
 admin.site.register(NodeRegisterFile, NodeRegisterFileAdmin)
 admin.site.register(Node, NodeAdmin)
+admin.site.register(IndexingTaskCron, IndexingTaskAdmin)
+admin.site.register(ReadDataJsonTask, DataJsonAdmin)
