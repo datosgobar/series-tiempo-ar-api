@@ -13,6 +13,7 @@ from series_tiempo_ar_api.apps.management.strings import FILE_READ_ERROR, READ_E
 
 @job('indexing')
 def read_datajson(task, async=True):
+    task_id = task.id
     nodes = Node.objects.filter(indexable=True)
     task.status = task.RUNNING
     task.catalogs.add(*[node.id for node in nodes])
@@ -25,9 +26,9 @@ def read_datajson(task, async=True):
         try:
             DataJson(catalog_url)
             if not async:
-                start_index_catalog(catalog_id, catalog_url, task.id)
+                start_index_catalog(catalog_id, catalog_url, task_id)
             else:
-                start_index_catalog.delay(catalog_id, catalog_url, task.id)
+                start_index_catalog.delay(catalog_id, catalog_url, task_id)
         except (IOError, ValueError, AssertionError) as e:
             logs.append(READ_ERROR.format(catalog_id, e))
 
@@ -35,6 +36,7 @@ def read_datajson(task, async=True):
         for log in logs:
             logs_string += log + '\n'
 
+        task = ReadDataJsonTask.objects.get(id=task_id)
         task.logs = logs_string
         task.save()
 
@@ -45,7 +47,6 @@ def read_datajson(task, async=True):
 
 @job('indexing', timeout=1500)
 def start_index_catalog(catalog_id, catalog_url, task_id):
-    catalog_reader.index_catalog(catalog_url, catalog_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
     task.catalogs.remove(Node.objects.get(catalog_id=catalog_id))
     if not task.catalogs.count():
@@ -53,6 +54,8 @@ def start_index_catalog(catalog_id, catalog_url, task_id):
         task.finished = timezone.now()
 
         task.save()
+
+    catalog_reader.index_catalog(catalog_url, catalog_id, task=task)
 
 
 @job('indexing')

@@ -128,6 +128,8 @@ class ReadDataJsonTask(models.Model):
     logs = models.TextField(default='-')
     catalogs = models.ManyToManyField(to=Node, blank=True)
 
+    stats = models.TextField(default='{}')
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.pk:  # first time only
