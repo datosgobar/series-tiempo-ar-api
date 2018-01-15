@@ -36,7 +36,7 @@ before_deploy:
 - eval "$(ssh-agent -s)"
 - chmod 600 /tmp/build\+ts-api@travis-ci.org
 - ssh-add /tmp/build\+ts-api@travis-ci.org
-- openssl aes-256-cbc -K $encrypted_27b45b79a046_key -iv $encrypted_27b45b79a046_key -in deploy/vault_pass.txt.enc -out /tmp/vault_pass.txt -d
+- openssl aes-256-cbc -K $encrypted_27b45b79a046_key -iv $encrypted_27b45b79a046_iv -in deploy/vault_pass.txt.enc -out /tmp/vault_pass.txt -d
 - scp -P $DEPLOY_TARGET_SSH_PORT /tmp/vault_pass.txt $DEPLOY_TARGET_USERNAME@$DEPLOY_TARGET_IP:~/series-tiempo-ar-deploy/
 - rm /tmp/vault_pass.txt
 
