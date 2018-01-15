@@ -18,9 +18,3 @@ openssl aes-256-cbc -K ${!ssh_key_var_name} -iv ${!ssh_iv_var_name} -in $deploym
 eval "$(ssh-agent -s)"
 chmod 600 /tmp/build\+ts-api@travis-ci.org
 ssh-add /tmp/build\+ts-api@travis-ci.org
-
-echo "Copiando password de ansible-vault"
-# Desencripto la key de ansible-vault para correr el deployment
-openssl aes-256-cbc -K ${!vault_key_var_name} -iv ${!vault_iv_var_name} -in $deployment_files/vault_pass.txt.enc -out /tmp/vault_pass.txt -d
-scp -P $DEPLOY_TARGET_SSH_PORT /tmp/vault_pass.txt $DEPLOY_TARGET_USERNAME@$DEPLOY_TARGET_IP:~/series-tiempo-ar-deploy/
-rm /tmp/vault_pass.txt
