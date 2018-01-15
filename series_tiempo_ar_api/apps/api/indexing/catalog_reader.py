@@ -3,8 +3,6 @@ from __future__ import division
 
 import json
 import logging
-import StringIO
-
 
 from pydatajson import DataJson
 
@@ -15,28 +13,7 @@ from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
 from series_tiempo_ar_api.apps.api.indexing import strings
 from series_tiempo_ar_api.apps.api.models import Dataset, Distribution
 
-
-def get_string_logger(logger_name, level=logging.INFO, _format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"):
-    """
-    Gets you what you need to log to a string. Returns a pair of StringIO, logger variables.
-
-    output, logger = get_string_logger('my_app_logger', level=logging.DEBUG)
-    call_stuff_to_debug_with_logger(logger=logger)
-    print output.getvalue()
-    """
-    _logger = logging.getLogger(logger_name)
-    _logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(_format)
-    _output = StringIO.StringIO()
-    string_handler = logging.StreamHandler(_output)
-    string_handler.setFormatter(formatter)
-    string_handler.setLevel(level)
-    _logger.addHandler(string_handler)
-
-    return _output, _logger
-
-
-output, logger = get_string_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def index_catalog(catalog, catalog_id, read_local=False, task=None):
@@ -72,5 +49,4 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None):
         task_stats[catalog_id] = stats
         task.stats = json.dumps(task_stats)
 
-        task.logs = (task.logs + output.getvalue()) or '-'
         task.save()
