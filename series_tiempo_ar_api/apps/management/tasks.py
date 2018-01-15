@@ -49,7 +49,7 @@ def start_index_catalog(catalog_id, catalog_url, task_id):
     task = ReadDataJsonTask.objects.get(id=task_id)
     task.catalogs.remove(Node.objects.get(catalog_id=catalog_id))
     if not task.catalogs.count():
-        task.status = task.FINISHED
+        task.status = task.INDEXING
         task.finished = timezone.now()
 
         task.save()
