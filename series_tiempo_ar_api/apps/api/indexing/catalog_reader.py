@@ -50,3 +50,5 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None):
         task.stats = json.dumps(task_stats)
 
         task.save()
+
+        task.generate_email()

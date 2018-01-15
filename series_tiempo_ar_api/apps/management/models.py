@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import json
 import os
 import sys
 import getpass
 
 from crontab import CronTab
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
-
+from django.core.mail import send_mail
+from series_tiempo_ar_api.apps.api import models as api_models
 from . import strings
 
 
@@ -140,3 +144,29 @@ class ReadDataJsonTask(models.Model):
 
     def __unicode__(self):
         return "Task at %s" % self.created
+
+    def generate_email(self):
+        template = u"""
+        Indexación finalizada: {finish_time}
+        {name}:
+        nuevos: {new},
+        actualizados: {updated},
+        totales: {total},
+        """
+
+        stats = json.loads(self.stats)
+        total_stats = {}
+        for catalog in stats:
+            for key in stats[catalog]:
+                total_stats[key] = total_stats.get(key, 0) + stats[catalog][key]
+
+        total_catalogs = api_models.Catalog.objects.all().count()
+        updated_catalogs = total_catalogs - total_stats['catalogs']
+        msg = template.format(finish_time=str(self.finished),
+                              name='Catálogos',
+                              new=total_stats['catalogs'],
+                              updated=updated_catalogs,
+                              total=total_catalogs)
+        sent = send_mail('subject', msg, settings.EMAIL_HOST_USER, ['lucaslavandeira@gmail.com'])
+        if not sent:
+            raise ValueError
