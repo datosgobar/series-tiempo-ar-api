@@ -91,7 +91,7 @@ class IndexingTaskAdmin(admin.ModelAdmin):
 
 
 class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs')
+    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs', 'stats')
     list_display = ('__unicode__', 'status')
 
     def save_model(self, request, obj, form, change):
