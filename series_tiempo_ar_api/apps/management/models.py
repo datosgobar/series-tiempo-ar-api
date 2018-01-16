@@ -153,7 +153,10 @@ class ReadDataJsonTask(models.Model):
         msg += self.format_message('fields', 'Series')
 
         emails = [user.email for user in User.objects.filter(is_staff=True)]
-        sent = send_mail('subject', msg, settings.EMAIL_HOST_USER, emails)
+        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE,
+                                                          str(self.created))
+
+        sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
         if not sent:
             raise ValueError
 

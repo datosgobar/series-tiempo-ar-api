@@ -284,3 +284,5 @@ RQ_QUEUES = {
         'DB': DEFAULT_REDIS_DB,
     },
 }
+
+ENV_TYPE = env('ENV_TYPE')
