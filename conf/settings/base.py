@@ -285,4 +285,4 @@ RQ_QUEUES = {
     },
 }
 
-ENV_TYPE = env('ENV_TYPE')
+ENV_TYPE = env('ENV_TYPE', default='')
