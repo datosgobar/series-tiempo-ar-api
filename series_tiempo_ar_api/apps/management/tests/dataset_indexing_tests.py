@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from ..models import DatasetIndexingFile
-from series_tiempo_ar_api.apps.management.tasks import bulk_index
+from series_tiempo_ar_api.apps.management.tasks import bulk_whitelist
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
 
 dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -44,7 +44,7 @@ class BulkIndexingTests(TestCase):
                                            uploader=self.user)
             idx_file.save()
 
-            bulk_index(idx_file.id)
+            bulk_whitelist(idx_file.id)
         dataset = Dataset.objects.get(catalog__identifier=self.test_catalog, identifier='1')
         self.assertTrue(dataset.indexable)
 
@@ -58,7 +58,7 @@ class BulkIndexingTests(TestCase):
                                            uploader=self.user)
             idx_file.save()
 
-            bulk_index(idx_file.id)
+            bulk_whitelist(idx_file.id)
 
         dataset = Dataset.objects.get(catalog__identifier=self.test_catalog, identifier='0')
         self.assertFalse(dataset.indexable)
@@ -70,7 +70,7 @@ class BulkIndexingTests(TestCase):
                                            uploader=self.user)
             idx_file.save()
 
-            bulk_index(idx_file.id)
+            bulk_whitelist(idx_file.id)
 
         idx_file = DatasetIndexingFile.objects.first()
         self.assertEqual(idx_file.state, idx_file.PROCESSED)
@@ -82,7 +82,7 @@ class BulkIndexingTests(TestCase):
                                            uploader=self.user)
             idx_file.save()
 
-            bulk_index(idx_file.id)
+            bulk_whitelist(idx_file.id)
 
         idx_file = DatasetIndexingFile.objects.first()
         self.assertEqual(idx_file.state, idx_file.FAILED)

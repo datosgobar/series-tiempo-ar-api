@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import time
 from django.contrib import admin
 from .actions import process_node_register_file, confirm_delete
-from .tasks import bulk_index, read_datajson
+from .tasks import bulk_whitelist, read_datajson
 from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTaskCron, ReadDataJsonTask
 
 
@@ -32,7 +32,7 @@ class DatasetIndexingFileAdmin(BaseRegisterFileAdmin):
             model.state = DatasetIndexingFile.state = DatasetIndexingFile.PROCESSING
             model.logs = u'-'  # Valor default mientras se ejecuta
             model.save()
-            bulk_index.delay(model.id)
+            bulk_whitelist.delay(model.id)
 
 
 class NodeRegisterFileAdmin(BaseRegisterFileAdmin):

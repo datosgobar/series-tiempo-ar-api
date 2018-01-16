@@ -12,7 +12,6 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.core.mail import send_mail
-from series_tiempo_ar_api.apps.api import models as api_models
 from . import strings
 
 
@@ -146,27 +145,30 @@ class ReadDataJsonTask(models.Model):
         return "Task at %s" % self.created
 
     def generate_email(self):
-        template = u"""
-        Indexación finalizada: {finish_time}
-        {name}:
-        nuevos: {new},
-        actualizados: {updated},
-        totales: {total},
-        """
+        msg = "Horario de finalización: {}\n".format(self.finished)
 
+        msg += self.format_message('catalogs', 'Catálogos')
+        msg += self.format_message('datasets', 'Datasets')
+        msg += self.format_message('distributions', 'Distribuciones')
+        msg += self.format_message('fields', 'Series')
+
+        sent = send_mail('subject', msg, settings.EMAIL_HOST_USER, ['lucaslavandeira@gmail.com'])
+        if not sent:
+            raise ValueError
+
+    def format_message(self, dict_key, full_name):
+        template = strings.INDEXING_REPORT_TEMPLATE
         stats = json.loads(self.stats)
         total_stats = {}
         for catalog in stats:
             for key in stats[catalog]:
                 total_stats[key] = total_stats.get(key, 0) + stats[catalog][key]
 
-        total_catalogs = api_models.Catalog.objects.all().count()
-        updated_catalogs = total_catalogs - total_stats['catalogs']
-        msg = template.format(finish_time=str(self.finished),
-                              name='Catálogos',
-                              new=total_stats['catalogs'],
+        total_catalogs = total_stats.get('total_' + dict_key, 0)
+        new_catalogs = total_stats.get(dict_key, 0)
+        updated_catalogs = total_catalogs - new_catalogs
+        msg = template.format(name=full_name,
+                              new=new_catalogs,
                               updated=updated_catalogs,
                               total=total_catalogs)
-        sent = send_mail('subject', msg, settings.EMAIL_HOST_USER, ['lucaslavandeira@gmail.com'])
-        if not sent:
-            raise ValueError
+        return msg

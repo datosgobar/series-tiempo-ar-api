@@ -20,6 +20,7 @@ class Command(BaseCommand):
         task_id = task.id
         read_datajson(task, async=False)
 
+        # Se finalizó de manera sincronica
         task = ReadDataJsonTask.objects.get(id=task_id)
-        task.status = task.INDEXING
+        task.status = task.FINISHED
         task.save()

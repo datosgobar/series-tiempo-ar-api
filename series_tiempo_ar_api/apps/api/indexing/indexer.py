@@ -16,9 +16,10 @@ class Indexer(object):
     Elasticsearch
     """
 
-    def __init__(self, index=settings.TS_INDEX):
+    def __init__(self, index=settings.TS_INDEX, async=True):
         self.elastic = ElasticInstance()
         self.index = index
+        self.async = async
 
     def run(self, distributions=None):
         """Indexa en Elasticsearch todos los datos de las
@@ -30,7 +31,10 @@ class Indexer(object):
         logger.info(strings.INDEX_START)
 
         for distribution in distributions:
-            index_distribution.delay(self.index, distribution.id)
+            if not self.async:
+                index_distribution(self.index, distribution.id)
+            else:
+                index_distribution.delay(self.index, distribution.id)
 
         logger.info(strings.INDEX_END)
 

@@ -14,7 +14,7 @@ def index_distribution(index, distribution_id):
 
     DistributionIndexer(index=index).run(distribution)
 
-    if not get_queue('indexing').count:
+    if not get_queue('indexing').jobs:
         task = ReadDataJsonTask.objects.last()
         task.finished = timezone.now()
         task.status = task.FINISHED

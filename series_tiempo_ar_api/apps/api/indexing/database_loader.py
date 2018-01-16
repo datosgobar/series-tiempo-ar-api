@@ -30,12 +30,7 @@ class DatabaseLoader(object):
         self.catalog_model = None
         self.read_local = read_local
         self.catalog_id = None
-        self.stats = {
-            'catalogs': 0,
-            'datasets': 0,
-            'distributions': 0,
-            'fields': 0,
-        }
+        self.stats = {}
 
     def run(self, catalog, catalog_id, distributions):
         """Guarda las distribuciones de la lista 'distributions',
@@ -95,7 +90,8 @@ class DatabaseLoader(object):
 
         self.dataset_cache[dataset[constants.IDENTIFIER]] = dataset_model
 
-        self.stats['datasets'] += created
+        self.stats['datasets'] = self.stats.get('datasets', 0) + created
+        self.stats['total_datasets'] = self.stats.get('total_datasets', 0) + 1
         return dataset_model
 
     def _catalog_model(self, catalog):
@@ -114,7 +110,9 @@ class DatabaseLoader(object):
         catalog_model.metadata = json.dumps(catalog)
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
         catalog_model.save()
-        self.stats['catalogs'] += created
+        self.stats['catalogs'] = self.stats.get('catalogs', 0) + created
+        self.stats['total_catalogs'] = self.stats.get('total_catalogs', 0) + 1
+
         return catalog_model
 
     def _distribution_model(self, catalog, distribution, periodicity):
@@ -146,7 +144,8 @@ class DatabaseLoader(object):
         distribution_model.save()
         self.distribution_models.append(distribution_model)
 
-        self.stats['distributions'] += created
+        self.stats['distributions'] = self.stats.get('distributions', 0) + created
+        self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
         return distribution_model
 
     def _read_file(self, file_url, distribution_model):
@@ -204,7 +203,8 @@ class DatabaseLoader(object):
             distribution_model.field_set.filter(title=title).delete()
             field_model.save()
 
-            self.stats['fields'] += created
+            self.stats['fields'] = self.stats.get('fields', 0) + created
+            self.stats['total_fields'] = self.stats.get('total_fields', 0) + 1
 
     @staticmethod
     def _remove_blacklisted_fields(metadata, blacklist):

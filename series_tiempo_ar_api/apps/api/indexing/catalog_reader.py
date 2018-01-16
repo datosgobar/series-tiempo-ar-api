@@ -16,7 +16,7 @@ from series_tiempo_ar_api.apps.api.models import Dataset, Distribution
 logger = logging.getLogger(__name__)
 
 
-def index_catalog(catalog, catalog_id, read_local=False, task=None):
+def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True):
     """Ejecuta el pipeline de lectura, guardado e indexado de datos
     y metadatos sobre el catálogo especificado
 
@@ -41,7 +41,7 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None):
                                       present=True,
                                       indexable=True)
     distribution_models = Distribution.objects.filter(dataset__in=datasets)
-    Indexer().run(distribution_models)
+    Indexer(async=async).run(distribution_models)
 
     if task:
         stats = loader.get_stats()
