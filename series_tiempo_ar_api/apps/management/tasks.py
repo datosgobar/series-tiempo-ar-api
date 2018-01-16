@@ -1,7 +1,7 @@
 #! coding: utf-8
 
 from django.utils import timezone
-from django_rq import job
+from django_rq import job, get_queue
 
 from pydatajson import DataJson
 
@@ -29,7 +29,7 @@ def read_datajson(task, async=True):
                 start_index_catalog(catalog_id, catalog_url, task_id)
             else:
                 start_index_catalog.delay(catalog_id, catalog_url, task_id)
-        except (IOError, ValueError, AssertionError) as e:
+        except (IOError, ValueError, AssertionError) as e:  # Errores que tira DataJson
             logs.append(READ_ERROR.format(catalog_id, e))
 
         logs_string = ''
@@ -40,7 +40,7 @@ def read_datajson(task, async=True):
         task.logs = logs_string
         task.save()
 
-    if not nodes:
+    if not nodes or not get_queue('indexing').jobs:
         task.status = task.FINISHED
         task.save()
 
