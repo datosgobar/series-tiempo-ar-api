@@ -26,6 +26,7 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True):
         read_local (bool): Lee las rutas a archivos fuente como archivo
         local o como URL. Default False
         task (ReadDataJsonTask): Task a loggear acciones
+        async (bool): Hacer las tareas de indexación asincrónicamente. Default True
     """
     logger.info(strings.PIPELINE_START, catalog_id)
     scraper = get_scraper(read_local)

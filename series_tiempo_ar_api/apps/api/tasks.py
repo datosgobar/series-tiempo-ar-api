@@ -14,6 +14,7 @@ def index_distribution(index, distribution_id):
 
     DistributionIndexer(index=index).run(distribution)
 
+    # Si no hay más jobs encolados, la tarea se considera como finalizada
     if not get_queue('indexing').jobs:
         task = ReadDataJsonTask.objects.last()
         task.finished = timezone.now()
