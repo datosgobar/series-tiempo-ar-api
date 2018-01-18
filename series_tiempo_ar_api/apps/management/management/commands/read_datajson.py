@@ -26,3 +26,5 @@ class Command(BaseCommand):
         task.status = task.FINISHED
         task.finished = timezone.now()
         task.save()
+        task.generate_email()
+

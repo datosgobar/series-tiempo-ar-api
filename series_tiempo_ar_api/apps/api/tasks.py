@@ -20,3 +20,4 @@ def index_distribution(index, distribution_id):
         task.finished = timezone.now()
         task.status = task.FINISHED
         task.save()
+        task.generate_email()
