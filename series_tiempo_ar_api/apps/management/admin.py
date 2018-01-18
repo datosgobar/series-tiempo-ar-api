@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import time
 from django.contrib import admin
 from .actions import process_node_register_file, confirm_delete
-from .tasks import bulk_index, read_datajson
+from .tasks import bulk_whitelist, read_datajson
 from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTaskCron, ReadDataJsonTask
 
 
@@ -32,7 +32,7 @@ class DatasetIndexingFileAdmin(BaseRegisterFileAdmin):
             model.state = DatasetIndexingFile.state = DatasetIndexingFile.PROCESSING
             model.logs = u'-'  # Valor default mientras se ejecuta
             model.save()
-            bulk_index.delay(model.id)
+            bulk_whitelist.delay(model.id)
 
 
 class NodeRegisterFileAdmin(BaseRegisterFileAdmin):
@@ -91,10 +91,13 @@ class IndexingTaskAdmin(admin.ModelAdmin):
 
 
 class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs')
+    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs', 'stats')
     list_display = ('__unicode__', 'status')
 
     def save_model(self, request, obj, form, change):
+        running_status = [ReadDataJsonTask.RUNNING, ReadDataJsonTask.INDEXING]
+        if ReadDataJsonTask.objects.filter(status__in=running_status):
+            return  # Ya hay tarea corriendo, no ejecuto una nueva
         super(DataJsonAdmin, self).save_model(request, obj, form, change)
         read_datajson.delay(obj)  # Ejecuta indexación
 

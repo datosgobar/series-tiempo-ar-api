@@ -8,3 +8,12 @@ READ_ERROR = u"Error en la lectura del catálogo {}: {}"
 CRONTAB_COMMENT = u"API series tiempo: indexing de datos"
 
 INDEXING_COMMAND = '{} {}/manage.py read_datajson'
+
+
+INDEXING_REPORT_TEMPLATE = \
+    u"""
+{name}:
+    nuevos: {new},
+    actualizados: {updated},
+    totales: {total},
+"""

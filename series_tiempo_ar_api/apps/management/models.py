@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import json
 import os
 import sys
 import getpass
 
 from crontab import CronTab
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
-
+from django.core.mail import send_mail
 from . import strings
 
 
@@ -128,6 +131,8 @@ class ReadDataJsonTask(models.Model):
     logs = models.TextField(default='-')
     catalogs = models.ManyToManyField(to=Node, blank=True)
 
+    stats = models.TextField(default='{}')
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.pk:  # first time only
@@ -138,3 +143,36 @@ class ReadDataJsonTask(models.Model):
 
     def __unicode__(self):
         return "Task at %s" % self.created
+
+    def generate_email(self):
+        msg = "Horario de finalización: {}\n".format(self.finished)
+
+        msg += self.format_message('catalogs', 'Catálogos')
+        msg += self.format_message('datasets', 'Datasets')
+        msg += self.format_message('distributions', 'Distribuciones')
+        msg += self.format_message('fields', 'Series')
+
+        emails = [user.email for user in User.objects.filter(is_staff=True)]
+        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE,
+                                                          str(self.created))
+
+        sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
+        if not sent:
+            raise ValueError
+
+    def format_message(self, dict_key, full_name):
+        template = strings.INDEXING_REPORT_TEMPLATE
+        stats = json.loads(self.stats)
+        total_stats = {}
+        for catalog in stats:
+            for key in stats[catalog]:
+                total_stats[key] = total_stats.get(key, 0) + stats[catalog][key]
+
+        total_catalogs = total_stats.get('total_' + dict_key, 0)
+        new_catalogs = total_stats.get(dict_key, 0)
+        updated_catalogs = total_catalogs - new_catalogs
+        msg = template.format(name=full_name,
+                              new=new_catalogs,
+                              updated=updated_catalogs,
+                              total=total_catalogs)
+        return msg
