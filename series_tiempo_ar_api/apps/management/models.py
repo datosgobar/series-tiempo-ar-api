@@ -157,7 +157,7 @@ class ReadDataJsonTask(models.Model):
                                                           str(self.created))
 
         sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
-        if not sent:
+        if emails and not sent:
             raise ValueError
 
     def format_message(self, dict_key, full_name):

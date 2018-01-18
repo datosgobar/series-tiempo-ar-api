@@ -15,6 +15,9 @@ dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
 class ReadDataJsonTest(TestCase):
 
+    def setUp(self):
+        User(username='test_user', password='test', email='test@test.com', is_staff=True).save()
+
     def test_read(self):
         identifier = 'test_id'
         Node(catalog_id=identifier,
@@ -60,7 +63,6 @@ class ReadDataJsonTest(TestCase):
         self.assertEqual(ReadDataJsonTask.objects.all().count(), 1)
 
     def test_report_sent(self):
-        User(username='test', password='test', email='test@test.com', is_staff=True).save()
         identifier = 'test_id'
         Node(catalog_id=identifier,
              catalog_url=os.path.join(dir_path, 'sample_data.json'),
