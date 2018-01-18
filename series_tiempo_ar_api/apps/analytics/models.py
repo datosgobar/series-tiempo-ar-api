@@ -7,8 +7,8 @@ from django.utils import timezone
 
 class Query(models.Model):
     """Registro de queries exitosas, guardadas con el propósito de analytics"""
-    ids = models.CharField(max_length=2000)
-    args = models.CharField(max_length=2000)
+    ids = models.TextField()
+    args = models.TextField()
     timestamp = models.DateTimeField()
     ip_address = models.CharField(max_length=200, null=True)
     params = models.TextField()

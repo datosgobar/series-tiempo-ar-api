@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from django.core.files import File
 from django.db import IntegrityError
+from django.db.models.query_utils import Q
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 
@@ -29,6 +30,7 @@ class DatabaseLoader(object):
         self.catalog_model = None
         self.read_local = read_local
         self.catalog_id = None
+        self.stats = {}
 
     def run(self, catalog, catalog_id, distributions):
         """Guarda las distribuciones de la lista 'distributions',
@@ -60,6 +62,7 @@ class DatabaseLoader(object):
                                                               periodicity)
 
                 self._save_fields(distribution_model, fields)
+        self._update_present_datasets(catalog_id)
         logger.info(strings.DB_LOAD_END)
 
     def _dataset_model(self, dataset):
@@ -73,7 +76,7 @@ class DatabaseLoader(object):
         # Borro las distribuciones, de existir. Solo guardo metadatos
         dataset.pop(constants.DISTRIBUTION, None)
         identifier = dataset[constants.IDENTIFIER]
-        dataset_model, _ = Dataset.objects.get_or_create(
+        dataset_model, created = Dataset.objects.get_or_create(
             identifier=identifier,
             catalog=self.catalog_model
         )
@@ -86,6 +89,9 @@ class DatabaseLoader(object):
         dataset_model.save()
 
         self.dataset_cache[dataset[constants.IDENTIFIER]] = dataset_model
+
+        self.stats['datasets'] = self.stats.get('datasets', 0) + created
+        self.stats['total_datasets'] = self.stats.get('total_datasets', 0) + 1
         return dataset_model
 
     def _catalog_model(self, catalog):
@@ -95,7 +101,7 @@ class DatabaseLoader(object):
         catalog = catalog.copy()
         # Borro el dataset, de existir. Solo guardo metadatos
         catalog.pop(constants.DATASET, None)
-        catalog_model, _ = Catalog.objects.get_or_create(identifier=self.catalog_id)
+        catalog_model, created = Catalog.objects.get_or_create(identifier=self.catalog_id)
 
         catalog = self._remove_blacklisted_fields(
             catalog,
@@ -104,6 +110,9 @@ class DatabaseLoader(object):
         catalog_model.metadata = json.dumps(catalog)
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
         catalog_model.save()
+        self.stats['catalogs'] = self.stats.get('catalogs', 0) + created
+        self.stats['total_catalogs'] = self.stats.get('total_catalogs', 0) + 1
+
         return catalog_model
 
     def _distribution_model(self, catalog, distribution, periodicity):
@@ -120,7 +129,7 @@ class DatabaseLoader(object):
 
         dataset.pop(constants.DISTRIBUTION, None)
         dataset_model = self._dataset_model(dataset)
-        distribution_model, _ = Distribution.objects.get_or_create(
+        distribution_model, created = Distribution.objects.get_or_create(
             identifier=identifier,
             dataset=dataset_model
         )
@@ -134,6 +143,9 @@ class DatabaseLoader(object):
         self._read_file(url, distribution_model)
         distribution_model.save()
         self.distribution_models.append(distribution_model)
+
+        self.stats['distributions'] = self.stats.get('distributions', 0) + created
+        self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
         return distribution_model
 
     def _read_file(self, file_url, distribution_model):
@@ -172,7 +184,7 @@ class DatabaseLoader(object):
             series_id = field.get(constants.FIELD_ID)
             title = field.get(constants.FIELD_TITLE)
             try:
-                field_model, _ = Field.objects.get_or_create(
+                field_model, created = Field.objects.get_or_create(
                     series_id=series_id,
                     title=title,
                     distribution=distribution_model
@@ -191,6 +203,9 @@ class DatabaseLoader(object):
             distribution_model.field_set.filter(title=title).delete()
             field_model.save()
 
+            self.stats['fields'] = self.stats.get('fields', 0) + created
+            self.stats['total_fields'] = self.stats.get('total_fields', 0) + 1
+
     @staticmethod
     def _remove_blacklisted_fields(metadata, blacklist):
         """Borra los campos listados en 'blacklist' de el diccionario
@@ -200,3 +215,14 @@ class DatabaseLoader(object):
         for field in blacklist:
             metadata.pop(field, None)
         return metadata
+
+    def _update_present_datasets(self, catalog_id):
+        """Actualiza la lista de datasets marcando los datasets encontrados como presentes"""
+
+        present_ids = self.dataset_cache.keys()
+        datasets = Dataset.objects.filter(~Q(identifier__in=present_ids),
+                                          Q(catalog__identifier=catalog_id))
+        datasets.update(present=False)
+
+    def get_stats(self):
+        return self.stats

@@ -164,5 +164,10 @@ def handle_incomplete_value(col, which='last'):
     if which not in ('first', 'last'):
         raise ValueError
 
+    # Fix a casos en donde la serie es de un único valor y se intenta borrar tanto
+    # para 'first' como para 'last'
+    if not len(col):
+        return
+
     idx = -1 if which == 'last' else 0
     del col[col.index[idx]]

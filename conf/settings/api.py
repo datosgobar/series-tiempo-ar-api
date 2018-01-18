@@ -31,3 +31,6 @@ MAX_ALLOWED_VALUES = {
     'limit': 1000,
     'ids': 20  # Cantidad máxima de series que se pueden pedir
 }
+
+
+DISTRIBUTION_INDEX_JOB_TIMEOUT = 500  # Segundos

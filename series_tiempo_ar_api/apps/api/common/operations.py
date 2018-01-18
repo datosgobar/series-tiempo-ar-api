@@ -14,6 +14,9 @@ from .incomplete_periods import handle_missing_values
 from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset, \
     freq_pandas_to_interval
 
+# Ignora divisiones por cero, no nos molesta el NaN
+np.seterr(divide='ignore', invalid='ignore')
+
 
 def year_ago_column(col, freq, operation):
     """Aplica operación entre los datos de una columna y su valor
@@ -118,6 +121,9 @@ def index_transform(col, transform_function, index, series_id, freq, name):
         offset = pd.DateOffset(months=months_offset)
         transform_col.index = transform_col.index - offset
         transform_col.index.freq = constants.PANDAS_SEMESTER
+
+    if not len(transform_col):
+        return pd.Series()
 
     handle_missing_values(col, transform_col)
     transform_df = generate_interval_transformations_df(transform_col, freq)
