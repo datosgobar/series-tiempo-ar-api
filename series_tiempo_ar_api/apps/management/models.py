@@ -90,10 +90,7 @@ class IndexingTaskCron(models.Model):
         return u'Indexing task at %s' % self.time
 
     def update_crontab(self):
-        python_exec = sys.executable
-        cwd = os.getcwd()
-
-        command = strings.INDEXING_COMMAND.format(python_exec, cwd)
+        command = settings.READ_DATAJSON_SHELL_CMD
         cron = self.cron_client
 
         job_id = strings.CRONTAB_COMMENT
