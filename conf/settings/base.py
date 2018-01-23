@@ -1,6 +1,7 @@
 #! coding: utf-8
 from __future__ import absolute_import, unicode_literals
 
+import os
 from os.path import dirname
 
 import environ
@@ -286,3 +287,6 @@ RQ_QUEUES = {
 }
 
 ENV_TYPE = env('ENV_TYPE', default='')
+
+# Tarea a ser croneada para indexación
+READ_DATAJSON_SHELL_CMD = env('READ_DATAJSON_BIN_PATH', default='')
