@@ -1,6 +1,11 @@
 #!/bin/bash
 
 set -e;
+
+echo "Agregando clave SSH"
+eval "$(ssh-agent -s)"
+ssh-add /tmp/build\+ts-api@travis-ci.org
+
 # Nota: Las variables no definidas aqui deben ser seteadas en ./variables.sh
 
 # TODO: Mejorar este script.

@@ -15,6 +15,5 @@ ssh-keyscan -p $DEPLOY_TARGET_SSH_PORT -t 'rsa,dsa,ecdsa' -H $DEPLOY_TARGET_IP 2
 echo "Inicializando acceso ssh"
 # Desencripto la key ssh para acceder al server
 openssl aes-256-cbc -K ${!ssh_key_var_name} -iv ${!ssh_iv_var_name} -in $deployment_files/build\+ts-api@travis-ci.org.enc -out /tmp/build\+ts-api@travis-ci.org -d
-eval "$(ssh-agent -s)"
 chmod 600 /tmp/build\+ts-api@travis-ci.org
-ssh-add /tmp/build\+ts-api@travis-ci.org
+
