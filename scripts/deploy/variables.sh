@@ -10,8 +10,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$ENVIRONMENT" == "testing" ]; then
     # Las siguientes variables definen cuales variables buscar para desencriptar
     # algunos valores de travis. Ver ./prepare.sh para mas info
-    export ssh_key_var_name="encrypted_f8e35165beb1_key"
-    export ssh_iv_var_name="encrypted_f8e35165beb1_iv"
+    export ssh_key_var_name="encrypted_27b45b79a046_key"
+    export ssh_iv_var_name="encrypted_27b45b79a046_iv"
 
     # Las siguientes variables son de conexion ssh
     export DEPLOY_TARGET_VAULT_PASS_FILE="$TESTING_DEPLOY_VAULT_PASS_FILE"
