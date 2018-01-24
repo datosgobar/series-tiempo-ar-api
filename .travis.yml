@@ -36,3 +36,8 @@ deploy:
     script: scripts/deploy/run_deploy.sh testing
     on:
       branch: master
+  - skip_cleanup: true
+    provider: script
+    script: scripts/deploy/run_deploy.sh staging
+    on:
+      tags: true
