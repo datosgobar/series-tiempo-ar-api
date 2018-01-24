@@ -23,8 +23,8 @@ if [ "$ENVIRONMENT" == "testing" ]; then
     export DEPLOY_REVISION="master"
 elif [ "$ENVIRONMENT" == "staging" ]; then
     echo "Ambiente $ENVIRONMENT"
-    export ssh_key_var_name="encrypted_27b45b79a046_key"
-    export ssh_iv_var_name="encrypted_27b45b79a046_iv"
+    export ssh_key_var_name="encrypted_4551c5846e4a_key"
+    export ssh_iv_var_name="encrypted_4551c5846e4a_iv"
 
     # Las siguientes variables son de conexion ssh
     export DEPLOY_TARGET_VAULT_PASS_FILE="$STAGING_DEPLOY_VAULT_PASS_FILE"
