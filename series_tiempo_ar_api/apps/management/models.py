@@ -7,7 +7,7 @@ import sys
 import getpass
 
 from crontab import CronTab
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -149,7 +149,8 @@ class ReadDataJsonTask(models.Model):
         msg += self.format_message('distributions', 'Distribuciones')
         msg += self.format_message('fields', 'Series')
 
-        emails = [user.email for user in User.objects.filter(is_staff=True)]
+        recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
+        emails = [user.email for user in recipients.user_set.all()]
         subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE,
                                                           str(self.created))
 

@@ -34,3 +34,6 @@ MAX_ALLOWED_VALUES = {
 
 
 DISTRIBUTION_INDEX_JOB_TIMEOUT = 500  # Segundos
+
+# Nombre del grupo de usuarios que reciben reportes de indexación
+READ_DATAJSON_RECIPIENT_GROUP = 'read_datajson_recipients'
