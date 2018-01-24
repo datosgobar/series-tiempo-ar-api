@@ -1,9 +1,13 @@
 #! coding: utf-8
+import logging
+
 from django.core.management import BaseCommand
 from django.utils import timezone
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -16,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         status = [ReadDataJsonTask.INDEXING, ReadDataJsonTask.RUNNING]
         if ReadDataJsonTask.objects.filter(status__in=status):
-            self.stderr.write(u'Ya está corriendo una indexación')
+            logger.info(u'Ya está corriendo una indexación')
             return
 
         async = not options['no_async']  # True by default
