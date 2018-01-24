@@ -68,6 +68,6 @@ class ReadDataJsonTest(TestCase):
              catalog_url=os.path.join(dir_path, 'sample_data.json'),
              indexable=True).save()
 
-        call_command('read_datajson')
+        call_command('read_datajson', no_async=True)
 
         self.assertEqual(len(mail.outbox), 1)
