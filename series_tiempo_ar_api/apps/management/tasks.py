@@ -34,7 +34,7 @@ def read_datajson(task, async=True):
                 start_index_catalog(catalog_id, catalog_url, task_id, async=False)
             else:
                 start_index_catalog.delay(catalog_id, catalog_url, task_id)
-        except (IOError, ValueError, AssertionError) as e:  # Errores que tira DataJson
+        except Exception as e:
             logs.append(READ_ERROR.format(catalog_id, e))
             task.catalogs.remove(node)
 
