@@ -40,9 +40,3 @@ RAVEN_CONFIG = {
 }
 
 INSTALLED_APPS += 'raven.contrib.django.raven_compat',
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST', default="")
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default="")
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default="")
-EMAIL_USE_TLS = True

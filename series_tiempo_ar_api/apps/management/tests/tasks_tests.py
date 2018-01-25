@@ -1,7 +1,8 @@
 #!coding=utf8
 import os
 
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.management import call_command
 from django.test import TestCase
@@ -16,7 +17,8 @@ dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 class ReadDataJsonTest(TestCase):
 
     def setUp(self):
-        User(username='test_user', password='test', email='test@test.com', is_staff=True).save()
+        self.user = User(username='test', password='test', email='test@test.com', is_staff=True)
+        self.user.save()
 
     def test_read(self):
         identifier = 'test_id'
@@ -68,6 +70,9 @@ class ReadDataJsonTest(TestCase):
              catalog_url=os.path.join(dir_path, 'sample_data.json'),
              indexable=True).save()
 
+        group = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
+        self.user.groups.add(group)
+        self.user.save()
         call_command('read_datajson', no_async=True)
 
         self.assertEqual(len(mail.outbox), 1)

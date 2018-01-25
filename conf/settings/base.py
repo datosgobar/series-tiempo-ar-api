@@ -153,6 +153,7 @@ DJANGO_BASE_APPS = (
 VENDOR_APPS = (
     "django_rq",
     'import_export',
+    'des'
 )
 
 APPS = (
@@ -250,7 +251,7 @@ LOGGING = {
 }
 
 # EMAILS
-EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_BACKEND = 'des.backends.ConfiguredEmailBackend'
 
 
 DEFAULT_REDIS_HOST = env("DEFAULT_REDIS_HOST", default="localhost")
