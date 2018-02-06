@@ -9,14 +9,15 @@ from .indexing.distribution_indexer import DistributionIndexer
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
-def index_distribution(index, distribution_id):
+def index_distribution(index, distribution_id, async=True):
     distribution = Distribution.objects.get(id=distribution_id)
 
     DistributionIndexer(index=index).run(distribution)
 
     # Si no hay más jobs encolados, la tarea se considera como finalizada
-    if not get_queue('indexing').jobs:
+    if async and not get_queue('indexing').jobs:
         task = ReadDataJsonTask.objects.last()
+
         task.finished = timezone.now()
         task.status = task.FINISHED
         task.save()

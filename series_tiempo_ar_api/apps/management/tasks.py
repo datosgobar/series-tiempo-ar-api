@@ -12,7 +12,7 @@ from series_tiempo_ar_api.apps.management.strings import FILE_READ_ERROR, READ_E
 
 
 @job('indexing')
-def read_datajson(task, async=True):
+def read_datajson(task, async=True, whitelist=False):
     """Tarea raíz de indexación. Itera sobre todos los nodos indexables (federados) e
     inicia la tarea de indexación sobre cada uno de ellos
     """
@@ -31,9 +31,13 @@ def read_datajson(task, async=True):
         try:
             DataJson(catalog_url)
             if not async:  # Debug
-                start_index_catalog(catalog_id, catalog_url, task_id, async=False)
+                start_index_catalog(catalog_id,
+                                    catalog_url,
+                                    task_id,
+                                    async=False,
+                                    whitelist=whitelist)
             else:
-                start_index_catalog.delay(catalog_id, catalog_url, task_id)
+                start_index_catalog.delay(catalog_id, catalog_url, task_id, whitelist=whitelist)
         except Exception as e:
             logs.append(READ_ERROR.format(catalog_id, e))
             task.catalogs.remove(node)
@@ -54,14 +58,18 @@ def read_datajson(task, async=True):
 
 
 @job('indexing', timeout=1500)
-def start_index_catalog(catalog_id, catalog_url, task_id, async=True):
+def start_index_catalog(catalog_id, catalog_url, task_id, async=True, whitelist=False):
     task = ReadDataJsonTask.objects.get(id=task_id)
     task.catalogs.remove(Node.objects.get(catalog_id=catalog_id))
     task.status = task.INDEXING
 
     task.save()
 
-    catalog_reader.index_catalog(catalog_url, catalog_id, task=task, async=async)
+    catalog_reader.index_catalog(catalog_url,
+                                 catalog_id,
+                                 task=task,
+                                 async=async,
+                                 whitelist=whitelist)
 
 
 @job('indexing')
