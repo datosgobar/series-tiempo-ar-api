@@ -1,8 +1,8 @@
 #!coding=utf8
 from django.conf.urls import url
 
-from .views import query
+from .views import search
 
 urlpatterns = [
-    url('^search/$', query, name='search'),
+    url('^search/$', search, name='search'),
 ]
