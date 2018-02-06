@@ -4,6 +4,7 @@ from __future__ import division
 import json
 import logging
 
+from django.utils import timezone
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
@@ -49,5 +50,10 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True):
         task_stats = json.loads(task.stats)
         task_stats[catalog_id] = stats
         task.stats = json.dumps(task_stats)
+
+        if async and not distribution_models:  # No hay nada para indexar, marco como finalizado
+            task.finished = timezone.now()
+            task.status = task.FINISHED
+            task.generate_email()
 
         task.save()
