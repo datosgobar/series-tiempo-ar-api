@@ -29,13 +29,6 @@ class CronTests(TestCase):
         cron.delete()
         self.assertFalse(cron.cron_client.crons)
 
-    def test_initially_no_crons(self):
-        mock_write = mock.Mock(return_value=None)
-        cron = IndexingTaskCron(time='00:00:00')
-        cron.cron_client.write = mock_write
-
-        self.assertFalse(cron.cron_client.crons)
-
     def test_cron_scheduled_correctly(self):
         hour = 0
         minute = 0
