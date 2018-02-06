@@ -22,10 +22,11 @@ def save(request):
     params = req_data.get('querystring')
     ids = params.get('ids', 'No especificado')
     ip_address = body.get('client_ip')
+    timestamp = body.get('started_at')
     args = req_data.get('request_uri', 'No especificado')
 
     params_start = args.find('?')
     if params_start > 0:
         args = args[params_start:]
-    analytics.delay(ids, args, ip_address, params)
+    analytics.delay(ids, args, ip_address, params, timestamp)
     return HttpResponse()
