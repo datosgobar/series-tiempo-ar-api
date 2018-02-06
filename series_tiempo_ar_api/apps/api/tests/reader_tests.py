@@ -124,7 +124,7 @@ class IndexerTests(TestCase):
     def _index_catalog(self, catalog_path):
         catalog = os.path.join(SAMPLES_DIR, catalog_path)
         distributions = get_time_series_distributions(catalog)
-        db_loader = DatabaseLoader(read_local=True)
+        db_loader = DatabaseLoader(read_local=True, default_whitelist=True)
         db_loader.run(catalog, CATALOG_ID, distributions)
         for distribution in db_loader.distribution_models:
             DistributionIndexer(index=self.test_index).run(distribution)
@@ -134,7 +134,7 @@ class DatabaseLoaderTests(TestCase):
 
     def setUp(self):
         setup_database()
-        self.loader = DatabaseLoader(read_local=True)
+        self.loader = DatabaseLoader(read_local=True, default_whitelist=True)
 
     def tearDown(self):
         Catalog.objects.all().delete()
@@ -187,7 +187,8 @@ class DatabaseLoaderTests(TestCase):
 
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
         distributions = get_time_series_distributions(catalog)
-        self.loader.run(catalog, CATALOG_ID, distributions)
+        loader = DatabaseLoader(read_local=True, default_whitelist=False)
+        loader.run(catalog, CATALOG_ID, distributions)
         dataset = Catalog.objects.get(identifier=CATALOG_ID).dataset_set
 
         self.assertEqual(dataset.count(), 1)
@@ -198,8 +199,8 @@ class ReaderTests(TestCase):
     catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
 
     def test_index_same_series_different_catalogs(self):
-        index_catalog(self.catalog, 'one_catalog_id', read_local=True)
-        index_catalog(self.catalog, 'other_catalog_id', read_local=True)
+        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'other_catalog_id', read_local=True, whitelist=True, async=False)
 
         count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
 

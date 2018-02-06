@@ -27,7 +27,7 @@ class ReadDataJsonTest(TestCase):
              indexable=True).save()
         task = ReadDataJsonTask()
         task.save()
-        read_datajson(task, async=False)
+        read_datajson(task, async=False, whitelist=True)
         self.assertTrue(Field.objects.filter(distribution__dataset__catalog__identifier=identifier))
 
     def test_read_invalid(self):
@@ -38,7 +38,7 @@ class ReadDataJsonTest(TestCase):
                             indexable=True).save()
         task = ReadDataJsonTask()
         task.save()
-        read_datajson(task, async=False)
+        read_datajson(task, async=False, whitelist=True)
 
         # Esperado: logs con errores
         self.assertTrue(task.logs)
@@ -49,7 +49,7 @@ class ReadDataJsonTest(TestCase):
              catalog_url=os.path.join(dir_path, 'sample_data.json'),
              indexable=True).save()
         # Esperado: mismo comportamiento que llamando la función read_datajson
-        call_command('read_datajson')
+        call_command('read_datajson', whitelist=True)
         self.assertTrue(Field.objects.filter(distribution__dataset__catalog__identifier=identifier))
 
     def test_read_datajson_while_indexing(self):

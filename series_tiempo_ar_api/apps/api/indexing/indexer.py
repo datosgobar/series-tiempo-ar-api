@@ -32,7 +32,7 @@ class Indexer(object):
 
         for distribution in distributions:
             if not self.async:
-                index_distribution(self.index, distribution.id)
+                index_distribution(self.index, distribution.id, async=False)
             else:
                 index_distribution.delay(self.index, distribution.id)
 

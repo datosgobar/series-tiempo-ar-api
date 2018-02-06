@@ -16,6 +16,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--no-async', action='store_true')
+        parser.add_argument('--whitelist', action='store_true')
 
     def handle(self, *args, **options):
         status = [ReadDataJsonTask.INDEXING, ReadDataJsonTask.RUNNING]
@@ -29,7 +30,7 @@ class Command(BaseCommand):
         task.save()
 
         task_id = task.id
-        read_datajson(task, async=async)
+        read_datajson(task, async=async, whitelist=options['whitelist'])
 
         if not async:
             # Se finalizó de manera sincronica
