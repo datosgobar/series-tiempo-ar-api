@@ -19,6 +19,19 @@ class DatasetAdmin(admin.ModelAdmin):
         queryset.update(indexable=True)
     make_indexable.short_description = 'Marcar como indexable'
 
+    def get_search_results(self, request, queryset, search_term):
+        queryset, distinct = \
+            super(DatasetAdmin, self).get_search_results(request, queryset, search_term)
+        if not search_term:
+            return queryset, distinct
+
+        ids_to_remove = []
+        for obj in queryset:
+            if search_term not in (obj.identifier,):
+                ids_to_remove.append(obj.id)
+
+        return queryset.exclude(id__in=ids_to_remove), distinct
+
 
 class DistributionAdmin(admin.ModelAdmin):
     list_display = ('identifier', 'dataset', 'get_catalog_id')
@@ -29,6 +42,19 @@ class DistributionAdmin(admin.ModelAdmin):
         return obj.dataset.catalog.identifier
     get_catalog_id.short_description = 'Catalog'
     get_catalog_id.admin_order_field = 'dataset__catalog__identifier'
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, distinct = \
+            super(DistributionAdmin, self).get_search_results(request, queryset, search_term)
+        if not search_term:
+            return queryset, distinct
+
+        ids_to_remove = []
+        for obj in queryset:
+            if search_term not in (obj.identifier, obj.dataset.identifier):
+                ids_to_remove.append(obj.id)
+
+        return queryset.exclude(id__in=ids_to_remove), distinct
 
 
 class FieldAdmin(admin.ModelAdmin):
@@ -53,6 +79,20 @@ class FieldAdmin(admin.ModelAdmin):
     get_dataset_id.short_description = 'Dataset'
     get_dataset_id.admin_order_field = 'distribution__dataset__identifier'
 
+    def get_search_results(self, request, queryset, search_term):
+        queryset, distinct = \
+            super(FieldAdmin, self).get_search_results(request, queryset, search_term)
+        if not search_term:
+            return queryset, distinct
+
+        ids_to_remove = []
+        for obj in queryset:
+            if search_term not in (obj.series_id,
+                                   obj.distribution.identifier,
+                                   obj.distribution.dataset.identifier):
+                ids_to_remove.append(obj.id)
+
+        return queryset.exclude(id__in=ids_to_remove), distinct
 
 admin.site.register(Catalog)
 admin.site.register(Dataset, DatasetAdmin)
