@@ -31,7 +31,7 @@ class FieldMetadataQuery(object):
             self.append_error(strings.EMPTY_QUERYSTRING)
 
     def execute(self):
-        """Ejecuta la query. Devuelve un diccionario con el siguiente formato 
+        """Ejecuta la query. Devuelve un diccionario con el siguiente formato
         {
             "limit": 20,
             "offset": 0,
@@ -42,7 +42,7 @@ class FieldMetadataQuery(object):
                     "description": "bar",
                     "id": "if-foo",
                }
-            ] 
+            ]
         }
         """
 
