@@ -55,6 +55,7 @@ class FieldAdmin(admin.ModelAdmin):
     get_dataset_id.short_description = 'Dataset'
     get_dataset_id.admin_order_field = 'distribution__dataset__identifier'
 
+
 admin.site.register(Catalog)
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Distribution, DistributionAdmin)
