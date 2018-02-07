@@ -94,6 +94,7 @@ class FieldAdmin(admin.ModelAdmin):
 
         return queryset.exclude(id__in=ids_to_remove), distinct
 
+
 admin.site.register(Catalog)
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Distribution, DistributionAdmin)
