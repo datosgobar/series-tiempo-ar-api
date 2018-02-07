@@ -23,7 +23,7 @@ class DatasetAdmin(admin.ModelAdmin):
 class DistributionAdmin(admin.ModelAdmin):
     list_display = ('identifier', 'dataset', 'get_catalog_id')
     search_fields = ('identifier', 'dataset__identifier', 'dataset__catalog__identifier')
-    list_filter = ('dataset__identifier', 'dataset__catalog__identifier')
+    list_filter = ('dataset__catalog__identifier', )
 
     def get_catalog_id(self, obj):
         return obj.dataset.catalog.identifier
@@ -40,9 +40,7 @@ class FieldAdmin(admin.ModelAdmin):
         'distribution__dataset__catalog__identifier'
     )
     list_filter = (
-        'distribution__identifier',
-        'distribution__dataset__identifier',
-        'distribution__dataset__catalog__identifier'
+        'distribution__dataset__catalog__identifier',
     )
 
     def get_catalog_id(self, obj):
