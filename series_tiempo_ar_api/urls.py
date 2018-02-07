@@ -9,7 +9,7 @@ from des import urls as des_urls
 
 
 admin.autodiscover()
-
+admin.site.index_template = "admin/api/index.html"
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^django-rq/', include('django_rq.urls')),
