@@ -1,0 +1,33 @@
+#! coding: utf-8
+from django.conf import settings
+from django.test import TestCase
+
+from series_tiempo_ar_api.apps.api.models import Field
+from series_tiempo_ar_api.apps.api.query.pipeline import Delimiter
+from series_tiempo_ar_api.apps.api.query.query import Query
+from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id
+
+
+class DelimiterTests(TestCase):
+    single_series = get_series_id('month')
+
+    @classmethod
+    def setUpClass(cls):
+        cls.field = Field.objects.get(series_id=cls.single_series)
+        super(cls, DelimiterTests).setUpClass()
+
+    def setUp(self):
+        self.query = Query(index=settings.TEST_INDEX)
+        self.cmd = Delimiter()
+
+    def test_delimiter(self):
+        self.query.add_series(self.single_series, self.field, 'value')
+        self.cmd.run(self.query, {'delimiter': '|'})
+
+        self.assertFalse(self.cmd.errors)
+
+    def test_multiple_delimiters(self):
+        self.query.add_series(self.single_series, self.field, 'value')
+        self.cmd.run(self.query, {'delimiter': '|;'})
+
+        self.assertTrue(self.cmd.errors)

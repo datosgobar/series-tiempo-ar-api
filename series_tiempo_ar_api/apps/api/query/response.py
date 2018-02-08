@@ -54,7 +54,9 @@ class CSVFormatter(BaseFormatter):
         content = 'attachment; filename="{}"'
         response['Content-Disposition'] = content.format(constants.CSV_RESPONSE_FILENAME)
 
-        writer = unicodecsv.writer(response)
+        delim = query_args.get(constants.PARAM_DELIM,
+                               constants.API_DEFAULT_VALUES[constants.PARAM_DELIM])
+        writer = unicodecsv.writer(response, delimiter=str(delim))
         header = [settings.INDEX_COLUMN] + series_ids
         writer.writerow(header)
         for row in data:

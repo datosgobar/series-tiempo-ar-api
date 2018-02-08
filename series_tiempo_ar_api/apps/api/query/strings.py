@@ -22,3 +22,5 @@ ES_NOT_INIT_ERROR = u"Instancia no inicializada. Pruebe con init(urls)"
 INVALID_QUERY_TYPE = u"Este tipo de Query no soporta operaciones de collapse"
 
 END_OF_PERIOD_ERROR = u"Agregación End of Period no soportada para series con índice menor a 1970"
+
+INVALID_DELIM_LENGTH = u"El carácter delimitador debe ser uno sólo"

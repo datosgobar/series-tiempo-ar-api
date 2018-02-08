@@ -82,3 +82,10 @@ class ViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, response_upper.content)
+
+    def test_csv_delimiter(self):
+        response = self.client.get(self.endpoint,
+                                   data={'ids': SERIES_NAME, 'format': 'csv', 'delimiter': ';'})
+
+        # CSV de sólo números, la única manera que haya ';' es que sea el delimiter
+        self.assertIn(';', response.content)
