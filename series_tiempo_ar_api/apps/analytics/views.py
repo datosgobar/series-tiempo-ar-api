@@ -19,6 +19,9 @@ def save(request):
     if not req_data:  # Fatal error
         return HttpResponse(status=400)
 
+    if 'api/' not in req_data.get('uri'):
+        return HttpResponse()
+
     params = req_data.get('querystring')
     ids = params.get('ids', 'No especificado')
     ip_address = body.get('client_ip')
