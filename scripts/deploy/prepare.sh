@@ -17,3 +17,11 @@ echo "Inicializando acceso ssh"
 openssl aes-256-cbc -K ${!ssh_key_var_name} -iv ${!ssh_iv_var_name} -in $deployment_files/build\+ts-api@travis-ci.org.enc -out /tmp/build\+ts-api@travis-ci.org -d
 chmod 600 /tmp/build\+ts-api@travis-ci.org
 
+if [ -n "$USE_VPN" ]; then
+    echo "Conectando a la VPN";
+    openssl aes-256-cbc -K ${!openvpn_key_var_name} -iv ${!openvpn_iv_var_name} -in $deployment_files/client.ovpn.enc -out "$TEMP_OVPN_PATH" -d
+    sudo cp "$TEMP_OVPN_PATH" "$OVPN_PATH"
+    sudo service openvpn start
+
+
+fi
