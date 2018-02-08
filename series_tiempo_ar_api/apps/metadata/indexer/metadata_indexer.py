@@ -1,0 +1,60 @@
+#! coding: utf-8
+from elasticsearch.helpers import parallel_bulk
+from pydatajson import DataJson
+
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+
+
+class MetadataIndexer(object):
+
+    def index(self, datajson_url):
+        data_json = DataJson(datajson_url)
+        actions = self.scrap_datajson(data_json)
+
+        self.index_actions(actions)
+
+    @staticmethod
+    def index_actions(actions):
+        elastic = ElasticInstance.get()
+        for success, info in parallel_bulk(elastic, actions):
+            if not success:
+                print(info)
+
+    def scrap_datajson(self, data_json):
+        themes = self.get_themes(data_json['themeTaxonomy'])
+
+        action_template = {
+            "_index": "metadata",
+            "_type": "doc",
+            "_id": None,
+            "_source": {}
+        }
+        actions = []
+        counter = 0
+        for field in data_json.get_fields():
+            if field.get('specialType'):
+                continue
+
+            dataset = data_json.get_dataset(identifier=field['dataset_identifier'])
+            action = action_template.copy()
+            action['_source'] = {
+                "title": field['title'],
+                "description": field['description'] or "",
+                "id": field['id'],
+                'dataset_source': dataset['source'],
+                'dataset_title': dataset['title'],
+                'dataset_description': dataset['description'],
+                'theme_description': themes[dataset['theme'][0]],
+            }
+            counter += 1
+            action['_id'] = counter
+            actions.append(action)
+        return actions
+
+    @staticmethod
+    def get_themes(theme_taxonomy):
+        themes = {}
+        for theme in theme_taxonomy:
+            themes[theme['id']] = theme['description']
+
+        return themes

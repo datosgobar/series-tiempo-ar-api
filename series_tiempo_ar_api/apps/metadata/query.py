@@ -1,7 +1,7 @@
 #! coding: utf-8
 from elasticsearch_dsl import Search
 
-from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from . import strings, constants
 
 
