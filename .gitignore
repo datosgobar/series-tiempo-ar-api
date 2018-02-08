@@ -35,3 +35,5 @@ node_modules/
 .vagrant
 .ruby-version
 .rbenv-gemset
+
+scripts/deploy/files/**/*.ovpn

@@ -22,6 +22,4 @@ if [ -n "$USE_VPN" ]; then
     openssl aes-256-cbc -K ${!openvpn_key_var_name} -iv ${!openvpn_iv_var_name} -in $deployment_files/client.ovpn.enc -out "$TEMP_OVPN_PATH" -d
     sudo cp "$TEMP_OVPN_PATH" "$OVPN_PATH"
     sudo service openvpn start
-
-
 fi
