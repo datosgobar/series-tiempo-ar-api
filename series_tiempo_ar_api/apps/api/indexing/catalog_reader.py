@@ -4,6 +4,7 @@ from __future__ import division
 import json
 import logging
 
+from django.utils import timezone
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
@@ -16,7 +17,7 @@ from series_tiempo_ar_api.apps.api.models import Dataset, Distribution
 logger = logging.getLogger(__name__)
 
 
-def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True):
+def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True, whitelist=False):
     """Ejecuta el pipeline de lectura, guardado e indexado de datos
     y metadatos sobre el catálogo especificado
 
@@ -27,13 +28,14 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True):
         local o como URL. Default False
         task (ReadDataJsonTask): Task a loggear acciones
         async (bool): Hacer las tareas de indexación asincrónicamente. Default True
+        whitelist (bool): Marcar los datasets nuevos como indexables por defecto. Default False
     """
     logger.info(strings.PIPELINE_START, catalog_id)
     scraper = get_scraper(read_local)
     scraper.run(catalog)
     distributions = scraper.distributions
 
-    loader = DatabaseLoader(read_local)
+    loader = DatabaseLoader(read_local, default_whitelist=whitelist)
     loader.run(catalog, catalog_id, distributions)
 
     # Indexo todos los datasets whitelisteados, independientemente de cuales fueron
@@ -49,5 +51,10 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True):
         task_stats = json.loads(task.stats)
         task_stats[catalog_id] = stats
         task.stats = json.dumps(task_stats)
+
+        if async and not distribution_models:  # No hay nada para indexar, marco como finalizado
+            task.finished = timezone.now()
+            task.status = task.FINISHED
+            task.generate_email()
 
         task.save()

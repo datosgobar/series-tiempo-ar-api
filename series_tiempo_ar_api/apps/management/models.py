@@ -2,8 +2,6 @@
 from __future__ import unicode_literals
 
 import json
-import os
-import sys
 import getpass
 
 from crontab import CronTab
@@ -68,13 +66,13 @@ class NodeRegisterFile(BaseRegisterFile):
 
 
 class IndexingTaskCron(models.Model):
+    cron_client = CronTab(user=getpass.getuser())
 
     time = models.TimeField(help_text='Los segundos serán ignorados')
     enabled = models.BooleanField(default=True)
     weekdays_only = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
-        self.cron_client = CronTab(user=getpass.getuser())
         super(IndexingTaskCron, self).__init__(*args, **kwargs)
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -89,9 +87,11 @@ class IndexingTaskCron(models.Model):
     def __unicode__(self):
         return u'Indexing task at %s' % self.time
 
-    def update_crontab(self):
+    @classmethod
+    def update_crontab(cls):
+        """Limpia la crontab y la regenera a partir de los modelos de IndexingTaskCron guardados"""
         command = settings.READ_DATAJSON_SHELL_CMD
-        cron = self.cron_client
+        cron = cls.cron_client
 
         job_id = strings.CRONTAB_COMMENT
         for job in cron.find_comment(job_id):
