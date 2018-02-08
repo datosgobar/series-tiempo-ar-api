@@ -2,6 +2,7 @@
 import json
 
 from django.test import TestCase
+from django.urls import reverse
 
 from .analytics import analytics
 from .models import Query
@@ -29,3 +30,37 @@ class AnalyticsTests(TestCase):
         self.assertTrue(query)
         self.assertEqual(args_dict, json.loads(query.params))
         self.assertEqual(timestamp_datetime, query.timestamp)
+
+
+class AnalyticsViewTests(TestCase):
+
+    body = {
+        'request': {
+            'querystring': {'ids': 'test_id'},
+            'uri': 'api/series',
+            'request_uri': 'http://localhost:8000/api/series?ids=test_id',
+        },
+        'client_ip': '127.0.0.1',
+        'started_at': 1271237123,
+    }
+
+    def test_view_valid_body(self):
+        response = self.client.post(reverse('analytics:save'),
+                                    json.dumps(self.body),
+                                    content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_invalid_method(self):
+        response = self.client.put(reverse('analytics:save'),
+                                   json.dumps(self.body),
+                                   content_type='application/json')
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_view_empty_body(self):
+        response = self.client.post(reverse('analytics:save'),
+                                    '{}',
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
