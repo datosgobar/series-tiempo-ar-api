@@ -9,14 +9,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 export OVPN_CONFIG="client"
 export OVPN_PATH="/etc/openvpn/$OVPN_CONFIG.conf"
-export TEMP_OVPN_PATH="/tmp/$OVPN_CONFIG.conf"
 
 if [ "$ENVIRONMENT" == "testing" ]; then
     echo "Ambiente $ENVIRONMENT"
     # Las siguientes variables definen cuales variables buscar para desencriptar
     # algunos valores de travis. Ver ./prepare.sh para mas info
-    export ssh_key_var_name="encrypted_27b45b79a046_key"
-    export ssh_iv_var_name="encrypted_27b45b79a046_iv"
+
 
     # Las siguientes variables son de conexion ssh
     export DEPLOY_TARGET_VAULT_PASS_FILE="$TESTING_DEPLOY_VAULT_PASS_FILE"
