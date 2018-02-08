@@ -2,16 +2,25 @@
 from elasticsearch.helpers import parallel_bulk
 from pydatajson import DataJson
 
+from . import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class MetadataIndexer(object):
 
+    def __init__(self):
+        self.elastic = ElasticInstance.get()
+
     def index(self, datajson_url):
+        self.init_index()
         data_json = DataJson(datajson_url)
         actions = self.scrap_datajson(data_json)
 
         self.index_actions(actions)
+
+    def init_index(self):
+        if not self.elastic.indices.exists(constants.FIELDS_INDEX):
+            self.elastic.indices.create(constants.FIELDS_INDEX, body=constants.FIELDS_MAPPING)
 
     @staticmethod
     def index_actions(actions):

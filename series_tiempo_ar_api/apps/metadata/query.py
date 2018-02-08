@@ -57,7 +57,8 @@ class FieldMetadataQuery(object):
         querystring = self.args[constants.PARAM_QUERYSTRING]
         offset = self.args[constants.PARAM_OFFSET]
         limit = self.args[constants.PARAM_LIMIT]
-        search = Search(using=es_client).query('match', _all=querystring)
+        search = Search(using=es_client,
+                        index=constants.FIELDS_INDEX).query('match', _all=querystring)
         search = search[offset:limit]
 
         hits = search.execute()
