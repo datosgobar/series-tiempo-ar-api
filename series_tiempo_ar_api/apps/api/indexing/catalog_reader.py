@@ -43,7 +43,7 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True, 
     datasets = Dataset.objects.filter(catalog__identifier=catalog_id,
                                       present=True,
                                       indexable=True)
-    distribution_models = Distribution.objects.filter(dataset__in=datasets)
+    distribution_models = Distribution.objects.filter(dataset__in=datasets, indexable=True)
     Indexer(async=async).run(distribution_models)
 
     if task:

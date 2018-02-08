@@ -43,6 +43,10 @@ class Distribution(models.Model):
         blank=True
     )
 
+    data_hash = models.CharField(max_length=128, default='')
+    last_updated = models.DateTimeField(blank=True, null=True)
+    indexable = models.BooleanField(default=True)
+
     def __unicode__(self):
         return u'%s (%s)' % (self.identifier, self.dataset.catalog.identifier)
 
