@@ -1,4 +1,6 @@
 #! coding: utf-8
+from __future__ import print_function
+
 from elasticsearch.helpers import parallel_bulk
 from pydatajson import DataJson
 
