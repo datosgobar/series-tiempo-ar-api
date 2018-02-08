@@ -36,4 +36,4 @@ node_modules/
 .ruby-version
 .rbenv-gemset
 
-scripts/deploy/files/**/*.ovpn
+scripts/deploy/files/
