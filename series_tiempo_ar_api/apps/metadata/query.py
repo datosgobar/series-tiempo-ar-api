@@ -59,7 +59,7 @@ class FieldMetadataQuery(object):
         limit = self.args[constants.PARAM_LIMIT]
         search = Search(using=es_client,
                         index=constants.FIELDS_INDEX).query('match', _all=querystring)
-        search = search[offset:limit]
+        search = search[offset:limit + offset]
 
         hits = search.execute()
         self.response = {
@@ -68,9 +68,9 @@ class FieldMetadataQuery(object):
         }
         for hit in hits:
             self.response['data'].append({
-                'id': hit.id,
-                'description': hit.description,
-                'title': hit.title,
+                'id': hit['id'],
+                'description': hit['description'],
+                'title': hit['title'],
             })
 
         self.response['count'] = len(self.response['data'])

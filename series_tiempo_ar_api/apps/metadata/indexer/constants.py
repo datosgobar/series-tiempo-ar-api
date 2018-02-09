@@ -1,8 +1,6 @@
 #! coding: utf-8
 
-from .. import constants
-
-FIELDS_INDEX = constants.FIELDS_INDEX
+from ..constants import FIELDS_INDEX, FIELDS_DOC_TYPE
 
 FIELDS_MAPPING = """
 {

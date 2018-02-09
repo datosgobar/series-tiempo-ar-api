@@ -35,8 +35,8 @@ class MetadataIndexer(object):
         themes = self.get_themes(data_json['themeTaxonomy'])
 
         action_template = {
-            "_index": "metadata",
-            "_type": "doc",
+            "_index": constants.FIELDS_INDEX,
+            "_type": constants.FIELDS_DOC_TYPE,
             "_id": None,
             "_source": {}
         }
