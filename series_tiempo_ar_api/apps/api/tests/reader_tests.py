@@ -7,12 +7,12 @@ from django.test import TestCase
 from elasticsearch_dsl import Search
 from series_tiempo_ar.search import get_time_series_distributions
 
-from series_tiempo_ar_api.apps.api.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.apps.api.indexing.database_loader import \
     DatabaseLoader
 from series_tiempo_ar_api.apps.api.indexing.distribution_indexer import DistributionIndexer
 from series_tiempo_ar_api.apps.api.indexing.scraping import Scraper
 from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog
+from series_tiempo_ar_api.apps.api.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.apps.api.tests import setup_database
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
@@ -204,3 +204,29 @@ class ReaderTests(TestCase):
         count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
 
         self.assertEqual(count, 1)
+
+    def test_dont_index_same_distribution_twice(self):
+        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+
+        distribution = Distribution.objects.get(identifier='212.1')
+
+        # La distribucion es marcada como no indexable hasta que cambien sus datos
+        self.assertFalse(distribution.indexable)
+
+    def test_first_time_distribution_indexable(self):
+        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+
+        distribution = Distribution.objects.get(identifier='212.1')
+
+        self.assertTrue(distribution.indexable)
+
+    def test_index_same_distribution_if_data_changed(self):
+        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
+        index_catalog(new_catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+
+        distribution = Distribution.objects.get(identifier='212.1')
+
+        # La distribución fue indexada nuevamente, está marcada como indexable
+        self.assertTrue(distribution.indexable)

@@ -1,6 +1,7 @@
 #! coding: utf-8
 import json
 import logging
+import hashlib
 from tempfile import NamedTemporaryFile
 
 import requests
@@ -8,6 +9,7 @@ from django.conf import settings
 from django.core.files import File
 from django.db import IntegrityError
 from django.db.models.query_utils import Q
+from django.utils import timezone
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 
@@ -164,25 +166,35 @@ class DatabaseLoader(object):
             file_url (str)
             distribution_model (Distribution)
         """
+        data_hash = ''
         if self.read_local:  # Usado en debug y testing
+            with open(file_url) as f:
+                data_hash = hashlib.sha512(f.read()).hexdigest()
+
             distribution_model.data_file = File(open(file_url))
-            return
 
-        request = requests.get(file_url, stream=True)
+        else:
+            request = requests.get(file_url, stream=True)
 
-        if request.status_code != 200:
-            return False
+            if request.status_code != 200:
+                return False
 
-        lf = NamedTemporaryFile()
+            lf = NamedTemporaryFile()
 
-        block_size = 1024 * 8
-        for block in request.iter_content(block_size):
-            lf.write(block)
+            lf.write(request.content)
 
-        if distribution_model.data_file:
-            distribution_model.data_file.delete()
+            if distribution_model.data_file:
+                distribution_model.data_file.delete()
 
-        distribution_model.data_file = File(lf)
+            distribution_model.data_file = File(lf)
+            data_hash = hashlib.sha512(request.content).hexdigest()
+
+        if distribution_model.data_hash != data_hash:
+            distribution_model.data_hash = data_hash
+            distribution_model.last_updated = timezone.now()
+            distribution_model.indexable = True
+        else:  # No cambió respecto a la corrida anterior
+            distribution_model.indexable = False
 
     def _save_fields(self, distribution_model, fields):
         for field in fields:
