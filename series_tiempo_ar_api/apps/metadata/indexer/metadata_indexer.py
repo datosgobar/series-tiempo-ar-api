@@ -4,7 +4,7 @@ from __future__ import print_function
 from elasticsearch.helpers import parallel_bulk
 from pydatajson import DataJson
 
-from . import constants
+from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
@@ -21,8 +21,7 @@ class MetadataIndexer(object):
         self.index_actions(actions)
 
     def init_index(self):
-        if not self.elastic.indices.exists(constants.FIELDS_INDEX):
-            self.elastic.indices.create(constants.FIELDS_INDEX, body=constants.FIELDS_MAPPING)
+        Field.init(using=self.elastic)
 
     @staticmethod
     def index_actions(actions):
@@ -34,32 +33,23 @@ class MetadataIndexer(object):
     def scrap_datajson(self, data_json):
         themes = self.get_themes(data_json['themeTaxonomy'])
 
-        action_template = {
-            "_index": constants.FIELDS_INDEX,
-            "_type": constants.FIELDS_DOC_TYPE,
-            "_id": None,
-            "_source": {}
-        }
         actions = []
-        counter = 0
         for field in data_json.get_fields():
             if field.get('specialType'):
                 continue
 
             dataset = data_json.get_dataset(identifier=field['dataset_identifier'])
-            action = action_template.copy()
-            action['_source'] = {
-                "title": field['title'],
-                "description": field['description'] or "",
-                "id": field['id'],
-                'dataset_source': dataset['source'],
-                'dataset_title': dataset['title'],
-                'dataset_description': dataset['description'],
-                'theme_description': themes[dataset['theme'][0]],
-            }
-            counter += 1
-            action['_id'] = counter
-            actions.append(action)
+
+            doc = Field(
+                title=field['title'],
+                description=field['description'],
+                id=field['id'],
+                dataset_title=dataset['title'],
+                dataset_source=dataset['source'],
+                dataset_description=dataset['description'],
+                theme_description=themes[dataset['theme'][0]]
+            )
+            actions.append(doc.to_dict(include_meta=True))
         return actions
 
     @staticmethod

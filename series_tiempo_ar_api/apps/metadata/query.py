@@ -1,7 +1,7 @@
 #! coding: utf-8
-from elasticsearch_dsl import Search
-
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from .indexer.doc_types import Field
+
 from . import strings, constants
 
 
@@ -57,8 +57,7 @@ class FieldMetadataQuery(object):
         querystring = self.args[constants.PARAM_QUERYSTRING]
         offset = self.args[constants.PARAM_OFFSET]
         limit = self.args[constants.PARAM_LIMIT]
-        search = Search(using=es_client,
-                        index=constants.FIELDS_INDEX).query('match', _all=querystring)
+        search = Field.search(using=es_client).query('match', _all=querystring)
         search = search[offset:limit + offset]
 
         hits = search.execute()

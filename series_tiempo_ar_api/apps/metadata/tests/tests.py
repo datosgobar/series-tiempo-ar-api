@@ -9,9 +9,10 @@ from pydatajson import DataJson
 from django.test import TestCase
 
 from series_tiempo_ar_api.apps.metadata.query import FieldMetadataQuery
-from series_tiempo_ar_api.apps.metadata.indexer import constants
+from series_tiempo_ar_api.apps.metadata import constants
 
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
+from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 mock.patch.object = mock.patch.object  # Hack for pylint inspection
@@ -89,13 +90,12 @@ class IndexerTests(TestCase):
         datajson = DataJson(catalog)
         result = MetadataIndexer().scrap_datajson(datajson)
 
-        mapping = constants.FIELDS_MAPPING['mappings']
-        mapping_fields = mapping[constants.FIELDS_DOC_TYPE]['properties'].keys()
+        mapping = Field._doc_type.mapping.properties.properties.to_dict()
+        mapping_fields = mapping.keys()
 
         # Me aseguro que los resultados sean legibles por el indexer de ES
         for field in result:
             for key in field['_source'].keys():
                 self.assertIn(key, mapping_fields)
 
-            self.assertEqual(field['_type'], constants.FIELDS_DOC_TYPE)
             self.assertEqual(field['_index'], constants.FIELDS_INDEX)
