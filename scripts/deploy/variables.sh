@@ -10,13 +10,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export OVPN_CONFIG="client"
 export OVPN_PATH="/etc/openvpn/$OVPN_CONFIG.conf"
 
+# Las siguientes variables definen cuales variables buscar para desencriptar
+# algunos valores de travis. Ver ./prepare.sh para mas info
+
+
 if [ "$ENVIRONMENT" == "testing" ]; then
     echo "Ambiente $ENVIRONMENT"
-    # Las siguientes variables definen cuales variables buscar para desencriptar
-    # algunos valores de travis. Ver ./prepare.sh para mas info
 
+    export USE_VPN="" # Do not use VPN
 
-    # Las siguientes variables son de conexion ssh
     export DEPLOY_TARGET_VAULT_PASS_FILE="$TESTING_DEPLOY_VAULT_PASS_FILE"
     export DEPLOY_TARGET_SSH_PORT="$TESTING_DEPLOY_TARGET_SSH_PORT"
     export DEPLOY_TARGET_USERNAME="$TESTING_DEPLOY_TARGET_USERNAME"
@@ -25,13 +27,9 @@ if [ "$ENVIRONMENT" == "testing" ]; then
     export DEPLOY_REVISION="master"
 elif [ "$ENVIRONMENT" == "staging" ]; then
     echo "Ambiente $ENVIRONMENT"
-    export ssh_key_var_name="encrypted_4551c5846e4a_key"
-    export ssh_iv_var_name="encrypted_4551c5846e4a_iv"
-    export USE_VPN="$STAGING_USE_VPN"
-    export openvpn_key_var_name=""
-    export openvpn_iv_var_name=""
 
-    # Las siguientes variables son de conexion ssh
+    export USE_VPN="$STAGING_USE_VPN"
+
     export DEPLOY_TARGET_VAULT_PASS_FILE="$STAGING_DEPLOY_VAULT_PASS_FILE"
     export DEPLOY_TARGET_SSH_PORT="$STAGING_DEPLOY_TARGET_SSH_PORT"
     export DEPLOY_TARGET_USERNAME="$STAGING_DEPLOY_TARGET_USERNAME"
