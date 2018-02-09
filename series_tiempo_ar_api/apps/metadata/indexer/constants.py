@@ -2,10 +2,9 @@
 
 from ..constants import FIELDS_INDEX, FIELDS_DOC_TYPE
 
-FIELDS_MAPPING = """
-{
+FIELDS_MAPPING = {
   "mappings": {
-    "doc": {
+    FIELDS_DOC_TYPE: {
       "properties": {
         "description": {"type": "text"},
         "id": {"type": "keyword"},
@@ -18,4 +17,3 @@ FIELDS_MAPPING = """
     }
   }
 }
-"""
