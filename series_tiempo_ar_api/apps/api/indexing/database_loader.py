@@ -169,7 +169,7 @@ class DatabaseLoader(object):
         data_hash = ''
         if self.read_local:  # Usado en debug y testing
             with open(file_url) as f:
-                data_hash = f.read()
+                data_hash = hashlib.sha512(f.read()).hexdigest()
 
             distribution_model.data_file = File(open(file_url))
 
@@ -187,6 +187,7 @@ class DatabaseLoader(object):
                 distribution_model.data_file.delete()
 
             distribution_model.data_file = File(lf)
+            data_hash = hashlib.sha512(request.content).hexdigest()
 
         if distribution_model.data_hash != data_hash:
             distribution_model.data_hash = data_hash
