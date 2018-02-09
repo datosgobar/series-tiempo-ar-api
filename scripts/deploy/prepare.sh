@@ -27,7 +27,7 @@ ssh-keyscan -p $DEPLOY_TARGET_SSH_PORT -t 'rsa,dsa,ecdsa' -H $DEPLOY_TARGET_IP 2
 
 echo "Inicializando acceso ssh"
 # Desencripto la key ssh para acceder al server
-cp "$environment_files/build\+ts-api@travis-ci.org" /tmp/build\+ts-api@travis-ci.org
+cp "$environment_files/build+ts-api@travis-ci.org" /tmp/build\+ts-api@travis-ci.org
 chmod 600 /tmp/build\+ts-api@travis-ci.org
 
 if [ -n "$USE_VPN" ]; then
