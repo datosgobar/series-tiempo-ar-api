@@ -54,11 +54,20 @@ class CSVFormatter(BaseFormatter):
         content = 'attachment; filename="{}"'
         response['Content-Disposition'] = content.format(constants.CSV_RESPONSE_FILENAME)
 
-        writer = unicodecsv.writer(response)
+        delim = query_args.get(constants.PARAM_DELIM,
+                               constants.API_DEFAULT_VALUES[constants.PARAM_DELIM])
+        writer = unicodecsv.writer(response, delimiter=str(delim))
         header = [settings.INDEX_COLUMN] + series_ids
+
         writer.writerow(header)
-        for row in data:
-            writer.writerow(row)
+        decimal_char = query_args.get(constants.PARAM_DEC_CHAR)
+        if decimal_char:  # Reemplazo los puntos decimales por el char pedido
+            for row in data:
+                row = [str(el).replace('.', decimal_char) for el in row]
+                writer.writerow(row)
+        else:
+            for row in data:
+                writer.writerow(row)
 
         return response
 

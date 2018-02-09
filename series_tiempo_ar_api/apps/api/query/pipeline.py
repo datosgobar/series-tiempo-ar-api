@@ -68,6 +68,8 @@ class QueryPipeline(object):
             Metadata,
             Format,
             Header,
+            Delimiter,
+            DecimalChar,
         ]
 
 
@@ -398,4 +400,25 @@ class Header(BaseOperation):
 
         if header not in constants.VALID_CSV_HEADER_VALUES:
             msg = strings.INVALID_PARAMETER.format(constants.PARAM_HEADER, header)
+            self._append_error(msg)
+
+
+class Delimiter(BaseOperation):
+    """Valida el parámetro delimitador de la respuesta CSV. No realiza operación"""
+
+    def run(self, query, args):
+        delim = args.get(constants.PARAM_DELIM, constants.API_DEFAULT_VALUES[constants.PARAM_DELIM])
+
+        if len(delim) != 1:
+            msg = strings.INVALID_PARAM_LENGTH.format(constants.PARAM_DELIM)
+            self._append_error(msg)
+
+
+class DecimalChar(BaseOperation):
+    """Valida el parámetro para cambiar el caracter decimal de los números del CSV."""
+
+    def run(self, query, args):
+        dec_char = args.get(constants.PARAM_DEC_CHAR)
+        if dec_char and len(dec_char) != 1:
+            msg = strings.INVALID_PARAM_LENGTH.format(constants.PARAM_DEC_CHAR)
             self._append_error(msg)
