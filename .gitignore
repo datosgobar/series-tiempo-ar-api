@@ -34,4 +34,6 @@ node_modules/
 
 .vagrant
 .ruby-version
-.rbenv-gemsets
+.rbenv-gemset
+
+scripts/deploy/files/
