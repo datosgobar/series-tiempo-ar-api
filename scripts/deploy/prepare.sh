@@ -13,9 +13,11 @@ files_tar="$deploy_files/files.tar.gz"
 enc_files_tar="$deploy_files/files.tar.gz.enc"
 
 # desencriptar
+echo "Desencriptando"
 openssl aes-256-cbc -K ${!files_key_var_name} -iv ${!files_iv_var_name} -in $enc_files_tar -out $files_tar -d
 
-tar zxf $files_tar -C $deploy_files
+echo "Descomprimiendo"
+tar zxvf $files_tar -C $deploy_files
 
 environment_files="scripts/deploy/files/$DEPLOY_ENVIRONMENT"
 
