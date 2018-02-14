@@ -3,11 +3,11 @@ from django.conf import settings
 from elasticsearch_dsl import Search, MultiSearch, Q
 from iso8601 import iso8601
 
+from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.helpers import get_relative_delta, find_index
-from ..elastic import ElasticInstance
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
-from series_tiempo_ar_api.apps.api.exceptions import QueryError
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .series import Series
 
 

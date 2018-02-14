@@ -1,20 +1,20 @@
 #! coding: utf-8
-import os
 import json
-from random import random
+import os
 from datetime import datetime
+from random import random
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from elasticsearch.helpers import parallel_bulk
 from django.conf import settings
+from elasticsearch.helpers import parallel_bulk
 
+from series_tiempo_ar_api.apps.api.common import operations
 from series_tiempo_ar_api.apps.api.helpers import interval_to_freq_pandas
 from series_tiempo_ar_api.apps.api.indexing.constants import INDEX_CREATION_BODY, \
     FORCE_MERGE_SEGMENTS
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
-from series_tiempo_ar_api.apps.api.query.elastic import ElasticInstance
-from series_tiempo_ar_api.apps.api.common import operations
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 DATA_FILE_NAME = 'data.csv'
 DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), DATA_FILE_NAME)

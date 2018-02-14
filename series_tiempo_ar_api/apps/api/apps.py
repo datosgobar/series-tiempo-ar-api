@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from django.conf import settings
 
-from .query.elastic import ElasticInstance
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class ApiConfig(AppConfig):
