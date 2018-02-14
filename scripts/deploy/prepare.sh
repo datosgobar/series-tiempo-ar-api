@@ -34,4 +34,5 @@ if [ -n "$USE_VPN" ]; then
     echo "Conectando a la VPN";
     sudo cp "$environment_files/client.ovpn" "$OVPN_PATH"
     sudo service openvpn start
+    ifconfig | grep -oh tun0
 fi
