@@ -36,10 +36,7 @@ class MetadataIndexer(object):
         themes = self.get_themes(self.data_json['themeTaxonomy'])
 
         actions = []
-        for field in self.data_json.get_fields():
-            if field.get('specialType'):
-                continue
-
+        for field in self.data_json.get_fields(only_time_series=True):
             dataset = self.data_json.get_dataset(identifier=field['dataset_identifier'])
 
             doc = Field(
