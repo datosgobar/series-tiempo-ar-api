@@ -12,7 +12,7 @@ class ViewTests(TestCase):
 
     def test_response_format(self):
         with mock.patch.object(Search, 'execute', return_value=[]):
-            response = self.client.get(reverse('metadata:search'),
+            response = self.client.get(reverse('api:metadata:search'),
                                        data={'q': 'algodon'})
 
         response_json = json.loads(response.content)
