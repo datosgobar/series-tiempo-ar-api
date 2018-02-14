@@ -14,7 +14,7 @@ SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
 class ViewTests(TestCase):
 
     client = Client()
-    endpoint = reverse('api:series')
+    endpoint = reverse('series:series')
 
     @classmethod
     def setUpClass(cls):

@@ -10,11 +10,15 @@ from des import urls as des_urls
 
 admin.autodiscover()
 
+api_endpoints = [
+    url(r'series/', include('series_tiempo_ar_api.apps.api.urls', namespace="series")),
+    url(r'search/', include('series_tiempo_ar_api.apps.metadata.urls', namespace='metadata')),
+]
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^django-rq/', include('django_rq.urls')),
-    url(r'^api/', include('series_tiempo_ar_api.apps.api.urls', namespace="api")),
+    url(r'^api/', include(api_endpoints, namespace="api")),
     url(r'^analytics/', include('series_tiempo_ar_api.apps.analytics.urls', namespace='analytics')),
-    url(r'^metadata/', include('series_tiempo_ar_api.apps.metadata.urls', namespace='metadata')),
     url(r'^django-des/', include(des_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
