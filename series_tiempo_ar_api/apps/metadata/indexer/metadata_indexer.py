@@ -30,7 +30,7 @@ class MetadataIndexer(object):
     def index_actions(self, actions):
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
-                logging.info(strings.INDEXING_ERROR.format(info))
+                logging.info(strings.INDEXING_ERROR, info)
 
     def scrap_datajson(self):
         themes = self.get_themes(self.data_json['themeTaxonomy'])

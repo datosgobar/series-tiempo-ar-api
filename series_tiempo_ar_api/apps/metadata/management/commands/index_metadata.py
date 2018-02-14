@@ -20,4 +20,4 @@ class Command(BaseCommand):
             data_json = DataJson(options['datajson_url'])
             MetadataIndexer(data_json).index()
         except Exception as e:
-            logger.exception('Error en la lectura del catálogo: {}'.format(e))
+            logger.exception('Error en la lectura del catálogo: %s', e)
