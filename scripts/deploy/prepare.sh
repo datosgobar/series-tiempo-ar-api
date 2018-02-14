@@ -32,6 +32,6 @@ chmod 600 /tmp/build\+ts-api@travis-ci.org
 
 if [ -n "$USE_VPN" ]; then
     echo "Conectando a la VPN";
-    cp "$environment_files/client.ovpn" "$OVPN_PATH"
+    sudo cp "$environment_files/client.ovpn" "$OVPN_PATH"
     sudo service openvpn start
 fi
