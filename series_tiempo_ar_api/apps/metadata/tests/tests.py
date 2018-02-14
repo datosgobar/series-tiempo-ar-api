@@ -81,14 +81,14 @@ class IndexerTests(TestCase):
     def test_scraping(self):
         catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
         datajson = DataJson(catalog)
-        result = MetadataIndexer().scrap_datajson(datajson)
+        result = MetadataIndexer(datajson).scrap_datajson()
 
         self.assertEqual(len(result), len(datajson.get_fields()) - 1)
 
     def test_scraping_result(self):
         catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
         datajson = DataJson(catalog)
-        result = MetadataIndexer().scrap_datajson(datajson)
+        result = MetadataIndexer(datajson).scrap_datajson()
 
         mapping = Field._doc_type.mapping.properties.properties.to_dict()
         mapping_fields = mapping.keys()
