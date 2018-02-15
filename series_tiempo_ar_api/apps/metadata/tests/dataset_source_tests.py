@@ -18,5 +18,5 @@ class DatasetSourceTests(TestCase):
 
         with mock.patch.object(Search, 'execute', return_value=search_mock):
             response = self.client.get(reverse('api:metadata:dataset_source'))
-            response_sources = json.loads(response.content)['sources']
+            response_sources = json.loads(response.content)['data']
             self.assertIn(test_source, response_sources)

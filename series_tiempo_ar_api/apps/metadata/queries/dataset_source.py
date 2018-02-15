@@ -18,6 +18,6 @@ def dataset_source_query():
 
     sources = [source['key'] for source in search_result.aggregations.sources.buckets]
     response = {
-        'sources': sources
+        'data': sources
     }
     return response
