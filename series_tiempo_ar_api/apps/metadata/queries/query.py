@@ -1,11 +1,11 @@
 #! coding: utf-8
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from .indexer.doc_types import Field
+from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 
-from . import strings, constants
+from series_tiempo_ar_api.apps.metadata import strings, constants
 
 
-class FieldMetadataQuery(object):
+class FieldSearchQuery(object):
     """Ejecuta una query de búsquerda de metadatos de Field, a través de Elasticsearch"""
 
     def __init__(self, args):

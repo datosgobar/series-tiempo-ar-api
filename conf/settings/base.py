@@ -1,13 +1,12 @@
 #! coding: utf-8
 from __future__ import absolute_import, unicode_literals
 
-import os
 from os.path import dirname
 
 import environ
 
-from .api import *
-from .metadata import *
+from .api.api import *
+from .api.metadata import *
 
 SETTINGS_DIR = environ.Path(__file__) - 1
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)

@@ -2,6 +2,7 @@
 from elasticsearch_dsl import DocType, Keyword, Text
 
 from series_tiempo_ar_api.apps.metadata import constants
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class Field(DocType):
@@ -19,3 +20,4 @@ class Field(DocType):
 
     class Meta:
         index = constants.FIELDS_INDEX
+        using = ElasticInstance.get()

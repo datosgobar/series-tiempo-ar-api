@@ -4,15 +4,14 @@ from __future__ import unicode_literals
 import os
 
 import mock
+from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
-from django.test import TestCase
 
-from series_tiempo_ar_api.apps.metadata.query import FieldMetadataQuery
 from series_tiempo_ar_api.apps.metadata import constants
-
-from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
+from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
+from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 mock.patch.object = mock.patch.object  # Hack for pylint inspection
@@ -21,28 +20,28 @@ mock.patch.object = mock.patch.object  # Hack for pylint inspection
 class QueryTests(TestCase):
 
     def test_no_querystring(self):
-        query = FieldMetadataQuery(args={})
+        query = FieldSearchQuery(args={})
 
         result = query.execute()
 
         self.assertTrue(result['errors'])
 
     def test_bad_limit(self):
-        query = FieldMetadataQuery(args={'limit': 'invalid'})
+        query = FieldSearchQuery(args={'limit': 'invalid'})
 
         result = query.execute()
 
         self.assertTrue(result['errors'])
 
     def test_bad_offset(self):
-        query = FieldMetadataQuery(args={'offset': 'invalid'})
+        query = FieldSearchQuery(args={'offset': 'invalid'})
 
         result = query.execute()
 
         self.assertTrue(result['errors'])
 
     def test_query_response_size(self):
-        query = FieldMetadataQuery(args={'q': 'aceite'})
+        query = FieldSearchQuery(args={'q': 'aceite'})
         return_value = [{
             'id': 'algo',
             'description': 'description',
@@ -56,7 +55,7 @@ class QueryTests(TestCase):
     def test_response_params(self):
         limit = '10'
         offset = '15'
-        query = FieldMetadataQuery(args={'q': 'aceite',
+        query = FieldSearchQuery(args={'q': 'aceite',
                                          'limit': limit,
                                          'offset': offset})
         return_value = [{
