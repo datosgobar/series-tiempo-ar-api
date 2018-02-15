@@ -1,9 +1,8 @@
 #! coding: utf-8
 from django.conf import settings
+from elasticsearch_dsl import A
 
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from elasticsearch_dsl import A
 
 
 def dataset_source_query():
