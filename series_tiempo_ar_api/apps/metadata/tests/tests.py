@@ -56,8 +56,8 @@ class QueryTests(TestCase):
         limit = '10'
         offset = '15'
         query = FieldSearchQuery(args={'q': 'aceite',
-                                         'limit': limit,
-                                         'offset': offset})
+                                       'limit': limit,
+                                       'offset': offset})
         return_value = [{
             'id': 'algo',
             'description': 'description',

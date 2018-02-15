@@ -7,4 +7,3 @@ urlpatterns = [
     url('^$', search, name='search'),
     url('^dataset_source$', dataset_source, name='dataset_source')
 ]
-
