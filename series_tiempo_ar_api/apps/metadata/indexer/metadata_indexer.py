@@ -45,6 +45,7 @@ class MetadataIndexer(object):
                 id=field['id'],
                 dataset_title=dataset['title'],
                 dataset_source=dataset['source'],
+                dataset_source_keyword=dataset['source'],
                 dataset_description=dataset['description'],
                 theme_description=themes[dataset['theme'][0]]
             )
