@@ -77,6 +77,7 @@ class QueryTest(TestCase):
 
     def test_default_return_limits(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.sort(how='asc')
         data = self.query.run()
 
         self.assertEqual(len(data), self.default_limit)
@@ -313,6 +314,7 @@ class QueryTest(TestCase):
                               'end_of_period')
         self.query.add_filter(start="1970")
         self.query.add_collapse('year')
+        self.query.sort('asc')
         eop_data = self.query.run()
 
         for eop_row in eop_data:

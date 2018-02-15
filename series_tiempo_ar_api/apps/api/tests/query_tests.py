@@ -32,6 +32,7 @@ class QueryTests(TestCase):
 
     def test_index_metadata_start_end_dates(self):
         self.query.add_series(self.single_series, self.field)
+        self.query.sort('asc')
         data = self.query.run()['data']
 
         index_meta = self.query.get_metadata()[0]
@@ -51,6 +52,7 @@ class QueryTests(TestCase):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series, self.field)
         self.query.add_collapse(collapse=collapse_interval)
+        self.query.sort('asc')
         data = self.query.run()['data']
 
         index_meta = self.query.get_metadata()[0]
