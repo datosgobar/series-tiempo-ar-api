@@ -35,7 +35,7 @@ if [ -n "$USE_VPN" ]; then
     sudo cp "$environment_files/client.ovpn" "$OVPN_PATH"
     sudo service openvpn restart
     echo "Esperando..."
-    sleep 5
+    sleep 10
     echo "Verificando VPN..."
     ifconfig -a | sed 's/[ \t].*//;/^$/d'
     ifconfig | grep -oh tun0
