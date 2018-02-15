@@ -4,7 +4,7 @@ from elasticsearch_dsl import MultiSearch, Q, Search
 from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
-from series_tiempo_ar_api.apps.api.helpers import get_relative_delta, find_index
+from series_tiempo_ar_api.apps.api.helpers import get_relative_delta
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query.es_query.series import Series
@@ -17,8 +17,6 @@ class ESQuery(object):
 
     def __init__(self, index):
         """
-        Base común de ambas queries (común y con collapse)
-
         args:
             index (str): Índice de Elasticsearch a ejecutar las queries.
         """
@@ -145,14 +143,19 @@ class ESQuery(object):
         for i, response in enumerate(responses):
             rep_mode = self.series[i].rep_mode
             series_id = self.series[i].series_id
-            self._format_single_response(response, rep_mode=rep_mode, series_id=series_id)
 
-        if not self.data_dict:
+            for hit in response:
+                data = hit[rep_mode] if rep_mode in hit else None
+                timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
+                timestamp_dict[series_id] = data
+
+        if not self.data_dict:  # No hay datos
             return
 
         self._make_date_index_continuous(min(self.data_dict.keys()),
                                          max(self.data_dict.keys()))
 
+        # Ordeno las timestamp según si el sort es asc o desc usando función de comparación
         def cmp_func(one, other):
             if one == other:
                 return 0
@@ -170,22 +173,9 @@ class ESQuery(object):
 
             self.data.append(row)
 
-    def _format_single_response(self, response, rep_mode, series_id):
-        """Formatea y agrega los datos de la respuesta de la búsqueda 'response'
-        a la lista de datos self.data
-        """
-        if not len(response):
-            return
-
-        for hit in response:
-            data = hit[rep_mode] if rep_mode in hit else None
-            timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
-            timestamp_dict[series_id] = data
-
     def _make_date_index_continuous(self, start_date, end_date):
         """Hace el índice de tiempo de los resultados continuo (según
-        el intervalo de resultados), sin saltos, hasta la fecha
-        especificada
+        el intervalo de resultados), sin saltos, entre start_date y end_date
         """
 
         # Si no hay datos cargados no hay nada que hacer
@@ -198,9 +188,3 @@ class ESQuery(object):
         while current_date < end_date:
             current_date += get_relative_delta(self.periodicity)
             self.data_dict.setdefault(unicode(current_date.date()), {})
-
-    @staticmethod
-    def _format_timestamp(timestamp):
-        if timestamp.find('T') != -1:  # Borrado de la parte de tiempo
-            return timestamp[:timestamp.find('T')]
-        return timestamp
