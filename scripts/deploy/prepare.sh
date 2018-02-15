@@ -21,10 +21,6 @@ tar zxvf $files_tar -C $deploy_files
 
 environment_files="scripts/deploy/files/$DEPLOY_ENVIRONMENT"
 
-echo "Inicializando known_hosts"
-# Agrego el host a known_hosts
-ssh-keyscan -p $DEPLOY_TARGET_SSH_PORT -t 'rsa,dsa,ecdsa' -H $DEPLOY_TARGET_IP 2>&1 | tee -a $HOME/.ssh/known_hosts
-
 echo "Inicializando acceso ssh"
 # Desencripto la key ssh para acceder al server
 cp "$environment_files/build+ts-api@travis-ci.org" /tmp/build\+ts-api@travis-ci.org
@@ -33,5 +29,14 @@ chmod 600 /tmp/build\+ts-api@travis-ci.org
 if [ -n "$USE_VPN" ]; then
     echo "Conectando a la VPN";
     sudo cp "$environment_files/client.ovpn" "$OVPN_PATH"
-    sudo service openvpn start
+    sudo service openvpn restart
+    echo "Esperando..."
+    sleep 10
+    echo "Verificando VPN..."
+    ifconfig -a | sed 's/[ \t].*//;/^$/d'
+    ifconfig | grep -oh tun0
 fi
+
+echo "Inicializando known_hosts"
+# Agrego el host a known_hosts
+ssh-keyscan -p $DEPLOY_TARGET_SSH_PORT -t 'rsa,dsa,ecdsa' -H $DEPLOY_TARGET_IP 2>&1 | tee -a $HOME/.ssh/known_hosts
