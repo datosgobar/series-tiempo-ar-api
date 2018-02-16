@@ -1,7 +1,9 @@
 #! coding: utf-8
+import os
 import json
 
 import unicodecsv
+from django.conf import settings
 from django_rq import job
 
 from .models import Query
@@ -19,11 +21,19 @@ def analytics(ids, args_string, ip_address, params, timestamp_milliseconds):
 @job("default")
 def export():
     queryset = Query.objects.all()
-    with open('protected/analytics.csv', 'wb') as f:
-        writer = unicodecsv.writer(f)
+    filepath = os.path.join(settings.PROTECTED_MEDIA_DIR, settings.ANALYTICS_CSV_FILENAME)
 
+    fields = [
+        Query.timestamp,
+        Query.ip_address,
+        Query.ids,
+        Query.params
+    ]
+
+    with open(filepath, 'wb') as f:
+        writer = unicodecsv.writer(f)
         # header
-        writer.writerow(['timestamp', 'ip_address', 'ids', 'params'])
+        writer.writerow([field.field_name for field in fields])
         for query in queryset.iterator():
 
-            writer.writerow([query.timestamp, query.ip_address, query.ids, query.params])
+            writer.writerow([getattr(query, field.field_name) for field in fields])

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
 import json
 
-from django.http import HttpResponse
+import sendfile
+from django.http import HttpResponse, Http404
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from .tasks import analytics
@@ -33,3 +36,10 @@ def save(request):
         args = args[params_start:]
     analytics.delay(ids, args, ip_address, params, timestamp)
     return HttpResponse()
+
+
+def read_analytics(request):
+    if not request.user.is_staff:
+        raise Http404
+
+    return sendfile.sendfile(request, os.path.join(settings.PROTECTED_MEDIA_DIR, 'analytics.csv'))
