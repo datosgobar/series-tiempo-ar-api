@@ -70,6 +70,8 @@ class ESQuery(object):
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
         search = Search(using=self.elastic, index=self.index)
+        end = self.args[constants.PARAM_START] + self.args[constants.PARAM_LIMIT]
+        search = search[self.args[constants.PARAM_START]:end]
         # Filtra los resultados por la serie pedida
         search = search.filter('bool',
                                must=[Q('match', series_id=series_id),
