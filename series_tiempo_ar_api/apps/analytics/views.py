@@ -6,7 +6,7 @@ import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .analytics import analytics
+from .tasks import analytics
 
 
 @csrf_exempt

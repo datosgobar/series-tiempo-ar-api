@@ -4,7 +4,7 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from .analytics import analytics
+from .tasks import analytics
 from .models import Query
 from .utils import kong_milliseconds_to_tzdatetime
 
