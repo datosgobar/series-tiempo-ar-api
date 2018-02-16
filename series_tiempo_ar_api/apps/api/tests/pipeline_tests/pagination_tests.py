@@ -32,13 +32,11 @@ class PaginationTests(TestCase):
 
     def test_start(self):
         self.query.add_series(self.single_series, self.field, 'value')
-        self.query.sort('asc')
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
         other_query = Query(index=settings.TEST_INDEX)
         other_query.add_series(self.single_series, self.field, 'value')
-        other_query.sort('asc')
         self.cmd.run(other_query, params)
         other_data = other_query.run()['data']
 

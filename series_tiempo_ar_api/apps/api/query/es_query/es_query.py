@@ -72,6 +72,7 @@ class ESQuery(object):
         search = Search(using=self.elastic, index=self.index)
         end = self.args[constants.PARAM_START] + self.args[constants.PARAM_LIMIT]
         search = search[self.args[constants.PARAM_START]:end]
+        search = search.sort(settings.TS_TIME_INDEX_FIELD)  # Default: ascending sort
         # Filtra los resultados por la serie pedida
         search = search.filter('bool',
                                must=[Q('match', series_id=series_id),
