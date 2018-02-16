@@ -6,6 +6,7 @@ from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
 from series_tiempo_ar_api.apps.analytics.models import Query
+from .tasks import export
 
 
 class QueryResource(resources.ModelResource):
@@ -25,6 +26,11 @@ class QueryAdmin(ImportExportModelAdmin):
 
     search_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids')
     resource_class = QueryResource
+    actions = ('export_analytics', )
+
+    def export_analytics(self, *_):
+        export.delay()
+    export_analytics.short_description = "Export analytics"
 
 
 admin.site.register(Query, QueryAdmin)
