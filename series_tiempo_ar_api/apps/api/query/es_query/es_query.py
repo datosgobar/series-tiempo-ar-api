@@ -34,8 +34,6 @@ class ESQuery(object):
             constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
         }
 
-        self.has_end_of_period = False
-
     def add_series(self, series_id, rep_mode, periodicity,
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         # Fix a casos en donde collapse agg no es avg pero los valores serían iguales a avg
@@ -131,8 +129,6 @@ class ESQuery(object):
             search = search.filter('bool',
                                    must=[Q('match', interval=self.periodicity)])
             multi_search = multi_search.add(search)
-            if serie.collapse_agg == constants.AGG_END_OF_PERIOD:
-                self.has_end_of_period = True
 
         responses = multi_search.execute()
         self._format_response(responses)
@@ -140,6 +136,16 @@ class ESQuery(object):
         return self.data[:self.args[constants.PARAM_LIMIT]]
 
     def _format_response(self, responses):
+        """Procesa la respuesta recibida de Elasticsearch, la guarda en
+        el diccionario data_dict con el siguiente formato
+        self.data_dict = {
+          "1990-01-01": { "serie_1": valor1, "serie_2": valor2, ... },
+          "1990-02-01": { "serie_1": valor1, "serie_2": valor2, ... }
+        }
+        Luego el diccionario es pasado a la lista de listas final
+        self.data para conformar la respuesta esperada de lista de listas
+        """
+
         for i, response in enumerate(responses):
             rep_mode = self.series[i].rep_mode
             series_id = self.series[i].series_id
@@ -175,7 +181,9 @@ class ESQuery(object):
 
     def _make_date_index_continuous(self, start_date, end_date):
         """Hace el índice de tiempo de los resultados continuo (según
-        el intervalo de resultados), sin saltos, entre start_date y end_date
+        el intervalo de resultados), sin saltos, entre start_date y end_date.
+        Esto implica llenar el diccionario self.data_dict con claves de los
+        timestamp faltantes para asegurar la continuidad
         """
 
         # Si no hay datos cargados no hay nada que hacer
