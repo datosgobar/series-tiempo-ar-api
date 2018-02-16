@@ -18,7 +18,7 @@ class QueryTest(TestCase):
     start = constants.API_DEFAULT_VALUES['start']
     limit = constants.API_DEFAULT_VALUES['limit']
 
-    default_limit = 10
+    default_limit = constants.API_DEFAULT_VALUES['limit']
     max_limit = 1000
 
     start_date = '2010-01-01'
@@ -372,3 +372,15 @@ class QueryTest(TestCase):
 
         for row in data:
             self.assertEqual(row[1], row[2])
+
+    def test_multiple_sort_desc_delayed(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_series(self.delayed_series, self.rep_mode, self.series_periodicity)
+
+        self.query.sort('desc')
+
+        data = self.query.run()
+
+        for row in data:
+            self.assertIsNotNone(row[2])
+            self.assertIsNone(row[1])

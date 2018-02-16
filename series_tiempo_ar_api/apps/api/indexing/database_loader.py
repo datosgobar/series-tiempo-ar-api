@@ -8,7 +8,6 @@ import requests
 from django.conf import settings
 from django.core.files import File
 from django.db import IntegrityError
-from django.db.models.query_utils import Q
 from django.utils import timezone
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
@@ -67,7 +66,6 @@ class DatabaseLoader(object):
                 if distribution_model:
                     self._save_fields(distribution_model, fields)
 
-        self._update_present_datasets(catalog_id)
         logger.info(strings.DB_LOAD_END)
 
     def _catalog_model(self, catalog):
@@ -114,6 +112,7 @@ class DatabaseLoader(object):
             settings.DATASET_BLACKLIST
         )
         dataset_model.metadata = json.dumps(dataset)
+        dataset_model.present = True
         dataset_model.save()
 
         self.dataset_cache[dataset[constants.IDENTIFIER]] = dataset_model
@@ -166,7 +165,6 @@ class DatabaseLoader(object):
             file_url (str)
             distribution_model (Distribution)
         """
-        data_hash = ''
         if self.read_local:  # Usado en debug y testing
             with open(file_url) as f:
                 data_hash = hashlib.sha512(f.read()).hexdigest()
@@ -235,14 +233,6 @@ class DatabaseLoader(object):
         for field in blacklist:
             metadata.pop(field, None)
         return metadata
-
-    def _update_present_datasets(self, catalog_id):
-        """Actualiza la lista de datasets marcando los datasets encontrados como presentes"""
-
-        present_ids = self.dataset_cache.keys()
-        datasets = Dataset.objects.filter(~Q(identifier__in=present_ids),
-                                          Q(catalog__identifier=catalog_id))
-        datasets.update(present=False)
 
     def get_stats(self):
         return self.stats
