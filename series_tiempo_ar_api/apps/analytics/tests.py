@@ -1,5 +1,6 @@
 #! coding: utf-8
 import json
+import copy
 
 from django.test import TestCase
 from django.urls import reverse
@@ -45,11 +46,13 @@ class AnalyticsViewTests(TestCase):
     }
 
     def test_view_valid_body(self):
+        count_before = Query.objects.count()
         response = self.client.post(reverse('analytics:save'),
                                     json.dumps(self.body),
                                     content_type="application/json")
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(Query.objects.count(), count_before + 1)
 
     def test_view_invalid_method(self):
         response = self.client.put(reverse('analytics:save'),
@@ -66,11 +69,11 @@ class AnalyticsViewTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_admin_call_not_logged(self):
-        body = self.body.copy()
+        body = copy.deepcopy(self.body)
         body['request']['uri'] = 'admin/api/dataset/12'
         count_before = Query.objects.count()
         response = self.client.post(reverse('analytics:save'),
-                                    json.dumps(self.body),
+                                    json.dumps(body),
                                     content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
