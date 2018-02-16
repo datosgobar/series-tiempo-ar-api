@@ -64,3 +64,15 @@ class AnalyticsViewTests(TestCase):
                                     content_type='application/json')
 
         self.assertEqual(response.status_code, 400)
+
+    def test_admin_call_not_logged(self):
+        body = self.body.copy()
+        body['request']['uri'] = 'admin/api/dataset/12'
+        count_before = Query.objects.count()
+        response = self.client.post(reverse('analytics:save'),
+                                    json.dumps(self.body),
+                                    content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        # Count unchanged
+        self.assertEqual(Query.objects.count(), count_before)
