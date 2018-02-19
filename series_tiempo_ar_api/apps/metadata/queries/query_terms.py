@@ -5,18 +5,20 @@ from elasticsearch_dsl import A
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 
 
-def dataset_source_query():
+def query_field_terms(field=None):
     """Devuelve todos los dataset_source únicos cargados en los metadatos de Field"""
 
+    if not field:
+        raise ValueError('Field a buscar inválido')
     search = Field.search()
 
-    agg = A('terms', field='dataset_source_keyword', size=settings.MAX_DATASET_SOURCES)
-    search.aggs.bucket('sources', agg)
+    agg = A('terms', field=field, size=settings.MAX_DATASET_SOURCES)
+    search.aggs.bucket('results', agg)
 
     search = search[:0]  # Descarta resultados de search, solo nos importa el aggregation
     search_result = search.execute()
 
-    sources = [source['key'] for source in search_result.aggregations.sources.buckets]
+    sources = [source['key'] for source in search_result.aggregations.results.buckets]
     response = {
         'data': sources
     }

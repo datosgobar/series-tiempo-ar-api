@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.http import JsonResponse
 
-from series_tiempo_ar_api.apps.metadata.queries.dataset_source import dataset_source_query
+from series_tiempo_ar_api.apps.metadata.queries.dataset_source import query_field_terms
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 
 
@@ -14,6 +14,12 @@ def search(request):
 
 
 def dataset_source(request):
-    response = dataset_source_query()
+    response = query_field_terms(field='dataset_source_keyword')
+
+    return JsonResponse(response)
+
+
+def field_units(request):
+    response = query_field_terms(field='units')
 
     return JsonResponse(response)
