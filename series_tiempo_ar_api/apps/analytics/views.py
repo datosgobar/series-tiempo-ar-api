@@ -23,7 +23,8 @@ def save(request):
     if not req_data:  # Fatal error
         return HttpResponse(status=400)
 
-    if 'api/' not in req_data.get('uri'):
+    uri = req_data.get('uri')
+    if 'admin/' in uri or 'api/' not in uri:
         return HttpResponse()
 
     params = req_data.get('querystring')
