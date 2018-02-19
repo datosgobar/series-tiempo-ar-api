@@ -6,10 +6,13 @@ from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 
 
 def query_field_terms(field=None):
-    """Devuelve todos los dataset_source únicos cargados en los metadatos de Field"""
+    """Devuelve todos los 'field' únicos cargados en los metadatos de Field,
+    usando un Terms aggregation en el índice de Elasticsearch
+    """
 
     if not field:
-        raise ValueError('Field a buscar inválido')
+        raise ValueError(u'Field a buscar inválido')
+
     search = Field.search()
 
     agg = A('terms', field=field, size=settings.MAX_DATASET_SOURCES)
