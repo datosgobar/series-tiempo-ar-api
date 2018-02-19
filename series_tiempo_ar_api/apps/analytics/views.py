@@ -8,8 +8,9 @@ import sendfile
 from django.http import HttpResponse, Http404
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
 
-from .tasks import analytics
+from .tasks import analytics, export
 
 
 @csrf_exempt
@@ -43,3 +44,11 @@ def read_analytics(request):
         raise Http404
 
     return sendfile.sendfile(request, os.path.join(settings.PROTECTED_MEDIA_DIR, 'analytics.csv'))
+
+
+def export_analytics(request):
+    if not request.user.is_staff:
+        raise Http404
+
+    export.delay()
+    return HttpResponse(render(request, 'export.html'))
