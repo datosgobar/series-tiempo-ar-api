@@ -19,9 +19,9 @@ def analytics(ids, args_string, ip_address, params, timestamp_milliseconds):
 
 
 @job("default")
-def export():
+def export(path=None):
     queryset = Query.objects.all()
-    filepath = os.path.join(settings.PROTECTED_MEDIA_DIR, settings.ANALYTICS_CSV_FILENAME)
+    filepath = path or os.path.join(settings.PROTECTED_MEDIA_DIR, settings.ANALYTICS_CSV_FILENAME)
 
     fields = [
         Query.timestamp,

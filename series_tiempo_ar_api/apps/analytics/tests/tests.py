@@ -4,9 +4,9 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from .tasks import analytics
-from .models import Query
-from .utils import kong_milliseconds_to_tzdatetime
+from series_tiempo_ar_api.apps.analytics.tasks import analytics
+from series_tiempo_ar_api.apps.analytics.models import Query
+from series_tiempo_ar_api.apps.analytics.utils import kong_milliseconds_to_tzdatetime
 
 
 class AnalyticsTests(TestCase):
