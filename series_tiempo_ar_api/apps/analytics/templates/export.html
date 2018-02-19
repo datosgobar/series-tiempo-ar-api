@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Export</title>
+</head>
+<body>
+
+<p>OK! En unos segundos el link de descarga ({% url 'analytics:read_analytics' %}) estará actualizado.</p>
+<p>Redirecting in 5 seconds...</p>
+<script type="application/javascript">
+    (function() {
+        var url = "{% url 'admin:analytics_query_changelist' %}";
+        window.setTimeout(function() {
+            location.href = url;
+        }, 5000);
+    })();
+
+</script>
+</body>
+</html>

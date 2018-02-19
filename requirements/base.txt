@@ -12,6 +12,6 @@ numpy
 django-rq==1.0.0
 pyyaml
 django-ipware==1.1.6
-django-import-export==0.5.1
+django-sendfile==0.3.11
 python-crontab==2.2.8
 django-des==2.2.0
