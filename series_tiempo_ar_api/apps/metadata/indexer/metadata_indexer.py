@@ -25,6 +25,8 @@ class MetadataIndexer(object):
         self.index_actions(actions)
 
     def init_index(self):
+        # noinspection PyProtectedMember
+        self.elastic.indices.delete(Field._doc_type.index)
         Field.init(using=self.elastic)
 
     def index_actions(self, actions):
@@ -43,6 +45,7 @@ class MetadataIndexer(object):
                 title=field['title'],
                 description=field['description'],
                 id=field['id'],
+                units=field['units'],
                 dataset_title=dataset['title'],
                 dataset_source=dataset['source'],
                 dataset_source_keyword=dataset['source'],

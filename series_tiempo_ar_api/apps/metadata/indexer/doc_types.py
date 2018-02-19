@@ -13,6 +13,7 @@ class Field(DocType):
     dataset_title = Text()
     dataset_description = Text()
     theme_description = Text()
+    units = Keyword()
 
     # Guardamos una copia como keyword para poder usar en aggregations
     dataset_source = Text()
