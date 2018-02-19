@@ -5,7 +5,7 @@ import os
 import json
 
 import sendfile
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
