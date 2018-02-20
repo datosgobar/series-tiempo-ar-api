@@ -23,3 +23,9 @@ def field_units(request):
     response = query_field_terms(field='units')
 
     return JsonResponse(response)
+
+
+def dataset_publisher_name(request):
+    response = query_field_terms(field='dataset_publisher')
+
+    return JsonResponse(response)
