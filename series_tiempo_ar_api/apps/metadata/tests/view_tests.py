@@ -47,3 +47,17 @@ class FieldUnitTests(TestCase):
             response_sources = json.loads(response.content)['data']
             # Expected: search results in 'data' list
             self.assertIn(test_unit, response_sources)
+
+
+class PublisherNameTests(TestCase):
+
+    def test_run(self):
+        test_unit = 'Test publisher name'
+        search_mock = mock.MagicMock()
+        search_mock.aggregations.results.buckets = [{'key': test_unit}]
+
+        with mock.patch.object(Search, 'execute', return_value=search_mock):
+            response = self.client.get(reverse('api:metadata:dataset_publisher_name'))
+            response_sources = json.loads(response.content)['data']
+            # Expected: search results in 'data' list
+            self.assertIn(test_unit, response_sources)

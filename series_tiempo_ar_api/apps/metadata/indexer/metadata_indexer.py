@@ -50,6 +50,7 @@ class MetadataIndexer(object):
                 dataset_source=dataset['source'],
                 dataset_source_keyword=dataset['source'],
                 dataset_description=dataset['description'],
+                dataset_publisher_name=dataset['publisher']['name'],
                 theme_description=themes[dataset['theme'][0]]
             )
             actions.append(doc.to_dict(include_meta=True))
