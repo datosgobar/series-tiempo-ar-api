@@ -45,4 +45,5 @@ class FieldUnitTests(TestCase):
         with mock.patch.object(Search, 'execute', return_value=search_mock):
             response = self.client.get(reverse('api:metadata:field_units'))
             response_sources = json.loads(response.content)['data']
+            # Expected: search results in 'data' list
             self.assertIn(test_unit, response_sources)
