@@ -113,8 +113,9 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 
 
 def export_vars(_):
-    data = {}
-    data['API_VERSION'] = env('API_VERSION', default='local')
+    data = {
+        'API_VERSION': env('API_VERSION', default='local')
+    }
     return data
 
 TEMPLATES = [

@@ -9,7 +9,7 @@ from des import urls as des_urls
 
 
 admin.autodiscover()
-admin.site.index_template = "admin/api/index.html"
+admin.site.index_template = "custom_index.html"
 
 api_endpoints = [
     url(r'series/', include('series_tiempo_ar_api.apps.api.urls', namespace="series")),
