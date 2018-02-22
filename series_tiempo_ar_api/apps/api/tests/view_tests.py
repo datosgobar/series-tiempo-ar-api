@@ -1,5 +1,6 @@
 #! coding: utf-8
 import json
+import csv
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -14,7 +15,7 @@ SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
 class ViewTests(TestCase):
 
     client = Client()
-    endpoint = reverse('api:series')
+    endpoint = reverse('api:series:series')
 
     @classmethod
     def setUpClass(cls):
@@ -82,3 +83,32 @@ class ViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, response_upper.content)
+
+    def test_csv_delimiter(self):
+        response = self.client.get(self.endpoint,
+                                   data={'ids': SERIES_NAME, 'format': 'csv', 'sep': ';'})
+
+        # CSV de sólo números, la única manera que haya ';' es que sea el delimiter
+        self.assertIn(';', response.content)
+
+    def test_csv_decimal_char(self):
+        decimal = ','
+        response = self.client.get(self.endpoint,
+                                   data={'ids': SERIES_NAME, 'format': 'csv', 'decimal': decimal})
+
+        reader = csv.reader(response.content.splitlines())
+
+        for line in reader:
+            self.assertTrue(len(line), 2)
+
+    def test_csv_decimal_and_delimiter(self):
+        delim = ';'
+        response = self.client.get(self.endpoint,
+                                   data={'ids': SERIES_NAME, 'format': 'csv',
+                                         'decimal': ',',
+                                         'sep': delim})
+
+        reader = csv.reader(response.content.splitlines(), delimiter=delim)
+
+        for line in reader:
+            self.assertTrue(len(line), 2)

@@ -17,3 +17,5 @@ DATABASES = {
         'PASSWORD': env('DATABASE_PASSWORD'),
     }
 }
+
+SENDFILE_BACKEND = 'sendfile.backends.development'

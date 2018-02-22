@@ -39,7 +39,7 @@ class DatasetAdmin(admin.ModelAdmin):
 
 
 class DistributionAdmin(admin.ModelAdmin):
-    list_display = ('identifier', 'dataset', 'get_catalog_id')
+    list_display = ('identifier', 'dataset', 'get_catalog_id', 'last_updated')
     search_fields = ('identifier', 'dataset__identifier', 'dataset__catalog__identifier')
     list_filter = ('dataset__catalog__identifier', )
 

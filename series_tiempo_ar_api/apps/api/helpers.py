@@ -60,17 +60,6 @@ def interval_to_freq_pandas(freq):
     return freqs[freq]
 
 
-def find_index(list_of_lists, element):
-    """Devuelve el índice de la lista que contenga la primera
-    ocurrencia de 'element' en la lista de listas. Si no se encuentra
-    ninguna devuelve -1
-    """
-    for i, row in enumerate(list_of_lists):
-        if element in row:
-            return i
-    return -1
-
-
 def get_relative_delta(periodicity):
     """Devuelve un objeto relativedelta a partir del intervalo
     'periodicity' pasado"""

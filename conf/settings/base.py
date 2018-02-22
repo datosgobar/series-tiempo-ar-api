@@ -1,13 +1,12 @@
 #! coding: utf-8
 from __future__ import absolute_import, unicode_literals
 
-import os
 from os.path import dirname
 
 import environ
 
-from .api import *
-from .metadata import *
+from .api.api import *
+from .api.metadata import *
 
 SETTINGS_DIR = environ.Path(__file__) - 1
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
@@ -159,7 +158,7 @@ DJANGO_BASE_APPS = (
 
 VENDOR_APPS = (
     "django_rq",
-    'import_export',
+    'sendfile',
     'des'
 )
 
@@ -167,6 +166,7 @@ APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
     'series_tiempo_ar_api.apps.analytics',
     'series_tiempo_ar_api.apps.management',
+    'series_tiempo_ar_api.apps.metadata',
     'series_tiempo_ar_api.libs.indexing',
 )
 
@@ -298,3 +298,6 @@ ENV_TYPE = env('ENV_TYPE', default='')
 
 # Tarea a ser croneada para indexación
 READ_DATAJSON_SHELL_CMD = env('READ_DATAJSON_BIN_PATH', default='')
+
+PROTECTED_MEDIA_DIR = ROOT_DIR('protected')
+ANALYTICS_CSV_FILENAME = 'analytics.csv'

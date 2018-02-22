@@ -6,12 +6,10 @@ from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
-
-from ..query.elastic import ElasticInstance
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from ..common import operations
-from ..models import Distribution
 from ..indexing import strings, constants
-
+from ..models import Distribution
 
 logger = logging.getLogger(__name__)
 
