@@ -110,6 +110,7 @@ class IndexingTaskCron(models.Model):
 
 
 class ReadDataJsonTask(models.Model):
+    DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
     RUNNING = "RUNNING"
     INDEXING = "INDEXING"
     FINISHED = "FINISHED"
@@ -139,10 +140,12 @@ class ReadDataJsonTask(models.Model):
         super(ReadDataJsonTask, self).save(force_insert, force_update, using, update_fields)
 
     def __unicode__(self):
-        return "Task at %s" % self.created
+        return "Task at %s" % self._format_date(self.created)
 
     def generate_email(self):
-        msg = "Horario de finalización: {}\n".format(self.finished)
+        start_time = self._format_date(self.created)
+        finish_time = self._format_date(self.finished)
+        msg = "Horario de finalización: {}\n".format(finish_time)
 
         msg += self.format_message('catalogs', 'Catálogos')
         msg += self.format_message('datasets', 'Datasets')
@@ -151,8 +154,7 @@ class ReadDataJsonTask(models.Model):
 
         recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
         emails = [user.email for user in recipients.user_set.all()]
-        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE,
-                                                          str(self.created))
+        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
 
         sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
         if emails and not sent:
@@ -174,3 +176,6 @@ class ReadDataJsonTask(models.Model):
                               updated=updated_catalogs,
                               total=total_catalogs)
         return msg
+
+    def _format_date(self, date):
+        return timezone.localtime(date).strftime(self.DATE_FORMAT)
