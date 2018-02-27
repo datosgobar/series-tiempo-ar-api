@@ -2,13 +2,12 @@
 
 from django.utils import timezone
 from django_rq import job, get_queue
-
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.actions import DatasetIndexableToggler
 from series_tiempo_ar_api.apps.management.models import Node, DatasetIndexingFile, ReadDataJsonTask
-from series_tiempo_ar_api.apps.api.indexing import catalog_reader
 from series_tiempo_ar_api.apps.management.strings import FILE_READ_ERROR, READ_ERROR
+from series_tiempo_ar_api.libs.indexing import catalog_reader
 
 
 @job('indexing')

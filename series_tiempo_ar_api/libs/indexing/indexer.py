@@ -3,9 +3,9 @@ import logging
 
 from django.conf import settings
 
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from ..indexing import strings, constants
-from ..tasks import index_distribution
+from . import strings, constants
+from .tasks import index_distribution
+from .elastic import ElasticInstance
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 #! coding: utf-8
+import hashlib
 import json
 import logging
-import hashlib
 from tempfile import NamedTemporaryFile
 
 import requests
@@ -12,12 +12,10 @@ from django.utils import timezone
 from pydatajson import DataJson
 from pydatajson.search import get_dataset
 
+from . import constants
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
-
-from series_tiempo_ar_api.apps.api.indexing import strings
-from series_tiempo_ar_api.apps.api.indexing import constants
-
+from series_tiempo_ar_api.libs.indexing import strings
 
 logger = logging.getLogger(__name__)
 

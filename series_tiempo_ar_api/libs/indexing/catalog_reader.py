@@ -6,13 +6,12 @@ import logging
 
 from django.utils import timezone
 from pydatajson import DataJson
+from .database_loader import DatabaseLoader
+from .indexer import Indexer
 
-from series_tiempo_ar_api.apps.api.indexing.database_loader import \
-    DatabaseLoader
-from series_tiempo_ar_api.apps.api.indexing.indexer import Indexer
-from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
-from series_tiempo_ar_api.apps.api.indexing import strings
+from . import strings
 from series_tiempo_ar_api.apps.api.models import Dataset, Distribution
+from series_tiempo_ar_api.libs.indexing.scraping import get_scraper
 
 logger = logging.getLogger(__name__)
 

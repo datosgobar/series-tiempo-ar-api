@@ -6,9 +6,9 @@ from random import random
 
 from nose.tools import raises
 
-from ..common import constants
-
-from ..common.incomplete_periods import handle_missing_values, handle_incomplete_value
+from series_tiempo_ar_api.libs.indexing import constants
+from series_tiempo_ar_api.libs.indexing.incomplete_periods import \
+    handle_missing_values, handle_incomplete_value
 
 
 class IncompletePeriodsTests(TestCase):

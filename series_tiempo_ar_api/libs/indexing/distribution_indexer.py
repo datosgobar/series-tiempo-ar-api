@@ -6,10 +6,11 @@ from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from ..common import operations
-from ..indexing import strings, constants
-from ..models import Distribution
+from series_tiempo_ar_api.apps.api.models import Distribution
+from .operations import process_column
+from .elastic import ElasticInstance
+from . import constants
+from . import strings
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class DistributionIndexer:
         df = self.init_df(distribution, fields)
 
         # Aplica la operación de procesamiento e indexado a cada columna
-        result = [operations.process_column(df[col], self.index) for col in df.columns]
+        result = [process_column(df[col], self.index) for col in df.columns]
 
         if not len(result):  # Distribución sin series cargadas
             return
