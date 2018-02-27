@@ -1,6 +1,8 @@
 #! coding: utf-8
 
-from ..common.constants import VALUE, CHANGE, PCT_CHANGE, CHANGE_YEAR_AGO, PCT_CHANGE_YEAR_AGO
+from series_tiempo_ar_api.libs.indexing.constants import \
+    VALUE, CHANGE, PCT_CHANGE, CHANGE_YEAR_AGO, PCT_CHANGE_YEAR_AGO
+
 # Modos de representación de las series, calculados y guardados
 # en el proceso de indexación
 REP_MODES = [

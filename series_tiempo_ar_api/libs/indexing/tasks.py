@@ -1,12 +1,24 @@
 #! coding: utf-8
+from django.conf import settings
+from django.utils import timezone
+from django_rq import job, get_queue
 
-from django_rq import job
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from .distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.apps.api.models import Distribution
 
-from series_tiempo_ar_api.apps.api.indexing.scraping import get_scraper
 
+@job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
+def index_distribution(index, distribution_id, async=True):
+    distribution = Distribution.objects.get(id=distribution_id)
 
-@job("scrapping")
-def scrape(url):
-    scrapper = get_scraper()
-    scrapper.run(url)
-    return scrapper.distributions
+    DistributionIndexer(index=index).run(distribution)
+
+    # Si no hay más jobs encolados, la tarea se considera como finalizada
+    if async and not get_queue('indexing').jobs:
+        task = ReadDataJsonTask.objects.last()
+
+        task.finished = timezone.now()
+        task.status = task.FINISHED
+        task.save()
+        task.generate_email()

@@ -3,7 +3,7 @@ from calendar import monthrange
 
 from dateutil.relativedelta import relativedelta
 
-from series_tiempo_ar_api.apps.api.common import constants
+from . import constants
 
 
 def handle_missing_values(col, result_col):

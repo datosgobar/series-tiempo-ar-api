@@ -1,11 +1,8 @@
 #! coding: utf-8
 
 import mock
-import json
-from elasticsearch_dsl import Search
-
-
 from django.test import TestCase
+from elasticsearch_dsl import Search
 from nose.tools import raises
 
 from series_tiempo_ar_api.apps.metadata.queries.query_terms import query_field_terms

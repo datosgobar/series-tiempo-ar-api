@@ -9,8 +9,8 @@ from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 from series_tiempo_ar.validations import validate_distribution
 
+from series_tiempo_ar_api.libs.indexing import strings
 from .constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
-from series_tiempo_ar_api.apps.api.indexing import strings
 
 logger = logging.getLogger(__name__)
 
