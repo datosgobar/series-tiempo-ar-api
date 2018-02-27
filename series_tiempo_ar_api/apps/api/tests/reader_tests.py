@@ -6,6 +6,8 @@ from django.conf import settings
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from series_tiempo_ar.search import get_time_series_distributions
+
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.database_loader import \
     DatabaseLoader
@@ -197,17 +199,20 @@ class DatabaseLoaderTests(TestCase):
 class ReaderTests(TestCase):
     catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
 
+    def setUp(self):
+        self.task = ReadDataJsonTask.objects.create()
+
     def test_index_same_series_different_catalogs(self):
-        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
-        index_catalog(self.catalog, 'other_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'one_catalog_id', self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'other_catalog_id', self.task, read_local=True, whitelist=True, async=False)
 
         count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
 
         self.assertEqual(count, 1)
 
     def test_dont_index_same_distribution_twice(self):
-        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
-        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'one_catalog_id', self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'one_catalog_id', self.task, read_local=True, whitelist=True, async=False)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -215,16 +220,16 @@ class ReaderTests(TestCase):
         self.assertFalse(distribution.indexable)
 
     def test_first_time_distribution_indexable(self):
-        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'one_catalog_id', self.task, read_local=True, whitelist=True, async=False)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
         self.assertTrue(distribution.indexable)
 
     def test_index_same_distribution_if_data_changed(self):
-        index_catalog(self.catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(self.catalog, 'one_catalog_id', self.task, read_local=True, whitelist=True, async=False)
         new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
-        index_catalog(new_catalog, 'one_catalog_id', read_local=True, whitelist=True, async=False)
+        index_catalog(new_catalog, 'one_catalog_id', self.task, read_local=True, whitelist=True, async=False)
 
         distribution = Distribution.objects.get(identifier='212.1')
 

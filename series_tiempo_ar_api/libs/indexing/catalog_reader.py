@@ -16,7 +16,7 @@ from series_tiempo_ar_api.libs.indexing.scraping import get_scraper
 logger = logging.getLogger(__name__)
 
 
-def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True, whitelist=False):
+def index_catalog(catalog, catalog_id, task, read_local=False, async=True, whitelist=False):
     """Ejecuta el pipeline de lectura, guardado e indexado de datos
     y metadatos sobre el catálogo especificado
 
@@ -45,15 +45,14 @@ def index_catalog(catalog, catalog_id, read_local=False, task=None, async=True, 
     distribution_models = Distribution.objects.filter(dataset__in=datasets, indexable=True)
     Indexer(async=async).run(distribution_models)
 
-    if task:
-        stats = loader.get_stats()
-        task_stats = json.loads(task.stats)
-        task_stats[catalog_id] = stats
-        task.stats = json.dumps(task_stats)
+    stats = loader.get_stats()
+    task_stats = json.loads(task.stats)
+    task_stats[catalog_id] = stats
+    task.stats = json.dumps(task_stats)
 
-        if async and not distribution_models:  # No hay nada para indexar, marco como finalizado
-            task.finished = timezone.now()
-            task.status = task.FINISHED
-            task.generate_email()
+    if async and not distribution_models:  # No hay nada para indexar, marco como finalizado
+        task.finished = timezone.now()
+        task.status = task.FINISHED
+        task.generate_email()
 
-        task.save()
+    task.save()
