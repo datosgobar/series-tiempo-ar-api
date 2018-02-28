@@ -1,56 +1,21 @@
 #! coding: utf-8
-import json
 import os
 
-from django.conf import settings
 from django.test import TestCase
 from elasticsearch_dsl import Search
+from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
+from series_tiempo_ar_api.apps.api.models import Distribution, Field
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.database_loader import \
     DatabaseLoader
 from series_tiempo_ar_api.libs.indexing.distribution_indexer import DistributionIndexer
-
-from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog
-from series_tiempo_ar_api.apps.api.tests import setup_database
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from series_tiempo_ar_api.libs.indexing.scraping import Scraper
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
-
-
-class ScrapperTests(TestCase):
-    def setUp(self):
-        self.scrapper = Scraper(read_local=True)
-
-    def test_scrapper(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-        self.scrapper.run(catalog)
-
-        self.assertTrue(len(self.scrapper.distributions))
-
-    def test_missing_metadata_field(self):
-        """No importa que un field no esté en metadatos, se scrapea
-        igual, para obtener todas las series posibles
-        """
-
-        catalog = os.path.join(SAMPLES_DIR, 'missing_field.json')
-        self.scrapper.run(catalog)
-        self.assertTrue(len(self.scrapper.distributions))
-
-    def test_missing_dataframe_column(self):
-        """Si falta una columna indicada por los metadatos, no se
-        scrapea la distribución
-        """
-
-        catalog = os.path.join(
-            SAMPLES_DIR, 'distribution_missing_column.json'
-        )
-        self.scrapper.run(catalog)
-        self.assertFalse(len(self.scrapper.distributions))
 
 
 class IndexerTests(TestCase):
@@ -59,6 +24,9 @@ class IndexerTests(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.elastic = ElasticInstance()
+
+    def setUp(self):
+        self.task = ReadDataJsonTask()
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
@@ -121,79 +89,17 @@ class IndexerTests(TestCase):
     def tearDown(self):
         if self.elastic.indices.exists(self.test_index):
             self.elastic.indices.delete(self.test_index)
+        Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID).delete()
 
     def _index_catalog(self, catalog_path):
-        catalog = os.path.join(SAMPLES_DIR, catalog_path)
+        catalog = DataJson(os.path.join(SAMPLES_DIR, catalog_path))
         distributions = get_time_series_distributions(catalog)
-        db_loader = DatabaseLoader(read_local=True, default_whitelist=True)
-        db_loader.run(catalog, CATALOG_ID, distributions)
-        for distribution in db_loader.distribution_models:
+        db_loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
+        for distribution in distributions:
+            db_loader.run(distribution, catalog, CATALOG_ID)
+
+        for distribution in Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID):
             DistributionIndexer(index=self.test_index).run(distribution)
-
-
-class DatabaseLoaderTests(TestCase):
-
-    def setUp(self):
-        setup_database()
-        self.loader = DatabaseLoader(read_local=True, default_whitelist=True)
-
-    def tearDown(self):
-        Catalog.objects.all().delete()
-
-    def test_blacklisted_catalog_meta(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-        distributions = get_time_series_distributions(catalog)
-
-        self.loader.run(catalog, CATALOG_ID, distributions)
-        meta = self.loader.distribution_models[0].dataset.catalog.metadata
-        meta = json.loads(meta)
-        for field in settings.CATALOG_BLACKLIST:
-            self.assertTrue(field not in meta)
-
-    def test_blacklisted_dataset_meta(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-        distributions = get_time_series_distributions(catalog)
-
-        self.loader.run(catalog, CATALOG_ID, distributions)
-        for distribution in self.loader.distribution_models:
-            meta = distribution.dataset.metadata
-            meta = json.loads(meta)
-            for field in settings.DATASET_BLACKLIST:
-                self.assertTrue(field not in meta)
-
-    def test_blacklisted_distrib_meta(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-        distributions = get_time_series_distributions(catalog)
-
-        self.loader.run(catalog, CATALOG_ID, distributions)
-
-        for distribution in self.loader.distribution_models:
-            meta = distribution.metadata
-            meta = json.loads(meta)
-            for field in settings.DISTRIBUTION_BLACKLIST:
-                self.assertTrue(field not in meta)
-
-    def test_blacklisted_field_meta(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-        distributions = get_time_series_distributions(catalog)
-
-        self.loader.run(catalog, CATALOG_ID, distributions)
-
-        for distribution in self.loader.distribution_models:
-            for field_model in distribution.field_set.all():
-                for field in settings.FIELD_BLACKLIST:
-                    self.assertTrue(field not in field_model.metadata)
-
-    def test_datasets_loaded_are_not_indexable(self):
-
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-        distributions = get_time_series_distributions(catalog)
-        loader = DatabaseLoader(read_local=True, default_whitelist=False)
-        loader.run(catalog, CATALOG_ID, distributions)
-        dataset = Catalog.objects.get(identifier=CATALOG_ID).dataset_set
-
-        self.assertEqual(dataset.count(), 1)
-        self.assertFalse(dataset.first().indexable)
 
 
 class ReaderTests(TestCase):

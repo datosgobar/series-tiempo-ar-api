@@ -1,11 +1,13 @@
 #!coding=utf8
 import os
 
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.management import call_command
 from django.test import TestCase
+from unittest import skipIf
 
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
@@ -13,7 +15,14 @@ from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
 
 dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
+skip = False
+try:
+    requests.head('http://infra.datos.gob.ar/', timeout=1).raise_for_status()
+except requests.exceptions.RequestException:
+    skip = True
 
+
+@skipIf(skip, "Distribuciones remotas caídas")
 class ReadDataJsonTest(TestCase):
 
     def setUp(self):

@@ -1,7 +1,6 @@
 #! coding: utf-8
 import hashlib
 import json
-import logging
 from tempfile import NamedTemporaryFile
 
 import requests
@@ -10,70 +9,58 @@ from django.core.files import File
 from django.db import IntegrityError
 from django.utils import timezone
 from pydatajson import DataJson
-from pydatajson.search import get_dataset
 
 from . import constants
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
 from series_tiempo_ar_api.libs.indexing import strings
 
-logger = logging.getLogger(__name__)
-
 
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
 
-    def __init__(self, read_local=False, default_whitelist=False):
-        self.distribution_models = []
-        self.dataset_cache = {}
+    def __init__(self, task, read_local=False, default_whitelist=False):
         self.catalog_model = None
-        self.read_local = read_local
-        self.catalog_id = None
         self.stats = {}
+        self.task = task
+        self.read_local = read_local
         self.default_whitelist = default_whitelist
 
-    def run(self, catalog, catalog_id, distributions):
+    def run(self, distribution, catalog, catalog_id):
         """Guarda las distribuciones de la lista 'distributions',
         asociadas al catálogo 'catalog, en la base de datos, junto con
         todos los metadatos de distinto nivel (catalog, dataset)
 
         Args:
+            distribution (dict)
             catalog (DataJson)
             catalog_id (str): Identificador único del catalogo a guardar
-            distributions (list)
         """
-        self.catalog_id = catalog_id
-        logger.info(strings.DB_LOAD_START)
-        catalog = DataJson(catalog)
-        self.catalog_model = self._catalog_model(catalog)
-        for distribution in distributions:
-            fields = distribution[constants.FIELD]
-            time_distribution = False
-            periodicity = None
-            for field in fields:
-                if field.get(constants.SPECIAL_TYPE) == constants.TIME_INDEX:
-                    periodicity = field.get(constants.SPECIAL_TYPE_DETAIL)
-                    time_distribution = True
-                    break
+        self.catalog_model = self._catalog_model(catalog, catalog_id)
+        dataset = catalog.get_dataset(distribution[constants.DATASET_IDENTIFIER])
+        dataset.pop(constants.DISTRIBUTION)
+        dataset_model = self._dataset_model(dataset)
+        fields = distribution[constants.FIELD]
+        periodicity = None
+        for field in fields:
+            if field.get(constants.SPECIAL_TYPE) == constants.TIME_INDEX:
+                periodicity = field.get(constants.SPECIAL_TYPE_DETAIL)
+                break
 
-            if time_distribution:
-                distribution_model = self._distribution_model(catalog,
-                                                              distribution,
-                                                              periodicity)
+        distribution_model = self._distribution_model(distribution, dataset_model, periodicity)
 
-                if distribution_model:
-                    self._save_fields(distribution_model, fields)
+        if distribution_model:
+            self._save_fields(distribution_model, fields)
+            return distribution_model
 
-        logger.info(strings.DB_LOAD_END)
-
-    def _catalog_model(self, catalog):
+    def _catalog_model(self, catalog, catalog_id):
         """Crea o actualiza el catalog model con el título pedido a partir
         de el diccionario de metadatos de un catálogo
         """
         catalog = catalog.copy()
         # Borro el dataset, de existir. Solo guardo metadatos
         catalog.pop(constants.DATASET, None)
-        catalog_model, created = Catalog.objects.get_or_create(identifier=self.catalog_id)
+        catalog_model, created = Catalog.objects.get_or_create(identifier=catalog_id)
 
         catalog = self._remove_blacklisted_fields(
             catalog,
@@ -91,8 +78,6 @@ class DatabaseLoader(object):
         """Crea o actualiza el modelo del dataset a partir de un
         diccionario que lo representa
         """
-        if dataset[constants.IDENTIFIER] in self.dataset_cache:
-            return self.dataset_cache[dataset[constants.IDENTIFIER]]
 
         dataset = dataset.copy()
         # Borro las distribuciones, de existir. Solo guardo metadatos
@@ -113,13 +98,11 @@ class DatabaseLoader(object):
         dataset_model.present = True
         dataset_model.save()
 
-        self.dataset_cache[dataset[constants.IDENTIFIER]] = dataset_model
-
         self.stats['datasets'] = self.stats.get('datasets', 0) + created
         self.stats['total_datasets'] = self.stats.get('total_datasets', 0) + 1
         return dataset_model
 
-    def _distribution_model(self, catalog, distribution, periodicity):
+    def _distribution_model(self, distribution, dataset_model, periodicity):
         """Crea o actualiza el modelo de la distribución a partir de
         un diccionario que lo representa
         """
@@ -128,13 +111,6 @@ class DatabaseLoader(object):
         distribution.pop(constants.FIELD, None)
         identifier = distribution[constants.IDENTIFIER]
         url = distribution.get(constants.DOWNLOAD_URL)
-        dataset_identifier = distribution.get(constants.DATASET_IDENTIFIER)
-        dataset = get_dataset(catalog, identifier=dataset_identifier)
-
-        dataset.pop(constants.DISTRIBUTION, None)
-        dataset_model = self._dataset_model(dataset)
-        if not dataset_model.indexable:
-            return None
 
         distribution_model, created = Distribution.objects.get_or_create(
             identifier=identifier,
@@ -147,18 +123,21 @@ class DatabaseLoader(object):
         distribution_model.metadata = json.dumps(distribution)
         distribution_model.download_url = url
         distribution_model.periodicity = periodicity
-        self._read_file(url, distribution_model)
-        distribution_model.save()
-        self.distribution_models.append(distribution_model)
+        success = self._read_file(url, distribution_model)
+        if success:
+            distribution_model.save()
 
-        self.stats['distributions'] = self.stats.get('distributions', 0) + created
-        self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
-        return distribution_model
+            self.stats['distributions'] = self.stats.get('distributions', 0) + created
+            self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
+            return distribution_model
+
+        return False
 
     def _read_file(self, file_url, distribution_model):
         """Descarga y lee el archivo de la distribución. Por razones
         de performance, NO hace un save() a la base de datos.
-
+        Marca el modelo de distribución como 'indexable' si el archivo tiene datos
+        distintos a los actuales. El chequeo de cambios se hace hasheando el archivo entero
         Args:
             file_url (str)
             distribution_model (Distribution)
@@ -173,6 +152,9 @@ class DatabaseLoader(object):
             request = requests.get(file_url, stream=True)
 
             if request.status_code != 200:
+                self.task.info(
+                    strings.INVALID_DISTRIBUTION_URL.format(distribution_model.identifier)
+                )
                 return False
 
             lf = NamedTemporaryFile()
@@ -192,10 +174,12 @@ class DatabaseLoader(object):
         else:  # No cambió respecto a la corrida anterior
             distribution_model.indexable = False
 
+        return True
+
     def _save_fields(self, distribution_model, fields):
+        catalog = distribution_model.dataset.catalog.identifier
+        fields = filter(lambda x: x.get(constants.SPECIAL_TYPE) != constants.TIME_INDEX, fields)
         for field in fields:
-            if field.get(constants.SPECIAL_TYPE) == constants.TIME_INDEX:
-                continue
 
             series_id = field.get(constants.FIELD_ID)
             title = field.get(constants.FIELD_TITLE)
@@ -206,8 +190,9 @@ class DatabaseLoader(object):
                     distribution=distribution_model
                 )
             except IntegrityError:  # Series ID ya existía
-                logger.warn(strings.DB_SERIES_ID_REPEATED, series_id, self.catalog_id)
+                self.task.info(strings.DB_SERIES_ID_REPEATED.format(series_id, catalog))
                 continue
+
             field = self._remove_blacklisted_fields(
                 field,
                 settings.FIELD_BLACKLIST
@@ -216,7 +201,9 @@ class DatabaseLoader(object):
             field_model.metadata = json.dumps(field)
 
             # Borra modelos viejos en caso de que haya habido un cambio de series id
+            # Necesario para poder mantener una relación 1:1 entre modelos de la DB y columnas del CSV
             distribution_model.field_set.filter(title=title).delete()
+
             field_model.save()
 
             self.stats['fields'] = self.stats.get('fields', 0) + created

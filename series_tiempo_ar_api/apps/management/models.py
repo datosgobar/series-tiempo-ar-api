@@ -179,3 +179,7 @@ class ReadDataJsonTask(models.Model):
 
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
+
+    def info(self, msg):
+        self.logs += msg + '\n'
+        self.save()

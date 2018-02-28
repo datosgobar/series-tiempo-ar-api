@@ -93,7 +93,7 @@
                     "title": "Producto Interno Bruto Servicios Comunales, Sociales y Personales Millones de pesos constantes. Base 1960. Valores trimestrales",
                     "modified": "2017-09-28T00:00:00",
                     "fileName": "pib-servicios-comunales-sociales-personales-millones-pesos-1960-trimestral.csv",
-                    "downloadURL": "series_tiempo_ar_api/apps/api/tests/samples/one_distribution_data.csv",
+                    "downloadURL": "series_tiempo_ar_api/libs/indexing/tests/samples/one_distribution_data.csv",
                     "field": [
                         {
                             "title": "indice_tiempo",
@@ -105,6 +105,13 @@
                         },
                         {
                             "units": "Millones de pesos",
+                            "id": "212.1_PSCIOS_ERS_0_0_22",
+                            "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Total",
+                            "title": "pib_scios_com_soc_pers",
+                            "scrapingIdentifierCell": "AC9"
+                        },
+                        {
+                            "units": "Millones de pesos",
                             "id": "212.1_PSCIOS_ERN_0_0_25",
                             "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Servicios Gubernamentales",
                             "title": "pib_scios_com_serv_gubern"
@@ -113,12 +120,14 @@
                             "units": "Millones de pesos",
                             "id": "212.1_PSCIOS_IOS_0_0_25",
                             "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Otros Servicios",
-                            "title": "pib_scios_com_otros_scios"
+                            "title": "pib_scios_com_otros_scios",
+                            "scrapingDataStartCell": "AD10"
                         }
                     ],
                     "draft": false,
                     "units": "Millones de pesos",
-                    "identifier": "212.1"
+                    "identifier": "212.1",
+                    "scrapingFileSheet": "32. Ingreso IED Pais"
                 }
             ]
         }
