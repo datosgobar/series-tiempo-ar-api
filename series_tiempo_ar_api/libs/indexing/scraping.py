@@ -54,5 +54,4 @@ class Scraper(object):
             self.task.info(msg)
             return False
 
-        self.task.info(strings.END_SCRAPING)
         return True
