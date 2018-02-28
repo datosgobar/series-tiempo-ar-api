@@ -7,6 +7,7 @@ import requests
 from django.conf import settings
 from series_tiempo_ar.validations import validate_distribution
 
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing import strings
 from .constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
 
@@ -51,7 +52,7 @@ class Scraper(object):
                 distribution_id,
                 e.message
             )
-            self.task.info(msg)
+            ReadDataJsonTask.info(self.task, msg)
             return False
 
         return True

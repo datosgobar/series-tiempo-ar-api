@@ -12,6 +12,7 @@ from series_tiempo_ar_api.libs.indexing.tests.reader_tests import SAMPLES_DIR
 class ScrapperTests(TestCase):
     def setUp(self):
         self.task = ReadDataJsonTask()
+        self.task.save()
         self.scrapper = Scraper(self.task, read_local=True)
 
     def test_scrapper(self):

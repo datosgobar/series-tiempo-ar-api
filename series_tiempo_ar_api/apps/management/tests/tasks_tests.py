@@ -17,7 +17,7 @@ dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
 skip = False
 try:
-    requests.head('http://infra.datos.gob.ar/', timeout=1).raise_for_status()
+    requests.head('http://infra.datos.gob.ar/catalog/sspm/data.json', timeout=1).raise_for_status()
 except requests.exceptions.RequestException:
     skip = True
 

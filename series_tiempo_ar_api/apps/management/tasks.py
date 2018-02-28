@@ -7,70 +7,51 @@ from pydatajson import DataJson
 from series_tiempo_ar_api.apps.management.actions import DatasetIndexableToggler
 from series_tiempo_ar_api.apps.management.models import Node, DatasetIndexingFile, ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.strings import FILE_READ_ERROR, READ_ERROR
-from series_tiempo_ar_api.libs.indexing import catalog_reader
-
+from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 
 @job('indexing')
 def read_datajson(task, async=True, whitelist=False, read_local=False):
     """Tarea raíz de indexación. Itera sobre todos los nodos indexables (federados) e
     inicia la tarea de indexación sobre cada uno de ellos
     """
-    task_id = task.id
     nodes = Node.objects.filter(indexable=True)
     task.status = task.RUNNING
-
-    # Trackea los nodos a indexar
-    task.catalogs.add(*[node.id for node in nodes])
-    task.save()
-    logs = []
 
     for node in nodes:
         catalog_id = node.catalog_id
         catalog_url = node.catalog_url
         try:
-            DataJson(catalog_url)
-            if not async:  # Debug
-                start_index_catalog(catalog_id,
-                                    catalog_url,
-                                    task_id,
-                                    async=False,
-                                    whitelist=whitelist,
-                                    read_local=read_local)
-            else:
-                start_index_catalog.delay(catalog_id, catalog_url, task_id, whitelist=whitelist, read_local=read_local)
+            catalog = DataJson(catalog_url)
         except Exception as e:
-            logs.append(READ_ERROR.format(catalog_id, e))
-            task.catalogs.remove(node)
+            ReadDataJsonTask.info(task, READ_ERROR.format(catalog_id, e.message))
+            continue
 
-        # Logging de errores de lectura
-        logs_string = ''
-        for log in logs:
-            logs_string += log + '\n'
-
-        task = ReadDataJsonTask.objects.get(id=task_id)
-        task.logs = logs_string
-        task.save()
+        for distribution in catalog.get_distributions(only_time_series=True):
+            fake_catalog = catalog.copy()
+            fake_catalog['dataset'] = filter(
+                lambda x: x['identifier'] != distribution['dataset_identifier'],
+                fake_catalog['dataset']
+            )
+            if async:
+                index_distribution.delay(distribution,
+                                         fake_catalog,
+                                         catalog_id,
+                                         task,
+                                         read_local=read_local,
+                                         whitelist=whitelist)
+            else:
+                index_distribution(distribution,
+                                   fake_catalog,
+                                   catalog_id,
+                                   task,
+                                   read_local=read_local,
+                                   async=False,
+                                   whitelist=whitelist)
 
     # Caso de no hay nodos o todos dieron error, marco como finalizado
     if not nodes or (async and not get_queue('indexing').jobs):
         task.status = task.FINISHED
         task.save()
-
-
-@job('indexing', timeout=1500)
-def start_index_catalog(catalog_id, catalog_url, task_id, async=True, whitelist=False, read_local=False):
-    task = ReadDataJsonTask.objects.get(id=task_id)
-    task.catalogs.remove(Node.objects.get(catalog_id=catalog_id))
-    task.status = task.INDEXING
-
-    task.save()
-
-    catalog_reader.index_catalog(catalog_url,
-                                 catalog_id,
-                                 task=task,
-                                 async=async,
-                                 whitelist=whitelist,
-                                 read_local=read_local)
 
 
 @job('indexing')

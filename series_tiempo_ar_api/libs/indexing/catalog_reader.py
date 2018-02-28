@@ -6,12 +6,12 @@ from pydatajson import DataJson
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 
 
-def index_catalog(catalog, catalog_id, task, read_local=False, async=True, whitelist=False):
+def index_catalog(catalog_url, catalog_id, task, read_local=False, async=True, whitelist=False):
     """Ejecuta el pipeline de lectura, guardado e indexado de datos
     y metadatos sobre cada distribución del catálogo especificado
 
     Args:
-        catalog (DataJson): DataJson del catálogo a parsear
+        catalog_url (DataJson): DataJson del catálogo a parsear
         catalog_id (str): ID único del catálogo a parsear
         task (ReadDataJsonTask): Task a loggear acciones
         read_local (bool): Lee las rutas a archivos fuente como archivo
@@ -20,11 +20,11 @@ def index_catalog(catalog, catalog_id, task, read_local=False, async=True, white
         whitelist (bool): Marcar los datasets nuevos como indexables por defecto. Default False
     """
 
-    catalog = DataJson(catalog)
+    catalog = DataJson(catalog_url)
 
     for distribution in catalog.get_distributions(only_time_series=True):
         if async:
-            index_distribution.delay(distribution, catalog, catalog_id, task, read_local, async, whitelist)
+            index_distribution.delay(distribution, catalog_url, catalog_id, task, read_local, async, whitelist)
         else:
             index_distribution(distribution, catalog, catalog_id, task, read_local, async, whitelist)
 
