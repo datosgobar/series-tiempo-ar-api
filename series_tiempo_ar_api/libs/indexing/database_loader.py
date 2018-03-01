@@ -180,7 +180,7 @@ class DatabaseLoader(object):
 
     def _save_fields(self, distribution_model, fields):
         catalog = distribution_model.dataset.catalog.identifier
-        fields = filter(lambda x: x.get(constants.SPECIAL_TYPE) != constants.TIME_INDEX, fields)
+        fields = [field for field in fields if field.get(constants.SPECIAL_TYPE) != constants.TIME_INDEX]
         for field in fields:
 
             series_id = field.get(constants.FIELD_ID)

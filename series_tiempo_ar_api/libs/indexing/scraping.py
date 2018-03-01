@@ -23,7 +23,7 @@ class Scraper(object):
         """
         Valida las distribuciones de series de tiempo de un catálogo
         entero a partir de su URL, o archivo fuente
-        
+
         Returns:
             bool: True si la distribución pasa las validaciones, False caso contrario
         """
