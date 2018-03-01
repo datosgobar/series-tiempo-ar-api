@@ -1,13 +1,13 @@
 #! coding: utf-8
 
-import pandas as pd
-from django.test import TestCase
 from random import random
 
+import pandas as pd
+from django.test import TestCase
 from nose.tools import raises
 
 from series_tiempo_ar_api.libs.indexing import constants
-from series_tiempo_ar_api.libs.indexing.incomplete_periods import \
+from series_tiempo_ar_api.libs.indexing.indexer.incomplete_periods import \
     handle_missing_values, handle_incomplete_value
 
 

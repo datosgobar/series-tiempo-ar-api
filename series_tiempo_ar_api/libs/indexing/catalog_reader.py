@@ -15,6 +15,7 @@ def index_catalog(node, task, read_local=False, async=True, whitelist=False):
     y metadatos sobre cada distribución del catálogo especificado
 
     Args:
+        node (Node): Nodo a indexar
         task (ReadDataJsonTask): Task a loggear acciones
         read_local (bool): Lee las rutas a archivos fuente como archivo
         local o como URL. Default False

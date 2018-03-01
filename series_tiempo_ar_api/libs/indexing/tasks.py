@@ -8,7 +8,7 @@ from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing import constants
-from .distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from .database_loader import DatabaseLoader
 from .scraping import Scraper
 

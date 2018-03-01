@@ -23,6 +23,9 @@ class Scraper(object):
         """
         Valida las distribuciones de series de tiempo de un catálogo
         entero a partir de su URL, o archivo fuente
+        
+        Returns:
+            bool: True si la distribución pasa las validaciones, False caso contrario
         """
         distribution_id = distribution.get(IDENTIFIER)
         url = distribution.get(DOWNLOAD_URL)
@@ -30,7 +33,7 @@ class Scraper(object):
             if not url or requests.head(url).status_code != 200:
                 msg = u'{} {}'.format(strings.INVALID_DISTRIBUTION_URL,
                                       distribution_id)
-                self.task.info(msg)
+                ReadDataJsonTask.info(self.task, msg)
                 return False
 
         # Fix a pandas fallando en lectura de URLs no ascii

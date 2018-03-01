@@ -8,9 +8,9 @@ from series_tiempo_ar.helpers import freq_iso_to_pandas
 
 from series_tiempo_ar_api.apps.api.models import Distribution
 from .operations import process_column
-from .elastic import ElasticInstance
-from . import constants
-from . import strings
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from series_tiempo_ar_api.libs.indexing import constants
+from series_tiempo_ar_api.libs.indexing import strings
 
 logger = logging.getLogger(__name__)
 

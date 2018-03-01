@@ -9,7 +9,7 @@ import numpy as np
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 
-from . import constants
+from series_tiempo_ar_api.libs.indexing import constants
 from .incomplete_periods import handle_missing_values
 from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset, \
     freq_pandas_to_interval

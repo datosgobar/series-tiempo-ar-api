@@ -11,8 +11,8 @@ from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.database_loader import \
     DatabaseLoader
-from series_tiempo_ar_api.libs.indexing.distribution_indexer import DistributionIndexer
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'

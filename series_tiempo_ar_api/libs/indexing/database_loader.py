@@ -35,6 +35,8 @@ class DatabaseLoader(object):
             distribution (dict)
             catalog (DataJson)
             catalog_id (str): Identificador único del catalogo a guardar
+        Returns:
+            Distribution: distribución creada, o None si falla
         """
         self.catalog_model = self._catalog_model(catalog, catalog_id)
         dataset = catalog.get_dataset(distribution[constants.DATASET_IDENTIFIER])
