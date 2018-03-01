@@ -1,4 +1,5 @@
 #! coding: utf-8
+READ_ERROR = u"Error en la lectura del catálogo {}: {}"
 
 PIPELINE_START = u"Comienzo de la indexación del catálogo %s"
 

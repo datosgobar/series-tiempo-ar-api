@@ -36,21 +36,8 @@ class ReadDataJsonTest(TestCase):
              indexable=True).save()
         task = ReadDataJsonTask()
         task.save()
-        read_datajson(task, async=False, whitelist=True)
+        read_datajson(task, whitelist=True)
         self.assertTrue(Field.objects.filter(distribution__dataset__catalog__identifier=identifier))
-
-    def test_read_invalid(self):
-        identifier = 'test_id'
-        # noinspection PyUnresolvedReferences
-        Node.objects.create(catalog_id=identifier,
-                            catalog_url=os.path.join(dir_path, 'missing_data.json'),
-                            indexable=True).save()
-        task = ReadDataJsonTask()
-        task.save()
-        read_datajson(task, async=False, whitelist=True)
-
-        # Esperado: logs con errores
-        self.assertTrue(task.logs)
 
     def test_read_datajson_command(self):
         identifier = 'test_id'

@@ -2,12 +2,12 @@
 
 from django.utils import timezone
 from django_rq import job, get_queue
-from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.actions import DatasetIndexableToggler
-from series_tiempo_ar_api.apps.management.models import Node, DatasetIndexingFile, ReadDataJsonTask
-from series_tiempo_ar_api.apps.management.strings import FILE_READ_ERROR, READ_ERROR
-from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
+from series_tiempo_ar_api.apps.management.models import Node, DatasetIndexingFile
+from series_tiempo_ar_api.apps.management.strings import FILE_READ_ERROR
+from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
+
 
 @job('indexing')
 def read_datajson(task, async=True, whitelist=False, read_local=False):
@@ -18,35 +18,7 @@ def read_datajson(task, async=True, whitelist=False, read_local=False):
     task.status = task.RUNNING
 
     for node in nodes:
-        catalog_id = node.catalog_id
-        catalog_url = node.catalog_url
-        try:
-            catalog = DataJson(catalog_url)
-        except Exception as e:
-            ReadDataJsonTask.info(task, READ_ERROR.format(catalog_id, e.message))
-            continue
-
-        for distribution in catalog.get_distributions(only_time_series=True):
-            fake_catalog = catalog.copy()
-            fake_catalog['dataset'] = filter(
-                lambda x: x['identifier'] != distribution['dataset_identifier'],
-                fake_catalog['dataset']
-            )
-            if async:
-                index_distribution.delay(distribution,
-                                         fake_catalog,
-                                         catalog_id,
-                                         task,
-                                         read_local=read_local,
-                                         whitelist=whitelist)
-            else:
-                index_distribution(distribution,
-                                   fake_catalog,
-                                   catalog_id,
-                                   task,
-                                   read_local=read_local,
-                                   async=False,
-                                   whitelist=whitelist)
+        index_catalog(node, task, read_local, async, whitelist)
 
     # Caso de no hay nodos o todos dieron error, marco como finalizado
     if not nodes or (async and not get_queue('indexing').jobs):

@@ -1,7 +1,10 @@
 #! coding: utf-8
+import json
+
 from django.conf import settings
 from django.utils import timezone
 from django_rq import job, get_queue
+from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing import constants
@@ -11,8 +14,11 @@ from .scraping import Scraper
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
-def index_distribution(distribution, catalog, catalog_id, task,
+def index_distribution(distribution, node, task,
                        read_local=False, async=True, whitelist=False, index=settings.TS_INDEX):
+
+    catalog = DataJson(json.loads(node.catalog))
+    catalog_id = node.catalog_id
 
     identifier = distribution[constants.IDENTIFIER]
     try:
@@ -32,7 +38,7 @@ def index_distribution(distribution, catalog, catalog_id, task,
 
     except Exception as e:
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(identifier, e.message))
-        # raise e  # Django-rq / sentry logging
+        raise e  # Django-rq / sentry logging
 
     # Si no hay más jobs encolados, la tarea se considera como finalizada
     if async and not get_queue('indexing').jobs:
@@ -42,5 +48,3 @@ def index_distribution(distribution, catalog, catalog_id, task,
         task.status = task.FINISHED
         task.save()
         task.generate_email()
-
-    ReadDataJsonTask.info(task, u"Distribución {} OK".format(identifier))
