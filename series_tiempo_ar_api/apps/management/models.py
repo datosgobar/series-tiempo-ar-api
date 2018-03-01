@@ -55,6 +55,7 @@ class Node(models.Model):
     catalog_id = models.CharField(max_length=100, unique=True)
     catalog_url = models.URLField()
     indexable = models.BooleanField()
+    catalog = models.TextField(default='{}')
 
     def __unicode__(self):
         return self.catalog_id
