@@ -19,7 +19,7 @@ class DatabaseLoaderTests(TestCase):
 
     def setUp(self):
         self.task = ReadDataJsonTask()
-        self.loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
+        self.loader = DatabaseLoader(read_local=True, default_whitelist=True)
 
     def tearDown(self):
         Catalog.objects.filter(identifier=self.catalog_id).delete()

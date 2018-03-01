@@ -13,7 +13,7 @@ class ScrapperTests(TestCase):
     def setUp(self):
         self.task = ReadDataJsonTask()
         self.task.save()
-        self.scrapper = Scraper(self.task, read_local=True)
+        self.scrapper = Scraper(read_local=True)
 
     def test_scrapper(self):
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))

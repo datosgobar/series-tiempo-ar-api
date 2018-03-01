@@ -6,23 +6,20 @@ from tempfile import NamedTemporaryFile
 import requests
 from django.conf import settings
 from django.core.files import File
-from django.db import IntegrityError
 from django.utils import timezone
 from pydatajson import DataJson
 
 from . import constants
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
-from series_tiempo_ar_api.libs.indexing import strings
 
 
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
 
-    def __init__(self, task, read_local=False, default_whitelist=False):
+    def __init__(self, read_local=False, default_whitelist=False):
         self.catalog_model = None
         self.stats = {}
-        self.task = task
         self.read_local = read_local
         self.default_whitelist = default_whitelist
 
@@ -125,15 +122,12 @@ class DatabaseLoader(object):
         distribution_model.metadata = json.dumps(distribution)
         distribution_model.download_url = url
         distribution_model.periodicity = periodicity
-        success = self._read_file(url, distribution_model)
-        if success:
-            distribution_model.save()
+        self._read_file(url, distribution_model)
 
-            self.stats['distributions'] = self.stats.get('distributions', 0) + created
-            self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
-            return distribution_model
-
-        return False
+        self.stats['distributions'] = self.stats.get('distributions', 0) + created
+        self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
+        distribution_model.save()
+        return distribution_model
 
     def _read_file(self, file_url, distribution_model):
         """Descarga y lee el archivo de la distribución. Por razones
@@ -152,12 +146,7 @@ class DatabaseLoader(object):
 
         else:
             request = requests.get(file_url, stream=True)
-
-            if request.status_code != 200:
-                self.task.info(
-                    strings.INVALID_DISTRIBUTION_URL.format(distribution_model.identifier)
-                )
-                return False
+            request.raise_for_status()  # Excepción si es inválido
 
             lf = NamedTemporaryFile()
 
@@ -176,24 +165,17 @@ class DatabaseLoader(object):
         else:  # No cambió respecto a la corrida anterior
             distribution_model.indexable = False
 
-        return True
-
     def _save_fields(self, distribution_model, fields):
-        catalog = distribution_model.dataset.catalog.identifier
         fields = [field for field in fields if field.get(constants.SPECIAL_TYPE) != constants.TIME_INDEX]
         for field in fields:
 
             series_id = field.get(constants.FIELD_ID)
             title = field.get(constants.FIELD_TITLE)
-            try:
-                field_model, created = Field.objects.get_or_create(
-                    series_id=series_id,
-                    title=title,
-                    distribution=distribution_model
-                )
-            except IntegrityError:  # Series ID ya existía
-                self.task.info(strings.DB_SERIES_ID_REPEATED.format(series_id, catalog))
-                continue
+            field_model, created = Field.objects.get_or_create(
+                series_id=series_id,
+                title=title,
+                distribution=distribution_model
+            )
 
             field = self._remove_blacklisted_fields(
                 field,

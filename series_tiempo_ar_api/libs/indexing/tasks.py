@@ -22,12 +22,12 @@ def index_distribution(distribution, node, task,
 
     identifier = distribution[constants.IDENTIFIER]
     try:
-        scraper = Scraper(task, read_local)
+        scraper = Scraper(read_local)
         result = scraper.run(distribution, catalog)
         if not result:
             return
 
-        loader = DatabaseLoader(task, read_local, default_whitelist=whitelist)
+        loader = DatabaseLoader(read_local=read_local, default_whitelist=whitelist)
 
         distribution_model = loader.run(distribution, catalog, catalog_id)
         if not distribution_model:

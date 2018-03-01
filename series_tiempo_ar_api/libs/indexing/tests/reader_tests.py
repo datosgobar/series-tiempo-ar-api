@@ -94,7 +94,7 @@ class IndexerTests(TestCase):
     def _index_catalog(self, catalog_path):
         catalog = DataJson(os.path.join(SAMPLES_DIR, catalog_path))
         distributions = get_time_series_distributions(catalog)
-        db_loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
+        db_loader = DatabaseLoader(read_local=True, default_whitelist=True)
         for distribution in distributions:
             db_loader.run(distribution, catalog, CATALOG_ID)
 
