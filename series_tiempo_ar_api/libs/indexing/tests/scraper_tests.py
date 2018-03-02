@@ -3,6 +3,7 @@ import os
 
 from pydatajson import DataJson
 from django.test import TestCase
+from nose.tools import raises
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.scraping import Scraper
@@ -30,6 +31,7 @@ class ScrapperTests(TestCase):
         result = self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
         self.assertTrue(result)
 
+    @raises(Exception)
     def test_missing_dataframe_column(self):
         """Si falta una columna indicada por los metadatos, no se
         scrapea la distribución
@@ -38,5 +40,4 @@ class ScrapperTests(TestCase):
         catalog = DataJson(os.path.join(
             SAMPLES_DIR, 'distribution_missing_column.json'
         ))
-        result = self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
-        self.assertFalse(result)
+        self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)

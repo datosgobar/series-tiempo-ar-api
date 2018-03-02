@@ -71,7 +71,7 @@ class DatabaseLoaderTests(TestCase):
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
         distributions = get_time_series_distributions(catalog)
-        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
+        loader = DatabaseLoader(read_local=True, default_whitelist=False)
         loader.run(distributions[0], catalog, self.catalog_id)
         dataset = Catalog.objects.get(identifier=CATALOG_ID).dataset_set
 
