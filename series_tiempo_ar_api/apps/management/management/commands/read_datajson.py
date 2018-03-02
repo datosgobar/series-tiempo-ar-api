@@ -2,11 +2,10 @@
 import logging
 
 from django.core.management import BaseCommand
-from django.utils import timezone
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
-
+from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
 logger = logging.getLogger(__name__)
 
 
@@ -29,13 +28,8 @@ class Command(BaseCommand):
         task = ReadDataJsonTask()
         task.save()
 
-        task_id = task.id
         read_datajson(task, async=async, whitelist=options['whitelist'])
 
         if not async:
-            # Se finalizó de manera sincronica
-            task = ReadDataJsonTask.objects.get(id=task_id)
-            task.status = task.FINISHED
-            task.finished = timezone.now()
-            task.save()
-            task.generate_email()
+            # Se finalizó la tarea sincrónicamente
+            ReportGenerator(task).generate()

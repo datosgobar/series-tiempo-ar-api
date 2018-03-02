@@ -8,7 +8,7 @@ from pydatajson import DataJson
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
-from .report.report_generator import generate_report
+from .report.report_generator import ReportGenerator
 from .database_loader import DatabaseLoader
 from .scraping import Scraper
 
@@ -42,4 +42,4 @@ def index_distribution(distribution, node, task,
 
     # Si no hay más jobs encolados, la tarea se considera como finalizada
     if async and not get_queue('indexing').jobs:
-        generate_report(task)
+        ReportGenerator(task).generate()
