@@ -200,3 +200,9 @@ class ReadDataJsonTask(models.Model):
             task = cls.objects.select_for_update().get(id=task.id)
             task.logs += msg + '\n'
             task.save()
+
+
+class Indicator(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.FloatField()
+    task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
