@@ -2,13 +2,13 @@
 import json
 
 from django.conf import settings
-from django.utils import timezone
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from .report.report_generator import generate_report
 from .database_loader import DatabaseLoader
 from .scraping import Scraper
 
@@ -42,9 +42,4 @@ def index_distribution(distribution, node, task,
 
     # Si no hay más jobs encolados, la tarea se considera como finalizada
     if async and not get_queue('indexing').jobs:
-        task = ReadDataJsonTask.objects.last()
-
-        task.finished = timezone.now()
-        task.status = task.FINISHED
-        task.save()
-        task.generate_email()
+        generate_report(task)
