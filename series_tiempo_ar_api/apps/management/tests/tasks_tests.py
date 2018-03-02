@@ -1,11 +1,13 @@
 #!coding=utf8
 import os
 
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.management import call_command
 from django.test import TestCase
+from unittest import skipIf
 
 from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
@@ -13,7 +15,14 @@ from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
 
 dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
+skip = False
+try:
+    requests.head('http://infra.datos.gob.ar/catalog/sspm/data.json', timeout=1).raise_for_status()
+except requests.exceptions.RequestException:
+    skip = True
 
+
+@skipIf(skip, "Distribuciones remotas caídas")
 class ReadDataJsonTest(TestCase):
 
     def setUp(self):
@@ -27,21 +36,8 @@ class ReadDataJsonTest(TestCase):
              indexable=True).save()
         task = ReadDataJsonTask()
         task.save()
-        read_datajson(task, async=False, whitelist=True)
+        read_datajson(task, whitelist=True)
         self.assertTrue(Field.objects.filter(distribution__dataset__catalog__identifier=identifier))
-
-    def test_read_invalid(self):
-        identifier = 'test_id'
-        # noinspection PyUnresolvedReferences
-        Node.objects.create(catalog_id=identifier,
-                            catalog_url=os.path.join(dir_path, 'missing_data.json'),
-                            indexable=True).save()
-        task = ReadDataJsonTask()
-        task.save()
-        read_datajson(task, async=False, whitelist=True)
-
-        # Esperado: logs con errores
-        self.assertTrue(task.logs)
 
     def test_read_datajson_command(self):
         identifier = 'test_id'

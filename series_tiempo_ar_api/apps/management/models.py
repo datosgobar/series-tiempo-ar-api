@@ -3,11 +3,12 @@ from __future__ import unicode_literals
 
 import json
 import getpass
+import requests
 
 from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.core.mail import send_mail
 from . import strings
@@ -55,9 +56,22 @@ class Node(models.Model):
     catalog_id = models.CharField(max_length=100, unique=True)
     catalog_url = models.URLField()
     indexable = models.BooleanField()
+    catalog = models.TextField(default='{}')
 
     def __unicode__(self):
         return self.catalog_id
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        try:
+            catalog_request = requests.get(self.catalog_url)
+            if catalog_request.status_code != 200:
+                return
+            self.catalog = catalog_request.content
+        except requests.exceptions.RequestException:
+            self.catalog = open(self.catalog_url).read()
+
+        super(Node, self).save(force_insert, force_update, using, update_fields)
 
 
 class NodeRegisterFile(BaseRegisterFile):
@@ -179,3 +193,10 @@ class ReadDataJsonTask(models.Model):
 
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
+
+    @classmethod
+    def info(cls, task, msg):
+        with transaction.atomic():
+            task = cls.objects.select_for_update().get(id=task.id)
+            task.logs += msg + '\n'
+            task.save()
