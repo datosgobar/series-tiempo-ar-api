@@ -14,13 +14,12 @@ from .scraping import Scraper
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
-def index_distribution(distribution, node, task,
+def index_distribution(distribution_id, node, task,
                        read_local=False, async=True, whitelist=False, index=settings.TS_INDEX):
 
     catalog = DataJson(json.loads(node.catalog))
     catalog_id = node.catalog_id
-
-    identifier = distribution[constants.IDENTIFIER]
+    distribution = catalog.get_distribution(identifier=distribution_id)
     try:
         scraper = Scraper(read_local)
         result = scraper.run(distribution, catalog)
@@ -37,7 +36,7 @@ def index_distribution(distribution, node, task,
             DistributionIndexer(index=index).run(distribution_model)
 
     except Exception as e:
-        ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(identifier, e.message))
+        ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
         raise e  # Django-rq / sentry logging
 
     # Si no hay más jobs encolados, la tarea se considera como finalizada
@@ -48,3 +47,6 @@ def index_distribution(distribution, node, task,
         task.status = task.FINISHED
         task.save()
         task.generate_email()
+
+    del scraper
+    del loader

@@ -24,15 +24,18 @@ def index_catalog(node, task, read_local=False, async=True, whitelist=False):
     """
 
     try:
-        catalog = DataJson(json.loads(node.catalog))
+        catalog = DataJson(node.catalog_url)
+        node.catalog = json.dumps(catalog)
+        node.save()
     except Exception as e:
         ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e.message))
         return
 
     for distribution in catalog.get_distributions(only_time_series=True):
+        identifier = distribution['identifier']
         if async:
-            index_distribution.delay(distribution, node, task, read_local, async, whitelist)
+            index_distribution.delay(identifier, node, task, read_local, async, whitelist)
         else:
-            index_distribution(distribution, node, task, read_local, async, whitelist)
+            index_distribution(identifier, node, task, read_local, async, whitelist)
 
     task.save()
