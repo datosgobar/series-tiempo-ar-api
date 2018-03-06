@@ -166,6 +166,35 @@ class ReadDataJsonTask(models.Model):
 
 
 class Indicator(models.Model):
-    name = models.CharField(max_length=100)
+
+    CATALOG_NEW = 'catalog_new'
+    CATALOG_UPDATED = 'catalog_updated'
+    CATALOG_TOTAL = 'catalog_total'
+    DATASET_NEW = 'dataset_new'
+    DATASET_UPDATED = 'dataset_updated'
+    DATASET_TOTAL = 'dataset_total'
+    DISTRIBUTION_NEW = 'distribution_new'
+    DISTRIBUTION_UPDATED = 'distribution_updated'
+    DISTRIBUTION_TOTAL = 'distribution_total'
+    FIELD_NEW = 'field_new'
+    FIELD_UPDATED = 'field_updated'
+    FIELD_TOTAL = 'field_total'
+
+    TYPE_CHOICES = (
+        (CATALOG_NEW, 'Catálogos nuevos'),
+        (CATALOG_TOTAL, 'Catálogos totales'),
+        (CATALOG_UPDATED, 'Catálogos actualizados'),
+        (DATASET_NEW, 'Datasets nuevos'),
+        (DATASET_TOTAL, 'Datasets totales'),
+        (DATASET_UPDATED, 'Datasets actualizados'),
+        (DISTRIBUTION_NEW, 'Distribuciones nuevas'),
+        (DISTRIBUTION_TOTAL, 'Distribuciones totales'),
+        (DISTRIBUTION_UPDATED, 'Distribuciones actualizadas'),
+        (FIELD_NEW, 'Series nuevas'),
+        (FIELD_TOTAL, 'Series totales'),
+        (FIELD_UPDATED, 'Series actualizadas'),
+    )
+
+    type = models.CharField(max_length=100, choices=TYPE_CHOICES)
     value = models.FloatField()
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
