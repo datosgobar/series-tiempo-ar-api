@@ -26,7 +26,7 @@ def index_distribution(distribution_id, node_id, task,
         if not result:
             return
 
-        loader = DatabaseLoader(read_local=read_local, default_whitelist=whitelist)
+        loader = DatabaseLoader(task, read_local=read_local, default_whitelist=whitelist)
 
         distribution_model = loader.run(distribution, catalog, node.catalog_id)
         if not distribution_model:

@@ -17,7 +17,8 @@ from series_tiempo_ar_api.apps.api.models import \
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
 
-    def __init__(self, read_local=False, default_whitelist=False):
+    def __init__(self, task, read_local=False, default_whitelist=False):
+        self.task = task
         self.catalog_model = None
         self.stats = {}
         self.read_local = read_local
