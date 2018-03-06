@@ -34,8 +34,8 @@ def index_catalog(node, task, read_local=False, async=True, whitelist=False):
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
         if async:
-            index_distribution.delay(identifier, node, task, read_local, async, whitelist)
+            index_distribution.delay(identifier, node.id, task, read_local, async, whitelist)
         else:
-            index_distribution(identifier, node, task, read_local, async, whitelist)
+            index_distribution(identifier, node.id, task, read_local, async, whitelist)
 
     task.save()
