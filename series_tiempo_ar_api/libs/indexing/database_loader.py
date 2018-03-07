@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 import requests
 from django.conf import settings
 from django.core.files import File
+from django.db import transaction
 from django.utils import timezone
 from pydatajson import DataJson
 
@@ -52,9 +53,13 @@ class DatabaseLoader(object):
 
         distribution_model = self._distribution_model(distribution, dataset_model, periodicity)
 
-        if distribution_model:
+        if distribution_model.indexable:
             self._save_fields(distribution_model, fields)
-            return distribution_model
+
+        for _ in fields[1:]:  # El primero es el índice de tiempo, no considerado
+            self.increment_indicator(Indicator.FIELD_TOTAL)
+
+        return distribution_model if distribution_model.indexable else None
 
     def _catalog_model(self, catalog, catalog_id):
         """Crea o actualiza el catalog model con el título pedido a partir
@@ -69,9 +74,14 @@ class DatabaseLoader(object):
             catalog,
             settings.CATALOG_BLACKLIST
         )
-        catalog_model.metadata = json.dumps(catalog)
+        catalog_meta = json.dumps(catalog)
+
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
         catalog_model.save()
+        if created:
+            self.increment_indicator(Indicator.CATALOG_NEW)
+        elif catalog_model.metadata != catalog_meta:
+            catalog_model = self.set_as_updated(catalog_model)
 
         return catalog_model
 
@@ -101,7 +111,7 @@ class DatabaseLoader(object):
         if created:
             self.increment_indicator(Indicator.DATASET_NEW)
         elif dataset_meta != dataset_model.metadata:
-            self.increment_indicator(Indicator.DATASET_UPDATED)
+            dataset_model = self.set_as_updated(dataset_model)
 
         dataset_model.metadata = dataset_meta
         dataset_model.save()
@@ -129,13 +139,25 @@ class DatabaseLoader(object):
         distribution_meta = json.dumps(distribution)
         distribution_model.download_url = url
         distribution_model.periodicity = periodicity
-        updated = self._read_file(url, distribution_model)
+        updated = False
+        if dataset_model.indexable:
+            updated = self._read_file(url, distribution_model)
+
+        if updated:
+            distribution_model.indexable = True
 
         if created:
             self.increment_indicator(Indicator.DISTRIBUTION_NEW)
-        elif updated or dataset_model != dataset_model.metadata:
+        elif updated or distribution_meta != distribution_model.metadata:
             self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
-    
+            if not self.read_updated(dataset_model):
+                self.set_as_updated(dataset_model)
+                self.increment_indicator(Indicator.DATASET_UPDATED)
+
+            if not self.read_updated(self.catalog_model):
+                self.set_as_updated(self.catalog_model)
+                self.increment_indicator(Indicator.CATALOG_UPDATED)
+
         self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
 
         distribution_model.metadata = distribution_meta
@@ -205,10 +227,9 @@ class DatabaseLoader(object):
 
             if created:
                 self.increment_indicator(Indicator.FIELD_NEW)
-            elif field_meta != field_model.metadata:
-                self.increment_indicator(Indicator.FIELD_UPDATED)
+            else:  # Por ahora todos los field son considerados como updated si su distribución lo es
+                field_model = self.set_as_updated(field_model)
 
-            self.increment_indicator(Indicator.FIELD_TOTAL)
             field_model.metadata = field_meta
             field_model.save()
 
@@ -227,3 +248,19 @@ class DatabaseLoader(object):
 
     def increment_indicator(self, indicator_type):
         ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type)
+
+    # Lectura / Escritura del campo updated protegiendose de race conditions
+
+    @staticmethod
+    def set_as_updated(model):
+        model.save()
+        with transaction.atomic():
+            model = model.__class__.objects.select_for_update().get(id=model.id)
+            model.updated = True
+            model.save()
+            return model
+
+    @staticmethod
+    def read_updated(model):
+        with transaction.atomic():
+            return model.__class__.objects.select_for_update().get(id=model.id).updated

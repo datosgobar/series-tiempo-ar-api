@@ -5,6 +5,7 @@ import json
 
 from pydatajson import DataJson
 
+from series_tiempo_ar_api.apps.api.models import Dataset
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
@@ -31,6 +32,7 @@ def index_catalog(node, task, read_local=False, async=True, whitelist=False):
         ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e.message))
         return
 
+    Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False)
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
         if async:

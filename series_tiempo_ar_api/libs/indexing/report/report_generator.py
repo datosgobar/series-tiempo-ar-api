@@ -5,7 +5,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 from django.utils import timezone
-from series_tiempo_ar_api.apps.management.models import Indicator
+from series_tiempo_ar_api.apps.management.models import Indicator, Node
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
 from . import strings
 
 
@@ -19,6 +20,7 @@ class ReportGenerator(object):
         self.task.finished = timezone.now()
         self.task.status = self.task.FINISHED
         self.task.save()
+        self.calculate_indicators()
         self.generate_email()
 
     def generate_email(self):
@@ -69,4 +71,13 @@ class ReportGenerator(object):
         if not indicator_queryset:
             return 0
 
-        return indicator_queryset[0].value
+        return sum([indic.value for indic in indicator_queryset])
+
+    def calculate_indicators(self):
+        for node in Node.objects.filter(indexable=True):
+            self.task.indicator_set.create(type=Indicator.DATASET_TOTAL,
+                                           value=Dataset.objects.filter(catalog__identifier=node.catalog_id, present=True).count(),
+                                           node=node)
+            self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL,
+                                           value=1,
+                                           node=node)
