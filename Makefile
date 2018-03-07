@@ -19,8 +19,10 @@ doctoc: ## generate table of contents, doctoc command line tool required
 	bash fix_github_links.sh docs/spreadsheet_integration.md
 
 swaggerdocs:
-	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/swagger; rm temp.zip
-	sed -i "s/url: \".*\"/url: \"\.\.\/series-tiempo-api-ar\.swagger\.yml\"/g" docs/swagger/index.html
+	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/; rm temp.zip
+	sed -i.bak "s/url: \".*\"/url: \"\.\/swagger\.yml\"/g" docs/index.html
+	echo ".download-url-wrapper { display: none!important; }" >> docs/swagger-ui.css
+	rm -f docs/index.html.bak
 
 serveswaggerdocs:
 	echo "Browse to http://localhost:8000/docs/swagger/"
