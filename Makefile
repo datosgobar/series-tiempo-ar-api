@@ -20,7 +20,7 @@ doctoc: ## generate table of contents, doctoc command line tool required
 
 swaggerdocs:
 	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/; rm temp.zip
-	sed -i.bak "s/url: \".*\"/url: \"\.\/swagger\.yml\"/g" docs/index.html
+	sed -i.bak "s/url: \".*\"/url: \"\.\/swagger\.yml\",\n    validatorUrl: null/g" docs/index.html
 	echo ".download-url-wrapper { display: none!important; }" >> docs/swagger-ui.css
 	rm -f docs/index.html.bak
 
