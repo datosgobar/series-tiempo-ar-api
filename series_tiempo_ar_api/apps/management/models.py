@@ -164,6 +164,17 @@ class ReadDataJsonTask(models.Model):
             task.logs += msg + '\n'
             task.save()
 
+    @classmethod
+    def increment_indicator(cls, task, catalog_id, indicator_type):
+        with transaction.atomic():
+            task = cls.objects.select_for_update().get(id=task.id)
+            indicator = task.indicator_set.get_or_create(
+                type=indicator_type,
+                node=Node.objects.get(catalog_id=catalog_id)
+            )[0]
+            indicator.value += 1
+            indicator.save()
+
 
 class Indicator(models.Model):
 
@@ -196,5 +207,6 @@ class Indicator(models.Model):
     )
 
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)
-    value = models.FloatField()
+    value = models.FloatField(default=0)
+    node = models.ForeignKey(to=Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)

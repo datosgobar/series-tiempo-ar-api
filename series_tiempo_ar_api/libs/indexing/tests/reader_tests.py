@@ -1,6 +1,8 @@
 #! coding: utf-8
+import json
 import os
 
+from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
@@ -27,6 +29,7 @@ class IndexerTests(TestCase):
 
     def setUp(self):
         self.task = ReadDataJsonTask()
+        self.task.save()
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
@@ -52,13 +55,18 @@ class IndexerTests(TestCase):
         """
         missing_field = '212.1_PSCIOS_ERS_0_0_22'
 
-        self._index_catalog('full_ts_data.json')
-        # Segunda corrida, 'actualización' del catálogo
-        self._index_catalog('missing_field.json')
+        node = Node(catalog_id=CATALOG_ID,
+                    catalog_url=os.path.join(SAMPLES_DIR, 'full_ts_data.json'),
+                    indexable=True)
+        self._index_catalog('full_ts_data.json', node)
+        with transaction.atomic():
+            node.catalog_url = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+            # Segunda corrida, 'actualización' del catálogo
+            self._index_catalog('missing_field.json', node)
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
-            .filter('match', series_id=missing_field).execute()
+            results = Search(using=self.elastic,
+                             index=self.test_index) \
+                .filter('match', series_id=missing_field).execute()
 
         self.assertTrue(len(results))
 
@@ -91,8 +99,13 @@ class IndexerTests(TestCase):
             self.elastic.indices.delete(self.test_index)
         Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID).delete()
 
-    def _index_catalog(self, catalog_path):
-        catalog = DataJson(os.path.join(SAMPLES_DIR, catalog_path))
+    def _index_catalog(self, catalog_path, node=None):
+        if not node:
+            node = Node(catalog_id=CATALOG_ID,
+                        catalog_url=os.path.join(SAMPLES_DIR, catalog_path),
+                        indexable=True)
+        node.save()
+        catalog = DataJson(json.loads(node.catalog))
         distributions = get_time_series_distributions(catalog)
         db_loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
         for distribution in distributions:
