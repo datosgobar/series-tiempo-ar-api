@@ -118,6 +118,7 @@ def export_vars(_):
     }
     return data
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -160,7 +161,8 @@ DJANGO_BASE_APPS = (
 VENDOR_APPS = (
     "django_rq",
     'sendfile',
-    'des'
+    'des',
+    'scheduler',
 )
 
 APPS = (

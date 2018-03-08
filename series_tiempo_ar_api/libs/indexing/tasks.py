@@ -41,4 +41,11 @@ def index_distribution(distribution_id, node_id, task,
 
     # Si no hay más jobs encolados, la tarea se considera como finalizada
     if async and not get_queue('indexing').jobs:
+        task.status = ReadDataJsonTask.FINISHED
+
+
+@job('indexing')
+def scheduler():
+    if not get_queue('indexing').jobs:
+        task = ReadDataJsonTask.objects.last()
         ReportGenerator(task).generate()
