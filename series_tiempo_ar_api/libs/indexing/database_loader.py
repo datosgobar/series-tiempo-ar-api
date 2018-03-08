@@ -77,11 +77,13 @@ class DatabaseLoader(object):
         catalog_meta = json.dumps(catalog)
 
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
-        catalog_model.save()
         if created:
             self.increment_indicator(Indicator.CATALOG_NEW)
         elif catalog_model.metadata != catalog_meta:
             catalog_model = self.set_as_updated(catalog_model)
+
+        catalog_model.metadata = catalog_meta
+        catalog_model.save()
 
         return catalog_model
 
