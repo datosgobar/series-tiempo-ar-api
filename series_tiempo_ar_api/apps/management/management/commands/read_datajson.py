@@ -5,13 +5,14 @@ from django.core.management import BaseCommand
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
-from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
+from series_tiempo_ar_api.libs.indexing.tasks import scheduler
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
     """Comando para ejecutar la indexación manualmente de manera sincrónica,
-    útil para debugging"""
+    útil para debugging. No correr junto con el rqscheduler para asegurar
+    la generación de reportes correcta."""
 
     def add_arguments(self, parser):
         parser.add_argument('--no-async', action='store_true')
@@ -32,4 +33,4 @@ class Command(BaseCommand):
 
         if not async:
             # Se finalizó la tarea sincrónicamente
-            ReportGenerator(task).generate()
+            scheduler()

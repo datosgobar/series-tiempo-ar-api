@@ -20,11 +20,6 @@ def read_datajson(task, async=True, whitelist=False, read_local=False):
     for node in nodes:
         index_catalog(node, task, read_local, async, whitelist)
 
-    # Caso de no hay nodos o todos dieron error, marco como finalizado
-    if not nodes or (async and not get_queue('indexing').jobs):
-        task.status = task.FINISHED
-        task.save()
-
 
 @job('indexing')
 def bulk_whitelist(indexing_file_id):

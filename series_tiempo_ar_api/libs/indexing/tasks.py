@@ -39,10 +39,6 @@ def index_distribution(distribution_id, node_id, task,
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
         raise e  # Django-rq / sentry logging
 
-    # Si no hay más jobs encolados, la tarea se considera como finalizada
-    if async and not get_queue('indexing').jobs:
-        task.status = ReadDataJsonTask.FINISHED
-
 
 # Para correr con el scheduler
 def scheduler():

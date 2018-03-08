@@ -126,7 +126,7 @@ class DatabaseLoader(object):
         """
         distribution = distribution.copy()
         # Borro los fields, de existir. Sólo guardo metadatos
-        distribution.pop(constants.FIELD, None)
+        fields = distribution.pop(constants.FIELD, None)
         identifier = distribution[constants.IDENTIFIER]
         url = distribution.get(constants.DOWNLOAD_URL)
 
@@ -160,6 +160,8 @@ class DatabaseLoader(object):
                 self.set_as_updated(self.catalog_model)
                 self.increment_indicator(Indicator.CATALOG_UPDATED)
 
+            for _ in fields[1:]:
+                self.increment_indicator(Indicator.FIELD_UPDATED)
         self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
 
         distribution_model.metadata = distribution_meta
