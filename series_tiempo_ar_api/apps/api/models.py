@@ -7,6 +7,7 @@ class Catalog(models.Model):
     title = models.CharField(max_length=2000)
     identifier = models.CharField(max_length=200, default='sspm', unique=True)
     metadata = models.TextField()
+    updated = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.title, self.identifier)
@@ -18,6 +19,7 @@ class Dataset(models.Model):
     catalog = models.ForeignKey(to=Catalog, on_delete=models.CASCADE)
     indexable = models.BooleanField(default=False)
     present = models.BooleanField(default=True)
+    updated = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.identifier, self.catalog.identifier)
@@ -36,6 +38,7 @@ class Distribution(models.Model):
     dataset = models.ForeignKey(to=Dataset, on_delete=models.CASCADE)
     download_url = models.URLField(max_length=1024)
     periodicity = models.CharField(max_length=200)
+    updated = models.BooleanField(default=False)
 
     data_file = models.FileField(
         max_length=2000,
@@ -57,6 +60,7 @@ class Field(models.Model):
     description = models.CharField(max_length=2000)
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
+    updated = models.BooleanField(default=True)
 
     def __unicode__(self):
         return u'%s' % (self.series_id)

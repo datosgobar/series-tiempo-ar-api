@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
 import getpass
 import requests
 
@@ -10,7 +9,6 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
-from django.core.mail import send_mail
 from . import strings
 
 
@@ -156,41 +154,6 @@ class ReadDataJsonTask(models.Model):
     def __unicode__(self):
         return "Task at %s" % self._format_date(self.created)
 
-    def generate_email(self):
-        start_time = self._format_date(self.created)
-        finish_time = self._format_date(self.finished)
-        msg = "Horario de finalización: {}\n".format(finish_time)
-
-        msg += self.format_message('catalogs', 'Catálogos')
-        msg += self.format_message('datasets', 'Datasets')
-        msg += self.format_message('distributions', 'Distribuciones')
-        msg += self.format_message('fields', 'Series')
-
-        recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
-        emails = [user.email for user in recipients.user_set.all()]
-        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
-
-        sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
-        if emails and not sent:
-            raise ValueError
-
-    def format_message(self, dict_key, full_name):
-        template = strings.INDEXING_REPORT_TEMPLATE
-        stats = json.loads(self.stats)
-        total_stats = {}
-        for catalog in stats:
-            for key in stats[catalog]:
-                total_stats[key] = total_stats.get(key, 0) + stats[catalog][key]
-
-        total_catalogs = total_stats.get('total_' + dict_key, 0)
-        new_catalogs = total_stats.get(dict_key, 0)
-        updated_catalogs = total_catalogs - new_catalogs
-        msg = template.format(name=full_name,
-                              new=new_catalogs,
-                              updated=updated_catalogs,
-                              total=total_catalogs)
-        return msg
-
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
 
@@ -200,3 +163,50 @@ class ReadDataJsonTask(models.Model):
             task = cls.objects.select_for_update().get(id=task.id)
             task.logs += msg + '\n'
             task.save()
+
+    @classmethod
+    def increment_indicator(cls, task, catalog_id, indicator_type):
+        with transaction.atomic():
+            task = cls.objects.select_for_update().get(id=task.id)
+            indicator = task.indicator_set.get_or_create(
+                type=indicator_type,
+                node=Node.objects.get(catalog_id=catalog_id)
+            )[0]
+            indicator.value += 1
+            indicator.save()
+
+
+class Indicator(models.Model):
+
+    CATALOG_NEW = 'catalog_new'
+    CATALOG_UPDATED = 'catalog_updated'
+    CATALOG_TOTAL = 'catalog_total'
+    DATASET_NEW = 'dataset_new'
+    DATASET_UPDATED = 'dataset_updated'
+    DATASET_TOTAL = 'dataset_total'
+    DISTRIBUTION_NEW = 'distribution_new'
+    DISTRIBUTION_UPDATED = 'distribution_updated'
+    DISTRIBUTION_TOTAL = 'distribution_total'
+    FIELD_NEW = 'field_new'
+    FIELD_UPDATED = 'field_updated'
+    FIELD_TOTAL = 'field_total'
+
+    TYPE_CHOICES = (
+        (CATALOG_NEW, 'Catálogos nuevos'),
+        (CATALOG_TOTAL, 'Catálogos totales'),
+        (CATALOG_UPDATED, 'Catálogos actualizados'),
+        (DATASET_NEW, 'Datasets nuevos'),
+        (DATASET_TOTAL, 'Datasets totales'),
+        (DATASET_UPDATED, 'Datasets actualizados'),
+        (DISTRIBUTION_NEW, 'Distribuciones nuevas'),
+        (DISTRIBUTION_TOTAL, 'Distribuciones totales'),
+        (DISTRIBUTION_UPDATED, 'Distribuciones actualizadas'),
+        (FIELD_NEW, 'Series nuevas'),
+        (FIELD_TOTAL, 'Series totales'),
+        (FIELD_UPDATED, 'Series actualizadas'),
+    )
+
+    type = models.CharField(max_length=100, choices=TYPE_CHOICES)
+    value = models.FloatField(default=0)
+    node = models.ForeignKey(to=Node, on_delete=models.CASCADE)
+    task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)

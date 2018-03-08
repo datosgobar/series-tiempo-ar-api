@@ -8,9 +8,11 @@ from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
 from series_tiempo_ar_api.libs.indexing.database_loader import DatabaseLoader
 from series_tiempo_ar_api.libs.indexing.tests.reader_tests import SAMPLES_DIR, CATALOG_ID
+
+dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
 
 class DatabaseLoaderTests(TestCase):
@@ -19,7 +21,11 @@ class DatabaseLoaderTests(TestCase):
 
     def setUp(self):
         self.task = ReadDataJsonTask()
-        self.loader = DatabaseLoader(read_local=True, default_whitelist=True)
+        self.task.save()
+        Node(catalog_id=self.catalog_id,
+             catalog_url=os.path.join(dir_path, 'full_ts_data.json'),
+             indexable=True).save()
+        self.loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
 
     def tearDown(self):
         Catalog.objects.filter(identifier=self.catalog_id).delete()
@@ -71,7 +77,7 @@ class DatabaseLoaderTests(TestCase):
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
         distributions = get_time_series_distributions(catalog)
-        loader = DatabaseLoader(read_local=True, default_whitelist=False)
+        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
         loader.run(distributions[0], catalog, self.catalog_id)
         dataset = Catalog.objects.get(identifier=CATALOG_ID).dataset_set
 

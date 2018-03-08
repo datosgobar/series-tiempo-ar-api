@@ -2,20 +2,20 @@
 import json
 
 from django.conf import settings
-from django.utils import timezone
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from .report.report_generator import ReportGenerator
 from .database_loader import DatabaseLoader
 from .scraping import Scraper
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task,
-                       read_local=False, async=True, whitelist=False, index=settings.TS_INDEX):
+                       read_local=False, whitelist=False, index=settings.TS_INDEX):
 
     node = Node.objects.get(id=node_id)
     catalog = DataJson(json.loads(node.catalog))
@@ -26,7 +26,7 @@ def index_distribution(distribution_id, node_id, task,
         if not result:
             return
 
-        loader = DatabaseLoader(read_local=read_local, default_whitelist=whitelist)
+        loader = DatabaseLoader(task, read_local=read_local, default_whitelist=whitelist)
 
         distribution_model = loader.run(distribution, catalog, node.catalog_id)
         if not distribution_model:
@@ -39,14 +39,12 @@ def index_distribution(distribution_id, node_id, task,
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
         raise e  # Django-rq / sentry logging
 
-    # Si no hay más jobs encolados, la tarea se considera como finalizada
-    if async and not get_queue('indexing').jobs:
-        task = ReadDataJsonTask.objects.last()
 
-        task.finished = timezone.now()
-        task.status = task.FINISHED
-        task.save()
-        task.generate_email()
+# Para correr con el scheduler
+def scheduler():
+    task = ReadDataJsonTask.objects.last()
+    if task.status == task.FINISHED:
+        return
 
-    del scraper
-    del loader
+    if not get_queue('indexing').jobs:
+        ReportGenerator(task).generate()

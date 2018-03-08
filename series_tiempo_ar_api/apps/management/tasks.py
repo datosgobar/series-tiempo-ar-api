@@ -10,7 +10,7 @@ from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 
 
 @job('indexing')
-def read_datajson(task, async=True, whitelist=False, read_local=False):
+def read_datajson(task, whitelist=False, read_local=False):
     """Tarea raíz de indexación. Itera sobre todos los nodos indexables (federados) e
     inicia la tarea de indexación sobre cada uno de ellos
     """
@@ -18,12 +18,7 @@ def read_datajson(task, async=True, whitelist=False, read_local=False):
     task.status = task.RUNNING
 
     for node in nodes:
-        index_catalog(node, task, read_local, async, whitelist)
-
-    # Caso de no hay nodos o todos dieron error, marco como finalizado
-    if not nodes or (async and not get_queue('indexing').jobs):
-        task.status = task.FINISHED
-        task.save()
+        index_catalog(node, task, read_local, whitelist)
 
 
 @job('indexing')

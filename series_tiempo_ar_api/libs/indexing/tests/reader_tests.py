@@ -1,6 +1,8 @@
 #! coding: utf-8
+import json
 import os
 
+from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
@@ -27,6 +29,7 @@ class IndexerTests(TestCase):
 
     def setUp(self):
         self.task = ReadDataJsonTask()
+        self.task.save()
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
@@ -52,13 +55,18 @@ class IndexerTests(TestCase):
         """
         missing_field = '212.1_PSCIOS_ERS_0_0_22'
 
-        self._index_catalog('full_ts_data.json')
-        # Segunda corrida, 'actualización' del catálogo
-        self._index_catalog('missing_field.json')
+        node = Node(catalog_id=CATALOG_ID,
+                    catalog_url=os.path.join(SAMPLES_DIR, 'full_ts_data.json'),
+                    indexable=True)
+        self._index_catalog('full_ts_data.json', node)
+        with transaction.atomic():
+            node.catalog_url = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+            # Segunda corrida, 'actualización' del catálogo
+            self._index_catalog('missing_field.json', node)
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
-            .filter('match', series_id=missing_field).execute()
+            results = Search(using=self.elastic,
+                             index=self.test_index) \
+                .filter('match', series_id=missing_field).execute()
 
         self.assertTrue(len(results))
 
@@ -91,10 +99,15 @@ class IndexerTests(TestCase):
             self.elastic.indices.delete(self.test_index)
         Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID).delete()
 
-    def _index_catalog(self, catalog_path):
-        catalog = DataJson(os.path.join(SAMPLES_DIR, catalog_path))
+    def _index_catalog(self, catalog_path, node=None):
+        if not node:
+            node = Node(catalog_id=CATALOG_ID,
+                        catalog_url=os.path.join(SAMPLES_DIR, catalog_path),
+                        indexable=True)
+        node.save()
+        catalog = DataJson(json.loads(node.catalog))
         distributions = get_time_series_distributions(catalog)
-        db_loader = DatabaseLoader(read_local=True, default_whitelist=True)
+        db_loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
         for distribution in distributions:
             db_loader.run(distribution, catalog, CATALOG_ID)
 
@@ -112,16 +125,16 @@ class ReaderTests(TestCase):
         self.node.save()
 
     def test_index_same_series_different_catalogs(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
         count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
 
         self.assertEqual(count, 1)
 
     def test_dont_index_same_distribution_twice(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -129,18 +142,18 @@ class ReaderTests(TestCase):
         self.assertFalse(distribution.indexable)
 
     def test_first_time_distribution_indexable(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
         self.assertTrue(distribution.indexable)
 
     def test_index_same_distribution_if_data_changed(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
         new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
         self.node.catalog_url = new_catalog
         self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True, async=False)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 

@@ -2,20 +2,20 @@
 import logging
 
 from django.core.management import BaseCommand
-from django.utils import timezone
+from django.conf import settings
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
-
+from series_tiempo_ar_api.libs.indexing.tasks import scheduler
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
     """Comando para ejecutar la indexación manualmente de manera sincrónica,
-    útil para debugging"""
+    útil para debugging. No correr junto con el rqscheduler para asegurar
+    la generación de reportes correcta."""
 
     def add_arguments(self, parser):
-        parser.add_argument('--no-async', action='store_true')
         parser.add_argument('--whitelist', action='store_true')
 
     def handle(self, *args, **options):
@@ -24,18 +24,11 @@ class Command(BaseCommand):
             logger.info(u'Ya está corriendo una indexación')
             return
 
-        async = not options['no_async']  # True by default
-
         task = ReadDataJsonTask()
         task.save()
 
-        task_id = task.id
-        read_datajson(task, async=async, whitelist=options['whitelist'])
+        read_datajson(task, whitelist=options['whitelist'])
 
-        if not async:
-            # Se finalizó de manera sincronica
-            task = ReadDataJsonTask.objects.get(id=task_id)
-            task.status = task.FINISHED
-            task.finished = timezone.now()
-            task.save()
-            task.generate_email()
+        # Si se corre el comando sincrónicamete (local/testing), generar el reporte
+        if not settings.RQ_QUEUES['indexing'].get('ASYNC', True):
+            scheduler()

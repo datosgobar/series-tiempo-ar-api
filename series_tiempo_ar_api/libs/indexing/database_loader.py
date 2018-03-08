@@ -6,9 +6,11 @@ from tempfile import NamedTemporaryFile
 import requests
 from django.conf import settings
 from django.core.files import File
+from django.db import transaction
 from django.utils import timezone
 from pydatajson import DataJson
 
+from series_tiempo_ar_api.apps.management.models import Indicator, ReadDataJsonTask
 from . import constants
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
@@ -17,8 +19,10 @@ from series_tiempo_ar_api.apps.api.models import \
 class DatabaseLoader(object):
     """Carga la base de datos. No hace validaciones"""
 
-    def __init__(self, read_local=False, default_whitelist=False):
+    def __init__(self, task, read_local=False, default_whitelist=False):
+        self.task = task
         self.catalog_model = None
+        self.catalog_id = None
         self.stats = {}
         self.read_local = read_local
         self.default_whitelist = default_whitelist
@@ -35,6 +39,7 @@ class DatabaseLoader(object):
         Returns:
             Distribution: distribución creada, o None si falla
         """
+        self.catalog_id = catalog_id
         self.catalog_model = self._catalog_model(catalog, catalog_id)
         dataset = catalog.get_dataset(distribution[constants.DATASET_IDENTIFIER])
         dataset.pop(constants.DISTRIBUTION)
@@ -48,9 +53,13 @@ class DatabaseLoader(object):
 
         distribution_model = self._distribution_model(distribution, dataset_model, periodicity)
 
-        if distribution_model:
+        if distribution_model.indexable:
             self._save_fields(distribution_model, fields)
-            return distribution_model
+
+        for _ in fields[1:]:  # El primero es el índice de tiempo, no considerado
+            self.increment_indicator(Indicator.FIELD_TOTAL)
+
+        return distribution_model if distribution_model.indexable else None
 
     def _catalog_model(self, catalog, catalog_id):
         """Crea o actualiza el catalog model con el título pedido a partir
@@ -65,11 +74,16 @@ class DatabaseLoader(object):
             catalog,
             settings.CATALOG_BLACKLIST
         )
-        catalog_model.metadata = json.dumps(catalog)
+        catalog_meta = json.dumps(catalog)
+
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
+        if created:
+            self.increment_indicator(Indicator.CATALOG_NEW)
+        elif catalog_model.metadata != catalog_meta:
+            catalog_model = self.set_as_updated(catalog_model)
+
+        catalog_model.metadata = catalog_meta
         catalog_model.save()
-        self.stats['catalogs'] = self.stats.get('catalogs', 0) + created
-        self.stats['total_catalogs'] = self.stats.get('total_catalogs', 0) + 1
 
         return catalog_model
 
@@ -93,12 +107,17 @@ class DatabaseLoader(object):
             dataset,
             settings.DATASET_BLACKLIST
         )
-        dataset_model.metadata = json.dumps(dataset)
+        dataset_meta = json.dumps(dataset)
         dataset_model.present = True
+
+        if created:
+            self.increment_indicator(Indicator.DATASET_NEW)
+        elif dataset_meta != dataset_model.metadata:
+            dataset_model = self.set_as_updated(dataset_model)
+
+        dataset_model.metadata = dataset_meta
         dataset_model.save()
 
-        self.stats['datasets'] = self.stats.get('datasets', 0) + created
-        self.stats['total_datasets'] = self.stats.get('total_datasets', 0) + 1
         return dataset_model
 
     def _distribution_model(self, distribution, dataset_model, periodicity):
@@ -107,7 +126,7 @@ class DatabaseLoader(object):
         """
         distribution = distribution.copy()
         # Borro los fields, de existir. Sólo guardo metadatos
-        distribution.pop(constants.FIELD, None)
+        fields = distribution.pop(constants.FIELD, None)
         identifier = distribution[constants.IDENTIFIER]
         url = distribution.get(constants.DOWNLOAD_URL)
 
@@ -119,13 +138,33 @@ class DatabaseLoader(object):
             distribution,
             settings.DISTRIBUTION_BLACKLIST
         )
-        distribution_model.metadata = json.dumps(distribution)
+        distribution_meta = json.dumps(distribution)
         distribution_model.download_url = url
         distribution_model.periodicity = periodicity
-        self._read_file(url, distribution_model)
+        updated = False
+        if dataset_model.indexable:
+            updated = self._read_file(url, distribution_model)
 
-        self.stats['distributions'] = self.stats.get('distributions', 0) + created
-        self.stats['total_distributions'] = self.stats.get('total_distributions', 0) + 1
+        if updated:
+            distribution_model.indexable = True
+
+        if created:
+            self.increment_indicator(Indicator.DISTRIBUTION_NEW)
+        elif updated or distribution_meta != distribution_model.metadata:
+            self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
+            if not self.read_updated(dataset_model):
+                self.set_as_updated(dataset_model)
+                self.increment_indicator(Indicator.DATASET_UPDATED)
+
+            if not self.read_updated(self.catalog_model):
+                self.set_as_updated(self.catalog_model)
+                self.increment_indicator(Indicator.CATALOG_UPDATED)
+
+            for _ in fields[1:]:
+                self.increment_indicator(Indicator.FIELD_UPDATED)
+        self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
+
+        distribution_model.metadata = distribution_meta
         distribution_model.save()
         return distribution_model
 
@@ -162,8 +201,10 @@ class DatabaseLoader(object):
             distribution_model.data_hash = data_hash
             distribution_model.last_updated = timezone.now()
             distribution_model.indexable = True
+            return True
         else:  # No cambió respecto a la corrida anterior
             distribution_model.indexable = False
+            return False
 
     def _save_fields(self, distribution_model, fields):
         fields = [field for field in fields if field.get(constants.SPECIAL_TYPE) != constants.TIME_INDEX]
@@ -182,16 +223,19 @@ class DatabaseLoader(object):
                 settings.FIELD_BLACKLIST
             )
             field_model.description = field[constants.FIELD_DESCRIPTION]
-            field_model.metadata = json.dumps(field)
 
+            field_meta = json.dumps(field)
             # Borra modelos viejos en caso de que haya habido un cambio de series id
             # Necesario para poder mantener una relación 1:1 entre modelos de la DB y columnas del CSV
             distribution_model.field_set.filter(title=title).delete()
 
-            field_model.save()
+            if created:
+                self.increment_indicator(Indicator.FIELD_NEW)
+            else:  # Por ahora todos los field son considerados como updated si su distribución lo es
+                field_model = self.set_as_updated(field_model)
 
-            self.stats['fields'] = self.stats.get('fields', 0) + created
-            self.stats['total_fields'] = self.stats.get('total_fields', 0) + 1
+            field_model.metadata = field_meta
+            field_model.save()
 
     @staticmethod
     def _remove_blacklisted_fields(metadata, blacklist):
@@ -205,3 +249,22 @@ class DatabaseLoader(object):
 
     def get_stats(self):
         return self.stats
+
+    def increment_indicator(self, indicator_type):
+        ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type)
+
+    # Lectura / Escritura del campo updated protegiendose de race conditions
+
+    @staticmethod
+    def set_as_updated(model):
+        model.save()
+        with transaction.atomic():
+            model = model.__class__.objects.select_for_update().get(id=model.id)
+            model.updated = True
+            model.save()
+            return model
+
+    @staticmethod
+    def read_updated(model):
+        with transaction.atomic():
+            return model.__class__.objects.select_for_update().get(id=model.id).updated
