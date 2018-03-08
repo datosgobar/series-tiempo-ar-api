@@ -44,8 +44,11 @@ def index_distribution(distribution_id, node_id, task,
         task.status = ReadDataJsonTask.FINISHED
 
 
-@job('indexing')
+# Para correr con el scheduler
 def scheduler():
+    task = ReadDataJsonTask.objects.last()
+    if task.status == task.FINISHED:
+        return
+
     if not get_queue('indexing').jobs:
-        task = ReadDataJsonTask.objects.last()
         ReportGenerator(task).generate()
