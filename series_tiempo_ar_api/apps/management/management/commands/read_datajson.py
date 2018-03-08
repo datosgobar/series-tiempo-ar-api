@@ -2,6 +2,7 @@
 import logging
 
 from django.core.management import BaseCommand
+from django.conf import settings
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
@@ -15,7 +16,6 @@ class Command(BaseCommand):
     la generación de reportes correcta."""
 
     def add_arguments(self, parser):
-        parser.add_argument('--no-async', action='store_true')
         parser.add_argument('--whitelist', action='store_true')
 
     def handle(self, *args, **options):
@@ -24,13 +24,11 @@ class Command(BaseCommand):
             logger.info(u'Ya está corriendo una indexación')
             return
 
-        async = not options['no_async']  # True by default
-
         task = ReadDataJsonTask()
         task.save()
 
-        read_datajson(task, async=async, whitelist=options['whitelist'])
+        read_datajson(task, whitelist=options['whitelist'])
 
-        if not async:
-            # Se finalizó la tarea sincrónicamente
+        # Si se corre el comando sincrónicamete (local/testing), generar el reporte
+        if not settings.RQ_QUEUES['indexing'].get('ASYNC', True):
             scheduler()

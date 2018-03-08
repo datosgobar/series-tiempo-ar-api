@@ -69,6 +69,6 @@ class ReadDataJsonTest(TestCase):
         group = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
         self.user.groups.add(group)
         self.user.save()
-        call_command('read_datajson', no_async=True)
+        call_command('read_datajson')
 
         self.assertEqual(len(mail.outbox), 1)
