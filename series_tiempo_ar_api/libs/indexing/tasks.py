@@ -15,7 +15,7 @@ from .scraping import Scraper
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task,
-                       read_local=False, async=True, whitelist=False, index=settings.TS_INDEX):
+                       read_local=False, whitelist=False, index=settings.TS_INDEX):
 
     node = Node.objects.get(id=node_id)
     catalog = DataJson(json.loads(node.catalog))
