@@ -220,6 +220,8 @@ class DatabaseLoader(object):
 
                 old_catalog_id = field_model.distribution.dataset.catalog.identifier
                 if old_catalog_id != self.catalog_id:
+                    field_model.error = True
+                    field_model.save()
                     raise FieldRepetitionError(u"Serie {} repetida en catálogos {} y {}".format(
                         series_id, old_catalog_id, self.catalog_id
                     ))
