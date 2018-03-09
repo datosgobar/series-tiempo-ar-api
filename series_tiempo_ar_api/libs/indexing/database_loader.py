@@ -150,6 +150,12 @@ class DatabaseLoader(object):
 
         if created:
             self.increment_indicator(Indicator.DISTRIBUTION_NEW)
+            # Cuenta todos sus fields como nuevos
+            # Se hace acá porque se tienen que contar pero no instanciar su modelo,
+            # No se corre el método _save_fields sobre distribuciones recién creadas
+            for _ in fields[1:]:
+                self.increment_indicator(Indicator.FIELD_NEW)
+
         elif updated or distribution_meta != distribution_model.metadata:
             self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
             if not self.read_updated(dataset_model):
@@ -241,10 +247,8 @@ class DatabaseLoader(object):
             # Necesario para poder mantener una relación 1:1 entre modelos de la DB y columnas del CSV
             distribution_model.field_set.filter(title=title).delete()
 
-            if created:
-                self.increment_indicator(Indicator.FIELD_NEW)
-            else:  # Por ahora todos los field son considerados como updated si su distribución lo es
-                field_model = self.set_as_updated(field_model)
+            # Por ahora todos los field son considerados como updated si su distribución lo es
+            field_model = self.set_as_updated(field_model)
 
             field_model.metadata = field_meta
             field_model.save()

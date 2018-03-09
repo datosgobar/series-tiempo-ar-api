@@ -9,7 +9,7 @@ from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.models import Distribution, Field
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.database_loader import \
     DatabaseLoader
@@ -159,3 +159,10 @@ class ReaderTests(TestCase):
 
         # La distribución fue indexada nuevamente, está marcada como indexable
         self.assertTrue(distribution.indexable)
+
+    def test_field_indicators_first_run(self):
+        index_catalog(self.node, self.task, read_local=True)
+
+        # Esperado: 3 fields nuevos, 3 totales
+        self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_NEW).value, 3)
+        self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_TOTAL).value, 3)
