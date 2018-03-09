@@ -64,4 +64,4 @@ class Field(models.Model):
     error = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u'%s' % (self.series_id)
+        return u'%s' % self.series_id
