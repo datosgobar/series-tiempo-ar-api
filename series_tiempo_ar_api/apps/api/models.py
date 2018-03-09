@@ -61,6 +61,7 @@ class Field(models.Model):
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
     updated = models.BooleanField(default=True)
+    error = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s' % (self.series_id)
