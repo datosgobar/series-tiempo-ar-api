@@ -211,13 +211,25 @@ class DatabaseLoader(object):
         for field in fields:
 
             series_id = field.get(constants.FIELD_ID)
-            title = field.get(constants.FIELD_TITLE)
-            field_model, created = Field.objects.get_or_create(
-                series_id=series_id,
-                title=title,
-                distribution=distribution_model
-            )
 
+            # No vale get_or_create, distribution_model puede haber diferido desde la última ejecución
+            field_model = Field.objects.filter(series_id=series_id)
+            if not field_model:
+                field_model = Field(series_id=series_id)
+                created = True
+            else:
+                field_model = field_model[0]
+                created = False
+
+                old_catalog_id = field_model.distribution.dataset.catalog.identifier
+                if old_catalog_id != self.catalog_id:
+                    raise FieldRepetitionError(u"Serie {} repetida en catálogos {} y {}".format(
+                        series_id, old_catalog_id, self.catalog_id
+                    ))
+
+            title = field.get(constants.FIELD_TITLE)
+            field_model.title = title
+            field_model.distribution = distribution_model
             field = self._remove_blacklisted_fields(
                 field,
                 settings.FIELD_BLACKLIST
@@ -268,3 +280,7 @@ class DatabaseLoader(object):
     def read_updated(model):
         with transaction.atomic():
             return model.__class__.objects.select_for_update().get(id=model.id).updated
+
+
+class FieldRepetitionError(Exception):
+    pass
