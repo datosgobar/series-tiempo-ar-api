@@ -215,10 +215,8 @@ class DatabaseLoader(object):
             field_model = Field.objects.filter(series_id=series_id)
             if not field_model:
                 field_model = Field(series_id=series_id)
-                created = True
             else:
                 field_model = field_model[0]
-                created = False
 
                 old_catalog_id = field_model.distribution.dataset.catalog.identifier
                 if old_catalog_id != self.catalog_id:
