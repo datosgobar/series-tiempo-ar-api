@@ -5,11 +5,12 @@ import os
 from django.conf import settings
 from django.test import TestCase
 from pydatajson import DataJson
+from nose.tools import raises
 from series_tiempo_ar.search import get_time_series_distributions
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
-from series_tiempo_ar_api.libs.indexing.database_loader import DatabaseLoader
+from series_tiempo_ar_api.libs.indexing.database_loader import DatabaseLoader, FieldRepetitionError
 from series_tiempo_ar_api.libs.indexing.tests.reader_tests import SAMPLES_DIR, CATALOG_ID
 
 dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -83,3 +84,36 @@ class DatabaseLoaderTests(TestCase):
 
         self.assertEqual(dataset.count(), 1)
         self.assertFalse(dataset.first().indexable)
+
+    def test_change_series_distribution(self):
+        catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
+        distributions = get_time_series_distributions(catalog)
+
+        self.loader.run(distributions[0], catalog, self.catalog_id)
+
+        catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'))
+        distributions = get_time_series_distributions(catalog)
+        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
+        loader.run(distributions[0], catalog, self.catalog_id)
+
+        # Valores obtenidos del .json fuente
+        self.assertEqual(Field.objects.get(series_id="212.1_PSCIOS_IOS_0_0_25").distribution,
+                         Distribution.objects.get(identifier="300.1"))
+
+    @raises(FieldRepetitionError)
+    def test_change_series_distributions_different_catalog(self):
+        catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
+        distributions = get_time_series_distributions(catalog)
+
+        self.loader.run(distributions[0], catalog, self.catalog_id)
+
+        other_catalog_id = 'other_catalog_id'
+        node = Node(catalog_id=other_catalog_id,
+                    catalog_url=os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'),
+                    indexable=True)
+        node.save()
+        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
+
+        catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'))
+        distributions = get_time_series_distributions(catalog)
+        loader.run(distributions[0], catalog, 'other_catalog_id')
