@@ -5,7 +5,7 @@ import json
 
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.api.models import Dataset
+from series_tiempo_ar_api.apps.api.models import Dataset, Catalog, Distribution, Field
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
@@ -31,7 +31,16 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e.message))
         return
 
-    Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False)
+    # Seteo inicial de variables a usar durante la indexación
+    catalog_model = Catalog.objects.filter(identifier=node.catalog_id)
+    if catalog_model:
+        catalog_model[0].updated = False
+        catalog_model[0].save()
+
+    Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False, updated=False)
+    Distribution.objects.filter(dataset__catalog__identifier=node.catalog_id).update(updated=False)
+    Field.objects.filter(distribution__dataset__catalog=catalog_model).update(updated=False)
+
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
         index_distribution.delay(identifier, node.id, task, read_local, whitelist)

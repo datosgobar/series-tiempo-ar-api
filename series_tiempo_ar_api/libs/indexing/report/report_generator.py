@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 from django.utils import timezone
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Field
 from . import strings
 
 
@@ -75,9 +75,23 @@ class ReportGenerator(object):
 
     def calculate_indicators(self):
         for node in Node.objects.filter(indexable=True):
-            self.task.indicator_set.create(type=Indicator.DATASET_TOTAL,
-                                           value=Dataset.objects.filter(catalog__identifier=node.catalog_id, present=True).count(),
-                                           node=node)
-            self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL,
-                                           value=1,
-                                           node=node)
+            catalog = Catalog.objects.filter(identifier=node.catalog_id)
+            if not catalog:
+                continue
+
+            catalog = catalog[0]
+
+            dataset_total = Dataset.objects.filter(catalog__identifier=node.catalog_id, present=True).count()
+            self.task.indicator_set.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
+
+            dataset_updated = Dataset.objects.filter(catalog__identifier=node.catalog_id, updated=True).count()
+            self.task.indicator_set.create(type=Indicator.DATASET_UPDATED, value=dataset_updated, node=node)
+
+            self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
+            self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=int(catalog.updated), node=node)
+
+    def calculate_series_indicators(self, node):
+        catalog = Catalog.objects.get(identifier=node.catalog_id)
+
+        updated = Field.objects.filter(distribution__dataset__catalog=catalog, updated=True).count()
+        self.task.indicator_set.create(type=Indicator.FIELD_UPDATED, value=updated, node=node)
