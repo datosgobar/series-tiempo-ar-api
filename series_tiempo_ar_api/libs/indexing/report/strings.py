@@ -5,5 +5,8 @@ INDEXING_REPORT_TEMPLATE = \
 {name}:
     nuevos: {new},
     actualizados: {updated},
+    no actualizados: {not_updated},
+    indexables: {indexable},
+    no indexables: {not_indexable},
     totales: {total},
 """

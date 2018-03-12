@@ -191,6 +191,10 @@ class Indicator(models.Model):
     FIELD_UPDATED = 'field_updated'
     FIELD_TOTAL = 'field_total'
 
+    FIELD_NOT_UPDATED = 'field_not_updated'
+    FIELD_INDEXABLE = 'field_indexable'
+    FIELD_NOT_INDEXABLE = 'field_not_indexable'
+
     TYPE_CHOICES = (
         (CATALOG_NEW, 'Catálogos nuevos'),
         (CATALOG_TOTAL, 'Catálogos totales'),
@@ -204,6 +208,9 @@ class Indicator(models.Model):
         (FIELD_NEW, 'Series nuevas'),
         (FIELD_TOTAL, 'Series totales'),
         (FIELD_UPDATED, 'Series actualizadas'),
+        (FIELD_NOT_UPDATED, 'Series no actualizadas'),
+        (FIELD_INDEXABLE, 'Series indexables'),
+        (FIELD_NOT_INDEXABLE, 'Series no indexables'),
     )
 
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)

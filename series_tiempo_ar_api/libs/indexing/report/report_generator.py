@@ -31,19 +31,25 @@ class ReportGenerator(object):
         msg += self.format_message('Catálogos',
                                    Indicator.CATALOG_NEW,
                                    Indicator.CATALOG_UPDATED,
-                                   Indicator.CATALOG_TOTAL)
+                                   Indicator.CATALOG_TOTAL,
+                                   None, None, None)
         msg += self.format_message('Datasets',
                                    Indicator.DATASET_NEW,
                                    Indicator.DATASET_UPDATED,
-                                   Indicator.DATASET_TOTAL)
+                                   Indicator.DATASET_TOTAL,
+                                   None, None, None)
         msg += self.format_message('Distribuciones',
                                    Indicator.DISTRIBUTION_NEW,
                                    Indicator.DISTRIBUTION_UPDATED,
-                                   Indicator.DISTRIBUTION_TOTAL)
+                                   Indicator.DISTRIBUTION_TOTAL,
+                                   None, None, None)
         msg += self.format_message('Series',
                                    Indicator.FIELD_NEW,
                                    Indicator.FIELD_UPDATED,
-                                   Indicator.FIELD_TOTAL)
+                                   Indicator.FIELD_TOTAL,
+                                   Indicator.FIELD_NOT_UPDATED,
+                                   Indicator.FIELD_INDEXABLE,
+                                   Indicator.FIELD_NOT_INDEXABLE)
 
         recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
         emails = [user.email for user in recipients.user_set.all()]
@@ -53,13 +59,22 @@ class ReportGenerator(object):
         if emails and not sent:
             raise ValueError
 
-    def format_message(self, full_name, new_indicator, updated_indicator, total_indicator):
+    def format_message(self, full_name,
+                       new_indicator, updated_indicator, total_indicator,
+                       not_updated_indicator, indexable, not_indexable):
         new_value = self._get_indicator_value(new_indicator)
         updated_value = self._get_indicator_value(updated_indicator)
+        not_updated_value = self._get_indicator_value(not_updated_indicator)
+        indexable_value = self._get_indicator_value(indexable)
+        not_indexable_value = self._get_indicator_value(not_indexable)
         total_value = self._get_indicator_value(total_indicator)
+
         msg = strings.INDEXING_REPORT_TEMPLATE.format(name=full_name,
                                                       new=new_value,
                                                       updated=updated_value,
+                                                      not_updated=not_updated_value,
+                                                      indexable=indexable_value,
+                                                      not_indexable=not_indexable_value,
                                                       total=total_value)
         return msg
 
@@ -67,6 +82,9 @@ class ReportGenerator(object):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
 
     def _get_indicator_value(self, indicator_type):
+        if not indicator_type:
+            return 0
+
         indicator_queryset = self.task.indicator_set.filter(type=indicator_type)
         if not indicator_queryset:
             return 0
@@ -97,3 +115,14 @@ class ReportGenerator(object):
 
         updated = Field.objects.filter(distribution__dataset__catalog=catalog, updated=True).count()
         self.task.indicator_set.create(type=Indicator.FIELD_UPDATED, value=updated, node=node)
+
+        not_updated = Field.objects.filter(distribution__dataset__catalog=catalog, updated=False).count()
+        self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
+
+        indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
+                                         distribution__dataset__indexable=True).count()
+        self.task.indicator_set.create(type=Indicator.FIELD_INDEXABLE, value=indexable, node=node)
+
+        not_indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
+                                             distribution__dataset__indexable=False).count()
+        self.task.indicator_set.create(type=Indicator.FIELD_NOT_INDEXABLE, value=not_indexable, node=node)
