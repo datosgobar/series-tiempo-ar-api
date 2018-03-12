@@ -1,10 +1,14 @@
 #!coding=utf8
 from __future__ import unicode_literals
 
+import json
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 from django.utils import timezone
+from pydatajson import DataJson
+
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Field
 from . import strings
@@ -111,6 +115,9 @@ class ReportGenerator(object):
             self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
             self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=int(catalog.updated), node=node)
 
+            data_json = DataJson(json.loads(node.catalog))
+            fields_total = len(data_json.get_fields(only_time_series=True))
+            self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
             self.calculate_series_indicators(node)
 
     def calculate_series_indicators(self, node):

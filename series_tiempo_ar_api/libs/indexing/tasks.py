@@ -37,7 +37,7 @@ def index_distribution(distribution_id, node_id, task,
 
     except Exception as e:
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
-        for _ in distribution['field'][0:]:
+        for _ in distribution['field'][1:]:
             ReadDataJsonTask.increment_indicator(task, node.catalog_id, Indicator.FIELD_ERROR)
 
         if settings.RQ_QUEUES['indexing'].get('ASYNC', True):

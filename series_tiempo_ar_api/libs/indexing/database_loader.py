@@ -56,9 +56,6 @@ class DatabaseLoader(object):
         if distribution_model.indexable:
             self._save_fields(distribution_model, fields)
 
-        for _ in fields[1:]:  # El primero es el índice de tiempo, no considerado
-            self.increment_indicator(Indicator.FIELD_TOTAL)
-
         return distribution_model if distribution_model.indexable else None
 
     def _catalog_model(self, catalog, catalog_id):
