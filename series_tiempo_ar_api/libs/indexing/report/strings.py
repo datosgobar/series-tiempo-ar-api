@@ -8,5 +8,6 @@ INDEXING_REPORT_TEMPLATE = \
     no actualizados: {not_updated},
     indexables: {indexable},
     no indexables: {not_indexable},
+    error: {error},
     totales: {total},
 """

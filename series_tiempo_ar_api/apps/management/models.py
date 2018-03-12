@@ -194,6 +194,7 @@ class Indicator(models.Model):
     FIELD_NOT_UPDATED = 'field_not_updated'
     FIELD_INDEXABLE = 'field_indexable'
     FIELD_NOT_INDEXABLE = 'field_not_indexable'
+    FIELD_ERROR = 'field_error'
 
     TYPE_CHOICES = (
         (CATALOG_NEW, 'Catálogos nuevos'),
@@ -211,6 +212,7 @@ class Indicator(models.Model):
         (FIELD_NOT_UPDATED, 'Series no actualizadas'),
         (FIELD_INDEXABLE, 'Series indexables'),
         (FIELD_NOT_INDEXABLE, 'Series no indexables'),
+        (FIELD_ERROR, 'Series con error'),
     )
 
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)

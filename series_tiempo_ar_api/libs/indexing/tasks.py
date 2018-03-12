@@ -5,7 +5,7 @@ from django.conf import settings
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from .report.report_generator import ReportGenerator
@@ -37,7 +37,11 @@ def index_distribution(distribution_id, node_id, task,
 
     except Exception as e:
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
-        raise e  # Django-rq / sentry logging
+        for _ in distribution['field'][0:]:
+            ReadDataJsonTask.increment_indicator(task, node.catalog_id, Indicator.FIELD_ERROR)
+
+        if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
+            raise e  # Django-rq / sentry logging
 
 
 # Para correr con el scheduler

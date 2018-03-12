@@ -32,24 +32,25 @@ class ReportGenerator(object):
                                    Indicator.CATALOG_NEW,
                                    Indicator.CATALOG_UPDATED,
                                    Indicator.CATALOG_TOTAL,
-                                   None, None, None)
+                                   None, None, None, None)
         msg += self.format_message('Datasets',
                                    Indicator.DATASET_NEW,
                                    Indicator.DATASET_UPDATED,
                                    Indicator.DATASET_TOTAL,
-                                   None, None, None)
+                                   None, None, None, None)
         msg += self.format_message('Distribuciones',
                                    Indicator.DISTRIBUTION_NEW,
                                    Indicator.DISTRIBUTION_UPDATED,
                                    Indicator.DISTRIBUTION_TOTAL,
-                                   None, None, None)
+                                   None, None, None, None)
         msg += self.format_message('Series',
                                    Indicator.FIELD_NEW,
                                    Indicator.FIELD_UPDATED,
                                    Indicator.FIELD_TOTAL,
                                    Indicator.FIELD_NOT_UPDATED,
                                    Indicator.FIELD_INDEXABLE,
-                                   Indicator.FIELD_NOT_INDEXABLE)
+                                   Indicator.FIELD_NOT_INDEXABLE,
+                                   Indicator.FIELD_ERROR)
 
         recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
         emails = [user.email for user in recipients.user_set.all()]
@@ -61,13 +62,14 @@ class ReportGenerator(object):
 
     def format_message(self, full_name,
                        new_indicator, updated_indicator, total_indicator,
-                       not_updated_indicator, indexable, not_indexable):
+                       not_updated_indicator, indexable, not_indexable, error):
         new_value = self._get_indicator_value(new_indicator)
         updated_value = self._get_indicator_value(updated_indicator)
         not_updated_value = self._get_indicator_value(not_updated_indicator)
         indexable_value = self._get_indicator_value(indexable)
         not_indexable_value = self._get_indicator_value(not_indexable)
         total_value = self._get_indicator_value(total_indicator)
+        error_value = self._get_indicator_value(error)
 
         msg = strings.INDEXING_REPORT_TEMPLATE.format(name=full_name,
                                                       new=new_value,
@@ -75,6 +77,7 @@ class ReportGenerator(object):
                                                       not_updated=not_updated_value,
                                                       indexable=indexable_value,
                                                       not_indexable=not_indexable_value,
+                                                      error=error_value,
                                                       total=total_value)
         return msg
 
