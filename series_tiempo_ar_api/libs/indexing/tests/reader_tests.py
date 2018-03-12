@@ -165,3 +165,11 @@ class ReaderTests(TestCase):
 
         # Esperado: 3 fields nuevos
         self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_NEW).value, 3)
+
+    def test_error_distribution_logs(self):
+        catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
+        self.node.catalog_url = catalog
+        self.node.save()
+        index_catalog(self.node, self.task, read_local=True)
+
+        self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)

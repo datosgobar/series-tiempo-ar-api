@@ -1,0 +1,134 @@
+{
+    "title": "Datos Argentina",
+    "description": "Portal de Datos Abiertos del Gobierno de la República Argentina",
+    "publisher": {
+        "name": "Ministerio de Modernización",
+        "mbox": "datos@modernizacion.gob.ar"
+    },
+    "issued": "2016-04-14T19:48:05.433640-03:00",
+    "modified": "2016-04-19T19:48:05.433640-03:00",
+    "language": [
+        "spa"
+    ],
+    "superThemeTaxonomy": "http://datos.gob.ar/superThemeTaxonomy.json",
+    "themeTaxonomy": [
+        {
+            "id": "convocatorias",
+            "label": "Convocatorias",
+            "description": "Datasets sobre licitaciones en estado de convocatoria."
+        },
+        {
+            "id": "compras",
+            "label": "Compras",
+            "description": "Datasets sobre compras realizadas."
+        },
+        {
+            "id": "contrataciones",
+            "label": "Contrataciones",
+            "description": "Datasets sobre contrataciones."
+        },
+        {
+            "id": "adjudicaciones",
+            "label": "Adjudicaciones",
+            "description": "Datasets sobre licitaciones adjudicadas."
+        },
+        {
+            "id": "normativa",
+            "label": "Normativa",
+            "description": "Datasets sobre normativa para compras y contrataciones."
+        },
+        {
+            "id": "proveedores",
+            "label": "Proveedores",
+            "description": "Datasets sobre proveedores del Estado."
+        }
+    ],
+    "license": "Open Data Commons Open Database License 1.0",
+    "homepage": "http://datos.gob.ar",
+    "rights": "Derechos especificados en la licencia.",
+    "spatial": "ARG",
+    "dataset": [
+        {
+            "title": "Sistema de contrataciones electrónicas",
+            "description": "Datos correspondientes al Sistema de Contrataciones Electrónicas (Argentina Compra)",
+            "publisher": {
+                "name": "Ministerio de Modernización. Secretaría de Modernización Administrativa. Oficina Nacional de Contrataciones",
+                "mbox": "onc@modernizacion.gob.ar"
+            },
+            "contactPoint": {
+                "fn": "Ministerio de Modernización. Secretaría de Modernización Administrativa. Oficina Nacional de Contrataciones. Dirección de Compras Electrónicas.",
+                "hasEmail": "onc-compraselectronicas@modernizacion.gob.ar"
+            },
+            "superTheme": [
+                "econ"
+            ],
+            "theme": [
+                "contrataciones",
+                "compras",
+                "convocatorias"
+            ],
+            "keyword": [
+                "bienes",
+                "compras",
+                "contrataciones"
+            ],
+            "accrualPeriodicity": "R/P1Y",
+            "issued": "2016-04-14T19:48:05.433640-03:00",
+            "modified": "2016-04-19T19:48:05.433640-03:00",
+            "identifier": "99db6631-d1c9-470b-a73e-c62daa32c777",
+            "language": [
+                "spa"
+            ],
+            "spatial": "ARG",
+            "temporal": "1970-01-01/1980-10-01",
+            "landingPage": "http://datos.gob.ar/dataset/sistema-de-contrataciones-electronicas-argentina-compra",
+            "license": "Open Data Commons Open Database License 1.0",
+            "distribution": [
+                {
+                    "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+                    "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. 1970-1980",
+                    "format": "CSV",
+                    "dataset_identifier": "212",
+                    "issued": "2017-09-28T00:00:00",
+                    "title": "Producto Interno Bruto Servicios Comunales, Sociales y Personales Millones de pesos constantes. Base 1960. Valores trimestrales",
+                    "modified": "2017-09-28T00:00:00",
+                    "fileName": "pib-servicios-comunales-sociales-personales-millones-pesos-1960-trimestral.csv",
+                    "field": [
+                        {
+                            "title": "indice_tiempo",
+                            "specialTypeDetail": "R/P3M",
+                            "units": "Millones de pesos",
+                            "specialType": "time_index",
+                            "type": "date",
+                            "id": "212.1_ICE_TIEMPO_0_0_13"
+                        },
+                        {
+                            "units": "Millones de pesos",
+                            "id": "212.1_PSCIOS_ERS_0_0_22",
+                            "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Total",
+                            "title": "pib_scios_com_soc_pers",
+                            "scrapingIdentifierCell": "AC9"
+                        },
+                        {
+                            "units": "Millones de pesos",
+                            "id": "212.1_PSCIOS_ERN_0_0_25",
+                            "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Servicios Gubernamentales",
+                            "title": "pib_scios_com_serv_gubern"
+                        },
+                        {
+                            "units": "Millones de pesos",
+                            "id": "212.1_PSCIOS_IOS_0_0_25",
+                            "description": "PIB Servicios Comunales, Sociales y Personales en millones de pesos de 1960. Otros Servicios",
+                            "title": "pib_scios_com_otros_scios",
+                            "scrapingDataStartCell": "AD10"
+                        }
+                    ],
+                    "draft": false,
+                    "units": "Millones de pesos",
+                    "identifier": "212.1",
+                    "scrapingFileSheet": "32. Ingreso IED Pais"
+                }
+            ]
+        }
+    ]
+}

@@ -44,5 +44,3 @@ def index_catalog(node, task, read_local=False, whitelist=False):
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
         index_distribution.delay(identifier, node.id, task, read_local, whitelist)
-
-    task.save()
