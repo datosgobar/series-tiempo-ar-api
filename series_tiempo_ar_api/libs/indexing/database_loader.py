@@ -145,9 +145,6 @@ class DatabaseLoader(object):
         if dataset_model.indexable:
             updated = self._read_file(url, distribution_model)
 
-        if updated:
-            distribution_model.indexable = True
-
         if created:
             self.increment_indicator(Indicator.DISTRIBUTION_NEW)
             # Cuenta todos sus fields como nuevos
@@ -159,7 +156,7 @@ class DatabaseLoader(object):
         elif updated or distribution_meta != distribution_model.metadata:
             self.set_as_updated(self.catalog_model)
             self.set_as_updated(dataset_model)
-            self.set_as_updated(distribution_model)
+            distribution_model = self.set_as_updated(distribution_model)
 
         self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
 
@@ -215,9 +212,10 @@ class DatabaseLoader(object):
             field_model = Field.objects.filter(series_id=series_id)
             if not field_model:
                 field_model = Field(series_id=series_id)
+                created = True
             else:
                 field_model = field_model[0]
-
+                created = False
                 old_catalog_id = field_model.distribution.dataset.catalog.identifier
                 if old_catalog_id != self.catalog_id:
                     field_model.error = True
@@ -240,7 +238,7 @@ class DatabaseLoader(object):
             # Necesario para poder mantener una relación 1:1 entre modelos de la DB y columnas del CSV
             distribution_model.field_set.filter(title=title).delete()
 
-            if field_model.metadata != field_meta:
+            if distribution_model.updated or (field_model.metadata != field_meta and not created):
                 field_model = self.set_as_updated(field_model)
 
             field_model.metadata = field_meta

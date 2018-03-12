@@ -90,6 +90,8 @@ class ReportGenerator(object):
             self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
             self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=int(catalog.updated), node=node)
 
+            self.calculate_series_indicators(node)
+
     def calculate_series_indicators(self, node):
         catalog = Catalog.objects.get(identifier=node.catalog_id)
 

@@ -48,7 +48,7 @@ class Distribution(models.Model):
 
     data_hash = models.CharField(max_length=128, default='')
     last_updated = models.DateTimeField(blank=True, null=True)
-    indexable = models.BooleanField(default=True)
+    indexable = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.identifier, self.dataset.catalog.identifier)
@@ -60,7 +60,7 @@ class Field(models.Model):
     description = models.CharField(max_length=2000)
     metadata = models.TextField()
     distribution = models.ForeignKey(to=Distribution, on_delete=models.CASCADE)
-    updated = models.BooleanField(default=True)
+    updated = models.BooleanField(default=False)
     error = models.BooleanField(default=False)
 
     def __unicode__(self):

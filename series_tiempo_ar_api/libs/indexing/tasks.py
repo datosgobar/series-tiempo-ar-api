@@ -32,7 +32,7 @@ def index_distribution(distribution_id, node_id, task,
         if not distribution_model:
             return
 
-        if distribution_model.dataset.indexable:
+        if distribution_model.indexable:
             DistributionIndexer(index=index).run(distribution_model)
 
     except Exception as e:
