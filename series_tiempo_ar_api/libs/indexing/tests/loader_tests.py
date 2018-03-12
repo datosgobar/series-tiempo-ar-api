@@ -93,7 +93,7 @@ class DatabaseLoaderTests(TestCase):
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'))
         distributions = get_time_series_distributions(catalog)
-        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
+        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
         loader.run(distributions[0], catalog, self.catalog_id)
 
         # Valores obtenidos del .json fuente
@@ -112,7 +112,7 @@ class DatabaseLoaderTests(TestCase):
                     catalog_url=os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'),
                     indexable=True)
         node.save()
-        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
+        loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'))
         distributions = get_time_series_distributions(catalog)

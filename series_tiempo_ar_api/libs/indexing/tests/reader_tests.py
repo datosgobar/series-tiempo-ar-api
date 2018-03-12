@@ -163,6 +163,5 @@ class ReaderTests(TestCase):
     def test_field_indicators_first_run(self):
         index_catalog(self.node, self.task, read_local=True)
 
-        # Esperado: 3 fields nuevos, 3 totales
+        # Esperado: 3 fields nuevos
         self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_NEW).value, 3)
-        self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_TOTAL).value, 3)
