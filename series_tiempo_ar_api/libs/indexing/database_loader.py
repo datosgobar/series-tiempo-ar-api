@@ -250,9 +250,6 @@ class DatabaseLoader(object):
             metadata.pop(field, None)
         return metadata
 
-    def get_stats(self):
-        return self.stats
-
     def increment_indicator(self, indicator_type, amt=1):
         ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type, amt)
 
@@ -266,11 +263,6 @@ class DatabaseLoader(object):
             model.updated = True
             model.save()
             return model
-
-    @staticmethod
-    def read_updated(model):
-        with transaction.atomic():
-            return model.__class__.objects.select_for_update().get(id=model.id).updated
 
 
 class FieldRepetitionError(Exception):
