@@ -68,13 +68,13 @@ class ReportGenerator(object):
         msg += self.format_message(
             'Series',
             {
-               'new': Indicator.FIELD_NEW,
-               'updated': Indicator.FIELD_UPDATED,
-               'not_updated': Indicator.FIELD_NOT_UPDATED,
-               'indexable': Indicator.FIELD_INDEXABLE,
-               'not_indexable': Indicator.FIELD_NOT_INDEXABLE,
-               'error': Indicator.FIELD_ERROR,
-               'total': Indicator.FIELD_TOTAL,
+                'new': Indicator.FIELD_NEW,
+                'updated': Indicator.FIELD_UPDATED,
+                'not_updated': Indicator.FIELD_NOT_UPDATED,
+                'indexable': Indicator.FIELD_INDEXABLE,
+                'not_indexable': Indicator.FIELD_NOT_INDEXABLE,
+                'error': Indicator.FIELD_ERROR,
+                'total': Indicator.FIELD_TOTAL,
             })
         recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
         emails = [user.email for user in recipients.user_set.all()]
