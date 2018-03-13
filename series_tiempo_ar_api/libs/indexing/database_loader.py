@@ -153,6 +153,7 @@ class DatabaseLoader(object):
             self.set_as_updated(self.catalog_model)
             self.set_as_updated(dataset_model)
             distribution_model = self.set_as_updated(distribution_model)
+            self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
 
         self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
 
