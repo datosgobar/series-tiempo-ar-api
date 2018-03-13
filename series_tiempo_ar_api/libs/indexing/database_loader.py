@@ -56,9 +56,6 @@ class DatabaseLoader(object):
         if distribution_model.indexable:
             self._save_fields(distribution_model, fields)
 
-        for _ in fields[1:]:  # El primero es el índice de tiempo, no considerado
-            self.increment_indicator(Indicator.FIELD_TOTAL)
-
         return distribution_model if distribution_model.indexable else None
 
     def _catalog_model(self, catalog, catalog_id):
@@ -145,23 +142,19 @@ class DatabaseLoader(object):
         if dataset_model.indexable:
             updated = self._read_file(url, distribution_model)
 
-        if updated:
-            distribution_model.indexable = True
-
         if created:
             self.increment_indicator(Indicator.DISTRIBUTION_NEW)
+            # Cuenta todos sus fields como nuevos
+            # Se hace acá porque se tienen que contar pero no instanciar su modelo,
+            # No se corre el método _save_fields sobre distribuciones recién creadas
+            self.increment_indicator(Indicator.FIELD_NEW, len(fields[1:]))
+
         elif updated or distribution_meta != distribution_model.metadata:
+            self.set_as_updated(self.catalog_model)
+            self.set_as_updated(dataset_model)
+            distribution_model = self.set_as_updated(distribution_model)
             self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
-            if not self.read_updated(dataset_model):
-                self.set_as_updated(dataset_model)
-                self.increment_indicator(Indicator.DATASET_UPDATED)
 
-            if not self.read_updated(self.catalog_model):
-                self.set_as_updated(self.catalog_model)
-                self.increment_indicator(Indicator.CATALOG_UPDATED)
-
-            for _ in fields[1:]:
-                self.increment_indicator(Indicator.FIELD_UPDATED)
         self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
 
         distribution_model.metadata = distribution_meta
@@ -220,9 +213,10 @@ class DatabaseLoader(object):
             else:
                 field_model = field_model[0]
                 created = False
-
                 old_catalog_id = field_model.distribution.dataset.catalog.identifier
                 if old_catalog_id != self.catalog_id:
+                    field_model.error = True
+                    field_model.save()
                     raise FieldRepetitionError(u"Serie {} repetida en catálogos {} y {}".format(
                         series_id, old_catalog_id, self.catalog_id
                     ))
@@ -241,9 +235,7 @@ class DatabaseLoader(object):
             # Necesario para poder mantener una relación 1:1 entre modelos de la DB y columnas del CSV
             distribution_model.field_set.filter(title=title).delete()
 
-            if created:
-                self.increment_indicator(Indicator.FIELD_NEW)
-            else:  # Por ahora todos los field son considerados como updated si su distribución lo es
+            if distribution_model.updated or (field_model.metadata != field_meta and not created):
                 field_model = self.set_as_updated(field_model)
 
             field_model.metadata = field_meta
@@ -259,11 +251,8 @@ class DatabaseLoader(object):
             metadata.pop(field, None)
         return metadata
 
-    def get_stats(self):
-        return self.stats
-
-    def increment_indicator(self, indicator_type):
-        ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type)
+    def increment_indicator(self, indicator_type, amt=1):
+        ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type, amt)
 
     # Lectura / Escritura del campo updated protegiendose de race conditions
 
@@ -275,11 +264,6 @@ class DatabaseLoader(object):
             model.updated = True
             model.save()
             return model
-
-    @staticmethod
-    def read_updated(model):
-        with transaction.atomic():
-            return model.__class__.objects.select_for_update().get(id=model.id).updated
 
 
 class FieldRepetitionError(Exception):

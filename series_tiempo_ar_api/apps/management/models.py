@@ -165,14 +165,14 @@ class ReadDataJsonTask(models.Model):
             task.save()
 
     @classmethod
-    def increment_indicator(cls, task, catalog_id, indicator_type):
+    def increment_indicator(cls, task, catalog_id, indicator_type, amt=1):
         with transaction.atomic():
             task = cls.objects.select_for_update().get(id=task.id)
             indicator = task.indicator_set.get_or_create(
                 type=indicator_type,
                 node=Node.objects.get(catalog_id=catalog_id)
             )[0]
-            indicator.value += 1
+            indicator.value += amt
             indicator.save()
 
 
@@ -191,6 +191,11 @@ class Indicator(models.Model):
     FIELD_UPDATED = 'field_updated'
     FIELD_TOTAL = 'field_total'
 
+    FIELD_NOT_UPDATED = 'field_not_updated'
+    FIELD_INDEXABLE = 'field_indexable'
+    FIELD_NOT_INDEXABLE = 'field_not_indexable'
+    FIELD_ERROR = 'field_error'
+
     TYPE_CHOICES = (
         (CATALOG_NEW, 'Catálogos nuevos'),
         (CATALOG_TOTAL, 'Catálogos totales'),
@@ -204,6 +209,10 @@ class Indicator(models.Model):
         (FIELD_NEW, 'Series nuevas'),
         (FIELD_TOTAL, 'Series totales'),
         (FIELD_UPDATED, 'Series actualizadas'),
+        (FIELD_NOT_UPDATED, 'Series no actualizadas'),
+        (FIELD_INDEXABLE, 'Series indexables'),
+        (FIELD_NOT_INDEXABLE, 'Series no indexables'),
+        (FIELD_ERROR, 'Series con error'),
     )
 
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)

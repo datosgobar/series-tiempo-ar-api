@@ -1,6 +1,7 @@
 #!coding=utf8
 import os
 
+import mock
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -69,6 +70,8 @@ class ReadDataJsonTest(TestCase):
         group = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
         self.user.groups.add(group)
         self.user.save()
-        call_command('read_datajson')
+        from django_rq.queues import Queue
+        with mock.patch.object(Queue, 'jobs', 0):
+            call_command('read_datajson')
 
         self.assertEqual(len(mail.outbox), 1)
