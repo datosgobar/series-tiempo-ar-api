@@ -6,12 +6,12 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.utils import timezone
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Field
-from . import strings
 
 
 class ReportGenerator(object):
@@ -85,11 +85,13 @@ class ReportGenerator(object):
             raise ValueError
 
     def format_message(self, full_name, indicators):
-        indicators = indicators.copy()
-        for name, indicator in indicators.iteritems():
-            indicators[name] = self._get_indicator_value(indicator)
+        context = indicators.copy()
 
-        msg = strings.INDEXING_REPORT_TEMPLATE.format(name=full_name, **indicators)
+        for name, indicator in context.iteritems():
+            context[name] = self._get_indicator_value(indicator)
+
+        context['name'] = full_name
+        msg = render_to_string('indexing/report.html', context=context)
         return msg
 
     def _format_date(self, date):
