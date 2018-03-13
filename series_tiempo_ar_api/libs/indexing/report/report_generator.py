@@ -91,7 +91,7 @@ class ReportGenerator(object):
             context[name] = self._get_indicator_value(indicator)
 
         context['name'] = full_name
-        msg = render_to_string('indexing/report.html', context=context)
+        msg = render_to_string('indexing/report.j2', context=context)
         return msg
 
     def _format_date(self, date):
