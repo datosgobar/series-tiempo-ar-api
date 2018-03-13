@@ -147,8 +147,7 @@ class DatabaseLoader(object):
             # Cuenta todos sus fields como nuevos
             # Se hace acá porque se tienen que contar pero no instanciar su modelo,
             # No se corre el método _save_fields sobre distribuciones recién creadas
-            for _ in fields[1:]:
-                self.increment_indicator(Indicator.FIELD_NEW)
+            self.increment_indicator(Indicator.FIELD_NEW, len(fields[1:]))
 
         elif updated or distribution_meta != distribution_model.metadata:
             self.set_as_updated(self.catalog_model)
@@ -254,8 +253,8 @@ class DatabaseLoader(object):
     def get_stats(self):
         return self.stats
 
-    def increment_indicator(self, indicator_type):
-        ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type)
+    def increment_indicator(self, indicator_type, amt=1):
+        ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type, amt)
 
     # Lectura / Escritura del campo updated protegiendose de race conditions
 
