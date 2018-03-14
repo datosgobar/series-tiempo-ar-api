@@ -37,8 +37,9 @@ def index_distribution(distribution_id, node_id, task,
         ReadDataJsonTask.increment_indicator(task, node.catalog_id, Indicator.DATASET_NEW)
         dataset_model.indexable = whitelist
         dataset_model.metadata = '{}'
-        dataset_model.save()
 
+    dataset_model.present = True
+    dataset_model.save()
     if not dataset_model.indexable:
         return
 
