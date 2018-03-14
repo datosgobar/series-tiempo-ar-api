@@ -65,7 +65,7 @@ class DatabaseLoader(object):
         catalog = catalog.copy()
         # Borro el dataset, de existir. Solo guardo metadatos
         catalog.pop(constants.DATASET, None)
-        catalog_model, created = Catalog.objects.get_or_create(identifier=catalog_id)
+        catalog_model = Catalog.objects.get(identifier=catalog_id)
 
         catalog = self._remove_blacklisted_fields(
             catalog,
@@ -74,9 +74,7 @@ class DatabaseLoader(object):
         catalog_meta = json.dumps(catalog)
 
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
-        if created:
-            self.increment_indicator(Indicator.CATALOG_NEW)
-        elif catalog_model.metadata != catalog_meta:
+        if catalog_model.metadata != catalog_meta:
             catalog_model = self.set_as_updated(catalog_model)
 
         catalog_model.metadata = catalog_meta
@@ -93,12 +91,10 @@ class DatabaseLoader(object):
         # Borro las distribuciones, de existir. Solo guardo metadatos
         dataset.pop(constants.DISTRIBUTION, None)
         identifier = dataset[constants.IDENTIFIER]
-        dataset_model, created = Dataset.objects.get_or_create(
+        dataset_model = Dataset.objects.get(
             identifier=identifier,
             catalog=self.catalog_model,
         )
-        if created:
-            dataset_model.indexable = self.default_whitelist
 
         dataset = self._remove_blacklisted_fields(
             dataset,
@@ -107,9 +103,7 @@ class DatabaseLoader(object):
         dataset_meta = json.dumps(dataset)
         dataset_model.present = True
 
-        if created:
-            self.increment_indicator(Indicator.DATASET_NEW)
-        elif dataset_meta != dataset_model.metadata:
+        if dataset_meta != dataset_model.metadata:
             dataset_model = self.set_as_updated(dataset_model)
 
         dataset_model.metadata = dataset_meta

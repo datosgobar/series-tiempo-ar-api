@@ -6,7 +6,7 @@ from django_rq import job, get_queue
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
-from series_tiempo_ar_api.libs.indexing import constants
+from series_tiempo_ar_api.apps.api.models import Dataset, Catalog
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from .report.report_generator import ReportGenerator
 from .database_loader import DatabaseLoader
@@ -20,6 +20,28 @@ def index_distribution(distribution_id, node_id, task,
     node = Node.objects.get(id=node_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution = catalog.get_distribution(identifier=distribution_id)
+
+    catalog_model, created = Catalog.objects.get_or_create(identifier=node.catalog_id)
+    if created:
+        ReadDataJsonTask.increment_indicator(task, node.catalog_id, Indicator.CATALOG_NEW)
+        catalog_model.title = catalog['title']
+        catalog_model.identifier = node.catalog_id
+        catalog_model.save()
+
+    dataset_model, created = Dataset.objects.get_or_create(
+        identifier=distribution['dataset_identifier'],
+        catalog=catalog_model,
+    )
+
+    if created:
+        ReadDataJsonTask.increment_indicator(task, node.catalog_id, Indicator.DATASET_NEW)
+        dataset_model.indexable = whitelist
+        dataset_model.metadata = '{}'
+        dataset_model.save()
+
+    if not dataset_model.indexable:
+        return
+
     try:
         scraper = Scraper(read_local)
         result = scraper.run(distribution, catalog)
