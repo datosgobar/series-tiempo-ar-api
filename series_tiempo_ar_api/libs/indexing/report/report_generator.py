@@ -134,15 +134,15 @@ class ReportGenerator(object):
         total = self.task.indicator_set.filter(type=Indicator.FIELD_TOTAL)
         total = total[0].value if total else 0
 
-        updated = Field.objects.filter(distribution__dataset__catalog=catalog, updated=True).count()
-        self.task.indicator_set.create(type=Indicator.FIELD_UPDATED, value=updated, node=node)
-
-        not_updated = total - updated
-        self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
-
         indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
                                          distribution__dataset__indexable=True).count()
         self.task.indicator_set.create(type=Indicator.FIELD_INDEXABLE, value=indexable, node=node)
 
         not_indexable = total - indexable
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_INDEXABLE, value=not_indexable, node=node)
+        updated = Field.objects.filter(distribution__dataset__catalog=catalog, updated=True).count()
+
+        self.task.indicator_set.create(type=Indicator.FIELD_UPDATED, value=updated, node=node)
+
+        not_updated = indexable - updated
+        self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
