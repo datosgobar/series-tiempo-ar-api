@@ -6,11 +6,11 @@ from tempfile import NamedTemporaryFile
 import requests
 from django.conf import settings
 from django.core.files import File
-from django.db import transaction
 from django.utils import timezone
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.management.models import Indicator, ReadDataJsonTask
+from series_tiempo_ar_api.apps.management.models import Indicator
+from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from . import constants
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
@@ -53,7 +53,7 @@ class DatabaseLoader(object):
 
         distribution_model = self._distribution_model(distribution, dataset_model, periodicity)
 
-        if distribution_model.indexable:
+        if distribution_model:
             self._save_fields(distribution_model, fields)
 
         return distribution_model if distribution_model.indexable else None
@@ -75,7 +75,7 @@ class DatabaseLoader(object):
 
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
         if catalog_model.metadata != catalog_meta:
-            catalog_model = self.set_as_updated(catalog_model)
+            self.increment_indicator(Indicator.CATALOG_UPDATED)
 
         catalog_model.metadata = catalog_meta
         catalog_model.save()
@@ -104,7 +104,7 @@ class DatabaseLoader(object):
         dataset_model.present = True
 
         if dataset_meta != dataset_model.metadata:
-            dataset_model = self.set_as_updated(dataset_model)
+            self.increment_indicator(Indicator.DATASET_UPDATED)
 
         dataset_model.metadata = dataset_meta
         dataset_model.save()
@@ -144,9 +144,8 @@ class DatabaseLoader(object):
             self.increment_indicator(Indicator.FIELD_NEW, len(fields[1:]))
 
         elif updated or distribution_meta != distribution_model.metadata:
-            self.set_as_updated(self.catalog_model)
-            self.set_as_updated(dataset_model)
-            distribution_model = self.set_as_updated(distribution_model)
+            self.increment_indicator(Indicator.CATALOG_UPDATED)
+            self.increment_indicator(Indicator.DATASET_UPDATED)
             self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
 
         self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
@@ -230,7 +229,7 @@ class DatabaseLoader(object):
             distribution_model.field_set.filter(title=title).delete()
 
             if distribution_model.updated or (field_model.metadata != field_meta and not created):
-                field_model = self.set_as_updated(field_model)
+                self.increment_indicator(Indicator.FIELD_UPDATED)
 
             field_model.metadata = field_meta
             field_model.save()
@@ -246,18 +245,7 @@ class DatabaseLoader(object):
         return metadata
 
     def increment_indicator(self, indicator_type, amt=1):
-        ReadDataJsonTask.increment_indicator(self.task, self.catalog_id, indicator_type, amt)
-
-    # Lectura / Escritura del campo updated protegiendose de race conditions
-
-    @staticmethod
-    def set_as_updated(model):
-        model.save()
-        with transaction.atomic():
-            model = model.__class__.objects.select_for_update().get(id=model.id)
-            model.updated = True
-            model.save()
-            return model
+        IndicatorLoader().increment_indicator(self.catalog_id, indicator_type, amt)
 
 
 class FieldRepetitionError(Exception):

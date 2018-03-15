@@ -175,12 +175,6 @@ class ReaderTests(TestCase):
         # La distribución fue indexada nuevamente, está marcada como indexable
         self.assertTrue(distribution.indexable)
 
-    def test_field_indicators_first_run(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        # Esperado: 3 fields nuevos
-        self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_NEW).value, 3)
-
     def test_error_distribution_logs(self):
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog

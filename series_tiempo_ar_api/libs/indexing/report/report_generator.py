@@ -12,6 +12,7 @@ from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Field
+from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 
 
 class ReportGenerator(object):
@@ -24,6 +25,7 @@ class ReportGenerator(object):
         self.task.finished = timezone.now()
         self.task.status = self.task.FINISHED
         self.task.save()
+        self.persist_indicators()
         self.calculate_indicators()
         self.generate_email()
 
@@ -115,12 +117,6 @@ class ReportGenerator(object):
 
             catalog = catalog[0]
 
-            dataset_total = Dataset.objects.filter(catalog__identifier=node.catalog_id, present=True).count()
-            self.task.indicator_set.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
-
-            dataset_updated = Dataset.objects.filter(catalog__identifier=node.catalog_id, updated=True).count()
-            self.task.indicator_set.create(type=Indicator.DATASET_UPDATED, value=dataset_updated, node=node)
-
             self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
             self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=int(catalog.updated), node=node)
 
@@ -140,9 +136,10 @@ class ReportGenerator(object):
 
         not_indexable = total - indexable
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_INDEXABLE, value=not_indexable, node=node)
-        updated = Field.objects.filter(distribution__dataset__catalog=catalog, updated=True).count()
-
-        self.task.indicator_set.create(type=Indicator.FIELD_UPDATED, value=updated, node=node)
+        updated = self.task.indicator_set.get_or_create(type=Indicator.FIELD_UPDATED, node=node)[0].value
 
         not_updated = indexable - updated
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
+
+    def persist_indicators(self):
+        IndicatorLoader().load_indicators(self.task)

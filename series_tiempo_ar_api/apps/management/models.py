@@ -164,17 +164,6 @@ class ReadDataJsonTask(models.Model):
             task.logs += msg + '\n'
             task.save()
 
-    @classmethod
-    def increment_indicator(cls, task, catalog_id, indicator_type, amt=1):
-        with transaction.atomic():
-            task = cls.objects.select_for_update().get(id=task.id)
-            indicator = task.indicator_set.get_or_create(
-                type=indicator_type,
-                node=Node.objects.get(catalog_id=catalog_id)
-            )[0]
-            indicator.value += amt
-            indicator.save()
-
 
 class Indicator(models.Model):
 
