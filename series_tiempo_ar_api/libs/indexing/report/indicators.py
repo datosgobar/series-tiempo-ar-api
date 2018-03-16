@@ -1,6 +1,7 @@
 #! coding: utf-8
 from redis import Redis
 
+from django.conf import settings
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
 
 
@@ -8,7 +9,9 @@ class IndicatorLoader(object):
     """Lee y escribe valores de indicadores al store de Redis"""
 
     def __init__(self):
-        self.redis = Redis()
+        self.redis = Redis(host=settings.DEFAULT_REDIS_HOST,
+                           port=settings.DEFAULT_REDIS_PORT,
+                           db=int(settings.DEFAULT_REDIS_DB))
 
     def load_indicators_into_db(self, task):
         """Carga todas las variables de indicadores guardadas a la base de datos en modelos Indicator,
