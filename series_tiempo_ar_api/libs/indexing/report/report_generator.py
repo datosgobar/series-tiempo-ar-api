@@ -20,6 +20,7 @@ class ReportGenerator(object):
 
     def __init__(self, task):
         self.task = task
+        self.indicators_loader = IndicatorLoader()
 
     def generate(self):
         self.task.finished = timezone.now()
@@ -28,6 +29,7 @@ class ReportGenerator(object):
         self.persist_indicators()
         self.calculate_indicators()
         self.generate_email()
+        self.indicators_loader.clear_indicators()
 
     def generate_email(self):
         start_time = self._format_date(self.task.created)
@@ -142,4 +144,4 @@ class ReportGenerator(object):
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
 
     def persist_indicators(self):
-        IndicatorLoader().load_indicators(self.task)
+        self.indicators_loader.load_indicators_into_db(self.task)
