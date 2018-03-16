@@ -6,8 +6,9 @@ from django_rq import job, get_queue
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
-from series_tiempo_ar_api.libs.indexing import constants
+from series_tiempo_ar_api.apps.api.models import Dataset, Catalog
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from .report.report_generator import ReportGenerator
 from .database_loader import DatabaseLoader
 from .scraping import Scraper
@@ -20,9 +21,12 @@ def index_distribution(distribution_id, node_id, task,
     node = Node.objects.get(id=node_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution = catalog.get_distribution(identifier=distribution_id)
+    dataset_model = get_dataset(catalog, node.catalog_id, distribution['dataset_identifier'], whitelist)
+    if not dataset_model.indexable:
+        return
+
     try:
-        scraper = Scraper(read_local)
-        result = scraper.run(distribution, catalog)
+        result = Scraper(read_local).run(distribution, catalog)
         if not result:
             return
 
@@ -38,10 +42,33 @@ def index_distribution(distribution_id, node_id, task,
     except Exception as e:
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
         for _ in distribution['field'][1:]:
-            ReadDataJsonTask.increment_indicator(task, node.catalog_id, Indicator.FIELD_ERROR)
+            IndicatorLoader().increment_indicator(node.catalog_id, Indicator.FIELD_ERROR)
 
         if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
             raise e  # Django-rq / sentry logging
+
+
+def get_dataset(catalog, catalog_id, dataset_id, whitelist):
+    catalog_model, created = Catalog.objects.get_or_create(identifier=catalog_id)
+    if created:
+        IndicatorLoader().increment_indicator(catalog_id, Indicator.CATALOG_NEW)
+        catalog_model.title = catalog['title']
+        catalog_model.identifier = catalog_id
+        catalog_model.save()
+
+    dataset_model, created = Dataset.objects.get_or_create(
+        identifier=dataset_id,
+        catalog=catalog_model,
+    )
+
+    if created:
+        IndicatorLoader().increment_indicator(catalog_id, Indicator.DATASET_NEW)
+        dataset_model.indexable = whitelist
+        dataset_model.metadata = '{}'
+
+    dataset_model.present = True
+    dataset_model.save()
+    return dataset_model
 
 
 # Para correr con el scheduler

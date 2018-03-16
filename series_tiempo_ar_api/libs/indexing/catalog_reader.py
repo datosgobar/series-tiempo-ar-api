@@ -3,10 +3,12 @@ from __future__ import division
 
 import json
 
+from django.db.models import Q
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.api.models import Dataset, Catalog, Distribution, Field
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
 
@@ -38,9 +40,12 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         catalog_model[0].save()
 
     Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False, updated=False)
+    # Borro de la lista de indexables a los datasets que ya no están presentes en el catálogo
+    dataset_ids = [dataset['identifier'] for dataset in catalog.get_datasets()]
+    Dataset.objects.filter(~Q(identifier__in=dataset_ids)).update(indexable=False)
+
     Distribution.objects.filter(dataset__catalog__identifier=node.catalog_id).update(updated=False)
     Field.objects.filter(distribution__dataset__catalog=catalog_model).update(updated=False)
-
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
         index_distribution.delay(identifier, node.id, task, read_local, whitelist)

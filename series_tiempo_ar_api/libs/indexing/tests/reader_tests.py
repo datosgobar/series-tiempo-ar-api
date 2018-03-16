@@ -8,7 +8,7 @@ from elasticsearch_dsl import Search
 from pydatajson import DataJson
 from series_tiempo_ar.search import get_time_series_distributions
 
-from series_tiempo_ar_api.apps.api.models import Distribution, Field
+from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog, Dataset
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.database_loader import \
@@ -106,6 +106,21 @@ class IndexerTests(TestCase):
                         indexable=True)
         node.save()
         catalog = DataJson(json.loads(node.catalog))
+        catalog_model, created = Catalog.objects.get_or_create(identifier=node.catalog_id)
+        if created:
+            catalog_model.title = catalog['title'],
+            catalog_model.metadata = '{}'
+            catalog_model.save()
+        for dataset in catalog.get_datasets(only_time_series=True):
+            dataset_model, created = Dataset.objects.get_or_create(
+                catalog=catalog_model,
+                identifier=dataset['identifier']
+            )
+            if created:
+                dataset_model.metadata = '{}'
+                dataset_model.indexable = True
+                dataset_model.save()
+
         distributions = get_time_series_distributions(catalog)
         db_loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
         for distribution in distributions:
@@ -160,16 +175,10 @@ class ReaderTests(TestCase):
         # La distribución fue indexada nuevamente, está marcada como indexable
         self.assertTrue(distribution.indexable)
 
-    def test_field_indicators_first_run(self):
-        index_catalog(self.node, self.task, read_local=True)
-
-        # Esperado: 3 fields nuevos
-        self.assertEqual(self.task.indicator_set.get(type=Indicator.FIELD_NEW).value, 3)
-
     def test_error_distribution_logs(self):
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog
         self.node.save()
-        index_catalog(self.node, self.task, read_local=True)
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
         self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)

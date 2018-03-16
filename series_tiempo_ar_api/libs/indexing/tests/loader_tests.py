@@ -23,10 +23,31 @@ class DatabaseLoaderTests(TestCase):
     def setUp(self):
         self.task = ReadDataJsonTask()
         self.task.save()
-        Node(catalog_id=self.catalog_id,
-             catalog_url=os.path.join(dir_path, 'full_ts_data.json'),
-             indexable=True).save()
+        self.node = Node(catalog_id=self.catalog_id,
+                         catalog_url=os.path.join(dir_path, 'full_ts_data.json'),
+                         indexable=True)
+        self.node.save()
+
+        self.init_datasets(self.node)
         self.loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
+
+    @staticmethod
+    def init_datasets(node, whitelist=True):
+        catalog_model, created = Catalog.objects.get_or_create(identifier=node.catalog_id)
+        catalog = DataJson(json.loads(node.catalog))
+        if created:
+            catalog_model.title = catalog['title'],
+            catalog_model.metadata = '{}'
+            catalog_model.save()
+        for dataset in catalog.get_datasets(only_time_series=True):
+            dataset_model, created = Dataset.objects.get_or_create(
+                catalog=catalog_model,
+                identifier=dataset['identifier']
+            )
+            if created:
+                dataset_model.metadata = '{}'
+                dataset_model.indexable = whitelist
+                dataset_model.save()
 
     def tearDown(self):
         Catalog.objects.filter(identifier=self.catalog_id).delete()
@@ -75,9 +96,12 @@ class DatabaseLoaderTests(TestCase):
                 self.assertTrue(field not in field_model.metadata)
 
     def test_datasets_loaded_are_not_indexable(self):
+        Catalog.objects.all().delete()  # Fuerza a recrear los modelos
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
         distributions = get_time_series_distributions(catalog)
+        self.node.catalog = json.dumps(catalog)
+        self.init_datasets(self.node, whitelist=False)
         loader = DatabaseLoader(self.task, read_local=True, default_whitelist=False)
         loader.run(distributions[0], catalog, self.catalog_id)
         dataset = Catalog.objects.get(identifier=CATALOG_ID).dataset_set
@@ -92,6 +116,8 @@ class DatabaseLoaderTests(TestCase):
         self.loader.run(distributions[0], catalog, self.catalog_id)
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'))
+        self.node.catalog = json.dumps(catalog)
+        self.init_datasets(self.node)
         distributions = get_time_series_distributions(catalog)
         loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
         loader.run(distributions[0], catalog, self.catalog_id)
@@ -116,4 +142,7 @@ class DatabaseLoaderTests(TestCase):
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data_changed_distribution.json'))
         distributions = get_time_series_distributions(catalog)
+        self.node.catalog = json.dumps(catalog)
+        self.node.catalog_id = 'other_catalog_id'
+        self.init_datasets(self.node)
         loader.run(distributions[0], catalog, 'other_catalog_id')
