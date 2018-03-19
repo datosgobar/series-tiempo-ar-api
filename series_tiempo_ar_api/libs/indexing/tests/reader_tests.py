@@ -193,7 +193,6 @@ class IndicatorsTests(TestCase):
     def setUp(self):
         self.loader = IndicatorLoader()
         self.loader.clear_indicators()  # Just in case
-        self.redis = Redis()
         self.task = ReadDataJsonTask.objects.create()
         self.node = Node(catalog_id=self.catalog_id, catalog_url=self.catalog, indexable=True)
         self.node.save()
