@@ -123,6 +123,10 @@ class ReportGenerator(object):
             self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=int(catalog.updated), node=node)
 
             data_json = DataJson(json.loads(node.catalog))
+            self.task.indicator_set.create(type=Indicator.DATASET_TOTAL,
+                                           value=len(data_json.get_datasets(only_time_series=True)),
+                                           node=node)
+
             fields_total = len(data_json.get_fields(only_time_series=True))
             self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
             self.calculate_series_indicators(node)
