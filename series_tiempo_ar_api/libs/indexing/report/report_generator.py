@@ -64,10 +64,10 @@ class ReportGenerator(object):
                 'new': Indicator.DISTRIBUTION_NEW,
                 'updated': Indicator.DISTRIBUTION_UPDATED,
                 'total': Indicator.DISTRIBUTION_TOTAL,
-                'not_updated': None,
-                'indexable': None,
-                'not_indexable': None,
-                'error': None,
+                'not_updated': Indicator.DISTRIBUTION_NOT_UPDATED,
+                'indexable': Indicator.DISTRIBUTION_INDEXABLE,
+                'not_indexable': Indicator.DISTRIBUTION_NOT_INDEXABLE,
+                'error': Indicator.DISTRIBUTION_ERROR,
             })
         msg += self.format_message(
             'Series',

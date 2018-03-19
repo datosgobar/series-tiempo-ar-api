@@ -176,6 +176,12 @@ class Indicator(models.Model):
     DISTRIBUTION_NEW = 'distribution_new'
     DISTRIBUTION_UPDATED = 'distribution_updated'
     DISTRIBUTION_TOTAL = 'distribution_total'
+
+    DISTRIBUTION_NOT_UPDATED = 'distribution_not_updated'
+    DISTRIBUTION_INDEXABLE = 'distribution_indexable'
+    DISTRIBUTION_NOT_INDEXABLE = 'distribution_not_indexable'
+    DISTRIBUTION_ERROR = 'distribution_error'
+
     FIELD_NEW = 'field_new'
     FIELD_UPDATED = 'field_updated'
     FIELD_TOTAL = 'field_total'
@@ -195,6 +201,10 @@ class Indicator(models.Model):
         (DISTRIBUTION_NEW, 'Distribuciones nuevas'),
         (DISTRIBUTION_TOTAL, 'Distribuciones totales'),
         (DISTRIBUTION_UPDATED, 'Distribuciones actualizadas'),
+        (DISTRIBUTION_NOT_UPDATED, 'Distribuciones no actualizadas'),
+        (DISTRIBUTION_INDEXABLE, 'Distribuciones indexables'),
+        (DISTRIBUTION_NOT_INDEXABLE, 'Distribuciones no indexables'),
+        (DISTRIBUTION_ERROR, 'Distribuciones con error'),
         (FIELD_NEW, 'Series nuevas'),
         (FIELD_TOTAL, 'Series totales'),
         (FIELD_UPDATED, 'Series actualizadas'),
