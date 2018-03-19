@@ -6,6 +6,7 @@ from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
+from redis import Redis
 from series_tiempo_ar.search import get_time_series_distributions
 
 from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog, Dataset
@@ -15,6 +16,7 @@ from series_tiempo_ar_api.libs.indexing.database_loader import \
     DatabaseLoader
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
@@ -182,3 +184,38 @@ class ReaderTests(TestCase):
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
         self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)
+
+
+class IndicatorsTests(TestCase):
+    catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
+    catalog_id = 'catalog_id'
+
+    def setUp(self):
+        self.loader = IndicatorLoader()
+        self.loader.clear_indicators()  # Just in case
+        self.task = ReadDataJsonTask.objects.create()
+        self.node = Node(catalog_id=self.catalog_id, catalog_url=self.catalog, indexable=True)
+        self.node.save()
+
+    def test_error_distribution_indicator(self):
+        self.loader.clear_indicators()
+        catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
+        self.node.catalog_url = catalog
+        self.node.save()
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+
+        indicator = int(self.loader.get(self.catalog_id, Indicator.DISTRIBUTION_ERROR))
+        self.assertEqual(indicator, 1)
+
+    def test_error_field_indicator(self):
+        self.loader.clear_indicators()
+        catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
+        self.node.catalog_url = catalog
+        self.node.save()
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+
+        indicator = int(self.loader.get(self.catalog_id, Indicator.FIELD_ERROR))
+        self.assertEqual(indicator, 3)
+
+    def tearDown(self):
+        IndicatorLoader().clear_indicators()

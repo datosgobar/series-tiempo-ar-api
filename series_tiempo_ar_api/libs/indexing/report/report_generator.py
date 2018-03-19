@@ -11,7 +11,7 @@ from django.utils import timezone
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Field
+from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Field, Distribution
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 
 
@@ -64,10 +64,10 @@ class ReportGenerator(object):
                 'new': Indicator.DISTRIBUTION_NEW,
                 'updated': Indicator.DISTRIBUTION_UPDATED,
                 'total': Indicator.DISTRIBUTION_TOTAL,
-                'not_updated': None,
-                'indexable': None,
-                'not_indexable': None,
-                'error': None,
+                'not_updated': Indicator.DISTRIBUTION_NOT_UPDATED,
+                'indexable': Indicator.DISTRIBUTION_INDEXABLE,
+                'not_indexable': Indicator.DISTRIBUTION_NOT_INDEXABLE,
+                'error': Indicator.DISTRIBUTION_ERROR,
             })
         msg += self.format_message(
             'Series',
@@ -127,6 +127,10 @@ class ReportGenerator(object):
             self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
             self.calculate_series_indicators(node)
 
+            distribution_total = len(data_json.get_distributions(only_time_series=True))
+            self.task.indicator_set.create(type=Indicator.DISTRIBUTION_TOTAL, value=distribution_total, node=node)
+            self.calculate_distribution_indicators(node)
+
     def calculate_series_indicators(self, node):
         catalog = Catalog.objects.get(identifier=node.catalog_id)
         total = self.task.indicator_set.filter(type=Indicator.FIELD_TOTAL)
@@ -142,6 +146,22 @@ class ReportGenerator(object):
 
         not_updated = indexable - updated
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
+
+    def calculate_distribution_indicators(self, node):
+        catalog = Catalog.objects.get(identifier=node.catalog_id)
+        total = self.task.indicator_set.filter(type=Indicator.DISTRIBUTION_TOTAL)
+        total = total[0].value if total else 0
+
+        indexable = Distribution.objects.filter(dataset__catalog=catalog,
+                                                dataset__indexable=True).count()
+        self.task.indicator_set.create(type=Indicator.DISTRIBUTION_INDEXABLE, value=indexable, node=node)
+        not_indexable = total - indexable
+        self.task.indicator_set.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE, value=not_indexable, node=node)
+
+        updated = self.task.indicator_set.get_or_create(type=Indicator.DISTRIBUTION_UPDATED, node=node)[0].value
+
+        not_updated = indexable - updated
+        self.task.indicator_set.create(type=Indicator.DISTRIBUTION_NOT_UPDATED, value=not_updated, node=node)
 
     def persist_indicators(self):
         self.indicators_loader.load_indicators_into_db(self.task)
