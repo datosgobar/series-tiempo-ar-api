@@ -41,9 +41,11 @@ def index_distribution(distribution_id, node_id, task,
 
     except Exception as e:
         ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
-        for _ in distribution['field'][1:]:
-            IndicatorLoader().increment_indicator(node.catalog_id, Indicator.FIELD_ERROR)
-
+        indicator_loader = IndicatorLoader()
+        indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
+        indicator_loader.increment_indicator(node.catalog_id,
+                                             Indicator.FIELD_ERROR,
+                                             amt=len(distribution['field'][1:]))
         if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
             raise e  # Django-rq / sentry logging
 

@@ -127,6 +127,10 @@ class ReportGenerator(object):
             self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
             self.calculate_series_indicators(node)
 
+            distribution_total = len(data_json.get_distributions(only_time_series=True))
+            self.task.indicator_set.create(type=Indicator.DISTRIBUTION_TOTAL, value=distribution_total, node=node)
+            self.calculate_distribution_indicators()
+
     def calculate_series_indicators(self, node):
         catalog = Catalog.objects.get(identifier=node.catalog_id)
         total = self.task.indicator_set.filter(type=Indicator.FIELD_TOTAL)
@@ -142,6 +146,9 @@ class ReportGenerator(object):
 
         not_updated = indexable - updated
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
+
+    def calculate_distribution_indicators(self):
+        pass
 
     def persist_indicators(self):
         self.indicators_loader.load_indicators_into_db(self.task)
