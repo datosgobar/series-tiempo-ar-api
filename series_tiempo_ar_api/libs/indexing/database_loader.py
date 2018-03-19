@@ -148,8 +148,7 @@ class DatabaseLoader(object):
             self.increment_indicator(Indicator.DATASET_UPDATED)
             self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
 
-        self.increment_indicator(Indicator.DISTRIBUTION_TOTAL)
-
+        distribution_model.updated = updated
         distribution_model.metadata = distribution_meta
         distribution_model.save()
         return distribution_model
