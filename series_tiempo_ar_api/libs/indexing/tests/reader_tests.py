@@ -199,21 +199,23 @@ class IndicatorsTests(TestCase):
         self.node.save()
 
     def test_error_distribution_indicator(self):
+        self.loader.clear_indicators()
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog
         self.node.save()
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
-        indicator = int(self.redis.get(self.loader.fmt(self.catalog_id, Indicator.DISTRIBUTION_ERROR)))
+        indicator = int(self.loader.get(self.catalog_id, Indicator.DISTRIBUTION_ERROR))
         self.assertEqual(indicator, 1)
 
     def test_error_field_indicator(self):
+        self.loader.clear_indicators()
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog
         self.node.save()
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
-        indicator = int(self.redis.get(self.loader.fmt(self.catalog_id, Indicator.FIELD_ERROR)))
+        indicator = int(self.loader.get(self.catalog_id, Indicator.FIELD_ERROR))
         self.assertEqual(indicator, 3)
 
     def tearDown(self):

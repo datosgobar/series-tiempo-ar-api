@@ -35,3 +35,6 @@ class IndicatorLoader(object):
     def fmt(self, catalog_id, indicator):
         """Devuelve un string que identifique al par catalogo-indicador para usar como key en redis"""
         return catalog_id + indicator
+
+    def get(self, catalog_id, indicator):
+        return self.redis.get(self.fmt(catalog_id, indicator))
