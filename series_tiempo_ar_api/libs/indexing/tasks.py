@@ -46,6 +46,11 @@ def index_distribution(distribution_id, node_id, task,
         indicator_loader.increment_indicator(node.catalog_id,
                                              Indicator.FIELD_ERROR,
                                              amt=len(distribution['field'][1:]))
+        # No usamos un contador manejado por el indicator_loader para asegurarse que los datasets
+        # sean contados una única vez (pueden fallar una vez por cada una de sus distribuciones)
+        dataset_model.error = True
+        dataset_model.save()
+
         if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
             raise e  # Django-rq / sentry logging
 
