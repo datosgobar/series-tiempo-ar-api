@@ -109,32 +109,32 @@ class ReportGenerator(object):
         return sum([indic.value for indic in indicator_queryset])
 
     def calculate_indicators(self):
-        for node in Node.objects.filter(indexable=True):
-            catalog_model = Catalog.objects.filter(identifier=node.catalog_id)
-            if not catalog_model:
-                continue
-            catalog_model = catalog_model[0]
 
-            updated = catalog_model.updated
-            self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=updated, node=node)
-            not_updated = 1 - updated
-            self.task.indicator_set.create(type=Indicator.CATALOG_NOT_UPDATED, value=not_updated, node=node)
+        nodes = Node.objects.filter(indexable=True)
+        catalog_ids = nodes.values_list('catalog_id', flat=True)
+        for catalog_model in Catalog.objects.filter(identifier__in=catalog_ids):
+            node = nodes.get(catalog_id=catalog_model.identifier)
+
+            self.calculate_catalog_indicators(node)
             data_json = DataJson(json.loads(node.catalog))
-            self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
 
-            fields_total = len(data_json.get_fields(only_time_series=True))
-            self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
-            self.calculate_series_indicators(node)
+            self.calculate_series_indicators(node, data_json)
+            self.calculate_distribution_indicators(node, data_json)
+            self.calculate_dataset_indicators(node, data_json)
 
-            distribution_total = len(data_json.get_distributions(only_time_series=True))
-            self.task.indicator_set.create(type=Indicator.DISTRIBUTION_TOTAL, value=distribution_total, node=node)
-            self.calculate_distribution_indicators(node)
+    def calculate_catalog_indicators(self, node):
+        catalog_model = Catalog.objects.get(identifier=node.catalog_id)
+        updated = catalog_model.updated
+        self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=updated, node=node)
+        not_updated = 1 - updated
+        self.task.indicator_set.create(type=Indicator.CATALOG_NOT_UPDATED, value=not_updated,
+                                       node=node)
+        self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
 
-            dataset_total = len(data_json.get_datasets(only_time_series=True))
-            self.task.indicator_set.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
-            self.calculate_dataset_indicators(node)
+    def calculate_series_indicators(self, node, data_json):
+        fields_total = len(data_json.get_fields(only_time_series=True))
+        self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
 
-    def calculate_series_indicators(self, node):
         catalog = Catalog.objects.get(identifier=node.catalog_id)
         total = self.task.indicator_set.filter(type=Indicator.FIELD_TOTAL)
         total = total[0].value if total else 0
@@ -150,7 +150,12 @@ class ReportGenerator(object):
         not_updated = indexable - updated
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
 
-    def calculate_distribution_indicators(self, node):
+    def calculate_distribution_indicators(self, node, data_json):
+        distribution_total = len(data_json.get_distributions(only_time_series=True))
+        self.task.indicator_set.create(type=Indicator.DISTRIBUTION_TOTAL,
+                                       value=distribution_total,
+                                       node=node)
+
         catalog = Catalog.objects.get(identifier=node.catalog_id)
         total = self.task.indicator_set.filter(type=Indicator.DISTRIBUTION_TOTAL)
         total = total[0].value if total else 0
@@ -166,7 +171,10 @@ class ReportGenerator(object):
         not_updated = indexable - updated
         self.task.indicator_set.create(type=Indicator.DISTRIBUTION_NOT_UPDATED, value=not_updated, node=node)
 
-    def calculate_dataset_indicators(self, node):
+    def calculate_dataset_indicators(self, node, data_json):
+        dataset_total = len(data_json.get_datasets(only_time_series=True))
+        self.task.indicator_set.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
+
         catalog = Catalog.objects.get(identifier=node.catalog_id)
         total = self.task.indicator_set.filter(type=Indicator.DATASET_TOTAL)
         total = total[0].value if total else 0
