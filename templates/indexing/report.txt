@@ -1,9 +1,9 @@
 {{ name }}:
-    nuevos: {{ new }},
-    actualizados: {{ updated }},
-    no actualizados: {{ not_updated }},
-    indexables: {{ indexable }},
-    no indexables: {{ not_indexable }},
-    error: {{ error }},
-    totales: {{ total }}
+    nuevos: {{ new }}
+    actualizados: {{ updated }}
+    no actualizados: {{ not_updated }}
+    {% if indexable %}indexables: {{ indexable }}
+    {% endif %}{% if not_indexable %}no indexables: {{ not_indexable }}
+    {% endif %}{% if error %}error: {{ error }}
+    {% endif %}totales: {{ total }}
 

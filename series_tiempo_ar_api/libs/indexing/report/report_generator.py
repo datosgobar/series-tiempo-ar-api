@@ -42,10 +42,7 @@ class ReportGenerator(object):
                 'new': Indicator.CATALOG_NEW,
                 'updated': Indicator.CATALOG_UPDATED,
                 'total': Indicator.CATALOG_TOTAL,
-                'not_updated': None,
-                'indexable': None,
-                'not_indexable': None,
-                'error': None,
+                'not_updated': Indicator.CATALOG_NOT_UPDATED,
             })
         msg += self.format_message(
             'Datasets',
@@ -113,9 +110,17 @@ class ReportGenerator(object):
 
     def calculate_indicators(self):
         for node in Node.objects.filter(indexable=True):
-            self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
+            catalog_model = Catalog.objects.filter(identifier=node.catalog_id)
+            if not catalog_model:
+                continue
+            catalog_model = catalog_model[0]
 
+            updated = catalog_model.updated
+            self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=updated, node=node)
+            not_updated = 1 - updated
+            self.task.indicator_set.create(type=Indicator.CATALOG_NOT_UPDATED, value=not_updated, node=node)
             data_json = DataJson(json.loads(node.catalog))
+            self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
 
             fields_total = len(data_json.get_fields(only_time_series=True))
             self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
