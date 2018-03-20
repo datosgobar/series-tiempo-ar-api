@@ -170,6 +170,9 @@ class Indicator(models.Model):
     CATALOG_NEW = 'catalog_new'
     CATALOG_UPDATED = 'catalog_updated'
     CATALOG_TOTAL = 'catalog_total'
+
+    CATALOG_NOT_UPDATED = 'catalog_not_updated'
+
     DATASET_NEW = 'dataset_new'
     DATASET_UPDATED = 'dataset_updated'
     DATASET_TOTAL = 'dataset_total'
@@ -201,6 +204,7 @@ class Indicator(models.Model):
         (CATALOG_NEW, 'Catálogos nuevos'),
         (CATALOG_TOTAL, 'Catálogos totales'),
         (CATALOG_UPDATED, 'Catálogos actualizados'),
+        (CATALOG_NOT_UPDATED, 'Catálogos no actualizados'),
         (DATASET_NEW, 'Datasets nuevos'),
         (DATASET_TOTAL, 'Datasets totales'),
         (DATASET_UPDATED, 'Datasets actualizados'),
