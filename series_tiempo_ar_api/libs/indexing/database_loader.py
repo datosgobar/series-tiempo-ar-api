@@ -76,6 +76,7 @@ class DatabaseLoader(object):
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
         if catalog_model.metadata != catalog_meta:
             self.increment_indicator(Indicator.CATALOG_UPDATED)
+            catalog_model.updated = True
 
         catalog_model.metadata = catalog_meta
         catalog_model.save()
@@ -105,6 +106,7 @@ class DatabaseLoader(object):
 
         if dataset_meta != dataset_model.metadata:
             self.increment_indicator(Indicator.DATASET_UPDATED)
+            dataset_model.updated = True
 
         dataset_model.metadata = dataset_meta
         dataset_model.save()
@@ -144,8 +146,16 @@ class DatabaseLoader(object):
             self.increment_indicator(Indicator.FIELD_NEW, len(fields[1:]))
 
         elif updated or distribution_meta != distribution_model.metadata:
-            self.increment_indicator(Indicator.CATALOG_UPDATED)
-            self.increment_indicator(Indicator.DATASET_UPDATED)
+            if not Catalog.objects.get(id=self.catalog_model.id).updated:
+                self.increment_indicator(Indicator.CATALOG_UPDATED)
+                self.catalog_model.updated = True
+                self.catalog_model.save()
+
+            if not Dataset.objects.get(id=dataset_model.id).updated:
+                self.increment_indicator(Indicator.DATASET_UPDATED)
+                dataset_model.updated = True
+                dataset_model.save()
+
             self.increment_indicator(Indicator.DISTRIBUTION_UPDATED)
 
         distribution_model.updated = updated
