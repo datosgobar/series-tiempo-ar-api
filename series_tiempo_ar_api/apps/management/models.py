@@ -173,6 +173,12 @@ class Indicator(models.Model):
     DATASET_NEW = 'dataset_new'
     DATASET_UPDATED = 'dataset_updated'
     DATASET_TOTAL = 'dataset_total'
+
+    DATASET_NOT_UPDATED = 'dataset_not_updated'
+    DATASET_INDEXABLE = 'dataset_indexable'
+    DATASET_NOT_INDEXABLE = 'dataset_not_indexable'
+    DATASET_ERROR = 'dataset_error'
+
     DISTRIBUTION_NEW = 'distribution_new'
     DISTRIBUTION_UPDATED = 'distribution_updated'
     DISTRIBUTION_TOTAL = 'distribution_total'
@@ -198,6 +204,10 @@ class Indicator(models.Model):
         (DATASET_NEW, 'Datasets nuevos'),
         (DATASET_TOTAL, 'Datasets totales'),
         (DATASET_UPDATED, 'Datasets actualizados'),
+        (DATASET_NOT_UPDATED, 'Datasets no actualizados'),
+        (DATASET_INDEXABLE, 'Datasets indexables'),
+        (DATASET_NOT_INDEXABLE, 'Datasets no indexables'),
+        (DATASET_ERROR, 'Datasets con errores'),
         (DISTRIBUTION_NEW, 'Distribuciones nuevas'),
         (DISTRIBUTION_TOTAL, 'Distribuciones totales'),
         (DISTRIBUTION_UPDATED, 'Distribuciones actualizadas'),

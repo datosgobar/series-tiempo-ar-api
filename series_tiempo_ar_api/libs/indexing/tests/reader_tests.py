@@ -206,16 +206,23 @@ class IndicatorsTests(TestCase):
 
         indicator = int(self.loader.get(self.catalog_id, Indicator.DISTRIBUTION_ERROR))
         self.assertEqual(indicator, 1)
+        indicator = int(self.loader.get(self.catalog_id, Indicator.FIELD_ERROR))
+        self.assertEqual(indicator, 3)
 
-    def test_error_field_indicator(self):
+        error = Dataset.objects.get(catalog__identifier=self.catalog_id).error
+        self.assertTrue(error)
+
+    def test_dataset_updated(self):
+        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+
         self.loader.clear_indicators()
-        catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
         self.node.catalog_url = catalog
         self.node.save()
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
-        indicator = int(self.loader.get(self.catalog_id, Indicator.FIELD_ERROR))
-        self.assertEqual(indicator, 3)
+        indicator = int(self.loader.get(self.catalog_id, Indicator.DATASET_UPDATED))
+        self.assertEqual(1, indicator)
 
     def tearDown(self):
         IndicatorLoader().clear_indicators()

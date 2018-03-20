@@ -20,6 +20,7 @@ class Dataset(models.Model):
     indexable = models.BooleanField(default=False)
     present = models.BooleanField(default=True)
     updated = models.BooleanField(default=False)
+    error = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.identifier, self.catalog.identifier)
