@@ -113,14 +113,7 @@ class ReportGenerator(object):
 
     def calculate_indicators(self):
         for node in Node.objects.filter(indexable=True):
-            catalog = Catalog.objects.filter(identifier=node.catalog_id)
-            if not catalog:
-                continue
-
-            catalog = catalog[0]
-
             self.task.indicator_set.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
-            self.task.indicator_set.create(type=Indicator.CATALOG_UPDATED, value=int(catalog.updated), node=node)
 
             data_json = DataJson(json.loads(node.catalog))
 

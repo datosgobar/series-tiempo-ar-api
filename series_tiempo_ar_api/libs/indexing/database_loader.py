@@ -75,7 +75,6 @@ class DatabaseLoader(object):
 
         catalog_model.title = catalog.get(constants.FIELD_TITLE)
         if catalog_model.metadata != catalog_meta:
-            self.increment_indicator(Indicator.CATALOG_UPDATED)
             catalog_model.updated = True
 
         catalog_model.metadata = catalog_meta
@@ -147,7 +146,6 @@ class DatabaseLoader(object):
 
         elif updated or distribution_meta != distribution_model.metadata:
             if not Catalog.objects.get(id=self.catalog_model.id).updated:
-                self.increment_indicator(Indicator.CATALOG_UPDATED)
                 self.catalog_model.updated = True
                 self.catalog_model.save()
 
