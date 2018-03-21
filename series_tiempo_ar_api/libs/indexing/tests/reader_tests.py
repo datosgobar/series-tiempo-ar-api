@@ -106,8 +106,10 @@ class IndexerTests(TestCase):
             node = Node(catalog_id=CATALOG_ID,
                         catalog_url=os.path.join(SAMPLES_DIR, catalog_path),
                         indexable=True)
+
+        catalog = DataJson(node.catalog_url)
+        node.catalog = json.dumps(catalog)
         node.save()
-        catalog = DataJson(json.loads(node.catalog))
         catalog_model, created = Catalog.objects.get_or_create(identifier=node.catalog_id)
         if created:
             catalog_model.title = catalog['title'],

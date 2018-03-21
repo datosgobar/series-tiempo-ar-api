@@ -55,21 +55,10 @@ class Node(models.Model):
     catalog_url = models.URLField()
     indexable = models.BooleanField()
     catalog = models.TextField(default='{}')
+    admins = models.ManyToManyField(User)
 
     def __unicode__(self):
         return self.catalog_id
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        try:
-            catalog_request = requests.get(self.catalog_url)
-            if catalog_request.status_code != 200:
-                return
-            self.catalog = catalog_request.content
-        except requests.exceptions.RequestException:
-            self.catalog = open(self.catalog_url).read()
-
-        super(Node, self).save(force_insert, force_update, using, update_fields)
 
 
 class NodeRegisterFile(BaseRegisterFile):

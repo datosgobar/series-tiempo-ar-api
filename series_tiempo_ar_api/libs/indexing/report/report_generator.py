@@ -29,21 +29,26 @@ class ReportGenerator(object):
         self.persist_indicators()
         self.calculate_indicators()
         self.generate_email()
+
+        # Reportes de catálogo individual
+        for node in Node.objects.filter(indexable=True):
+            self.generate_email(node=node)
+
         self.indicators_loader.clear_indicators()
 
-    def generate_email(self):
-        start_time = self._format_date(self.task.created)
+    def generate_email(self, node=None):
         finish_time = self._format_date(self.task.finished)
         msg = "Horario de finalización: {}\n".format(finish_time)
 
-        msg += self.format_message(
-            'Catálogos',
-            {
-                'new': Indicator.CATALOG_NEW,
-                'updated': Indicator.CATALOG_UPDATED,
-                'total': Indicator.CATALOG_TOTAL,
-                'not_updated': Indicator.CATALOG_NOT_UPDATED,
-            })
+        if not node:
+            msg += self.format_message(
+                'Catálogos',
+                {
+                    'new': Indicator.CATALOG_NEW,
+                    'updated': Indicator.CATALOG_UPDATED,
+                    'total': Indicator.CATALOG_TOTAL,
+                    'not_updated': Indicator.CATALOG_NOT_UPDATED,
+                })
         msg += self.format_message(
             'Datasets',
             {
@@ -54,7 +59,7 @@ class ReportGenerator(object):
                 'indexable': Indicator.DATASET_INDEXABLE,
                 'not_indexable': Indicator.DATASET_NOT_INDEXABLE,
                 'error': Indicator.DATASET_ERROR,
-            })
+            }, node)
         msg += self.format_message(
             'Distribuciones',
             {
@@ -65,7 +70,7 @@ class ReportGenerator(object):
                 'indexable': Indicator.DISTRIBUTION_INDEXABLE,
                 'not_indexable': Indicator.DISTRIBUTION_NOT_INDEXABLE,
                 'error': Indicator.DISTRIBUTION_ERROR,
-            })
+            }, node)
         msg += self.format_message(
             'Series',
             {
@@ -76,20 +81,28 @@ class ReportGenerator(object):
                 'not_indexable': Indicator.FIELD_NOT_INDEXABLE,
                 'error': Indicator.FIELD_ERROR,
                 'total': Indicator.FIELD_TOTAL,
-            })
-        recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
-        emails = [user.email for user in recipients.user_set.all()]
-        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
+            }, node)
 
+        self.send_email(msg, node)
+
+    def send_email(self, msg, node=None):
+        start_time = self._format_date(self.task.created)
+        if not node:
+            recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
+        else:
+            recipients = node.admins.all()
+
+        emails = [user.email for user in recipients]
+        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
         sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
         if emails and not sent:
             raise ValueError
 
-    def format_message(self, full_name, indicators):
+    def format_message(self, full_name, indicators, node=None):
         context = indicators.copy()
 
         for name, indicator in context.iteritems():
-            context[name] = self._get_indicator_value(indicator)
+            context[name] = self._get_indicator_value(indicator, node=node)
 
         context['name'] = full_name
         msg = render_to_string('indexing/report.txt', context=context)
@@ -98,11 +111,17 @@ class ReportGenerator(object):
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
 
-    def _get_indicator_value(self, indicator_type):
+    def _get_indicator_value(self, indicator_type, node=None):
+        """Devuelve el valor del indicador_type para el nodo node, o si no es especificado,
+        la suma del valor de ese indicador en todos los nodos indexados
+        """
         if not indicator_type:
             return 0
 
-        indicator_queryset = self.task.indicator_set.filter(type=indicator_type)
+        if node:
+            indicator_queryset = self.task.indicator_set.filter(type=indicator_type, node=node)
+        else:
+            indicator_queryset = self.task.indicator_set.filter(type=indicator_type)
         if not indicator_queryset:
             return 0
 
