@@ -24,9 +24,10 @@ class MetadataIndexer(object):
 
         self.index_actions(actions)
 
+    # noinspection PyProtectedMember
     def init_index(self):
-        # noinspection PyProtectedMember
-        self.elastic.indices.delete(Field._doc_type.index)
+        if self.elastic.indices.exists(Field._doc_type.index):
+            self.elastic.indices.delete(Field._doc_type.index)
         Field.init(using=self.elastic)
 
     def index_actions(self, actions):
@@ -42,16 +43,16 @@ class MetadataIndexer(object):
             dataset = self.data_json.get_dataset(identifier=field['dataset_identifier'])
 
             doc = Field(
-                title=field['title'],
-                description=field['description'],
-                id=field['id'],
-                units=field['units'],
-                dataset_title=dataset['title'],
-                dataset_source=dataset['source'],
-                dataset_source_keyword=dataset['source'],
-                dataset_description=dataset['description'],
-                dataset_publisher_name=dataset['publisher']['name'],
-                theme_description=themes[dataset['theme'][0]]
+                title=field.get('title'),
+                description=field.get('description'),
+                id=field.get('id'),
+                units=field.get('units'),
+                dataset_title=dataset.get('title'),
+                dataset_source=dataset.get('source'),
+                dataset_source_keyword=dataset.get('source'),
+                dataset_description=dataset.get('description'),
+                dataset_publisher_name=dataset.get('publisher', {}).get('name'),
+                theme_description=themes.get(dataset.get('theme', [None])[0])
             )
             actions.append(doc.to_dict(include_meta=True))
         return actions
