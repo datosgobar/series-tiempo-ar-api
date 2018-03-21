@@ -167,38 +167,38 @@ class ReadDataJsonTask(models.Model):
 
 class Indicator(models.Model):
 
-    CATALOG_NEW = 'catalog_new'
-    CATALOG_UPDATED = 'catalog_updated'
-    CATALOG_TOTAL = 'catalog_total'
+    CATALOG_NEW = 'catalogos_nuevos_cant'
+    CATALOG_UPDATED = 'catalogos_actualizados_cant'
+    CATALOG_TOTAL = 'catalogos_cant'
 
-    CATALOG_NOT_UPDATED = 'catalog_not_updated'
+    CATALOG_NOT_UPDATED = 'catalogos_no_actualizados_cant'
 
-    DATASET_NEW = 'dataset_new'
-    DATASET_UPDATED = 'dataset_updated'
-    DATASET_TOTAL = 'dataset_total'
+    DATASET_NEW = 'datasets_nuevos_cant'
+    DATASET_UPDATED = 'datasets_actualizados_cant'
+    DATASET_TOTAL = 'datasets_cant'
 
-    DATASET_NOT_UPDATED = 'dataset_not_updated'
-    DATASET_INDEXABLE = 'dataset_indexable'
-    DATASET_NOT_INDEXABLE = 'dataset_not_indexable'
-    DATASET_ERROR = 'dataset_error'
+    DATASET_NOT_UPDATED = 'datasets_no_actualizados_cant'
+    DATASET_INDEXABLE = 'dataset_indexables_cant'
+    DATASET_NOT_INDEXABLE = 'datasets_no_indexables_cant'
+    DATASET_ERROR = 'datasets_error_cant'
 
-    DISTRIBUTION_NEW = 'distribution_new'
-    DISTRIBUTION_UPDATED = 'distribution_updated'
-    DISTRIBUTION_TOTAL = 'distribution_total'
+    DISTRIBUTION_NEW = 'distribuciones_nuevas_cant'
+    DISTRIBUTION_UPDATED = 'distribuciones_actualizadas_cant'
+    DISTRIBUTION_TOTAL = 'distribuciones_cant'
 
-    DISTRIBUTION_NOT_UPDATED = 'distribution_not_updated'
-    DISTRIBUTION_INDEXABLE = 'distribution_indexable'
-    DISTRIBUTION_NOT_INDEXABLE = 'distribution_not_indexable'
-    DISTRIBUTION_ERROR = 'distribution_error'
+    DISTRIBUTION_NOT_UPDATED = 'distribuciones_no_actualizadas_cant'
+    DISTRIBUTION_INDEXABLE = 'distribuciones_indexables_cant'
+    DISTRIBUTION_NOT_INDEXABLE = 'distribuciones_no_indexables_cant'
+    DISTRIBUTION_ERROR = 'distribuciones_error_cant'
 
-    FIELD_NEW = 'field_new'
-    FIELD_UPDATED = 'field_updated'
-    FIELD_TOTAL = 'field_total'
+    FIELD_NEW = 'series_nuevas_cant'
+    FIELD_UPDATED = 'series_actualizadas_cant'
+    FIELD_TOTAL = 'field_cant'
 
-    FIELD_NOT_UPDATED = 'field_not_updated'
-    FIELD_INDEXABLE = 'field_indexable'
-    FIELD_NOT_INDEXABLE = 'field_not_indexable'
-    FIELD_ERROR = 'field_error'
+    FIELD_NOT_UPDATED = 'series_no_actualizadas_cant'
+    FIELD_INDEXABLE = 'series_indexables_cant'
+    FIELD_NOT_INDEXABLE = 'series_no_indexables_cant'
+    FIELD_ERROR = 'series_error_cant'
 
     TYPE_CHOICES = (
         (CATALOG_NEW, 'Catálogos nuevos'),
