@@ -37,6 +37,10 @@ class ReportGenerator(object):
         self.indicators_loader.clear_indicators()
 
     def generate_email(self, node=None):
+        """Genera y manda el mail con el reporte de indexación. Si node es especificado, genera el reporte
+        con valores de entidades pertenecientes únicamente a ese nodo (reporte individual). Caso contrario
+        (default), genera el reporte de indexación global
+        """
         finish_time = self._format_date(self.task.finished)
         msg = "Horario de finalización: {}\n".format(finish_time)
 
