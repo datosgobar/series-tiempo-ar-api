@@ -2,12 +2,14 @@
 import json
 import os
 
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
-from redis import Redis
 from series_tiempo_ar.search import get_time_series_distributions
+
+from django.core import mail
 
 from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog, Dataset
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
@@ -17,6 +19,7 @@ from series_tiempo_ar_api.libs.indexing.database_loader import \
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
+from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
@@ -225,6 +228,26 @@ class IndicatorsTests(TestCase):
 
         indicator = int(self.loader.get(self.catalog_id, Indicator.DATASET_UPDATED))
         self.assertEqual(1, indicator)
+
+    def test_multiple_nodes(self):
+        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
+
+        Node(catalog_id='otro', catalog_url=catalog, indexable=True).save()
+
+        self.loader.increment_indicator(self.catalog_id, Indicator.CATALOG_TOTAL)
+        self.loader.increment_indicator('otro', Indicator.CATALOG_TOTAL)
+        ReportGenerator(self.task).generate()
+
+        self.assertEqual(2, self.task.indicator_set.filter(type=Indicator.CATALOG_TOTAL).count())
+
+    def test_individual_report(self):
+        user = User(username='test', password='test', email='test@email.com')
+        user.save()
+        self.node.admins.add(user)
+
+        ReportGenerator(self.task).generate()
+        # Expected: se manda un mail con el reporte individual
+        self.assertEqual(1, len(mail.outbox))
 
     def tearDown(self):
         IndicatorLoader().clear_indicators()
