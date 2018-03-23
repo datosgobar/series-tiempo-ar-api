@@ -37,10 +37,11 @@ class MetadataIndexer(object):
 
     def scrap_datajson(self):
         themes = self.get_themes(self.data_json['themeTaxonomy'])
-
+        datasets = {}
         actions = []
         for field in self.data_json.get_fields(only_time_series=True):
-            dataset = self.data_json.get_dataset(identifier=field['dataset_identifier'])
+            dataset = datasets.setdefault(field['dataset_identifier'],
+                                          self.data_json.get_dataset(identifier=field['dataset_identifier']))
 
             doc = Field(
                 title=field.get('title'),
