@@ -166,7 +166,7 @@ class ReportGenerator(object):
         indexable = Dataset.objects.filter(catalog=catalog, indexable=True).count()
         self.task.indicator_set.create(type=Indicator.DATASET_INDEXABLE, value=indexable, node=node)
 
-        not_indexable = total - indexable
+        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False).count()
         self.task.indicator_set.create(type=Indicator.DATASET_NOT_INDEXABLE, value=not_indexable, node=node)
 
         updated = Dataset.objects.filter(catalog=catalog, updated=True).count()

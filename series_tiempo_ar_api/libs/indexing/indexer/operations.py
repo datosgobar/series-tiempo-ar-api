@@ -89,7 +89,7 @@ def process_column(col, index):
     # Lista de intervalos temporales de pandas EN ORDEN
     freqs = constants.PANDAS_FREQS
     if orig_freq not in freqs:
-        raise ValueError
+        raise ValueError(u'Frecuencia inválida: {}'.format(str(orig_freq)))
 
     for freq in freqs:
         # Promedio
@@ -125,7 +125,10 @@ def index_transform(col, transform_function, index, series_id, freq, name):
     if not len(transform_col):
         return pd.Series()
 
-    handle_missing_values(col, transform_col)
+    try:
+        handle_missing_values(col, transform_col)
+    except ValueError:
+        raise ValueError(u'Error borrando valores sobrantes durante la indexación')
     transform_df = generate_interval_transformations_df(transform_col, freq)
     result = transform_df.apply(elastic_index,
                                 axis='columns',
