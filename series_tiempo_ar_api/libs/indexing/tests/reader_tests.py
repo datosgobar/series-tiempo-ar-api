@@ -226,7 +226,7 @@ class IndicatorsTests(TestCase):
         self.node.save()
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
-        indicator = int(self.loader.get(self.catalog_id, Indicator.DATASET_UPDATED))
+        indicator = Dataset.objects.filter(catalog__identifier=self.catalog_id, updated=True).count()
         self.assertEqual(1, indicator)
 
     def test_multiple_nodes(self):
