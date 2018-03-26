@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <p>Horario de finalización: {{ finish_time }}</p>
+    {% if not is_partial_report %}
+    <p>Catálogos:</p>
+    <ul>
+        <li>nuevos: {{ catalogos_nuevos_cant }}</li>
+        <li>actualizados: {{ catalogos_actualizados_cant }}</li>
+        <li>no actualizados: {{ catalogos_no_actualizados_cant }}</li>
+        <li>totales: {{ catalogos_cant }}</li>
+    </ul>
+    {% endif %}
+
+    <p>Datasets:</p>
+    <ul>
+        <li>nuevos: {{ datasets_nuevos_cant }}</li>
+        <li>actualizados: {{ datasets_actualizados_cant }}</li>
+        <li>no actualizados: {{ datasets_no_actualizados_cant }}</li>
+        <li>indexables: {{ dataset_indexables_cant }}</li>
+        <li>no indexables: {{ datasets_no_indexables_cant }}</li>
+        <li>error: {{ datasets_error_cant }}</li>
+        <li>totales: {{ datasets_cant }}</li>
+    </ul>
+
+    <p>Distribuciones:</p>
+    <ul>
+        <li>nuevos: {{ distribuciones_nuevas_cant }}</li>
+        <li>actualizados: {{ distribuciones_actualizadas_cant }}</li>
+        <li>no actualizados: {{ distribuciones_no_actualizadas_cant }}</li>
+        <li>indexables: {{ distribuciones_indexables_cant }}</li>
+        <li>no indexables: {{ distribuciones_no_indexables_cant }}</li>
+        <li>error: {{ distribuciones_error_cant }}</li>
+        <li>totales: {{ distribuciones_cant }}</li>
+    </ul>
+
+    <p>Series:</p>
+    <ul>
+        <li>nuevos: {{ series_nuevas_cant }}</li>
+        <li>actualizados: {{ series_actualizadas_cant }}</li>
+        <li>no actualizados: {{ series_no_actualizadas_cant }}</li>
+        <li>indexables: {{ series_indexables_cant }}</li>
+        <li>no indexables: {{ series_no_indexables_cant }}</li>
+        <li>error: {{ series_error_cant }}</li>
+        <li>totales: {{ field_cant }}</li>
+    </ul>
+</body>
+</html>

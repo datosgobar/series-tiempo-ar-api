@@ -19,9 +19,8 @@ class IndicatorLoader(object):
         """
         for node in Node.objects.filter(indexable=True):
             for indicator, _ in Indicator.TYPE_CHOICES:
-                value = self.redis.get(self.fmt(node.catalog_id, indicator))
-                if value:
-                    task.indicator_set.create(type=indicator, value=value, node=node)
+                value = self.redis.get(self.fmt(node.catalog_id, indicator)) or 0
+                task.indicator_set.create(type=indicator, value=value, node=node)
 
     def increment_indicator(self, catalog_id, indicator, amt=1):
         self.redis.incr(self.fmt(catalog_id, indicator), amt)

@@ -26,6 +26,7 @@ class DatabaseLoaderTests(TestCase):
         self.node = Node(catalog_id=self.catalog_id,
                          catalog_url=os.path.join(dir_path, 'full_ts_data.json'),
                          indexable=True)
+        self.node.catalog = json.dumps(DataJson(self.node.catalog_url))
         self.node.save()
 
         self.init_datasets(self.node)

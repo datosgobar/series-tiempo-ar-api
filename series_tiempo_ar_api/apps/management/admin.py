@@ -49,6 +49,7 @@ class NodeAdmin(admin.ModelAdmin):
 
     list_display = ('catalog_id', 'indexable')
     actions = ('delete_model', 'run_indexing', 'make_indexable', 'make_unindexable')
+    exclude = ('catalog', )
 
     def get_actions(self, request):
         # Borro la acción de borrado default

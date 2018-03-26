@@ -144,7 +144,7 @@ class DatabaseLoader(object):
             # No se corre el método _save_fields sobre distribuciones recién creadas
             self.increment_indicator(Indicator.FIELD_NEW, len(fields[1:]))
 
-        elif updated or distribution_meta != distribution_model.metadata:
+        if updated or (distribution_model.metadata and distribution_meta != distribution_model.metadata):
             if not Catalog.objects.get(id=self.catalog_model.id).updated:
                 self.catalog_model.updated = True
                 self.catalog_model.save()

@@ -5,7 +5,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.core.mail import send_mail
+from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 from pydatajson import DataJson
@@ -29,80 +29,58 @@ class ReportGenerator(object):
         self.persist_indicators()
         self.calculate_indicators()
         self.generate_email()
+
+        # Reportes de catálogo individual
+        for node in Node.objects.filter(indexable=True):
+            self.generate_email(node=node)
+
         self.indicators_loader.clear_indicators()
 
-    def generate_email(self):
-        start_time = self._format_date(self.task.created)
-        finish_time = self._format_date(self.task.finished)
-        msg = "Horario de finalización: {}\n".format(finish_time)
+    def generate_email(self, node=None):
+        """Genera y manda el mail con el reporte de indexación. Si node es especificado, genera el reporte
+        con valores de entidades pertenecientes únicamente a ese nodo (reporte individual). Caso contrario
+        (default), genera el reporte de indexación global
+        """
 
-        msg += self.format_message(
-            'Catálogos',
-            {
-                'new': Indicator.CATALOG_NEW,
-                'updated': Indicator.CATALOG_UPDATED,
-                'total': Indicator.CATALOG_TOTAL,
-                'not_updated': Indicator.CATALOG_NOT_UPDATED,
-            })
-        msg += self.format_message(
-            'Datasets',
-            {
-                'new': Indicator.DATASET_NEW,
-                'updated': Indicator.DATASET_UPDATED,
-                'total': Indicator.DATASET_TOTAL,
-                'not_updated': Indicator.DATASET_NOT_UPDATED,
-                'indexable': Indicator.DATASET_INDEXABLE,
-                'not_indexable': Indicator.DATASET_NOT_INDEXABLE,
-                'error': Indicator.DATASET_ERROR,
-            })
-        msg += self.format_message(
-            'Distribuciones',
-            {
-                'new': Indicator.DISTRIBUTION_NEW,
-                'updated': Indicator.DISTRIBUTION_UPDATED,
-                'total': Indicator.DISTRIBUTION_TOTAL,
-                'not_updated': Indicator.DISTRIBUTION_NOT_UPDATED,
-                'indexable': Indicator.DISTRIBUTION_INDEXABLE,
-                'not_indexable': Indicator.DISTRIBUTION_NOT_INDEXABLE,
-                'error': Indicator.DISTRIBUTION_ERROR,
-            })
-        msg += self.format_message(
-            'Series',
-            {
-                'new': Indicator.FIELD_NEW,
-                'updated': Indicator.FIELD_UPDATED,
-                'not_updated': Indicator.FIELD_NOT_UPDATED,
-                'indexable': Indicator.FIELD_INDEXABLE,
-                'not_indexable': Indicator.FIELD_NOT_INDEXABLE,
-                'error': Indicator.FIELD_ERROR,
-                'total': Indicator.FIELD_TOTAL,
-            })
-        recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP)
-        emails = [user.email for user in recipients.user_set.all()]
+        context = {
+            'finish_time': self._format_date(self.task.finished),
+            'is_partial_report': bool(node),
+        }
+        context.update({indicator: self._get_indicator_value(indicator) for indicator, _ in Indicator.TYPE_CHOICES})
+        self.send_email(context, node)
+
+    def send_email(self, context, node=None):
+        start_time = self._format_date(self.task.created)
+        if not node:
+            recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
+        else:
+            recipients = node.admins.all()
+
+        msg = render_to_string('indexing/report.txt', context=context)
+        emails = [user.email for user in recipients]
         subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
 
-        sent = send_mail(subject, msg, settings.EMAIL_HOST_USER, emails)
+        mail = EmailMultiAlternatives(subject, msg, settings.EMAIL_HOST_USER, emails)
+        html_msg = render_to_string('indexing/report.html', context=context)
+        mail.attach_alternative(html_msg, 'text/html')
+        sent = mail.send()
         if emails and not sent:
             raise ValueError
-
-    def format_message(self, full_name, indicators):
-        context = indicators.copy()
-
-        for name, indicator in context.iteritems():
-            context[name] = self._get_indicator_value(indicator)
-
-        context['name'] = full_name
-        msg = render_to_string('indexing/report.txt', context=context)
-        return msg
 
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
 
-    def _get_indicator_value(self, indicator_type):
+    def _get_indicator_value(self, indicator_type, node=None):
+        """Devuelve el valor del indicador_type para el nodo node, o si no es especificado,
+        la suma del valor de ese indicador en todos los nodos indexados
+        """
         if not indicator_type:
             return 0
 
-        indicator_queryset = self.task.indicator_set.filter(type=indicator_type)
+        if node:
+            indicator_queryset = self.task.indicator_set.filter(type=indicator_type, node=node)
+        else:
+            indicator_queryset = self.task.indicator_set.filter(type=indicator_type)
         if not indicator_queryset:
             return 0
 

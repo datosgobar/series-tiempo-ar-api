@@ -1,9 +1,34 @@
-{{ name }}:
-    nuevos: {{ new }}
-    actualizados: {{ updated }}
-    no actualizados: {{ not_updated }}
-    {% if indexable %}indexables: {{ indexable }}
-    {% endif %}{% if not_indexable %}no indexables: {{ not_indexable }}
-    {% endif %}{% if error %}error: {{ error }}
-    {% endif %}totales: {{ total }}
+Horario de finalización: {{ finish_time }}
+{% if not is_partial_report %}Catálogos:
+    nuevos: {{ catalogos_nuevos_cant }}
+    actualizados: {{ catalogos_actualizados_cant }}
+    no actualizados: {{ catalogos_no_actualizados_cant }}
+    totales: {{ catalogos_cant }}
+{% endif %}
 
+Datasets:
+    nuevos: {{ datasets_nuevos_cant }}
+    actualizados: {{ datasets_actualizados_cant }}
+    no actualizados: {{ datasets_no_actualizados_cant }}
+    indexables: {{ dataset_indexables_cant }}
+    no indexables: {{ datasets_no_indexables_cant }}
+    error: {{ datasets_error_cant }}
+    totales: {{ datasets_cant }}
+
+Distribuciones:
+    nuevos: {{ distribuciones_nuevas_cant }}
+    actualizados: {{ distribuciones_actualizadas_cant }}
+    no actualizados: {{ distribuciones_no_actualizadas_cant }}
+    indexables: {{ distribuciones_indexables_cant }}
+    no indexables: {{ distribuciones_no_indexables_cant }}
+    error: {{ distribuciones_error_cant }}
+    totales: {{ distribuciones_cant }}
+
+Series:
+    nuevos: {{ series_nuevas_cant }}
+    actualizados: {{ series_actualizadas_cant }}
+    no actualizados: {{ series_no_actualizadas_cant }}
+    indexables: {{ series_indexables_cant }}
+    no indexables: {{ series_no_indexables_cant }}
+    error: {{ series_error_cant }}
+    totales: {{ field_cant }}
