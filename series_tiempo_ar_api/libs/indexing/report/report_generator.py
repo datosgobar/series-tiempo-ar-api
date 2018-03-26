@@ -123,7 +123,9 @@ class ReportGenerator(object):
                                          distribution__dataset__indexable=True).count()
         self.task.indicator_set.create(type=Indicator.FIELD_INDEXABLE, value=indexable, node=node)
 
-        not_indexable = total - indexable
+        not_indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
+                                             distribution__dataset__indexable=False,
+                                             distribution__dataset__present=True).count()
         self.task.indicator_set.create(type=Indicator.FIELD_NOT_INDEXABLE, value=not_indexable, node=node)
         updated = self.task.indicator_set.get_or_create(type=Indicator.FIELD_UPDATED, node=node)[0].value
 
@@ -143,7 +145,9 @@ class ReportGenerator(object):
         indexable = Distribution.objects.filter(dataset__catalog=catalog,
                                                 dataset__indexable=True).count()
         self.task.indicator_set.create(type=Indicator.DISTRIBUTION_INDEXABLE, value=indexable, node=node)
-        not_indexable = total - indexable
+        not_indexable = Distribution.objects.filter(dataset__catalog=catalog,
+                                                    dataset__indexable=False,
+                                                    dataset__present=True).count()
         self.task.indicator_set.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE, value=not_indexable, node=node)
 
         updated = self.task.indicator_set.get_or_create(type=Indicator.DISTRIBUTION_UPDATED, node=node)[0].value
