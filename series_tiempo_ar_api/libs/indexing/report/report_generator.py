@@ -46,7 +46,9 @@ class ReportGenerator(object):
             'finish_time': self._format_date(self.task.finished),
             'is_partial_report': bool(node),
         }
-        context.update({indicator: self._get_indicator_value(indicator) for indicator, _ in Indicator.TYPE_CHOICES})
+        context.update({
+            indicator: self._get_indicator_value(indicator, node=node) for indicator, _ in Indicator.TYPE_CHOICES
+        })
         self.send_email(context, node)
 
     def send_email(self, context, node=None):
@@ -162,7 +164,9 @@ class ReportGenerator(object):
 
         not_indexable = total - indexable
         self.task.indicator_set.create(type=Indicator.DATASET_NOT_INDEXABLE, value=not_indexable, node=node)
-        updated = self.task.indicator_set.get_or_create(type=Indicator.DATASET_UPDATED, node=node)[0].value
+
+        updated = Dataset.objects.filter(catalog=catalog, updated=True).count()
+        self.task.indicator_set.create(type=Indicator.DATASET_UPDATED, value=updated, node=node)
 
         not_updated = indexable - updated
         self.task.indicator_set.create(type=Indicator.DATASET_NOT_UPDATED, value=not_updated, node=node)
