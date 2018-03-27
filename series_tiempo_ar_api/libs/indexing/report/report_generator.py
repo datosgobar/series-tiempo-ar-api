@@ -65,6 +65,9 @@ class ReportGenerator(object):
         mail = EmailMultiAlternatives(subject, msg, settings.EMAIL_HOST_USER, emails)
         html_msg = render_to_string('indexing/report.html', context=context)
         mail.attach_alternative(html_msg, 'text/html')
+
+        mail.attach('errors.log', self.task.logs, 'text/plain')
+
         sent = mail.send()
         if emails and not sent:
             raise ValueError
