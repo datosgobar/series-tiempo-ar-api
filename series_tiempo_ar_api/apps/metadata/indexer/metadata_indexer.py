@@ -9,7 +9,7 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 from . import strings
 
-logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class MetadataIndexer(object):
@@ -17,12 +17,16 @@ class MetadataIndexer(object):
     def __init__(self, data_json):
         self.data_json = data_json
         self.elastic = ElasticInstance.get()
+        logger.info('Hosts de ES: %s', self.elastic.transport.hosts)
 
     def index(self):
+        logger.info(u'Inicio de la indexación de metadatos')
         self.init_index()
+
         actions = self.scrap_datajson()
 
         self.index_actions(actions)
+        logger.info(u'Fin de la indexación de metadatos')
 
     # noinspection PyProtectedMember
     def init_index(self):
@@ -33,7 +37,7 @@ class MetadataIndexer(object):
     def index_actions(self, actions):
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
-                logging.info(strings.INDEXING_ERROR, info)
+                logger.info(strings.INDEXING_ERROR, info)
 
     def scrap_datajson(self):
         themes = self.get_themes(self.data_json['themeTaxonomy'])
@@ -62,6 +66,7 @@ class MetadataIndexer(object):
         for dataset in self.data_json['dataset']:
             if dataset['identifier'] == identifier:
                 return dataset
+        raise ValueError(u'Identifier no encontrado: {}'.format(identifier))
 
     @staticmethod
     def get_themes(theme_taxonomy):
