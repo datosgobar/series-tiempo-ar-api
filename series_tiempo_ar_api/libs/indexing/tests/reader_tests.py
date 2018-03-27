@@ -137,6 +137,7 @@ class IndexerTests(TestCase):
             DistributionIndexer(index=self.test_index).run(distribution)
         self.elastic.indices.forcemerge(index=self.test_index)
 
+
 class ReaderTests(TestCase):
     catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
     catalog_id = 'catalog_id'
