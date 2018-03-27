@@ -116,8 +116,6 @@ class ReportGenerator(object):
         self.task.indicator_set.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
 
         catalog = Catalog.objects.get(identifier=node.catalog_id)
-        total = self.task.indicator_set.filter(type=Indicator.FIELD_TOTAL)
-        total = total[0].value if total else 0
 
         indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
                                          distribution__dataset__indexable=True).count()
@@ -139,8 +137,6 @@ class ReportGenerator(object):
                                        node=node)
 
         catalog = Catalog.objects.get(identifier=node.catalog_id)
-        total = self.task.indicator_set.filter(type=Indicator.DISTRIBUTION_TOTAL)
-        total = total[0].value if total else 0
 
         indexable = Distribution.objects.filter(dataset__catalog=catalog,
                                                 dataset__indexable=True).count()
@@ -160,8 +156,6 @@ class ReportGenerator(object):
         self.task.indicator_set.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
 
         catalog = Catalog.objects.get(identifier=node.catalog_id)
-        total = self.task.indicator_set.filter(type=Indicator.DATASET_TOTAL)
-        total = total[0].value if total else 0
 
         indexable = Dataset.objects.filter(catalog=catalog, indexable=True).count()
         self.task.indicator_set.create(type=Indicator.DATASET_INDEXABLE, value=indexable, node=node)
