@@ -41,7 +41,7 @@ class MetadataIndexer(object):
         actions = []
         for field in self.data_json.get_fields(only_time_series=True):
             dataset = datasets.setdefault(field['dataset_identifier'],
-                                          self.data_json.get_dataset(identifier=field['dataset_identifier']))
+                                          self.get_dataset(identifier=field['dataset_identifier']))
 
             doc = Field(
                 title=field.get('title'),
@@ -57,6 +57,11 @@ class MetadataIndexer(object):
             )
             actions.append(doc.to_dict(include_meta=True))
         return actions
+
+    def get_dataset(self, identifier):
+        for dataset in self.data_json['dataset']:
+            if dataset['identifier'] == identifier:
+                return dataset
 
     @staticmethod
     def get_themes(theme_taxonomy):
