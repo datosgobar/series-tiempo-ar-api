@@ -86,7 +86,7 @@ class ReportGenerator(object):
         if not indicator_queryset:
             return 0
 
-        return sum([indic.value for indic in indicator_queryset])
+        return int(sum([indic.value for indic in indicator_queryset]))
 
     def calculate_indicators(self):
 
