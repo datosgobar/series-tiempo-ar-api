@@ -40,10 +40,6 @@ class DistributionIndexer:
             if not success:
                 logger.warn(strings.BULK_REQUEST_ERROR, info)
 
-        # Fuerzo a que los datos estén disponibles para queries inmediatamente
-        segments = constants.FORCE_MERGE_SEGMENTS
-        self.elastic.indices.forcemerge(index=self.index, params={'max_num_segments': segments})
-
     @staticmethod
     def init_df(distribution, fields):
         """Inicializa el DataFrame del CSV de la distribución pasada,

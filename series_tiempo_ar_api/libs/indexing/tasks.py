@@ -7,6 +7,7 @@ from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
 from series_tiempo_ar_api.apps.api.models import Dataset, Catalog
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from .report.report_generator import ReportGenerator
@@ -86,3 +87,6 @@ def scheduler():
 
     if not get_queue('indexing').jobs:
         ReportGenerator(task).generate()
+
+    elastic = ElasticInstance.get()
+    elastic.indices.forcemerge(index=settings.TS_INDEX)
