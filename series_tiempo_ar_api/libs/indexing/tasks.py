@@ -41,7 +41,10 @@ def index_distribution(distribution_id, node_id, task,
             DistributionIndexer(index=index).run(distribution_model)
 
     except Exception as e:
-        ReadDataJsonTask.info(task, u"Excepción en distrbución {}: {}".format(distribution_id, e.message))
+        ReadDataJsonTask.info(
+            task,
+            u"Excepción en distrbución {} del catálogo {}: {}".format(distribution_id, node.catalog_id, e.message)
+        )
         indicator_loader = IndicatorLoader()
         indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
         indicator_loader.increment_indicator(node.catalog_id,
