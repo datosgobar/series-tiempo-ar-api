@@ -116,6 +116,13 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
         <td>simple</td>
         <td>metadata=none</td>
     </tr>
+    <tr>
+        <td>decimal</td>
+        <td>No</td>
+        <td>Caracter utilizado para los decimales.<br><br>Uno de: <em>"," o "."</em></td>
+        <td>.</td>
+        <td>metadata=,</td>
+    </tr>
 </table>
 
 ### `ids`
@@ -280,5 +287,13 @@ Las opciones disponibles son:
 * *simple*: Se devuelven los metadatos más importantes para comprender y utilizar las series (default).
 * *full*: Se devuelven todos los metadatos disponibles que tengan relación con cada serie.
 
+### `decimal`
+
+Especifica el caracter utilizado para los números decimales, siendo *.* el valor por defecto. Sólo aplica cuando `format=csv`.
+
+Las opciones disponibles son:
+
+* *,*: Coma.
+* *.*: Punto.
 
 
