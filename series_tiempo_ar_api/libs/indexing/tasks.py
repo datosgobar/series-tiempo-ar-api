@@ -23,7 +23,7 @@ def index_distribution(distribution_id, node_id, task,
     node = Node.objects.get(id=node_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution = catalog.get_distribution(identifier=distribution_id)
-    dataset_model = get_dataset(catalog, node.catalog_id, distribution['dataset_identifier'], whitelist)
+    dataset_model = _get_dataset(catalog, node.catalog_id, distribution['dataset_identifier'], whitelist)
     if not dataset_model.indexable:
         return
 
@@ -42,29 +42,31 @@ def index_distribution(distribution_id, node_id, task,
             DistributionIndexer(index=index).run(distribution_model)
 
     except Exception as e:
-        msg = u"Excepción en distrbución {} del catálogo {}: {}"
-        if e.message:
-            e_msg = e.message
-        else:
-            e_msg = format_exc()
-
-        msg = msg.format(distribution_id, node.catalog_id, e_msg)
-        ReadDataJsonTask.info(task, msg)
-        indicator_loader = IndicatorLoader()
-        indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
-        indicator_loader.increment_indicator(node.catalog_id,
-                                             Indicator.FIELD_ERROR,
-                                             amt=len(distribution['field'][1:]))
-        # No usamos un contador manejado por el indicator_loader para asegurarse que los datasets
-        # sean contados una única vez (pueden fallar una vez por cada una de sus distribuciones)
-        dataset_model.error = True
-        dataset_model.save()
-
-        if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
-            raise e  # Django-rq / sentry logging
+        _handle_exception(dataset_model, distribution, distribution_id, e, node, task)
 
 
-def get_dataset(catalog, catalog_id, dataset_id, whitelist):
+def _handle_exception(dataset_model, distribution, distribution_id, exc, node, task):
+    msg = u"Excepción en distrbución {} del catálogo {}: {}"
+    if exc.message:
+        e_msg = exc.message
+    else:
+        e_msg = format_exc()
+    msg = msg.format(distribution_id, node.catalog_id, e_msg)
+    ReadDataJsonTask.info(task, msg)
+    indicator_loader = IndicatorLoader()
+    indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
+    indicator_loader.increment_indicator(node.catalog_id,
+                                         Indicator.FIELD_ERROR,
+                                         amt=len(distribution['field'][1:]))
+    # No usamos un contador manejado por el indicator_loader para asegurarse que los datasets
+    # sean contados una única vez (pueden fallar una vez por cada una de sus distribuciones)
+    dataset_model.error = True
+    dataset_model.save()
+    if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
+        raise exc  # Django-rq / sentry logging
+
+
+def _get_dataset(catalog, catalog_id, dataset_id, whitelist):
     catalog_model, created = Catalog.objects.get_or_create(identifier=catalog_id)
     if created:
         IndicatorLoader().increment_indicator(catalog_id, Indicator.CATALOG_NEW)
