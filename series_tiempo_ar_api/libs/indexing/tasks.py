@@ -1,5 +1,6 @@
 #! coding: utf-8
 import json
+from traceback import format_exc
 
 from django.conf import settings
 from django_rq import job, get_queue
@@ -41,10 +42,14 @@ def index_distribution(distribution_id, node_id, task,
             DistributionIndexer(index=index).run(distribution_model)
 
     except Exception as e:
-        ReadDataJsonTask.info(
-            task,
-            u"Excepción en distrbución {} del catálogo {}: {}".format(distribution_id, node.catalog_id, e.message)
-        )
+        msg = u"Excepción en distrbución {} del catálogo {}: {}"
+        if e.message:
+            e_msg = e.message
+        else:
+            e_msg = format_exc()
+
+        msg = msg.format(distribution_id, node.catalog_id, e_msg)
+        ReadDataJsonTask.info(task, msg)
         indicator_loader = IndicatorLoader()
         indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
         indicator_loader.increment_indicator(node.catalog_id,
