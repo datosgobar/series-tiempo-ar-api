@@ -1,7 +1,8 @@
 from django.conf.urls import url
-from .views import save, export_analytics
+from .views import save, read_analytics, export_analytics
 
 urlpatterns = [
     url('^save/$', save, name='save'),
-    url('^analytics.csv', export_analytics, name='read_analytics'),
+    url('^analytics.csv', read_analytics, name='read_analytics'),
+    url('^export', export_analytics, name='export_analytics'),
 ]
