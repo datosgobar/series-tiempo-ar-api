@@ -9,7 +9,6 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render
 
 from .tasks import analytics, export
 
@@ -42,11 +41,9 @@ def save(request):
 
 
 @staff_member_required
-def read_analytics(request):
-    return sendfile.sendfile(request, os.path.join(settings.PROTECTED_MEDIA_DIR, 'analytics.csv'))
-
-
-@staff_member_required
 def export_analytics(request):
-    export.delay()
-    return HttpResponse(render(request, 'export.html'))
+    export()
+    return sendfile.sendfile(request,
+                             os.path.join(settings.PROTECTED_MEDIA_DIR, 'analytics.csv'),
+                             attachment=True,
+                             attachment_filename='data.csv')
