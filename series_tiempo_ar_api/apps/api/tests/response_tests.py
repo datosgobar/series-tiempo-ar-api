@@ -64,3 +64,15 @@ class ResponseTests(TestCase):
         line_end = response.content.find('\n')
         header = response.content[:line_end]
         self.assertIn(self.series_desc, header)
+
+    def test_csv_different_decimal_empty_rows(self):
+        query = Query(index=settings.TEST_INDEX)
+
+        field = Field.objects.get(series_id=self.single_series)
+        query.add_series(self.single_series, field)
+        query.add_series(self.single_series, field, rep_mode='percent_change_a_year_ago')
+
+        generator = ResponseFormatterGenerator('csv').get_formatter()
+        response = generator.run(query, {'decimal': ','})
+
+        self.assertFalse("None" in response.content)

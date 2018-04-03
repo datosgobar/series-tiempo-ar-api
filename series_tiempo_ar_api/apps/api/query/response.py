@@ -60,10 +60,11 @@ class CSVFormatter(BaseFormatter):
         header = [settings.INDEX_COLUMN] + series_ids
 
         writer.writerow(header)
-        decimal_char = query_args.get(constants.PARAM_DEC_CHAR)
-        if decimal_char:  # Reemplazo los puntos decimales por el char pedido
+        decimal_char = query_args.get(constants.PARAM_DEC_CHAR, '.')
+        if decimal_char != '.':
+            # Reemplazo los puntos decimales por el char pedido
             for row in data:
-                row = [str(el).replace('.', decimal_char) for el in row]
+                row = [str(el).replace('.', decimal_char) if el else None for el in row]
                 writer.writerow(row)
         else:
             for row in data:
