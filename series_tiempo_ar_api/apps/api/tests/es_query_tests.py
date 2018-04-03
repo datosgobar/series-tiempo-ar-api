@@ -384,3 +384,22 @@ class QueryTest(TestCase):
         for row in data:
             self.assertIsNotNone(row[2])
             self.assertIsNone(row[1])
+
+    def test_same_series_rep_mode(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
+
+        data = self.query.run()
+
+        other_query = ESQuery(settings.TEST_INDEX)
+        other_query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
+        other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+
+        other_data = other_query.run()
+
+        # Esperado: mismos resultados, invertidos en orden de fila
+        for i, row in enumerate(data):
+            other_row = other_data[i]
+            self.assertEqual(row[0], other_row[0])
+            self.assertEqual(row[1], other_row[2])
+            self.assertEqual(row[2], other_row[1])
