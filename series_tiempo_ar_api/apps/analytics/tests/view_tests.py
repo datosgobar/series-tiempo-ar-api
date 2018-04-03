@@ -11,23 +11,6 @@ from django.contrib.auth.models import User
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
 
-class ExportViewTests(TestCase):
-
-    def test_export_when_not_staff(self):
-        response = self.client.get(reverse('analytics:export_analytics'))
-
-        # Expected: admin login redirect
-        self.assertEqual(response.status_code, 302)
-
-    def test_export_as_staff(self):
-        user = User(username='user', password='pass', email='mail@test.com', is_staff=True)
-        user.save()
-        self.client.force_login(user)
-        response = self.client.get(reverse('analytics:export_analytics'))
-
-        self.assertEqual(response.status_code, 200)
-
-
 class AnalyticsDownloadTests(TestCase):
 
     def test_download_when_not_staff(self):
