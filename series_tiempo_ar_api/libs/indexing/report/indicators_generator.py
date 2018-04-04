@@ -29,8 +29,7 @@ class IndicatorsGenerator(object):
         catalog_model = Catalog.objects.get(identifier=node.catalog_id)
         updated = catalog_model.updated
         self.create(type=Indicator.CATALOG_UPDATED, value=updated, node=node)
-        not_updated = 1 - updated
-        self.create(type=Indicator.CATALOG_NOT_UPDATED, value=not_updated, node=node)
+        self.create(type=Indicator.CATALOG_NOT_UPDATED, value=not updated, node=node)
         self.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
 
     def calculate_series_indicators(self, node, data_json):
