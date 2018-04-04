@@ -92,4 +92,5 @@ def scheduler():
         ReportGenerator(task).generate()
 
     elastic = ElasticInstance.get()
-    elastic.indices.forcemerge(index=settings.TS_INDEX)
+    if elastic.indices.exists(index=settings.TS_INDEX):
+        elastic.indices.forcemerge(index=settings.TS_INDEX)
