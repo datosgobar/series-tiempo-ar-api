@@ -14,13 +14,14 @@ class IndicatorLoader(object):
                            db=int(settings.DEFAULT_REDIS_DB))
 
     def load_indicators_into_db(self, task):
-        """Carga todas las variables de indicadores guardadas a la base de datos en modelos Indicator,
-        asociados a la task pasada
+        """Carga todas las variables de indicadores guardadas en Redis,
+        a la base de datos en modelos Indicator, asociados a la task pasada
         """
         for node in Node.objects.filter(indexable=True):
             for indicator, _ in Indicator.TYPE_CHOICES:
-                value = self.redis.get(self.fmt(node.catalog_id, indicator)) or 0
-                task.indicator_set.create(type=indicator, value=value, node=node)
+                value = self.redis.get(self.fmt(node.catalog_id, indicator))
+                if value:
+                    task.indicator_set.create(type=indicator, value=value, node=node)
 
     def increment_indicator(self, catalog_id, indicator, amt=1):
         self.redis.incr(self.fmt(catalog_id, indicator), amt)
