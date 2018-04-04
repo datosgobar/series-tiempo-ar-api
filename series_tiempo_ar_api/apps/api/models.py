@@ -14,6 +14,9 @@ class Catalog(models.Model):
 
 
 class Dataset(models.Model):
+    class Meta:
+        unique_together = (('identifier', 'catalog'),)
+
     identifier = models.CharField(max_length=200)
     metadata = models.TextField()
     catalog = models.ForeignKey(to=Catalog, on_delete=models.CASCADE)
