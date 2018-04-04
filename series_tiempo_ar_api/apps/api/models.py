@@ -8,6 +8,7 @@ class Catalog(models.Model):
     identifier = models.CharField(max_length=200, default='sspm', unique=True)
     metadata = models.TextField()
     updated = models.BooleanField(default=False)
+    error = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.title, self.identifier)

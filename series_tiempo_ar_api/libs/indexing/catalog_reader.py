@@ -37,6 +37,7 @@ def index_catalog(node, task, read_local=False, whitelist=False):
     catalog_model = Catalog.objects.filter(identifier=node.catalog_id)
     if catalog_model:
         catalog_model[0].updated = False
+        catalog_model[0].error = False
         catalog_model[0].save()
 
     Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False, updated=False, error=False)
@@ -50,4 +51,4 @@ def index_catalog(node, task, read_local=False, whitelist=False):
     Field.objects.filter(distribution__dataset__catalog=catalog_model).update(updated=False)
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
-        index_distribution.delay(identifier, node.id, task, read_local, whitelist)
+        index_distribution.delay(identifier, node.id, task.id, read_local, whitelist)

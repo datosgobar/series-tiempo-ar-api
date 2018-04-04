@@ -5,6 +5,7 @@ CATALOG_UPDATED = 'catalogos_actualizados_cant'
 CATALOG_TOTAL = 'catalogos_cant'
 
 CATALOG_NOT_UPDATED = 'catalogos_no_actualizados_cant'
+CATALOG_ERROR = 'catalogos_error_cant'
 
 DATASET_NEW = 'datasets_nuevos_cant'
 DATASET_UPDATED = 'datasets_actualizados_cant'
@@ -38,6 +39,7 @@ TYPE_CHOICES = (
     (CATALOG_TOTAL, 'Catálogos totales'),
     (CATALOG_UPDATED, 'Catálogos actualizados'),
     (CATALOG_NOT_UPDATED, 'Catálogos no actualizados'),
+    (CATALOG_ERROR, 'Catálogos con error'),
     (DATASET_NEW, 'Datasets nuevos'),
     (DATASET_TOTAL, 'Datasets totales'),
     (DATASET_UPDATED, 'Datasets actualizados'),

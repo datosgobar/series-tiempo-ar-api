@@ -17,10 +17,11 @@ from .scraping import Scraper
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
-def index_distribution(distribution_id, node_id, task,
+def index_distribution(distribution_id, node_id, task_id,
                        read_local=False, whitelist=False, index=settings.TS_INDEX):
 
     node = Node.objects.get(id=node_id)
+    task = ReadDataJsonTask.objects.get(id=task_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution = catalog.get_distribution(identifier=distribution_id)
     dataset_model = _get_dataset(catalog, node.catalog_id, distribution['dataset_identifier'], whitelist)
@@ -62,6 +63,10 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
     # sean contados una única vez (pueden fallar una vez por cada una de sus distribuciones)
     dataset_model.error = True
     dataset_model.save()
+
+    dataset_model.catalog.error = True
+    dataset_model.catalog.save()
+
     if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
         raise exc  # Django-rq / sentry logging
 
