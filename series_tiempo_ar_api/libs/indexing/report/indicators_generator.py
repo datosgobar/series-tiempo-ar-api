@@ -32,7 +32,7 @@ class IndicatorsGenerator(object):
         self.create(type=Indicator.CATALOG_NOT_UPDATED, value=not updated, node=node)
         self.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
 
-        error = Catalog.objects.filter(error=True).count()
+        error = catalog_model.error
         self.create(type=Indicator.CATALOG_ERROR, value=error, node=node)
 
     def calculate_dataset_indicators(self, node, data_json):
