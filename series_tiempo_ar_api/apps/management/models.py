@@ -169,10 +169,12 @@ class IndicatorMeta(ModelBase):
 class Indicator(models.Model):
     __metaclass__ = IndicatorMeta
 
+    class Meta:
+        unique_together = ('type', 'node', 'task',)
+
     TYPE_CHOICES = indicator_names.TYPE_CHOICES
 
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
-
