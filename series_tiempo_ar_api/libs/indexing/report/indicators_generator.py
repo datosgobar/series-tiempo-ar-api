@@ -35,6 +35,31 @@ class IndicatorsGenerator(object):
         error = Catalog.objects.filter(error=True).count()
         self.create(type=Indicator.CATALOG_ERROR, value=error, node=node)
 
+    def calculate_dataset_indicators(self, node, data_json):
+        dataset_total = len(data_json.get_datasets(only_time_series=True))
+        self.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
+
+        catalog = Catalog.objects.get(identifier=node.catalog_id)
+
+        indexable = Dataset.objects.filter(catalog=catalog, indexable=True).count()
+        self.create(type=Indicator.DATASET_INDEXABLE, value=indexable, node=node)
+
+        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False).count()
+        self.create(type=Indicator.DATASET_NOT_INDEXABLE,
+                    value=not_indexable,
+                    node=node)
+
+        updated = Dataset.objects.filter(catalog=catalog, updated=True).count()
+        self.create(type=Indicator.DATASET_UPDATED, value=updated, node=node)
+
+        not_updated = indexable - updated
+        self.create(type=Indicator.DATASET_NOT_UPDATED,
+                    value=not_updated,
+                    node=node)
+
+        error = Dataset.objects.filter(catalog=catalog, error=True).count()
+        self.create(type=Indicator.DATASET_ERROR, value=error, node=node)
+
     def calculate_series_indicators(self, node, data_json):
         fields_total = len(data_json.get_fields(only_time_series=True))
         self.create(type=Indicator.FIELD_TOTAL, value=fields_total, node=node)
@@ -79,28 +104,3 @@ class IndicatorsGenerator(object):
 
         not_updated = indexable - updated
         self.create(type=Indicator.DISTRIBUTION_NOT_UPDATED, value=not_updated, node=node)
-
-    def calculate_dataset_indicators(self, node, data_json):
-        dataset_total = len(data_json.get_datasets(only_time_series=True))
-        self.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
-
-        catalog = Catalog.objects.get(identifier=node.catalog_id)
-
-        indexable = Dataset.objects.filter(catalog=catalog, indexable=True).count()
-        self.create(type=Indicator.DATASET_INDEXABLE, value=indexable, node=node)
-
-        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False).count()
-        self.create(type=Indicator.DATASET_NOT_INDEXABLE,
-                    value=not_indexable,
-                    node=node)
-
-        updated = Dataset.objects.filter(catalog=catalog, updated=True).count()
-        self.create(type=Indicator.DATASET_UPDATED, value=updated, node=node)
-
-        not_updated = indexable - updated
-        self.create(type=Indicator.DATASET_NOT_UPDATED,
-                    value=not_updated,
-                    node=node)
-
-        error = Dataset.objects.filter(catalog=catalog, error=True).count()
-        self.create(type=Indicator.DATASET_ERROR, value=error, node=node)
