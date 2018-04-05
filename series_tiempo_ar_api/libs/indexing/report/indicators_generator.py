@@ -43,7 +43,7 @@ class IndicatorsGenerator(object):
         updated = indexable.filter(updated=True).count()
         self.create(type=Indicator.DATASET_UPDATED, value=updated, node=node)
 
-        not_updated = indexable.exclude(present=True, updated=True).count()
+        not_updated = indexable.filter(present=True).exclude(updated=True).count()
         self.create(type=Indicator.DATASET_NOT_UPDATED, value=not_updated, node=node)
 
         legacy_indexable = indexable.filter(present=False).count()
