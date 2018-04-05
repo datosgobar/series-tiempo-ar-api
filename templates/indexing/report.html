@@ -15,12 +15,16 @@
 
     <p>Datasets:</p>
     <ul>
-        <li>nuevos: {{ datasets_nuevos_cant }}</li>
-        <li>actualizados: {{ datasets_actualizados_cant }}</li>
-        <li>no actualizados: {{ datasets_no_actualizados_cant }}</li>
-        <li>indexables: {{ dataset_indexables_cant }}</li>
-        <li>no indexables: {{ datasets_no_indexables_cant }}</li>
+        <li>indexables (actualizados): {{ datasets_actualizados_cant }}</li>
+        <li>indexables (no actualizados): {{ datasets_no_actualizados_cant }}</li>
+        <li>indexables (discontinuos): {{ datasets_indexables_discontinuados_cant }}</li>
+        <li>indexables (totales): {{ datasets_indexables_cant }}</li>
         <li>error: {{ datasets_error_cant }}</li>
+        <li>no indexables (nuevos): {{ datasets_nuevos_cant }}</li>
+        <li>no indexables (anteriores): {{ datasets_no_indexables_anteriores_cant }}</li>
+        <li>no indexables (discontinuos): {{ datasets_no_indexables_discontinuados_cant }}</li>
+        <li>no indexables (totales): {{ datasets_no_indexables_cant }}</li>
+        <li>accesibles: {{ datasets_disponibles_cant }}</li>
         <li>totales: {{ datasets_cant }}</li>
     </ul>
 

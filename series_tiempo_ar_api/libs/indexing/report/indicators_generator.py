@@ -36,29 +36,67 @@ class IndicatorsGenerator(object):
         self.create(type=Indicator.CATALOG_ERROR, value=error, node=node)
 
     def calculate_dataset_indicators(self, node, data_json):
-        dataset_total = len(data_json.get_datasets(only_time_series=True))
-        self.create(type=Indicator.DATASET_TOTAL, value=dataset_total, node=node)
-
         catalog = Catalog.objects.get(identifier=node.catalog_id)
 
-        indexable = Dataset.objects.filter(catalog=catalog, indexable=True).count()
-        self.create(type=Indicator.DATASET_INDEXABLE, value=indexable, node=node)
+        indexable = Dataset.objects.filter(catalog=catalog, indexable=True)
 
-        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False).count()
-        self.create(type=Indicator.DATASET_NOT_INDEXABLE,
-                    value=not_indexable,
-                    node=node)
-
-        updated = Dataset.objects.filter(catalog=catalog, updated=True).count()
+        updated = indexable.filter(updated=True).count()
         self.create(type=Indicator.DATASET_UPDATED, value=updated, node=node)
 
-        not_updated = indexable - updated
-        self.create(type=Indicator.DATASET_NOT_UPDATED,
-                    value=not_updated,
-                    node=node)
+        not_updated = indexable.exclude(present=True, updated=True).count()
+        self.create(type=Indicator.DATASET_NOT_UPDATED, value=not_updated, node=node)
+
+        legacy_indexable = indexable.filter(present=False).count()
+        self.create(type=Indicator.DATASET_INDEXABLE_DISCONTINUED, value=legacy_indexable, node=node)
+
+        self.create(type=Indicator.DATASET_INDEXABLE, value=indexable.count(), node=node)
 
         error = Dataset.objects.filter(catalog=catalog, error=True).count()
         self.create(type=Indicator.DATASET_ERROR, value=error, node=node)
+
+        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False)
+
+        new = self.task.indicator_set.filter(node=node, type=Indicator.DATASET_NEW)
+        new = new[0].value if new else 0
+
+        not_indexable_previous = not_indexable.count() - new
+        self.create(type=Indicator.DATASET_NOT_INDEXABLE_PREVIOUS,
+                    value=not_indexable_previous,
+                    node=node)
+
+        not_indexable_discontinued = not_indexable.filter(present=False).count()
+        self.create(type=Indicator.DATASET_NOT_INDEXABLE_DISCONTINUED,
+                    value=not_indexable_discontinued,
+                    node=node)
+
+        self.create(type=Indicator.DATASET_NOT_INDEXABLE, value=not_indexable.count(), node=node)
+
+        available = len(data_json.get_datasets(only_time_series=True))
+        self.create(type=Indicator.DATASET_AVAILABLE, value=available, node=node)
+
+        total = Field.objects.values_list('distribution__dataset').distinct().count()
+        self.create(type=Indicator.DATASET_TOTAL, value=total, node=node)
+
+    def calculate_distribution_indicators(self, node, data_json):
+        catalog = Catalog.objects.get(identifier=node.catalog_id)
+
+        distribution_total = len(data_json.get_distributions(only_time_series=True))
+        self.create(type=Indicator.DISTRIBUTION_TOTAL, value=distribution_total, node=node)
+
+        indexable = Distribution.objects.filter(dataset__catalog=catalog,
+                                                dataset__indexable=True).count()
+        self.create(type=Indicator.DISTRIBUTION_INDEXABLE, value=indexable, node=node)
+
+        not_indexable = Distribution.objects.filter(dataset__catalog=catalog,
+                                                    dataset__indexable=False,
+                                                    dataset__present=True).count()
+        self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE, value=not_indexable, node=node)
+
+        updated = self.task.indicator_set.get_or_create(type=Indicator.DISTRIBUTION_UPDATED,
+                                                        node=node)[0].value
+
+        not_updated = indexable - updated
+        self.create(type=Indicator.DISTRIBUTION_NOT_UPDATED, value=not_updated, node=node)
 
     def calculate_series_indicators(self, node, data_json):
         fields_total = len(data_json.get_fields(only_time_series=True))
@@ -83,24 +121,3 @@ class IndicatorsGenerator(object):
         self.create(type=Indicator.FIELD_NOT_UPDATED,
                     value=not_updated,
                     node=node)
-
-    def calculate_distribution_indicators(self, node, data_json):
-        catalog = Catalog.objects.get(identifier=node.catalog_id)
-
-        distribution_total = len(data_json.get_distributions(only_time_series=True))
-        self.create(type=Indicator.DISTRIBUTION_TOTAL, value=distribution_total, node=node)
-
-        indexable = Distribution.objects.filter(dataset__catalog=catalog,
-                                                dataset__indexable=True).count()
-        self.create(type=Indicator.DISTRIBUTION_INDEXABLE, value=indexable, node=node)
-
-        not_indexable = Distribution.objects.filter(dataset__catalog=catalog,
-                                                    dataset__indexable=False,
-                                                    dataset__present=True).count()
-        self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE, value=not_indexable, node=node)
-
-        updated = self.task.indicator_set.get_or_create(type=Indicator.DISTRIBUTION_UPDATED,
-                                                        node=node)[0].value
-
-        not_updated = indexable - updated
-        self.create(type=Indicator.DISTRIBUTION_NOT_UPDATED, value=not_updated, node=node)
