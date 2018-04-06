@@ -10,7 +10,7 @@ from django.db import models, transaction
 from django.db.models.base import ModelBase
 from django.utils import timezone
 from . import strings
-from . import indicator_names
+from .indicator_names import IndicatorNamesMixin
 
 
 class BaseRegisterFile(models.Model):
@@ -155,26 +155,12 @@ class ReadDataJsonTask(models.Model):
             task.save()
 
 
-class IndicatorMeta(ModelBase):
-
-    def __getattr__(cls, item):
-        # Hack para definir los indicadores en un módulo aparte
-        try:
-            return getattr(indicator_names, item)
-        except AttributeError:
-            # noinspection PyUnresolvedReferences
-            return super(IndicatorMeta, cls).__getattr__(item)
-
-
-class Indicator(models.Model):
-    __metaclass__ = IndicatorMeta
+class Indicator(models.Model, IndicatorNamesMixin):
 
     class Meta:
         unique_together = ('type', 'node', 'task',)
 
-    TYPE_CHOICES = indicator_names.TYPE_CHOICES
-
-    type = models.CharField(max_length=100, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=100, choices=IndicatorNamesMixin.TYPE_CHOICES)
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
