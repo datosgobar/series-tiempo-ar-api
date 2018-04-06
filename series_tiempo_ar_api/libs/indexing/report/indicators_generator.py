@@ -113,11 +113,13 @@ class IndicatorsGenerator(object):
         not_indexable_total = new + not_indexable_previous + not_indexable_discontinued
         self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE, value=not_indexable_total, node=node)
 
-        available = len(data_json.get_distributions(only_time_series=True))
-        self.create(type=Indicator.DISTRIBUTION_AVAILABLE, value=available, node=node)
+        self.create(type=Indicator.DISTRIBUTION_AVAILABLE,
+                    value=len(data_json.get_distributions(only_time_series=True)),
+                    node=node)
 
-        total = Field.objects.values_list('distribution').distinct().count()
-        self.create(type=Indicator.DISTRIBUTION_TOTAL, value=total, node=node)
+        self.create(type=Indicator.DISTRIBUTION_TOTAL,
+                    value=Field.objects.values_list('distribution').distinct().count(),
+                    node=node)
 
     def calculate_series_indicators(self, node, data_json):
         catalog = Catalog.objects.get(identifier=node.catalog_id)
@@ -158,8 +160,8 @@ class IndicatorsGenerator(object):
         not_indexable = not_indexable_previous + new + not_indexable_discontinued
         self.create(type=Indicator.FIELD_NOT_INDEXABLE, value=not_indexable, node=node)
 
-        available = len(data_json.get_fields(only_time_series=True))
-        self.create(type=Indicator.FIELD_AVAILABLE, value=available, node=node)
+        self.create(type=Indicator.FIELD_AVAILABLE,
+                    value=len(data_json.get_fields(only_time_series=True)),
+                    node=node)
 
-        total = Field.objects.count()
-        self.create(type=Indicator.FIELD_TOTAL, value=total, node=node)
+        self.create(type=Indicator.FIELD_TOTAL, value=Field.objects.count(), node=node)
