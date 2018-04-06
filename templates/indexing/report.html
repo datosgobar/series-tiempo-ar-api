@@ -24,30 +24,38 @@
         <li>no indexables (anteriores): {{ datasets_no_indexables_anteriores_cant }}</li>
         <li>no indexables (discontinuos): {{ datasets_no_indexables_discontinuados_cant }}</li>
         <li>no indexables (totales): {{ datasets_no_indexables_cant }}</li>
-        <li>accesibles: {{ datasets_disponibles_cant }}</li>
-        <li>totales: {{ datasets_cant }}</li>
+        <li>totales (disponibles para indexar): {{ datasets_disponibles_cant }}</li>
+        <li>totales (accesibles por API): {{ datasets_cant }}</li>
     </ul>
 
     <p>Distribuciones:</p>
     <ul>
-        <li>nuevos: {{ distribuciones_nuevas_cant }}</li>
-        <li>actualizados: {{ distribuciones_actualizadas_cant }}</li>
-        <li>no actualizados: {{ distribuciones_no_actualizadas_cant }}</li>
-        <li>indexables: {{ distribuciones_indexables_cant }}</li>
-        <li>no indexables: {{ distribuciones_no_indexables_cant }}</li>
+        <li>indexables (actualizados): {{ distribuciones_actualizadas_cant }}</li>
+        <li>indexables (no actualizados): {{ distribuciones_no_actualizadas_cant }}</li>
+        <li>indexables (discontinuos): {{ distribuciones_indexables_discontinuadas_cant }}</li>
+        <li>indexables (totales): {{ distribuciones_indexables_cant }}</li>
         <li>error: {{ distribuciones_error_cant }}</li>
-        <li>totales: {{ distribuciones_cant }}</li>
+        <li>no indexables (nuevos): {{ distribuciones_nuevas_cant }}</li>
+        <li>no indexables (anteriores): {{ distribuciones_no_indexables_anteriores_cant }}</li>
+        <li>no indexables (discontinuos): {{ distribuciones_no_indexables_discontinuadas_cant }}</li>
+        <li>no indexables (totales): {{ distribuciones_no_indexables_cant }}</li>
+        <li>totales (disponibles para indexar): {{ distribuciones_disponibles_cant }}</li>
+        <li>totales (accesibles por API): {{ distribuciones_cant }}</li>
     </ul>
 
     <p>Series:</p>
     <ul>
-        <li>nuevos: {{ series_nuevas_cant }}</li>
-        <li>actualizados: {{ series_actualizadas_cant }}</li>
-        <li>no actualizados: {{ series_no_actualizadas_cant }}</li>
-        <li>indexables: {{ series_indexables_cant }}</li>
-        <li>no indexables: {{ series_no_indexables_cant }}</li>
+        <li>indexables (actualizados): {{ series_actualizadas_cant }}</li>
+        <li>indexables (no actualizados): {{ series_no_actualizadas_cant }}</li>
+        <li>indexables (discontinuos): {{ series_indexables_discontinuadas_cant }}</li>
+        <li>indexables (totales): {{ series_indexables_cant }}</li>
         <li>error: {{ series_error_cant }}</li>
-        <li>totales: {{ field_cant }}</li>
+        <li>no indexables (nuevos): {{ series_nuevas_cant }}</li>
+        <li>no indexables (anteriores): {{ series_no_indexables_anteriores_cant }}</li>
+        <li>no indexables (discontinuos): {{ series_no_indexables_discontinuadas_cant }}</li>
+        <li>no indexables (totales): {{ series_no_indexables_cant }}</li>
+        <li>totales (publicados en catálogos): {{ series_disponibles_cant }}</li>
+        <li>totales (accesibles por API): {{ field_cant }}</li>
     </ul>
 </body>
 </html>
