@@ -151,12 +151,11 @@ class ESQuery(object):
 
         for i, response in enumerate(responses):
             rep_mode = self.series[i].rep_mode
-            series_id = self.series[i].series_id
 
             for hit in response:
                 data = hit[rep_mode] if rep_mode in hit else None
                 timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
-                timestamp_dict[series_id] = data
+                timestamp_dict[self._data_dict_series_key(self.series[i])] = data
 
         if not self.data_dict:  # No hay datos
             return
@@ -178,9 +177,17 @@ class ESQuery(object):
             row = [timestamp]
 
             for series in self.series:
-                row.append(self.data_dict[timestamp].get(series.series_id))
+                row.append(self.data_dict[timestamp].get(self._data_dict_series_key(series)))
 
             self.data.append(row)
+
+    @staticmethod
+    def _data_dict_series_key(series):
+        """Key única para identificar la serie pedida en el data_dict armado. Evita
+        que se pisen series en queries que piden la misma serie con distintos rep modes
+        o aggs (ver issue #243)
+        """
+        return series.series_id + series.rep_mode + series.collapse_agg
 
     def _make_date_index_continuous(self, start_date, end_date):
         """Hace el índice de tiempo de los resultados continuo (según

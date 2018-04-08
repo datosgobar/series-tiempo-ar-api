@@ -302,5 +302,5 @@ ENV_TYPE = env('ENV_TYPE', default='')
 # Tarea a ser croneada para indexación
 READ_DATAJSON_SHELL_CMD = env('READ_DATAJSON_BIN_PATH', default='')
 
-PROTECTED_MEDIA_DIR = ROOT_DIR('protected')
+PROTECTED_MEDIA_DIR = env('PROTECTED_MEDIA_DIR', default=ROOT_DIR('protected'))
 ANALYTICS_CSV_FILENAME = 'analytics.csv'
