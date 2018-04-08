@@ -4,22 +4,53 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
  
 
-- [Descargar una tabla con una o varias series](#descargar-una-tabla-con-una-o-varias-series)
-- [Filtrar por fechas](#filtrar-por-fechas)
-- [Cambiar la agregación temporal](#cambiar-la-agregacion-temporal)
-- [Cambiar la función de agregación temporal](#cambiar-la-funcion-de-agregaci%C3%B3n-temporal)
-- [Aplicar transformaciones](#aplicar-transformaciones)
-- [Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez](#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez)
+- [Pasos](#pasos)
+  - [1. Buscar series](#1-buscar-series)
+  - [2. Armar consulta](#2-armar-consulta)
+  - [3. Descargar o integrar consulta](#3-descargar-o-integrar-consulta)
+- [Tipos de consulta](#tipos-de-consulta)
+  - [Descargar una tabla con una o varias series](#descargar-una-tabla-con-una-o-varias-series)
+  - [Filtrar por fechas](#filtrar-por-fechas)
+  - [Cambiar la agregación temporal](#cambiar-la-agregacion-temporal)
+  - [Cambiar la función de agregación temporal](#cambiar-la-funcion-de-agregaci%C3%B3n-temporal)
+  - [Aplicar transformaciones](#aplicar-transformaciones)
+  - [Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez](#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## ¿Dónde encontrar los ids y otros metadatos de las series?
+## Pasos
 
-En http://www.datos.gob.ar podés encontrar la [base completa de series de tiempo](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional) y [descargar la lista de series](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv) disponibles para buscar cuáles consultar a la API.
+### 1. Buscar series
 
-También podés descargarte de ahí [todos los valores de la base completa](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.3/download/series-tiempo-valores.csv), en lugar de usar la API.
+**En datos.gob.ar**
 
-## Descargar una tabla con una o varias series
+En http://www.datos.gob.ar podés encontrar la [base completa de series de tiempo](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional).
+
+**Descargar lista de series**: [CSV](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv) - [XLSX](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.6/download/series-tiempo-metadatos.xlsx) - [DTA](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.10/download/series-tiempo-metadatos.dta).
+
+**En aplicaciones web**
+
+* **Generador de URLs**: https://datosgobar.github.io/series-tiempo-ar-explorador
+* **Buscador y visualizador**: http://series-de-tiempo-ar-graficos.netlify.com/
+
+### 2. Armar consulta
+
+Los ids de las series deben pasarse al parámetro `ids` del *endpoint* principal `series`:
+
+```md
+http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15
+```
+
+Hay varios parámetros opcionales para hacer distintos tipos de consulta ([Ver referencia API](api_reference.md))
+
+### 3. Descargar o integrar consulta
+
+* Integrar con aplicaciones: usar con `format=json` y el nivel de metadatos necesario `metadata=none, only, simple o full`.
+* Integrar con planillas de cálculo: usar con `format=csv` ([ver "Integración con planillas de cálculo"](spreadsheet_integration.md)).
+
+## Tipos de consulta
+
+### Descargar una tabla con una o varias series
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general*
 
@@ -29,7 +60,7 @@ http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016
 [Descargar](http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15&format=csv
 )
 
-## Filtrar por fechas
+### Filtrar por fechas
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016*
 
@@ -55,7 +86,7 @@ http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016
 [Descargar](http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&start_date=2016-01-01&end_date=2016-12-01
 )
 
-## Cambiar la agregación temporal
+### Cambiar la agregación temporal
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales*
 
@@ -65,7 +96,7 @@ http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016
 [Descargar](http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
 )
 
-## Cambiar la función de agregación temporal
+### Cambiar la función de agregación temporal
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales a último valor del período*
 
@@ -82,7 +113,7 @@ http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41:end_of_period,
 ```
 [Descargar](http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
 )
-## Aplicar transformaciones
+### Aplicar transformaciones
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, en valores mensuales y variación porcentual*
 
@@ -100,7 +131,7 @@ http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016
 [Descargar](http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&collapse=month&format=csv&start_date=2016-01-01
 )
 
-## Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez
+### Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez
 
 *Tipo de cambio (variaciones porcentuales entre los últimos valores de cada período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales*
 
