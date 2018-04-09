@@ -74,7 +74,8 @@ class IndicatorsGenerator(object):
         available = len(data_json.get_datasets(only_time_series=True))
         self.create(type=Indicator.DATASET_AVAILABLE, value=available, node=node)
 
-        total = Field.objects.values_list('distribution__dataset').distinct().count()
+        total = Field.objects.filter(distribution__dataset__catalog=catalog)\
+            .values_list('distribution__dataset').distinct().count()
         self.create(type=Indicator.DATASET_TOTAL, value=total, node=node)
 
     def calculate_distribution_indicators(self, node, data_json):
@@ -118,7 +119,8 @@ class IndicatorsGenerator(object):
                     node=node)
 
         self.create(type=Indicator.DISTRIBUTION_TOTAL,
-                    value=Field.objects.values_list('distribution').distinct().count(),
+                    value=Field.objects.filter(distribution__dataset__catalog=catalog).
+                    values_list('distribution').distinct().count(),
                     node=node)
 
     def calculate_series_indicators(self, node, data_json):
@@ -164,4 +166,6 @@ class IndicatorsGenerator(object):
                     value=len(data_json.get_fields(only_time_series=True)),
                     node=node)
 
-        self.create(type=Indicator.FIELD_TOTAL, value=Field.objects.count(), node=node)
+        self.create(type=Indicator.FIELD_TOTAL,
+                    value=Field.objects.filter(distribution__dataset__catalog=catalog).count(),
+                    node=node)
