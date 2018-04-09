@@ -32,4 +32,5 @@ class Command(BaseCommand):
 
         # Si se corre el comando sincrónicamete (local/testing), generar el reporte
         if not settings.RQ_QUEUES['indexing'].get('ASYNC', True):
+            task = ReadDataJsonTask.objects.get(id=task.id)
             ReportGenerator(task).generate()

@@ -6,4 +6,5 @@ omit =
     *strings.py
     *constants.py
     *models.py
-
+    *migrations/
+    series_tiempo_ar_api/apps/management/indicator_names.py

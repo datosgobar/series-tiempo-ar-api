@@ -8,6 +8,7 @@ class Catalog(models.Model):
     identifier = models.CharField(max_length=200, default='sspm', unique=True)
     metadata = models.TextField()
     updated = models.BooleanField(default=False)
+    error = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'%s (%s)' % (self.title, self.identifier)
@@ -24,6 +25,7 @@ class Dataset(models.Model):
     present = models.BooleanField(default=True)
     updated = models.BooleanField(default=False)
     error = models.BooleanField(default=False)
+    available = models.BooleanField(default=False)  # True si fue alguna vez indexado
 
     def __unicode__(self):
         return u'%s (%s)' % (self.identifier, self.catalog.identifier)

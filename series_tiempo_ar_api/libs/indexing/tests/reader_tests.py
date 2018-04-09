@@ -200,7 +200,11 @@ class IndicatorsTests(TestCase):
         self.loader = IndicatorLoader()
         self.loader.clear_indicators()  # Just in case
         self.task = ReadDataJsonTask.objects.create()
-        self.node = Node(catalog_id=self.catalog_id, catalog_url=self.catalog, indexable=True)
+        self.node = Node(catalog_id=self.catalog_id,
+                         catalog_url=self.catalog,
+                         indexable=True,
+                         catalog=json.dumps(DataJson(self.catalog)))
+        Catalog(identifier=self.catalog_id, title='test catalog', metadata='{}').save()
         self.node.save()
 
     def test_error_distribution_indicator(self):
@@ -233,10 +237,11 @@ class IndicatorsTests(TestCase):
     def test_multiple_nodes(self):
         catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
 
-        Node(catalog_id='otro', catalog_url=catalog, indexable=True).save()
-
-        self.loader.increment_indicator(self.catalog_id, Indicator.CATALOG_TOTAL)
-        self.loader.increment_indicator('otro', Indicator.CATALOG_TOTAL)
+        Node(catalog_id='otro',
+             catalog_url=catalog,
+             indexable=True,
+             catalog=json.dumps(DataJson(catalog))).save()
+        Catalog(identifier='otro', title='test catalog', metadata='{}').save()
         ReportGenerator(self.task).generate()
 
         self.assertEqual(2, self.task.indicator_set.filter(type=Indicator.CATALOG_TOTAL).count())
