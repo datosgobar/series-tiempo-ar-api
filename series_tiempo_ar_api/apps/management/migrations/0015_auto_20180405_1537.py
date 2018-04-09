@@ -15,7 +15,12 @@ def clean_duplicates(*_):
             indicators = task.indicator_set.filter(type=indicator_type)
             if len(indicators) > 1:
                 max_val = max([(indic.value, indic) for indic in indicators])
-                task.indicator_set.exclude(id=max_val[1].id).delete()
+                indicators.exclude(id=max_val[1].id).delete()
+
+    # Borro indicadores "legacy"
+    for indic in Indicator.objects.all():
+        if indic.type not in [t[0] for t in Indicator.TYPE_CHOICES]:
+            indic.delete()
 
 
 class Migration(migrations.Migration):
