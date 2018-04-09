@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
-from series_tiempo_ar_api.libs.indexing.report.attachments import generate_attachments
+from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 
@@ -70,7 +70,10 @@ class ReportGenerator(object):
         mail.attach_alternative(html_msg, 'text/html')
 
         mail.attach('errors.log', self.task.logs, 'text/plain')
-        mail.attach('catalogs.csv', generate_attachments(), 'text/csv')
+        mail.attach('catalogs.csv', attachments.generate_catalog_attachment(node=node), 'text/csv')
+        mail.attach('datasets.csv', attachments.generate_dataset_attachment(node=node), 'text/csv')
+        mail.attach('distributions.csv', attachments.generate_distribution_attachment(node=node), 'text/csv')
+        mail.attach('series.csv', attachments.generate_field_attachment(node=node), 'text/csv')
 
         sent = mail.send()
         if emails and not sent:

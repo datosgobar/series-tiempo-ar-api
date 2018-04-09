@@ -42,7 +42,7 @@ def index_catalog(node, task, read_local=False, whitelist=False):
 
     Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False, updated=False, error=False)
 
-    Distribution.objects.filter(dataset__catalog__identifier=node.catalog_id).update(updated=False)
+    Distribution.objects.filter(dataset__catalog__identifier=node.catalog_id).update(updated=False, error='')
     Field.objects.filter(distribution__dataset__catalog=catalog_model).update(updated=False)
     for distribution in catalog.get_distributions(only_time_series=True):
         identifier = distribution['identifier']
