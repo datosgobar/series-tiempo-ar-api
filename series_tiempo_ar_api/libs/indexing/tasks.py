@@ -65,7 +65,7 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
         distribution = Distribution.objects.get(identifier=distribution_id)
         distribution.error = msg
         distribution.save()
-    except IntegrityError:
+    except Distribution.DoesNotExist:
         pass
 
     # No usamos un contador manejado por el indicator_loader para asegurarse que los datasets
