@@ -19,7 +19,7 @@ def generate_attachments(queryset, get_indexable, get_present, get_error):
     writer.writerow(HEADER_ROW)
 
     for entity in queryset:
-        meta = json.loads(entity.metadata)
+        meta = json.loads(entity.metadata or '{}')
 
         error, error_msg = get_error(entity)
         writer.writerow([
