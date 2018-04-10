@@ -55,9 +55,10 @@ class AttachmentTests(TestCase):
         for row in reader:
             dataset = Dataset.objects.get(identifier=row[0])
 
-            self.assertEqual(dataset.indexable, row[4])
-            self.assertEqual(dataset.present, row[5])
-            self.assertEqual(dataset.error, row[6])
+            self.assertEqual(str(dataset.indexable), row[4])
+            self.assertEqual(str(dataset.available), row[5])
+            error = bool(dataset.error)
+            self.assertEqual(str(error), row[6])
 
     def test_distribution(self):
         out = attachments.generate_distribution_attachment()
@@ -69,21 +70,24 @@ class AttachmentTests(TestCase):
         for row in reader:
             distribution = Distribution.objects.get(identifier=row[0])
 
-            self.assertEqual(distribution.indexable, row[4])
-            self.assertEqual(distribution.dataset.present, row[5])
-            self.assertEqual(distribution.error, row[6])
+            self.assertEqual(str(distribution.indexable), row[4])
+            self.assertEqual(str(distribution.dataset.available), row[5])
+            error = bool(distribution.error)
+            self.assertEqual(str(error), row[6])
 
     def test_fields(self):
 
-        out = attachments.generate_distribution_attachment()
+        out = attachments.generate_field_attachment()
 
         stream = StringIO(out)
         reader = unicodecsv.reader(stream)
         reader.next()  # Skip header
 
+        fields = Field.objects.all()
         for row in reader:
-            field = Field.objects.get(identifier=row[0])
+            field = fields.get(series_id=row[0])
 
-            self.assertEqual(field.distribution.dataset.indexable, row[4])
-            self.assertEqual(field.distribution.dataset.present, row[5])
-            self.assertEqual(field.distribution.error, row[6])
+            self.assertEqual(str(field.distribution.dataset.indexable), row[4])
+            self.assertEqual(str(field.distribution.dataset.available), row[5])
+            error = bool(field.distribution.error)
+            self.assertEqual(str(error), row[6])

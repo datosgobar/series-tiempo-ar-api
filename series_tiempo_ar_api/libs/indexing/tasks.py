@@ -3,7 +3,7 @@ import json
 from traceback import format_exc
 
 from django.conf import settings
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
@@ -61,12 +61,13 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
                                          Indicator.FIELD_ERROR,
                                          amt=len(distribution['field'][1:]))
 
-    try:
-        distribution = Distribution.objects.get(identifier=distribution_id)
-        distribution.error = msg
-        distribution.save()
-    except Distribution.DoesNotExist:
-        pass
+    with transaction.atomic():
+        try:
+            distribution = Distribution.objects.get(identifier=distribution_id)
+            distribution.error = msg
+            distribution.save()
+        except Distribution.DoesNotExist:
+            pass
 
     # No usamos un contador manejado por el indicator_loader para asegurarse que los datasets
     # sean contados una única vez (pueden fallar una vez por cada una de sus distribuciones)

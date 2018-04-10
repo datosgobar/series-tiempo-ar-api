@@ -190,6 +190,8 @@ class DatabaseLoader(object):
             distribution_model.data_hash = data_hash
             distribution_model.last_updated = timezone.now()
             distribution_model.indexable = True
+            distribution_model.dataset.available = True
+            distribution_model.dataset.save()
             return True
         else:  # No cambió respecto a la corrida anterior
             distribution_model.indexable = False

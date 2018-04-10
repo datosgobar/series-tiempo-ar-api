@@ -37,7 +37,8 @@ def generate_attachments(queryset, get_indexable, get_present, get_error):
 
 
 def generate_catalog_attachment(node=None):
-    queryset = Catalog.objects.all()
+    ids = Node.objects.filter(indexable=True).values('catalog_id')
+    queryset = Catalog.objects.filter(identifier__in=ids)
     if node:
         queryset = queryset.filter(identifier=node.catalog_id)
     return generate_attachments(queryset,
