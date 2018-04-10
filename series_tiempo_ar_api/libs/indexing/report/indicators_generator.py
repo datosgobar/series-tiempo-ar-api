@@ -7,6 +7,7 @@ from series_tiempo_ar_api.apps.api.models import Catalog, Field, Distribution, D
 from series_tiempo_ar_api.apps.management.models import Indicator
 
 
+# pylint: disable=R0914
 class IndicatorsGenerator(object):
 
     def __init__(self, node, task):
@@ -58,15 +59,14 @@ class IndicatorsGenerator(object):
 
         new = self.task.indicator_set.filter(node=node, type=Indicator.DATASET_NEW)
         new = new[0].value if new else 0
-
-        not_indexable_previous = not_indexable.count() - new
-        self.create(type=Indicator.DATASET_NOT_INDEXABLE_PREVIOUS,
-                    value=not_indexable_previous,
-                    node=node)
-
         not_indexable_discontinued = not_indexable.filter(present=False).count()
         self.create(type=Indicator.DATASET_NOT_INDEXABLE_DISCONTINUED,
                     value=not_indexable_discontinued,
+                    node=node)
+
+        not_indexable_previous = not_indexable.count() - new - not_indexable_discontinued
+        self.create(type=Indicator.DATASET_NOT_INDEXABLE_PREVIOUS,
+                    value=not_indexable_previous,
                     node=node)
 
         self.create(type=Indicator.DATASET_NOT_INDEXABLE, value=not_indexable.count(), node=node)
@@ -83,20 +83,28 @@ class IndicatorsGenerator(object):
 
         indexable = Distribution.objects.filter(dataset__catalog=catalog, dataset__indexable=True)
 
-        not_updated = indexable.filter(dataset__present=True).exclude(dataset__updated=True).count()
-        self.create(type=Indicator.DISTRIBUTION_NOT_UPDATED, value=not_updated, node=node)
-
-        legacy_indexable = indexable.filter(dataset__present=False).count()
-        self.create(type=Indicator.DISTRIBUTION_INDEXABLE_DISCONTINUED, value=legacy_indexable, node=node)
-
+        not_updated = indexable.filter(dataset__present=True).exclude(updated=True)
         self.create(type=Indicator.DISTRIBUTION_INDEXABLE, value=indexable.count(), node=node)
 
-        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False)
+        not_indexable = Dataset.objects.filter(catalog=catalog, indexable=False, present=True)
         not_indexable_ids = not_indexable.values_list('identifier', flat=True)
         not_indexable_previous = 0
+        no_longer_present = 0
         for dataset in data_json['dataset']:
             if dataset.get('identifier') in not_indexable_ids:
                 not_indexable_previous += len(dataset.get('distribution', []))
+
+            ids = [dist.get('identifier') for dist in dataset.get('distribution', [])]
+            for dist in not_updated.filter(dataset__identifier=dataset.get('identifier')):
+                if dist.identifier not in ids:
+                    no_longer_present += 1
+
+        self.create(type=Indicator.DISTRIBUTION_NOT_UPDATED,
+                    value=not_updated.count() - no_longer_present,
+                    node=node)
+
+        legacy_indexable = indexable.filter(dataset__present=False).count() + no_longer_present
+        self.create(type=Indicator.DISTRIBUTION_INDEXABLE_DISCONTINUED, value=legacy_indexable, node=node)
 
         new = self.task.indicator_set.filter(node=node, type=Indicator.DISTRIBUTION_NEW)
         new = new[0].value if new else 0
@@ -133,6 +141,13 @@ class IndicatorsGenerator(object):
         self.create(type=Indicator.FIELD_NOT_UPDATED, value=not_updated, node=node)
 
         legacy_indexable = indexable.filter(distribution__dataset__present=False).count()
+
+        updated_models = indexable.filter(distribution__dataset__present=True,
+                                          distribution__dataset__updated=True).count()
+        updated_real = self.task.indicator_set.filter(type=Indicator.FIELD_UPDATED)
+        updated_real = updated_real[0].value if updated_real else 0
+        legacy_indexable += updated_models - updated_real
+
         self.create(type=Indicator.FIELD_INDEXABLE_DISCONTINUED, value=legacy_indexable, node=node)
 
         self.create(type=Indicator.FIELD_INDEXABLE, value=indexable.count(), node=node)
