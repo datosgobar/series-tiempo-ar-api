@@ -72,6 +72,6 @@ class ReadDataJsonTest(TestCase):
         self.user.save()
         from django_rq.queues import Queue
         with mock.patch.object(Queue, 'jobs', 0):
-            call_command('read_datajson')
+                call_command('read_datajson')
 
         self.assertEqual(len(mail.outbox), 1)

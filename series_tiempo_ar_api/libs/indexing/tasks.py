@@ -3,11 +3,12 @@ import json
 from traceback import format_exc
 
 from django.conf import settings
+from django.db import IntegrityError, transaction
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
-from series_tiempo_ar_api.apps.api.models import Dataset, Catalog
+from series_tiempo_ar_api.apps.api.models import Dataset, Catalog, Distribution
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
@@ -59,6 +60,15 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
     indicator_loader.increment_indicator(node.catalog_id,
                                          Indicator.FIELD_ERROR,
                                          amt=len(distribution['field'][1:]))
+
+    with transaction.atomic():
+        try:
+            distribution = Distribution.objects.get(identifier=distribution_id)
+            distribution.error = msg
+            distribution.save()
+        except Distribution.DoesNotExist:
+            pass
+
     # No usamos un contador manejado por el indicator_loader para asegurarse que los datasets
     # sean contados una única vez (pueden fallar una vez por cada una de sus distribuciones)
     dataset_model.error = True
@@ -72,11 +82,15 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
 
 
 def _get_dataset(catalog, catalog_id, dataset_id, whitelist):
+
     catalog_model, created = Catalog.objects.get_or_create(identifier=catalog_id)
     if created:
         IndicatorLoader().increment_indicator(catalog_id, Indicator.CATALOG_NEW)
         catalog_model.title = catalog['title']
         catalog_model.identifier = catalog_id
+        catalog_meta = catalog.copy()
+        catalog_meta.pop('dataset')
+        catalog_model.metadata = json.dumps(catalog_meta)
         catalog_model.save()
 
     dataset_model, created = Dataset.objects.get_or_create(
