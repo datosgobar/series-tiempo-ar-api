@@ -34,4 +34,15 @@ class Series(object):
         search = search.filter('bool',
                                must=[Q('match', series_id=self.series_id),
                                      Q('match', aggregation=self.collapse_agg)])
+
         return search
+
+    def add_range_filter(self, start, end):
+        _filter = {
+            'lte': end,
+            'gte': start
+        }
+        self.search = self.search.filter('range', timestamp=_filter)
+
+    def add_collapse(self, periodicity):
+        self.search = self.search.filter('bool', must=[Q('match', interval=periodicity)])

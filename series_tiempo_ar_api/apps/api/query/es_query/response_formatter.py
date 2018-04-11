@@ -7,12 +7,11 @@ from series_tiempo_ar_api.apps.api.query import constants
 
 class ResponseFormatter(object):
 
-    def __init__(self, series, responses, args, periodicity):
+    def __init__(self, series, responses, args):
         self.series = series
         self.responses = responses
         self.data_dict = {}
         self.args = args
-        self.periodicity = periodicity
 
     def format_response(self):
         """Procesa la respuesta recibida de Elasticsearch, la guarda en
@@ -82,5 +81,5 @@ class ResponseFormatter(object):
         end_date = iso8601.parse_date(end_date)
 
         while current_date < end_date:
-            current_date += get_relative_delta(self.periodicity)
+            current_date += get_relative_delta(self.args[constants.PARAM_PERIODICITY])
             self.data_dict.setdefault(unicode(current_date.date()), {})

@@ -1,6 +1,6 @@
 #! coding: utf-8
 from django.conf import settings
-from elasticsearch_dsl import MultiSearch, Q
+from elasticsearch_dsl import MultiSearch
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
@@ -24,7 +24,6 @@ class ESQuery(object):
         self.elastic = ElasticInstance()
         self.data = []
 
-        self.periodicity = None
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
             constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
@@ -40,7 +39,7 @@ class ESQuery(object):
             collapse_agg = constants.AGG_DEFAULT
 
         self._init_series(series_id, rep_mode, collapse_agg)
-        self.periodicity = periodicity
+        self.args[constants.PARAM_PERIODICITY] = periodicity
 
     def get_series_ids(self):
         """Devuelve una lista de series cargadas"""
@@ -64,7 +63,7 @@ class ESQuery(object):
         self.args[constants.PARAM_SORT] = how
 
     def add_collapse(self, interval):
-        self.periodicity = interval
+        self.args[constants.PARAM_PERIODICITY] = interval
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
         self.series.append(Series(series_id=series_id,
@@ -88,14 +87,8 @@ class ESQuery(object):
         if not len(self.series):
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
-        _filter = {
-            'lte': end,
-            'gte': start
-        }
         for serie in self.series:
-            # Agrega un filtro de rango temporal a la query de ES
-            serie.search = serie.search.filter('range',
-                                               timestamp=_filter)
+            serie.add_range_filter(start, end)
 
     def get_data_start_end_dates(self):
         if not self.data:
@@ -119,13 +112,11 @@ class ESQuery(object):
                                    using=self.elastic)
 
         for serie in self.series:
-            search = serie.search
-            search = search.filter('bool',
-                                   must=[Q('match', interval=self.periodicity)])
-            multi_search = multi_search.add(search)
+            serie.add_collapse(self.args[constants.PARAM_PERIODICITY])
+            multi_search = multi_search.add(serie.search)
 
         responses = multi_search.execute()
-        formatter = ResponseFormatter(self.series, responses, self.args, self.periodicity)
+        formatter = ResponseFormatter(self.series, responses, self.args)
         self.data = formatter.format_response()
         # Devuelvo hasta LIMIT values
         return self.data[:self.args[constants.PARAM_LIMIT]]
