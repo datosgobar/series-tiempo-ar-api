@@ -1,6 +1,6 @@
 #! coding: utf-8
 from django.conf import settings
-from elasticsearch_dsl import MultiSearch, Q, Search
+from elasticsearch_dsl import MultiSearch, Q
 
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
@@ -67,17 +67,10 @@ class ESQuery(object):
         self.periodicity = interval
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
-        search = Search(using=self.elastic, index=self.index)
-        end = self.args[constants.PARAM_START] + self.args[constants.PARAM_LIMIT]
-        search = search[self.args[constants.PARAM_START]:end]
-        search = search.sort(settings.TS_TIME_INDEX_FIELD)  # Default: ascending sort
-        # Filtra los resultados por la serie pedida
-        search = search.filter('bool',
-                               must=[Q('match', series_id=series_id),
-                                     Q('match', aggregation=collapse_agg)])
         self.series.append(Series(series_id=series_id,
+                                  index=self.index,
                                   rep_mode=rep_mode,
-                                  search=search,
+                                  args=self.args,
                                   collapse_agg=collapse_agg))
 
     def add_pagination(self, start, limit):
