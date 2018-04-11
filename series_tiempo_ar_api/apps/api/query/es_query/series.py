@@ -16,15 +16,6 @@ class Series(object):
         self.collapse_agg = collapse_agg or constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
         self.search = self.init_search()
 
-    def __getitem__(self, item):
-        return self.__getattribute__(item)
-
-    def __setitem__(self, key, value):
-        return self.__setattr__(key, value)
-
-    def get(self, item, default=None):
-        return getattr(self, item, default)
-
     def init_search(self):
         search = Search(using=self.elastic, index=self.index)
         end = self.args[constants.PARAM_START] + self.args[constants.PARAM_LIMIT]
