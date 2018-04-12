@@ -3,8 +3,8 @@ import os
 import json
 
 import unicodecsv
-from django.conf import settings
 from django_rq import job
+from django.conf import settings
 from django.utils.timezone import localtime
 from .models import Query
 from .utils import kong_milliseconds_to_tzdatetime
