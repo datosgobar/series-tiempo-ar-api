@@ -16,10 +16,14 @@ REP_MODES = [
 AGG_DEFAULT = 'avg'
 AGG_SUM = 'sum'
 AGG_END_OF_PERIOD = 'end_of_period'
+AGG_MAX = 'max'
+AGG_MIN = 'min'
 AGGREGATIONS = [
     AGG_DEFAULT,
     AGG_SUM,
     AGG_END_OF_PERIOD,
+    AGG_MAX,
+    AGG_MIN,
 ]
 
 COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
@@ -127,28 +131,9 @@ COLLAPSE_AGG_NAME = 'agg'
 
 CSV_RESPONSE_FILENAME = 'data.csv'
 
+PARAM_PERIODICITY = 'periodicity'
 
-# Scripts de map reduce para calcular End of Period en Elasticsearch
-EOP_INIT = """
-params._agg.last_date = -1;
-params._agg.value = 0;
-"""
-
-EOP_MAP = """
-if (doc.timestamp.value > params._agg.last_date) {
-    params._agg.last_date = doc.timestamp.value;
-    params._agg.value = doc.value.value;
-}
-"""
-
-EOP_REDUCE = """
-double value = -1;
-long last_date = 0;
-for (a in params._aggs) {
-    if (a != null && a.last_date > last_date && a.value != 0.0) {
-        value = a.value;
-        last_date = a.last_date;
-        }
-    }
-return value
-"""
+IN_MEMORY_AGGS = [
+    AGG_MAX,
+    AGG_MIN
+]
