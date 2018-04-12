@@ -2,6 +2,16 @@
 <html lang="en">
 <body>
     <p>Horario de finalización: {{ finish_time }}</p>
+
+    <h4>Resumen</h4>
+    <ul>
+        <li>Cantidad datasets total: {{ datasets_disponibles_cant }} (disponibles para indexar)</li>
+        <li>Cantidad datasets API: {{ datasets_cant }} (accesibles por API)</li>
+        <li>Cantidad series total: {{ series_disponibles_cant }} (publicadas en catálogos)</li>
+        <li>Cantidad series API: {{ field_cant }} (accesibles por API)</li>
+    </ul>
+    <hr>
+    <h4>Detalle</h4>
     {% if not is_partial_report %}
     <p>Catálogos:</p>
     <ul>
