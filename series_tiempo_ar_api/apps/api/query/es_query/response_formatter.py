@@ -27,10 +27,16 @@ class ResponseFormatter(object):
         for i, response in enumerate(self.responses):
             rep_mode = self.series[i].rep_mode
 
-            for hit in response:
-                data = hit[rep_mode] if rep_mode in hit else None
-                timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
-                timestamp_dict[self._data_dict_series_key(self.series[i])] = data
+            if self.series[i].collapse_agg in (constants.AGG_MIN, constants.AGG_MAX):
+                for hit in response.aggregations.test.buckets:
+                    data = hit['test'][rep_mode]
+                    timestamp_dict = self.data_dict.setdefault(hit['key_as_string'], {})
+                    timestamp_dict[self._data_dict_series_key(self.series[i])] = data
+            else:
+                for hit in response:
+                    data = hit[rep_mode] if rep_mode in hit else None
+                    timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
+                    timestamp_dict[self._data_dict_series_key(self.series[i])] = data
 
         if not self.data_dict:  # No hay datos
             return []

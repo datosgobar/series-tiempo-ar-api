@@ -16,10 +16,14 @@ REP_MODES = [
 AGG_DEFAULT = 'avg'
 AGG_SUM = 'sum'
 AGG_END_OF_PERIOD = 'end_of_period'
+AGG_MAX = 'max'
+AGG_MIN = 'min'
 AGGREGATIONS = [
     AGG_DEFAULT,
     AGG_SUM,
     AGG_END_OF_PERIOD,
+    AGG_MAX,
+    AGG_MIN,
 ]
 
 COLLAPSE_INTERVALS = [  # EN ORDEN DE MENOR A MAYOR
@@ -128,3 +132,8 @@ COLLAPSE_AGG_NAME = 'agg'
 CSV_RESPONSE_FILENAME = 'data.csv'
 
 PARAM_PERIODICITY = 'periodicity'
+
+IN_MEMORY_AGGS = [
+    AGG_MAX,
+    AGG_MIN
+]

@@ -38,8 +38,8 @@ class ESQuery(object):
         if periodicity == constants.COLLAPSE_INTERVALS[-1]:
             collapse_agg = constants.AGG_DEFAULT
 
-        self._init_series(series_id, rep_mode, collapse_agg)
         self.args[constants.PARAM_PERIODICITY] = periodicity
+        self._init_series(series_id, rep_mode, collapse_agg)
 
     def get_series_ids(self):
         """Devuelve una lista de series cargadas"""

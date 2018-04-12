@@ -403,3 +403,35 @@ class QueryTest(TestCase):
             self.assertEqual(row[0], other_row[0])
             self.assertEqual(row[1], other_row[2])
             self.assertEqual(row[2], other_row[1])
+
+    def test_min_agg(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_pagination(start=0, limit=12)
+        data = self.query.run()
+
+        other_query = ESQuery(settings.TEST_INDEX)
+        other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='min')
+        other_query.add_pagination(start=0, limit=1)
+        other_query.add_collapse('year')
+
+        other_data = other_query.run()
+
+        min_val = min([row[1] for row in data])
+
+        self.assertAlmostEqual(min_val, other_data[0][1], places=5)
+
+    def test_max_agg(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_pagination(start=0, limit=12)
+        data = self.query.run()
+
+        other_query = ESQuery(settings.TEST_INDEX)
+        other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
+        other_query.add_pagination(start=0, limit=1)
+        other_query.add_collapse('year')
+
+        other_data = other_query.run()
+
+        min_val = max([row[1] for row in data])
+
+        self.assertAlmostEqual(min_val, other_data[0][1], places=5)
