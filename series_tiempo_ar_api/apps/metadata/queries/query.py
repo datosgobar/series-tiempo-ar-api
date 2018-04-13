@@ -60,6 +60,9 @@ class FieldSearchQuery(object):
         search = Field.search(using=es_client).query('match', _all=querystring)
         search = search[offset:limit + offset]
 
+        for arg, field in constants.FILTER_ARGS.iteritems():
+            search = self.add_filters(search, arg, field)
+
         hits = search.execute()
         self.response = {
             'data': [],
@@ -80,3 +83,11 @@ class FieldSearchQuery(object):
 
     def append_error(self, msg):
         self.errors.append({'error': msg})
+
+    def add_filters(self, search, arg_name, field_name):
+        units = self.args.get(arg_name)
+        if units:
+            units = units.split(',')
+            search = search.filter('terms', **{field_name: units})
+
+        return search
