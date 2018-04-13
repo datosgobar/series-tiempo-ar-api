@@ -12,7 +12,7 @@ class Field(DocType):
     id = Keyword()
     dataset_title = Text()
     dataset_description = Text()
-    theme_description = Text()
+    dataset_theme = Keyword()
     units = Keyword()
     dataset_publisher_name = Keyword()
 
