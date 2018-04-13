@@ -1,6 +1,9 @@
 #!coding=utf8
 import os
 
+import unicodecsv
+from django.utils.timezone import localtime
+from iso8601 import iso8601
 from django.test import TestCase
 from django.utils import timezone
 
@@ -30,3 +33,16 @@ class ExportTests(TestCase):
     def tearDown(self):
         if os.path.exists(self.filepath):
             os.remove(self.filepath)
+
+    def test_export_dates(self):
+        query = Query(args='test', params='test', ip_address='ip_addr', timestamp=timezone.now(), ids='')
+        query.save()
+
+        export(path=self.filepath)
+        with open(self.filepath) as f:
+            reader = unicodecsv.reader(f)
+            reader.next()
+            for line in unicodecsv.reader(f):
+                date = iso8601.parse_date(line[0])
+                # Timestamp del modelo en UTC, pasandola a localtime debe ser igual a la del CSV
+                self.assertEqual(localtime(query.timestamp), date)
