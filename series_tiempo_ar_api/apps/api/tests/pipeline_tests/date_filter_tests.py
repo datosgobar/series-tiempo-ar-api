@@ -18,11 +18,6 @@ class DateFilterTests(TestCase):
     start_date = '1980-01-01'
     end_date = '1985-01-01'
 
-    @classmethod
-    def setUpClass(cls):
-        cls.field = Field.objects.get(series_id=cls.single_series)
-        super(cls, DateFilterTests).setUpClass()
-
     def setUp(self):
         self.query = Query(index=settings.TEST_INDEX)
         self.cmd = DateFilter()

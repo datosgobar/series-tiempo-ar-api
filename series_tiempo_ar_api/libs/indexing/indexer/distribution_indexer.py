@@ -1,5 +1,6 @@
 #! coding: utf-8
 import logging
+from functools import reduce
 
 import pandas as pd
 from django.conf import settings
@@ -38,7 +39,7 @@ class DistributionIndexer:
 
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
-                logger.warn(strings.BULK_REQUEST_ERROR, info)
+                logger.warning(strings.BULK_REQUEST_ERROR, info)
 
     @staticmethod
     def init_df(distribution, fields):

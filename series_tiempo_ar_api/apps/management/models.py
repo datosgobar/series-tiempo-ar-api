@@ -7,7 +7,6 @@ from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models, transaction
-from django.db.models.base import ModelBase
 from django.utils import timezone
 from . import strings
 from .indicator_names import IndicatorNamesMixin

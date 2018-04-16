@@ -1,5 +1,6 @@
 #! coding: utf-8
-from django.utils.timezone import datetime, get_current_timezone
+from datetime import datetime
+from django.utils.timezone import get_current_timezone
 
 
 def milliseconds_to_seconds(timestamp):

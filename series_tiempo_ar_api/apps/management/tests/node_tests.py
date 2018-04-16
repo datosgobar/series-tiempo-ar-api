@@ -37,7 +37,7 @@ class NodeRegisterFileTests(TestCase):
         self.assertFalse(Node.objects.filter(catalog_id=non_federated))
 
     def read_file(self, filepath):
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             nrf = NodeRegisterFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                    uploader=self.user)
             nrf.save()
@@ -55,7 +55,7 @@ class NodeTests(TestCase):
 
     def test_delete_federated_node_fails(self):
         filepath = os.path.join(dir_path, 'indice.yml')
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             nrf = NodeRegisterFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                    uploader=self.user)
             nrf.save()
@@ -70,7 +70,7 @@ class NodeTests(TestCase):
 
     def test_delete_non_federated_node(self):
         filepath = os.path.join(dir_path, 'indice.yml')
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             nrf = NodeRegisterFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                    uploader=self.user)
             nrf.save()

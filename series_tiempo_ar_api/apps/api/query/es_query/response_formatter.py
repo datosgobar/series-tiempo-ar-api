@@ -44,17 +44,8 @@ class ResponseFormatter(object):
         self._make_date_index_continuous(min(self.data_dict.keys()),
                                          max(self.data_dict.keys()))
 
-        # Ordeno las timestamp según si el sort es asc o desc usando función de comparación
-        def cmp_func(one, other):
-            if one == other:
-                return 0
-
-            if self.args[constants.PARAM_SORT] == constants.SORT_ASCENDING:
-                return -1 if one < other else 1
-            else:
-                return 1 if one < other else -1
-
-        for timestamp in sorted(self.data_dict.keys(), cmp=cmp_func):
+        for timestamp in sorted(self.data_dict.keys(),
+                                reverse=self.args[constants.PARAM_SORT] != constants.SORT_ASCENDING):
             row = [timestamp]
 
             for series in self.series:
@@ -88,4 +79,4 @@ class ResponseFormatter(object):
 
         while current_date < end_date:
             current_date += get_relative_delta(self.args[constants.PARAM_PERIODICITY])
-            self.data_dict.setdefault(unicode(current_date.date()), {})
+            self.data_dict.setdefault(str(current_date.date()), {})

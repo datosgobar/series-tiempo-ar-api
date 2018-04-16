@@ -3,7 +3,7 @@ import os
 import json
 
 import unicodecsv
-from StringIO import StringIO
+from io import StringIO
 from django.test import TestCase
 
 from django.core.management import call_command

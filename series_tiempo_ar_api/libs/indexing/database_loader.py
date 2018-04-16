@@ -168,7 +168,7 @@ class DatabaseLoader(object):
         """
         if self.read_local:  # Usado en debug y testing
             with open(file_url) as f:
-                data_hash = hashlib.sha512(f.read()).hexdigest()
+                data_hash = hashlib.sha512(f.read().encode()).hexdigest()
 
             distribution_model.data_file = File(open(file_url))
 

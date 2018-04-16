@@ -89,7 +89,7 @@ class ViewTests(TestCase):
                                    data={'ids': SERIES_NAME, 'format': 'csv', 'sep': ';'})
 
         # CSV de sólo números, la única manera que haya ';' es que sea el delimiter
-        self.assertIn(';', response.content)
+        self.assertIn(b';', response.content)
 
     def test_csv_decimal_char(self):
         decimal = ','

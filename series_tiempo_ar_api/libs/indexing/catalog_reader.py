@@ -30,7 +30,7 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         node.catalog = json.dumps(catalog)
         node.save()
     except Exception as e:
-        ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e.message))
+        ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e))
         return
 
     # Seteo inicial de variables a usar durante la indexación

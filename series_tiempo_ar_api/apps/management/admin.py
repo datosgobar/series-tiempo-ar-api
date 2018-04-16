@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import time
 from django.contrib import admin
 from .actions import process_node_register_file, confirm_delete
 from .tasks import bulk_whitelist, read_datajson

@@ -24,7 +24,7 @@ class DatasetIndexableToggler(object):
     def read_dataset_csv(self, federation_file):
         reader = unicodecsv.reader(federation_file)
 
-        headers = reader.next()
+        headers = next(reader)
         if CATALOG_HEADER not in headers or DATASET_ID_HEADER not in headers:
             raise ValueError
 

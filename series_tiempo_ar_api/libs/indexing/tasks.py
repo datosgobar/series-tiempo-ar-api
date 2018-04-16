@@ -3,7 +3,7 @@ import json
 from traceback import format_exc
 
 from django.conf import settings
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
@@ -49,8 +49,8 @@ def index_distribution(distribution_id, node_id, task_id,
 
 def _handle_exception(dataset_model, distribution, distribution_id, exc, node, task):
     msg = u"Excepción en distrbución {} del catálogo {}: {}"
-    if exc.message:
-        e_msg = exc.message
+    if exc:
+        e_msg = exc
     else:
         e_msg = format_exc()
     msg = msg.format(distribution_id, node.catalog_id, e_msg)
