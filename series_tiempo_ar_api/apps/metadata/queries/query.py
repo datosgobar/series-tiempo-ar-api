@@ -85,6 +85,9 @@ class FieldSearchQuery(object):
         self.errors.append({'error': msg})
 
     def add_filters(self, search, arg_name, field_name):
+        """Agrega filtro por field_name al objeto search de Elasticsearch,
+        obtenido desde el campo arg_name de la query.
+        """
         units = self.args.get(arg_name)
         if units:
             units = units.split(',')
