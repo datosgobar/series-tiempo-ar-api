@@ -29,3 +29,9 @@ def dataset_publisher_name(request):
     response = query_field_terms(field='dataset_publisher_name')
 
     return JsonResponse(response)
+
+
+def dataset_theme(request):
+    response = query_field_terms(field='dataset_theme')
+
+    return JsonResponse(response)

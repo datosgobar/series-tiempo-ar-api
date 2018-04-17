@@ -57,7 +57,7 @@ class MetadataIndexer(object):
                 dataset_source_keyword=dataset.get('source'),
                 dataset_description=dataset.get('description'),
                 dataset_publisher_name=dataset.get('publisher', {}).get('name'),
-                theme_description=themes.get(dataset.get('theme', [None])[0])
+                dataset_theme=themes.get(dataset.get('theme', [None])[0])
             )
             actions.append(doc.to_dict(include_meta=True))
         return actions
@@ -72,6 +72,6 @@ class MetadataIndexer(object):
     def get_themes(theme_taxonomy):
         themes = {}
         for theme in theme_taxonomy:
-            themes[theme['id']] = theme['description']
+            themes[theme['id']] = theme['label']
 
         return themes

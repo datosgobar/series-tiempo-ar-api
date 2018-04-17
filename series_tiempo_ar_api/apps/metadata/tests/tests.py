@@ -69,6 +69,23 @@ class QueryTests(TestCase):
         self.assertEqual(result['limit'], int(limit))
         self.assertEqual(result['offset'], int(offset))
 
+    def test_add_filter(self):
+        q = FieldSearchQuery(args={'units': 'unit_test'})
+        search = q.add_filters(Search(), 'units', 'units').to_dict()
+
+        # Esperado: un filter agregado
+        filters = search['query']['bool']['filter']
+        self.assertEqual(len(filters), 1)
+        self.assertEqual(filters[0]['terms']['units'], ['unit_test'])
+
+    def test_add_filter_no_param(self):
+        q = FieldSearchQuery(args={})
+        search = Search()
+        prev_dict = search.to_dict()
+        search = q.add_filters(search, 'units', 'units').to_dict()
+        # Esperado: no se modifica la query si no hay parámetros
+        self.assertEqual(prev_dict, search)
+
 
 class IndexerTests(TestCase):
 
