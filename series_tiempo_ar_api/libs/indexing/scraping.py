@@ -1,6 +1,6 @@
 #! coding: utf-8
 import logging
-import urllib
+import urllib.parse
 
 import pandas as pd
 import requests
@@ -35,7 +35,7 @@ class Scraper(object):
 
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
-        url = urllib.quote(url, safe='/:')
+        url = urllib.parse.quote(url, safe='/:')
 
         dataset = catalog.get_dataset(distribution[DATASET_IDENTIFIER])
         df = pd.read_csv(url, parse_dates=[settings.INDEX_COLUMN])

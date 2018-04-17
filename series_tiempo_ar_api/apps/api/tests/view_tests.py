@@ -96,7 +96,7 @@ class ViewTests(TestCase):
         response = self.client.get(self.endpoint,
                                    data={'ids': SERIES_NAME, 'format': 'csv', 'decimal': decimal})
 
-        reader = csv.reader(response.content.splitlines())
+        reader = csv.reader(str(response.content).splitlines())
 
         for line in reader:
             self.assertTrue(len(line), 2)
@@ -108,7 +108,7 @@ class ViewTests(TestCase):
                                          'decimal': ',',
                                          'sep': delim})
 
-        reader = csv.reader(response.content.splitlines(), delimiter=delim)
+        reader = csv.reader(str(response.content).splitlines(), delimiter=delim)
 
         for line in reader:
             self.assertTrue(len(line), 2)

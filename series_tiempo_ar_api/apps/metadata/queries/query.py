@@ -60,7 +60,7 @@ class FieldSearchQuery(object):
         search = Field.search(using=es_client).query('match', _all=querystring)
         search = search[offset:limit + offset]
 
-        for arg, field in constants.FILTER_ARGS.iteritems():
+        for arg, field in constants.FILTER_ARGS.items():
             search = self.add_filters(search, arg, field)
 
         hits = search.execute()

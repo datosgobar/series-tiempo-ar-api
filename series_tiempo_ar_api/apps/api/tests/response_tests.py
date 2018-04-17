@@ -39,16 +39,16 @@ class ResponseTests(TestCase):
     def test_csv_response_header_ids(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(self.query, {'header': 'ids'})
-        line_end = response.content.find('\n')
+        line_end = str(response.content).find('\n')
         header = response.content[:line_end]
-        self.assertTrue(self.single_series in header)
+        self.assertTrue(self.single_series in str(header))
 
     def test_csv_response_header(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(self.query, {'header': 'titles'})
-        line_end = response.content.find('\n')
+        line_end = str(response.content).find('\n')
         header = response.content[:line_end]
-        self.assertTrue(self.series_name in header)
+        self.assertTrue(self.series_name in str(header))
 
     def test_csv_name(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
@@ -61,9 +61,9 @@ class ResponseTests(TestCase):
     def test_csv_response_header_description(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(self.query, {'header': 'descriptions'})
-        line_end = response.content.find('\n')
+        line_end = str(response.content).find('\n')
         header = response.content[:line_end]
-        self.assertIn(self.series_desc, header)
+        self.assertIn(self.series_desc, str(header))
 
     def test_csv_different_decimal_empty_rows(self):
         query = Query(index=settings.TEST_INDEX)
@@ -75,4 +75,4 @@ class ResponseTests(TestCase):
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(query, {'decimal': ','})
 
-        self.assertFalse("None" in response.content)
+        self.assertFalse("None" in str(response.content))
