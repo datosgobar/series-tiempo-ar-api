@@ -435,3 +435,14 @@ class QueryTest(TestCase):
         min_val = max([row[1] for row in data])
 
         self.assertAlmostEqual(min_val, other_data[0][1], places=5)
+
+    def test_max_without_collapse_same_as_avg(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        data = self.query.run()
+
+        other_query = ESQuery(settings.TEST_INDEX)
+        other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
+        other_data = other_query.run()
+
+        for i, row in enumerate(data):
+            self.assertEqual(tuple(row), tuple(other_data[i]))
