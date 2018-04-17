@@ -35,6 +35,9 @@ if [ -n "$USE_VPN" ]; then
     echo "Verificando VPN..."
     ifconfig -a | sed 's/[ \t].*//;/^$/d'
     ifconfig | grep -oh tun0
+
+    echo "Seteo valor de mtu"
+    sudo ifconfig tun0 mtu $MTU_VALUE
 fi
 
 echo "Inicializando known_hosts"

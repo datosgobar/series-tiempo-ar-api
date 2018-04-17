@@ -13,6 +13,7 @@ export OVPN_PATH="/etc/openvpn/$OVPN_CONFIG.conf"
 # Las siguientes variables definen cuales variables buscar para desencriptar
 # algunos valores de travis. Ver ./prepare.sh para mas info
 
+DEFAULT_MTU_VALUE=578
 
 if [ "$ENVIRONMENT" == "testing" ]; then
     echo "Ambiente $ENVIRONMENT"
@@ -36,6 +37,7 @@ elif [ "$ENVIRONMENT" == "staging" ]; then
     export DEPLOY_TARGET_IP="$STAGING_DEPLOY_TARGET_IP"
     export DEPLOY_ENVIRONMENT="$ENVIRONMENT"
     export DEPLOY_REVISION="${TRAVIS_TAG:-$TRAVIS_COMMIT}" # Desde el tag o el hash del commit
+    export MTU_VALUE="${STIEMPO_DEV_MTU_VALUE:-$DEFAULT_MTU_VALUE}"
 else
     echo "Ambiente '$ENVIRONMENT' desconocido";
     exit 1;
