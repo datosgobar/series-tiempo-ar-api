@@ -73,7 +73,7 @@ class ESQuery(object):
                                   collapse_agg=collapse_agg))
 
     def add_pagination(self, start, limit):
-        if not len(self.series):
+        if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:
@@ -84,7 +84,7 @@ class ESQuery(object):
         self.args[constants.PARAM_LIMIT] = limit
 
     def add_filter(self, start=None, end=None):
-        if not len(self.series):
+        if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:

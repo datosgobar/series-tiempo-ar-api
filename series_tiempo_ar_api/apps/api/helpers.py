@@ -16,8 +16,8 @@ def get_periodicity_human_format(periodicity):
 
 def freq_pandas_to_index_offset(freq):
     """Dada una lista de datos de una serie de frecuencia 'freq',
-    devuelve el la distancia de elementos separados por un año en esa
-    lista.
+    devuelve la distancia de elementos separados por un año en esa
+    lista. Si no está definido (serie diaria o semanal), devuelve 0
     Ejemplo: para una serie mensual se devuelve 12
     """
     offset = {
@@ -29,6 +29,7 @@ def freq_pandas_to_index_offset(freq):
     for key, value in offset.items():
         if key in freq:
             return value
+    return 0
 
 
 def freq_pandas_to_interval(freq):

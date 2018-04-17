@@ -1,8 +1,8 @@
 #! coding: utf-8
+import json
 from collections import OrderedDict
 
 from django.conf import settings
-import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format

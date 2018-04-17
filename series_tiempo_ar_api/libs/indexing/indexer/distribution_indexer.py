@@ -8,10 +8,10 @@ from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
 from series_tiempo_ar_api.apps.api.models import Distribution
-from .operations import process_column
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
+from .operations import process_column
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class DistributionIndexer:
         # Aplica la operación de procesamiento e indexado a cada columna
         result = [process_column(df[col], self.index) for col in df.columns]
 
-        if not len(result):  # Distribución sin series cargadas
+        if not result:  # Distribución sin series cargadas
             return
 
         # List flatten: si el resultado son múltiples listas las junto en una sola

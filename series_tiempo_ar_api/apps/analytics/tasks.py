@@ -33,7 +33,7 @@ def export(path=None):
     with open(filepath, 'wb') as f:
         writer = unicodecsv.writer(f)
         # header
-        writer.writerow([field for field in fields.keys()])
+        writer.writerow([field for field in fields])
         for query in queryset.iterator():
 
             writer.writerow([val(query) for val in fields.values()])

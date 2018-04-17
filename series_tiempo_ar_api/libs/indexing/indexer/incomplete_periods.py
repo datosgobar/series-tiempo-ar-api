@@ -166,7 +166,7 @@ def handle_incomplete_value(col, which='last'):
 
     # Fix a casos en donde la serie es de un único valor y se intenta borrar tanto
     # para 'first' como para 'last'
-    if not len(col):
+    if not col.count():
         return
 
     idx = -1 if which == 'last' else 0

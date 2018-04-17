@@ -73,9 +73,6 @@ class IndexingTaskCron(models.Model):
     enabled = models.BooleanField(default=True)
     weekdays_only = models.BooleanField(default=False)
 
-    def __init__(self, *args, **kwargs):
-        super(IndexingTaskCron, self).__init__(*args, **kwargs)
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(IndexingTaskCron, self).save(force_insert, force_update, using, update_fields)

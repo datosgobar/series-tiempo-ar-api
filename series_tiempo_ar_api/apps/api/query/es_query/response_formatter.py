@@ -71,7 +71,7 @@ class ResponseFormatter(object):
         """
 
         # Si no hay datos cargados no hay nada que hacer
-        if not len(self.data_dict):
+        if not self.data_dict:
             return
 
         current_date = iso8601.parse_date(start_date)

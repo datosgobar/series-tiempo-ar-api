@@ -286,7 +286,7 @@ class IdsField(BaseOperation):
         field_model = Field.objects.filter(series_id=series_id)
         if not field_model:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
-            return
+            return None
 
         return field_model[0]
 

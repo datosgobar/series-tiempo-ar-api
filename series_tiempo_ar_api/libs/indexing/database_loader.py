@@ -11,9 +11,9 @@ from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
-from . import constants
 from series_tiempo_ar_api.apps.api.models import \
     Dataset, Catalog, Distribution, Field
+from . import constants
 
 
 class DatabaseLoader(object):
@@ -193,9 +193,10 @@ class DatabaseLoader(object):
             distribution_model.dataset.available = True
             distribution_model.dataset.save()
             return True
-        else:  # No cambió respecto a la corrida anterior
-            distribution_model.indexable = False
-            return False
+
+        # No cambió respecto a la corrida anterior
+        distribution_model.indexable = False
+        return False
 
     def _save_fields(self, distribution_model, fields):
         fields = [field for field in fields if field.get(constants.SPECIAL_TYPE) != constants.TIME_INDEX]
