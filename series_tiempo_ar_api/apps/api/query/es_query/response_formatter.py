@@ -29,7 +29,7 @@ class ResponseFormatter(object):
 
             if self.series[i].collapse_agg in (constants.AGG_MIN, constants.AGG_MAX):
                 for hit in response.aggregations.test.buckets:
-                    data = hit['test'][rep_mode]
+                    data = hit['test']['value']
                     timestamp_dict = self.data_dict.setdefault(hit['key_as_string'], {})
                     timestamp_dict[self._data_dict_series_key(self.series[i])] = data
             else:
