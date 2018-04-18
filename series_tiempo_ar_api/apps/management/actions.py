@@ -42,7 +42,7 @@ class DatasetIndexableToggler(object):
 
     def update_database(self):
         for catalog, datasets in self.catalogs.items():
-            dataset_models = Catalog.objects.get(identifier=catalog).dataset_set
+            dataset_models = Catalog.objects.get_or_create(identifier=catalog)[0].dataset_set
             for dataset in datasets:
                 status = 'OK'
                 try:
@@ -62,9 +62,14 @@ def process_node_register_file(register_file):
     nodes = yaml.load(yml)
     for node, values in nodes.items():
         if bool(values['federado']) is True:  # evitar entrar al branch con un valor truthy
-            Node.objects.get_or_create(catalog_id=node,
-                                       catalog_url=values['url'],
-                                       indexable=True)
+            try:
+                node = Node.objects.get(catalog_id=node)
+            except Node.DoesNotExist:
+                node = Node(catalog_id=node)
+
+            node.catalog_url = values['url']
+            node.indexable = True
+            node.save()
 
     register_file.state = NodeRegisterFile.PROCESSED
     register_file.save()

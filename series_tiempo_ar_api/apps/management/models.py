@@ -88,7 +88,7 @@ class IndexingTaskCron(models.Model):
     @classmethod
     def update_crontab(cls):
         """Limpia la crontab y la regenera a partir de los modelos de IndexingTaskCron guardados"""
-        command = settings.READ_DATAJSON_SHELL_CMD
+        command = settings.READ_DATAJSON_SHELL_CMD or 'true'
         cron = cls.cron_client
 
         job_id = strings.CRONTAB_COMMENT

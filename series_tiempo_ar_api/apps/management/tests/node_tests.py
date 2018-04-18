@@ -43,6 +43,14 @@ class NodeRegisterFileTests(TestCase):
             nrf.save()
             process_node_register_file(register_file=nrf)
 
+    def test_register_file_updates_existing_nodes(self):
+        filepath = os.path.join(dir_path, 'indice.yml')
+        Node(catalog_id='sspm',
+             indexable=False,
+             catalog_url='series_tiempo_ar_api/apps/management/tests/samples/sample_data.json').save()
+        self.read_file(filepath)
+        self.assertTrue(Node.objects.get(catalog_id='sspm').indexable)
+
     def tearDown(self):
         self.user.delete()
 
