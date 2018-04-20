@@ -41,7 +41,8 @@ class Series(object):
         if self.collapse_agg not in constants.IN_MEMORY_AGGS:
             self.search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
 
-        else:  # Agregamos la aggregation (?) para que se ejecute en ES en runtime
+        elif periodicity != self.args[constants.PARAM_PERIODICITY]:
+            # Agregamos la aggregation (?) para que se ejecute en ES en runtime
             self.search = self.search.filter('bool', must=[Q('match', interval=self.args['periodicity'])])
             self.search.aggs.bucket('test',
                                     A('date_histogram',
@@ -49,3 +50,6 @@ class Series(object):
                                       interval=periodicity,
                                       format='yyyy-MM-dd').
                                     metric('test', self.collapse_agg, field=self.rep_mode))
+        else:  # Ignoramos la in memory ag
+            self.collapse_agg = constants.AGG_DEFAULT
+            self.search = self.search.filter('bool', must=[Q('match', interval=periodicity)])

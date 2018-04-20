@@ -1,8 +1,8 @@
 #! coding: utf-8
+import json
 from collections import OrderedDict
 
 from django.conf import settings
-from pandas import json
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
@@ -199,22 +199,22 @@ class Query(object):
         # Idea: obtener todos los metadatos y descartar los que no queremos
         meta = self._get_full_metadata(serie_model)
 
-        for meta_field in meta.keys():
+        for meta_field in list(meta):
             if meta_field not in constants.CATALOG_SIMPLE_META_FIELDS:
                 meta.pop(meta_field)
 
         dataset = meta['dataset'][0]  # Dataset de un único elemento
-        for meta_field in dataset.keys():
+        for meta_field in list(dataset):
             if meta_field not in constants.DATASET_SIMPLE_META_FIELDS:
                 dataset.pop(meta_field)
 
         distribution = dataset['distribution'][0]
-        for meta_field in distribution.keys():
+        for meta_field in list(distribution):
             if meta_field not in constants.DISTRIBUTION_SIMPLE_META_FIELDS:
                 distribution.pop(meta_field)
 
         field = distribution['field'][0]
-        for meta_field in field.keys():
+        for meta_field in list(field):
             if meta_field not in constants.FIELD_SIMPLE_META_FIELDS:
                 field.pop(meta_field)
 

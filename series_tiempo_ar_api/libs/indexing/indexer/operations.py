@@ -1,5 +1,4 @@
 #! coding: utf-8
-# pylint: disable=W0613
 
 """Operaciones de cálculos de variaciones absolutas y porcentuales anuales"""
 
@@ -10,9 +9,9 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 
 from series_tiempo_ar_api.libs.indexing import constants
-from .incomplete_periods import handle_missing_values
 from series_tiempo_ar_api.apps.api.helpers import freq_pandas_to_index_offset, \
     freq_pandas_to_interval
+from .incomplete_periods import handle_missing_values
 
 # Ignora divisiones por cero, no nos molesta el NaN
 np.seterr(divide='ignore', invalid='ignore')
@@ -23,11 +22,12 @@ def year_ago_column(col, freq, operation):
     un año antes. Devuelve una nueva serie de pandas.
     """
     array = []
-    offset = freq_pandas_to_index_offset(freq.freqstr) or 0
+    offset = freq_pandas_to_index_offset(freq.freqstr)
+
     if offset:
         values = col.values
         array = operation(values[offset:], values[:-offset])
-    else:
+    else:  # Serie diaria o semanal, aplicamos la operacion iterativamente
         for idx, val in col.iteritems():
             value = get_value_a_year_ago(idx, col, validate=True)
             if value != 0:
@@ -122,8 +122,8 @@ def index_transform(col, transform_function, index, series_id, freq, name):
         transform_col.index = transform_col.index - offset
         transform_col.index.freq = constants.PANDAS_SEMESTER
 
-    if not len(transform_col):
-        return pd.Series()
+    if not transform_col.count():
+        return transform_col
 
     try:
         handle_missing_values(col, transform_col)

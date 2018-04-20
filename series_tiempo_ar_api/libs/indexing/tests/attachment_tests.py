@@ -2,8 +2,8 @@
 import os
 import json
 
-import unicodecsv
-from StringIO import StringIO
+import csv
+from io import StringIO
 from django.test import TestCase
 
 from django.core.management import call_command
@@ -35,11 +35,11 @@ class AttachmentTests(TestCase):
         out = attachments.generate_catalog_attachment()
 
         stream = StringIO(out)
-        reader = unicodecsv.reader(stream)
-        reader.next()  # Skip header
+        reader = csv.reader(stream)
+        next(reader)  # Skip header
 
         catalog = Catalog.objects.first()
-        row = reader.next()
+        row = next(reader)
         self.assertEqual(len(row), 8)
         self.assertTrue(row[0], catalog.identifier)
         self.assertTrue(row[1], catalog.title)
@@ -49,8 +49,8 @@ class AttachmentTests(TestCase):
         out = attachments.generate_dataset_attachment()
 
         stream = StringIO(out)
-        reader = unicodecsv.reader(stream)
-        reader.next()  # Skip header
+        reader = csv.reader(stream)
+        next(reader)  # Skip header
 
         for row in reader:
             dataset = Dataset.objects.get(identifier=row[0])
@@ -64,8 +64,8 @@ class AttachmentTests(TestCase):
         out = attachments.generate_distribution_attachment()
 
         stream = StringIO(out)
-        reader = unicodecsv.reader(stream)
-        reader.next()  # Skip header
+        reader = csv.reader(stream)
+        next(reader)  # Skip header
 
         for row in reader:
             distribution = Distribution.objects.get(identifier=row[0])
@@ -80,8 +80,8 @@ class AttachmentTests(TestCase):
         out = attachments.generate_field_attachment()
 
         stream = StringIO(out)
-        reader = unicodecsv.reader(stream)
-        reader.next()  # Skip header
+        reader = csv.reader(stream)
+        next(reader)  # Skip header
 
         fields = Field.objects.all()
         for row in reader:

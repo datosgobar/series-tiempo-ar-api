@@ -7,6 +7,7 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 
+from series_tiempo_ar_api.apps.api.models import Catalog
 from series_tiempo_ar_api.apps.management.models import Indicator, Node
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
@@ -32,8 +33,9 @@ class ReportGenerator(object):
 
         self.generate_email()
 
+        ids = Catalog.objects.all().values_list('identifier')
         # Reportes de catálogo individual
-        for node in Node.objects.filter(indexable=True):
+        for node in Node.objects.filter(indexable=True, catalog_id__in=ids):
             self.generate_email(node=node)
 
         self.indicators_loader.clear_indicators()

@@ -29,7 +29,7 @@ class ResponseFormatter(object):
 
             if self.series[i].collapse_agg in (constants.AGG_MIN, constants.AGG_MAX):
                 for hit in response.aggregations.test.buckets:
-                    data = hit['test'][rep_mode]
+                    data = hit['test']['value']
                     timestamp_dict = self.data_dict.setdefault(hit['key_as_string'], {})
                     timestamp_dict[self._data_dict_series_key(self.series[i])] = data
             else:
@@ -44,17 +44,8 @@ class ResponseFormatter(object):
         self._make_date_index_continuous(min(self.data_dict.keys()),
                                          max(self.data_dict.keys()))
 
-        # Ordeno las timestamp según si el sort es asc o desc usando función de comparación
-        def cmp_func(one, other):
-            if one == other:
-                return 0
-
-            if self.args[constants.PARAM_SORT] == constants.SORT_ASCENDING:
-                return -1 if one < other else 1
-            else:
-                return 1 if one < other else -1
-
-        for timestamp in sorted(self.data_dict.keys(), cmp=cmp_func):
+        for timestamp in sorted(self.data_dict.keys(),
+                                reverse=self.args[constants.PARAM_SORT] != constants.SORT_ASCENDING):
             row = [timestamp]
 
             for series in self.series:
@@ -80,7 +71,7 @@ class ResponseFormatter(object):
         """
 
         # Si no hay datos cargados no hay nada que hacer
-        if not len(self.data_dict):
+        if not self.data_dict:
             return
 
         current_date = iso8601.parse_date(start_date)
@@ -88,4 +79,4 @@ class ResponseFormatter(object):
 
         while current_date < end_date:
             current_date += get_relative_delta(self.args[constants.PARAM_PERIODICITY])
-            self.data_dict.setdefault(unicode(current_date.date()), {})
+            self.data_dict.setdefault(str(current_date.date()), {})

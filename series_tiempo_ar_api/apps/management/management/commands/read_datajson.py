@@ -7,7 +7,6 @@ from django.conf import settings
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.apps.management.tasks import read_datajson
 from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
-from series_tiempo_ar_api.libs.indexing.tasks import scheduler
 logger = logging.getLogger(__name__)
 
 

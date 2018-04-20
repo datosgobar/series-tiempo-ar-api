@@ -93,3 +93,46 @@ class QueryTests(TestCase):
         # Aggregation sin haber definido collapse NO HACE NADA!
         self.query.add_series(self.single_series, self.field, collapse_agg='sum')
         self.assertTrue(self.query.series_models)
+
+    def test_simple_metadata_remove_catalog(self):
+        catalog = self.field.distribution.dataset.catalog
+        catalog.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        catalog.save()
+
+        self.query.add_series(self.single_series, self.field)
+        self.query.run()
+        index_meta = self.query.get_metadata()[1]
+        self.assertNotIn('extra_field', index_meta)
+        self.assertIn('title', index_meta)
+
+    def test_simple_metadata_remove_dataset(self):
+        dataset = self.field.distribution.dataset
+        dataset.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        dataset.save()
+
+        self.query.add_series(self.single_series, self.field)
+        self.query.run()
+        index_meta = self.query.get_metadata()[1]
+        self.assertNotIn('extra_field', index_meta)
+        self.assertIn('title', index_meta['dataset'][0])
+
+    def test_simple_metadata_remove_distribution(self):
+        dist = self.field.distribution
+        dist.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        dist.save()
+
+        self.query.add_series(self.single_series, self.field)
+        self.query.run()
+        index_meta = self.query.get_metadata()[1]
+        self.assertNotIn('extra_field', index_meta)
+        self.assertIn('title', index_meta['dataset'][0]['distribution'][0])
+
+    def test_simple_metadata_remove_field(self):
+        self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
+        self.field.save()
+
+        self.query.add_series(self.single_series, self.field)
+        self.query.run()
+        index_meta = self.query.get_metadata()[1]
+        self.assertNotIn('extra_field', index_meta)
+        self.assertIn('id', index_meta['dataset'][0]['distribution'][0]['field'][0])

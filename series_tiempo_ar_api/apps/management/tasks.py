@@ -1,7 +1,7 @@
 #! coding: utf-8
 
 from django.utils import timezone
-from django_rq import job, get_queue
+from django_rq import job
 
 from series_tiempo_ar_api.apps.management.actions import DatasetIndexableToggler
 from series_tiempo_ar_api.apps.management.models import Node, DatasetIndexingFile

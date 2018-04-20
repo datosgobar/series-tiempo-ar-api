@@ -25,11 +25,6 @@ class PaginationTests(TestCase):
         self.query = Query(index=settings.TEST_INDEX)
         self.cmd = Pagination()
 
-    @classmethod
-    def setUpClass(cls):
-        cls.field = Field.objects.get(series_id=cls.single_series)
-        super(cls, PaginationTests).setUpClass()
-
     def test_start(self):
         self.query.add_series(self.single_series, self.field, 'value')
         params = {'ids': self.single_series, 'limit': self.limit}

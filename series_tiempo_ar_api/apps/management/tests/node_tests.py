@@ -37,11 +37,19 @@ class NodeRegisterFileTests(TestCase):
         self.assertFalse(Node.objects.filter(catalog_id=non_federated))
 
     def read_file(self, filepath):
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             nrf = NodeRegisterFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                    uploader=self.user)
             nrf.save()
             process_node_register_file(register_file=nrf)
+
+    def test_register_file_updates_existing_nodes(self):
+        filepath = os.path.join(dir_path, 'indice.yml')
+        Node(catalog_id='sspm',
+             indexable=False,
+             catalog_url='series_tiempo_ar_api/apps/management/tests/samples/sample_data.json').save()
+        self.read_file(filepath)
+        self.assertTrue(Node.objects.get(catalog_id='sspm').indexable)
 
     def tearDown(self):
         self.user.delete()
@@ -55,7 +63,7 @@ class NodeTests(TestCase):
 
     def test_delete_federated_node_fails(self):
         filepath = os.path.join(dir_path, 'indice.yml')
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             nrf = NodeRegisterFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                    uploader=self.user)
             nrf.save()
@@ -70,7 +78,7 @@ class NodeTests(TestCase):
 
     def test_delete_non_federated_node(self):
         filepath = os.path.join(dir_path, 'indice.yml')
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             nrf = NodeRegisterFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                    uploader=self.user)
             nrf.save()

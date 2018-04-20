@@ -46,7 +46,3 @@ class AnalyticsDownloadTests(TestCase):
         response = self.client.get(reverse('analytics:read_analytics'))
 
         self.assertEqual(response.status_code, 200)
-
-        with open(os.path.join(samples_dir, 'sample_analytics_dump.csv')) as response_file:
-            response_content = list(response.streaming_content)[0]  # Unwrap iterable
-            self.assertEqual(response_content, response_file.read())

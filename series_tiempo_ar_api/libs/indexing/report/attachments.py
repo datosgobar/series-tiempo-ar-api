@@ -1,8 +1,8 @@
 #!coding=utf8
 import json
-from StringIO import StringIO
+from io import StringIO
 
-import unicodecsv
+import csv
 
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
 from series_tiempo_ar_api.apps.management.models import Node
@@ -14,7 +14,7 @@ HEADER_ROW = [
 
 def generate_attachments(queryset, get_indexable, get_present, get_error):
     out = StringIO()
-    writer = unicodecsv.writer(out)
+    writer = csv.writer(out)
 
     writer.writerow(HEADER_ROW)
 

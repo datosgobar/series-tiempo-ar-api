@@ -7,7 +7,6 @@ from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models, transaction
-from django.db.models.base import ModelBase
 from django.utils import timezone
 from . import strings
 from .indicator_names import IndicatorNamesMixin
@@ -74,9 +73,6 @@ class IndexingTaskCron(models.Model):
     enabled = models.BooleanField(default=True)
     weekdays_only = models.BooleanField(default=False)
 
-    def __init__(self, *args, **kwargs):
-        super(IndexingTaskCron, self).__init__(*args, **kwargs)
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         super(IndexingTaskCron, self).save(force_insert, force_update, using, update_fields)
@@ -92,7 +88,7 @@ class IndexingTaskCron(models.Model):
     @classmethod
     def update_crontab(cls):
         """Limpia la crontab y la regenera a partir de los modelos de IndexingTaskCron guardados"""
-        command = settings.READ_DATAJSON_SHELL_CMD
+        command = settings.READ_DATAJSON_SHELL_CMD or 'true'
         cron = cls.cron_client
 
         job_id = strings.CRONTAB_COMMENT

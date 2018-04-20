@@ -39,7 +39,7 @@ class BulkIndexingTests(TestCase):
         dataset = Dataset.objects.get(catalog__identifier=self.test_catalog, identifier='1')
         self.assertFalse(dataset.indexable)
 
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             idx_file = DatasetIndexingFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                            uploader=self.user)
             idx_file.save()
@@ -53,7 +53,7 @@ class BulkIndexingTests(TestCase):
 
         dataset = Dataset.objects.get(catalog__identifier=self.test_catalog, identifier='0')
         self.assertFalse(dataset.indexable)
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             idx_file = DatasetIndexingFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                            uploader=self.user)
             idx_file.save()
@@ -65,7 +65,7 @@ class BulkIndexingTests(TestCase):
 
     def test_idx_file_model_changes_states(self):
         filepath = os.path.join(dir_path, 'test_indexing_file.csv')
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             idx_file = DatasetIndexingFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                            uploader=self.user)
             idx_file.save()
@@ -77,7 +77,7 @@ class BulkIndexingTests(TestCase):
 
     def test_missing_dataset_header(self):
         filepath = os.path.join(dir_path, 'missing_dataset_headers.csv')
-        with open(filepath, 'r') as f:
+        with open(filepath, 'rb') as f:
             idx_file = DatasetIndexingFile(indexing_file=SimpleUploadedFile(filepath, f.read()),
                                            uploader=self.user)
             idx_file.save()

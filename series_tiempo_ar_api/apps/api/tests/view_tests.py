@@ -89,14 +89,14 @@ class ViewTests(TestCase):
                                    data={'ids': SERIES_NAME, 'format': 'csv', 'sep': ';'})
 
         # CSV de sólo números, la única manera que haya ';' es que sea el delimiter
-        self.assertIn(';', response.content)
+        self.assertIn(b';', response.content)
 
     def test_csv_decimal_char(self):
         decimal = ','
         response = self.client.get(self.endpoint,
                                    data={'ids': SERIES_NAME, 'format': 'csv', 'decimal': decimal})
 
-        reader = csv.reader(response.content.splitlines())
+        reader = csv.reader(str(response.content).splitlines())
 
         for line in reader:
             self.assertTrue(len(line), 2)
@@ -108,7 +108,7 @@ class ViewTests(TestCase):
                                          'decimal': ',',
                                          'sep': delim})
 
-        reader = csv.reader(response.content.splitlines(), delimiter=delim)
+        reader = csv.reader(str(response.content).splitlines(), delimiter=delim)
 
         for line in reader:
             self.assertTrue(len(line), 2)
