@@ -38,3 +38,5 @@ node_modules/
 .rbenv-gemset
 
 scripts/deploy/files/
+scripts/deploy/files.tar.gz
+
