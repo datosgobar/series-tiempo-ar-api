@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e;
+set -x;
 
 echo "Agregando clave SSH"
 eval "$(ssh-agent -s)"
