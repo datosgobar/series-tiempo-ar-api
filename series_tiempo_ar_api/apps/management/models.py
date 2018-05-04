@@ -12,43 +12,6 @@ from . import strings
 from .indicator_names import IndicatorNamesMixin
 
 
-class BaseRegisterFile(models.Model):
-    """Base de los archivos de registro de datasets y de nodos.
-    Contiene atributos de estado del archivo y fechas de creado / modificado
-    """
-    UPLOADED = "UPLOADED"
-    PROCESSING = "PROCESSING"
-    PROCESSED = "PROCESSED"
-    FAILED = "FAILED"
-
-    STATE_CHOICES = (
-        (UPLOADED, "Cargado"),
-        (PROCESSING, "Procesando"),
-        (PROCESSED, "Procesado"),
-        (FAILED, "Error"),
-    )
-
-    created = models.DateTimeField()
-    modified = models.DateTimeField(null=True)
-    indexing_file = models.FileField(upload_to='register_files/')
-    uploader = models.ForeignKey(User)
-    state = models.CharField(max_length=20, choices=STATE_CHOICES)
-    logs = models.TextField(default=u'-')
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if not self.pk:  # first time only
-            self.created = timezone.now()
-            self.state = self.UPLOADED
-
-        super(BaseRegisterFile, self).save(force_insert, force_update, using, update_fields)
-
-
-class DatasetIndexingFile(BaseRegisterFile):
-    def __unicode__(self):
-        return "Indexing file: {}".format(self.created)
-
-
 class Node(models.Model):
 
     catalog_id = models.CharField(max_length=100, unique=True)
@@ -59,11 +22,6 @@ class Node(models.Model):
 
     def __unicode__(self):
         return self.catalog_id
-
-
-class NodeRegisterFile(BaseRegisterFile):
-    def __unicode__(self):
-        return "Node register file: {}".format(self.created)
 
 
 class IndexingTaskCron(models.Model):
