@@ -3,12 +3,10 @@ from __future__ import division
 
 import json
 
-from django.db.models import Q
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.api.models import Dataset, Catalog, Distribution, Field
+from django_datajsonar.models import Distribution
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
 
@@ -33,17 +31,5 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e))
         return
 
-    # Seteo inicial de variables a usar durante la indexación
-    catalog_model = Catalog.objects.filter(identifier=node.catalog_id)
-    if catalog_model:
-        catalog_model[0].updated = False
-        catalog_model[0].error = False
-        catalog_model[0].save()
-
-    Dataset.objects.filter(catalog__identifier=node.catalog_id).update(present=False, updated=False, error=False)
-
-    Distribution.objects.filter(dataset__catalog__identifier=node.catalog_id).update(updated=False, error='')
-    Field.objects.filter(distribution__dataset__catalog=catalog_model).update(updated=False)
-    for distribution in catalog.get_distributions(only_time_series=True):
-        identifier = distribution['identifier']
-        index_distribution.delay(identifier, node.id, task.id, read_local, whitelist)
+    for distribution in Distribution.objects.all():
+        index_distribution.delay(distribution.identifier, node.id, task.id, read_local, whitelist)

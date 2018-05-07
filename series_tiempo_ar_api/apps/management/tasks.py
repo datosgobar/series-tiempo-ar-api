@@ -3,7 +3,7 @@
 from django.utils import timezone
 from django_rq import job
 
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Node
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 
 
