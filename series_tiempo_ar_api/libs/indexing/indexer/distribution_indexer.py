@@ -42,6 +42,9 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
+        for field in distribution.field_set.all():
+            field.enhanced_meta.update_or_create(key='available', value='true')
+
     def init_df(self, distribution, fields):
         """Inicializa el DataFrame del CSV de la distribución pasada,
         seteando el índice de tiempo correcto y validando las columnas
@@ -77,4 +80,6 @@ class DistributionIndexer:
     def get_time_index_periodicity(self, distribution, fields):
         time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
         fields.pop('indice_tiempo')
-        return json.loads(time_index.metadata)['specialTypeDetail']
+        periodicity = json.loads(time_index.metadata)['specialTypeDetail']
+        distribution.enhanced_meta.update_or_create(key='periodicity', value=periodicity)
+        return periodicity

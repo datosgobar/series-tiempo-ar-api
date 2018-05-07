@@ -7,9 +7,9 @@ import iso8601
 from django.conf import settings
 from django.http import JsonResponse
 from elasticsearch import TransportError
+from django_datajsonar import models
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError, EndOfPeriodError
-from series_tiempo_ar_api.apps.api.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
@@ -283,11 +283,15 @@ class IdsField(BaseOperation):
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        field_model = Field.objects.filter(series_id=series_id)
+        field_model = models.Field.objects.filter(identifier=series_id)
         if not field_model:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
             return None
 
+        available = field_model[0].enhanced_meta.filter(key='available')
+        if not available or available[0] == 'False':
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
+            return None
         return field_model[0]
 
     def _parse_single_series(self, serie):

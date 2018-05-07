@@ -49,16 +49,16 @@ class Query(object):
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         periodicities = [
-            get_periodicity_human_format(field.distribution.periodicity)
+            get_periodicity_human_format(field.distribution.enhanced_meta.get(key='periodicity').value)
             for field in self.series_models
         ]
 
         self.series_models.append(field_model)
 
         series_periodicity = get_periodicity_human_format(
-            field_model.distribution.periodicity)
+            field_model.distribution.enhanced_meta.get(key='periodicity').value)
 
-        periodicity = get_periodicity_human_format(field_model.distribution.periodicity)
+        periodicity = get_periodicity_human_format(field_model.distribution.enhanced_meta.get(key='periodicity').value)
         if periodicities and series_periodicity not in periodicities:
             # Hay varias series con distintas periodicities, colapso los datos
             periodicities.append(series_periodicity)
@@ -89,7 +89,7 @@ class Query(object):
         order = constants.COLLAPSE_INTERVALS
 
         for serie in self.series_models:
-            periodicity = serie.distribution.periodicity
+            periodicity = serie.distribution.enhanced_meta.get(key='periodicity').value
             periodicity = get_periodicity_human_format(periodicity)
             if order.index(periodicity) > order.index(collapse):
                 raise CollapseError
@@ -184,7 +184,7 @@ class Query(object):
         result = []
         for field in self.series_models:
             result.append({
-                'id': field.series_id,
+                'id': field.identifier,
                 'distribution': field.distribution.identifier,
                 'dataset': field.distribution.dataset.identifier
             })
