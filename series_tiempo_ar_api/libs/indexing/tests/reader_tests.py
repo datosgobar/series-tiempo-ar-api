@@ -11,7 +11,7 @@ from series_tiempo_ar.search import get_time_series_distributions
 
 from django.core import mail
 
-from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog, Dataset
+from django_datajsonar.models import Distribution, Field, Catalog, Dataset
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.database_loader import \
@@ -41,8 +41,8 @@ class IndexerTests(TestCase):
 
         distribution = Distribution.objects.get(identifier="212.1")
         fields = distribution.field_set.all()
-        fields = {field.title: field.series_id for field in fields}
-        df = DistributionIndexer.init_df(distribution, fields)
+        fields = {field.title: field.identifier for field in fields}
+        df = DistributionIndexer(None).init_df(distribution, fields)
 
         for field in fields.values():
             self.assertTrue(field in df.columns)
@@ -161,7 +161,7 @@ class ReaderTests(TestCase):
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
         index_catalog(self.node, self.task, read_local=True, whitelist=True)
 
-        count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
+        count = Field.objects.filter(identifier='212.1_PSCIOS_ERN_0_0_25').count()
 
         self.assertEqual(count, 1)
 

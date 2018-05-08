@@ -5,7 +5,7 @@ from django.test import TestCase
 from nose.tools import raises
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from series_tiempo_ar_api.apps.api.models import Field
+from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from .helpers import get_series_id
 
@@ -17,7 +17,7 @@ class QueryTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.field = Field.objects.get(series_id=cls.single_series)
+        cls.field = Field.objects.get(identifier=cls.single_series)
         super(cls, QueryTests).setUpClass()
 
     def setUp(self):
@@ -68,14 +68,14 @@ class QueryTests(TestCase):
         self.query.add_series(self.single_series, self.field)
         # Devuelve lista de ids, una por serie. Me quedo con la primera (única)
         ids = self.query.get_series_identifiers()[0]
-        field = Field.objects.get(series_id=self.single_series)
-        self.assertEqual(ids['id'], field.series_id)
+        field = Field.objects.get(identifier=self.single_series)
+        self.assertEqual(ids['id'], field.identifier)
         self.assertEqual(ids['distribution'], field.distribution.identifier)
         self.assertEqual(ids['dataset'], field.distribution.dataset.identifier)
 
     def test_weekly_collapse(self):
         day_series_name = settings.TEST_SERIES_NAME.format('day')
-        field = Field.objects.get(series_id=day_series_name)
+        field = Field.objects.get(identifier=day_series_name)
 
         self.query.add_series(day_series_name, field)
 

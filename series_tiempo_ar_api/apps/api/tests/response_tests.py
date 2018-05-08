@@ -1,8 +1,9 @@
 #! coding: utf-8
+import json
 from django.conf import settings
 from django.test import TestCase
 
-from series_tiempo_ar_api.apps.api.models import Field
+from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
@@ -18,10 +19,10 @@ class ResponseTests(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.query = Query(index=settings.TEST_INDEX)
-        field = Field.objects.get(series_id=cls.single_series)
+        field = Field.objects.get(identifier=cls.single_series)
         cls.query.add_series(cls.single_series, field)
         cls.series_name = field.title
-        cls.series_desc = field.description
+        cls.series_desc = json.loads(field.metadata)['description']
         super(ResponseTests, cls).setUpClass()
 
     def test_csv_response(self):
@@ -68,7 +69,7 @@ class ResponseTests(TestCase):
     def test_csv_different_decimal_empty_rows(self):
         query = Query(index=settings.TEST_INDEX)
 
-        field = Field.objects.get(series_id=self.single_series)
+        field = Field.objects.get(identifier=self.single_series)
         query.add_series(self.single_series, field)
         query.add_series(self.single_series, field, rep_mode='percent_change_a_year_ago')
 

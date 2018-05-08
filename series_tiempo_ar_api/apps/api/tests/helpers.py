@@ -1,7 +1,7 @@
 #! coding: utf-8
 
 from django.conf import settings
-from series_tiempo_ar_api.apps.api.models import \
+from django_datajsonar.models import \
     Catalog, Dataset, Distribution, Field
 
 
@@ -23,29 +23,37 @@ def init_year_series(dataset):
     distrib = Distribution.objects.create(identifier='132.1',
                                           metadata='{}',
                                           download_url="invalid_url",
-                                          dataset=dataset,
-                                          periodicity='R/P1Y')
-    Field.objects.create(
-        series_id=settings.TEST_SERIES_NAME.format('year'),
+                                          dataset=dataset)
+    distrib.save()
+    distrib.enhanced_meta.create(key='periodicity', value='R/P1Y')
+    field = Field.objects.create(
+        identifier=settings.TEST_SERIES_NAME.format('year'),
         metadata='{}',
         distribution=distrib,
-        description="random series description",
         title='random_year_0_title'
     )
+    field.save()
+    field.enhanced_meta.create(key='available', value='True')
+
 
 
 def init_semester_series(dataset):
     distrib = Distribution.objects.create(identifier='132.2',
                                           metadata='{}',
                                           download_url="invalid_url",
-                                          dataset=dataset,
-                                          periodicity='R/P6M')
-    Field.objects.create(
-        series_id=settings.TEST_SERIES_NAME.format('semester'),
+                                          dataset=dataset)
+    distrib.save()
+    distrib.enhanced_meta.create(key='periodicity', value='R/P6M')
+
+    field = Field.objects.create(
+        identifier=settings.TEST_SERIES_NAME.format('semester'),
         metadata='{}',
         distribution=distrib,
         title='random_semester_0_title'
     )
+    field.save()
+    field.enhanced_meta.create(key='available', value='True')
+
 
 
 def init_month_series(dataset):
@@ -53,15 +61,18 @@ def init_month_series(dataset):
     distrib = Distribution.objects.create(identifier='132.3',
                                           metadata='{}',
                                           download_url="invalid_url",
-                                          dataset=dataset,
-                                          periodicity='R/P1M')
-    Field.objects.create(
-        series_id=settings.TEST_SERIES_NAME.format('month'),
+                                          dataset=dataset)
+    distrib.save()
+    distrib.enhanced_meta.create(key='periodicity', value='R/P1M')
+    field = Field.objects.create(
+        identifier=settings.TEST_SERIES_NAME.format('month'),
         metadata='{}',
         distribution=distrib,
-        description="random series description",
         title='random_month_0_title'
     )
+    field.save()
+    field.enhanced_meta.create(key='available', value='True')
+
     return dataset
 
 
@@ -69,14 +80,18 @@ def init_daily_series(dataset):
     distrib = Distribution.objects.create(identifier='132.4',
                                           metadata='{}',
                                           download_url="invalid_url",
-                                          dataset=dataset,
-                                          periodicity='R/P1D')
-    Field.objects.create(
-        series_id=settings.TEST_SERIES_NAME.format('day'),
+                                          dataset=dataset)
+    distrib.save()
+    distrib.enhanced_meta.create(key='periodicity', value='R/P1D')
+
+    field = Field.objects.create(
+        identifier=settings.TEST_SERIES_NAME.format('day'),
         metadata='{}',
         distribution=distrib,
         title='random_day_0_title'
     )
+    field.save()
+    field.enhanced_meta.create(key='available', value='True')
 
 
 def get_series_id(periodicity):

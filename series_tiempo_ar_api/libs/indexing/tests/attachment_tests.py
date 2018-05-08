@@ -9,8 +9,8 @@ from django.test import TestCase
 from django.core.management import call_command
 from pydatajson import DataJson
 
+from django_datajsonar.models import Catalog, Dataset, Distribution, Field
 from series_tiempo_ar_api.apps.management.models import Node
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
 from series_tiempo_ar_api.libs.indexing.report import attachments
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')

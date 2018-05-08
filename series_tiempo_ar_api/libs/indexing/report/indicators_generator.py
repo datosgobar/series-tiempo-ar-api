@@ -3,7 +3,7 @@ import json
 
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Field, Distribution, Dataset
+from django_datajsonar.models import Catalog, Field, Distribution, Dataset
 from series_tiempo_ar_api.apps.management.models import Indicator
 
 

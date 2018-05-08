@@ -8,7 +8,6 @@ from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 
-from series_tiempo_ar_api.apps.api.models import Distribution
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings

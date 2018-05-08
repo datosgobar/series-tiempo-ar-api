@@ -12,18 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='baseregisterfile',
-            name='uploader',
-        ),
-        migrations.RemoveField(
-            model_name='datasetindexingfile',
-            name='baseregisterfile_ptr',
-        ),
-        migrations.RemoveField(
-            model_name='noderegisterfile',
-            name='baseregisterfile_ptr',
-        ),
         migrations.AlterField(
             model_name='indicator',
             name='type',
