@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('api', '0034_distribution_error'),
-        ('django_datajsonar', '0001_initial'),
+        ('django_datajsonar', '__latest__'),
     ]
 
     operations = [
