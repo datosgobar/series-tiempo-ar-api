@@ -35,7 +35,7 @@ class Query(object):
             return [model.title for model in self.series_models]
 
         if how == constants.HEADER_PARAM_DESCRIPTIONS:
-            return [model.description for model in self.series_models]
+            return [json.loads(model.metadata)['description'] for model in self.series_models]
 
         return self.es_query.get_series_ids()
 

@@ -36,7 +36,6 @@ def init_year_series(dataset):
     field.enhanced_meta.create(key='available', value='True')
 
 
-
 def init_semester_series(dataset):
     distrib = Distribution.objects.create(identifier='132.2',
                                           metadata='{}',
@@ -55,7 +54,6 @@ def init_semester_series(dataset):
     field.enhanced_meta.create(key='available', value='True')
 
 
-
 def init_month_series(dataset):
 
     distrib = Distribution.objects.create(identifier='132.3',
@@ -66,7 +64,7 @@ def init_month_series(dataset):
     distrib.enhanced_meta.create(key='periodicity', value='R/P1M')
     field = Field.objects.create(
         identifier=settings.TEST_SERIES_NAME.format('month'),
-        metadata='{}',
+        metadata='{"description": "test_series_description"}',
         distribution=distrib,
         title='random_month_0_title'
     )
@@ -86,7 +84,7 @@ def init_daily_series(dataset):
 
     field = Field.objects.create(
         identifier=settings.TEST_SERIES_NAME.format('day'),
-        metadata='{}',
+        metadata='{"description": "test_series_description"}',
         distribution=distrib,
         title='random_day_0_title'
     )
