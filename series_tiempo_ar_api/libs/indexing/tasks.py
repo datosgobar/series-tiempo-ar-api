@@ -36,8 +36,18 @@ def index_distribution(distribution_id, node_id, task_id,
         if not result:
             return
 
-        if distribution_model.dataset.indexable:
+        changed = True
+        _hash = distribution_model.enhanced_meta.filter(key='last_hash')
+        if _hash:
+            changed = _hash[0].value != distribution_model.data_hash
+
+        if changed:
             DistributionIndexer(index=index).run(distribution_model)
+
+        distribution_model.enhanced_meta.update_or_create(key='last_hash',
+                                                          defaults={'value': distribution_model.data_hash})
+        distribution_model.enhanced_meta.update_or_create(key='changed',
+                                                          defaults={'value': str(changed)})
 
     except Distribution.DoesNotExist as e:
         _handle_exception(distribution_model.dataset, distribution, distribution_id, e, node, task)

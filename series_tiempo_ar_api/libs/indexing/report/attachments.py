@@ -4,8 +4,7 @@ from io import StringIO
 
 import csv
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Catalog, Dataset, Distribution, Field, Node
 
 HEADER_ROW = [
     'identifier', 'title', 'description', 'actualizado', 'indexable', 'discontinuado', 'error', 'error_mensaje'
@@ -28,7 +27,7 @@ def generate_attachments(queryset, get_indexable, get_present, get_error):
             meta.get('description'),
             entity.updated,
             get_indexable(entity),
-            get_present(entity),
+            entity.present,
             error,
             error_msg,
         ])

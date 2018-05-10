@@ -10,7 +10,7 @@ from django.core.management import call_command
 from pydatajson import DataJson
 
 from django_datajsonar.models import Catalog, Dataset, Distribution, Field
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Node
 from series_tiempo_ar_api.libs.indexing.report import attachments
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
@@ -29,7 +29,7 @@ class AttachmentTests(TestCase):
                         catalog=json.dumps(DataJson(cls.catalog)))
 
         cls.node.save()
-        call_command('read_datajson', whitelist=True)
+        call_command('read_datajson', whitelist=True, read_local=True)
 
     def test_catalog(self):
         out = attachments.generate_catalog_attachment()
@@ -56,7 +56,7 @@ class AttachmentTests(TestCase):
             dataset = Dataset.objects.get(identifier=row[0])
 
             self.assertEqual(str(dataset.indexable), row[4])
-            self.assertEqual(str(dataset.available), row[5])
+            self.assertEqual(str(dataset.present), row[5])
             error = bool(dataset.error)
             self.assertEqual(str(error), row[6])
 
@@ -70,8 +70,8 @@ class AttachmentTests(TestCase):
         for row in reader:
             distribution = Distribution.objects.get(identifier=row[0])
 
-            self.assertEqual(str(distribution.indexable), row[4])
-            self.assertEqual(str(distribution.dataset.available), row[5])
+            self.assertEqual(str(distribution.dataset.indexable), row[4])
+            self.assertEqual(str(distribution.present), row[5])
             error = bool(distribution.error)
             self.assertEqual(str(error), row[6])
 
@@ -85,9 +85,9 @@ class AttachmentTests(TestCase):
 
         fields = Field.objects.all()
         for row in reader:
-            field = fields.get(series_id=row[0])
+            field = fields.get(identifier=row[0])
 
             self.assertEqual(str(field.distribution.dataset.indexable), row[4])
-            self.assertEqual(str(field.distribution.dataset.available), row[5])
+            self.assertEqual(str(field.present), row[5])
             error = bool(field.distribution.error)
             self.assertEqual(str(error), row[6])
