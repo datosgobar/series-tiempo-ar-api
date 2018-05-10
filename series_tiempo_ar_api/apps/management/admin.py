@@ -2,9 +2,8 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .actions import confirm_delete
 from .tasks import read_datajson
-from .models import Node, IndexingTaskCron, ReadDataJsonTask
+from .models import IndexingTaskCron, ReadDataJsonTask
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -48,7 +47,7 @@ class IndexingTaskAdmin(admin.ModelAdmin):
 
 
 class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs', 'stats')
+    readonly_fields = ('status', 'created', 'finished', 'logs', 'stats')
     list_display = ('__unicode__', 'status')
 
     def save_model(self, request, obj, form, change):
@@ -59,6 +58,5 @@ class DataJsonAdmin(admin.ModelAdmin):
         read_datajson.delay(obj)  # Ejecuta indexación
 
 
-admin.site.register(Node, NodeAdmin)
 admin.site.register(IndexingTaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)

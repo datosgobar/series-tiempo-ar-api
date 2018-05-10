@@ -2,22 +2,18 @@
 import json
 import os
 
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
 
-from django.core import mail
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field, Catalog, Dataset
 from django_datajsonar.models import ReadDataJsonTask, Node
-from series_tiempo_ar_api.apps.management.models import Indicator, ReadDataJsonTask as ManagementTask
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
-from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
@@ -207,70 +203,3 @@ class ReaderTests(TestCase):
         index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
 
         self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)
-
-
-class IndicatorsTests(TestCase):
-    catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-    catalog_id = 'catalog_id'
-
-    def setUp(self):
-        self.loader = IndicatorLoader()
-        self.loader.clear_indicators()  # Just in case
-        self.task = ReadDataJsonTask.objects.create()
-        self.node = Node(catalog_id=self.catalog_id,
-                         catalog_url=self.catalog,
-                         indexable=True,
-                         catalog=json.dumps(DataJson(self.catalog)))
-        Catalog(identifier=self.catalog_id, title='test catalog', metadata='{}').save()
-        self.node.save()
-
-    def test_error_distribution_indicator(self):
-        self.loader.clear_indicators()
-        catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
-        self.node.catalog_url = catalog
-        self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        indicator = int(self.loader.get(self.catalog_id, Indicator.DISTRIBUTION_ERROR))
-        self.assertEqual(indicator, 1)
-        indicator = int(self.loader.get(self.catalog_id, Indicator.FIELD_ERROR))
-        self.assertEqual(indicator, 3)
-
-        error = Dataset.objects.get(catalog__identifier=self.catalog_id).error
-        self.assertTrue(error)
-
-    def test_dataset_updated(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        self.loader.clear_indicators()
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
-        self.node.catalog_url = catalog
-        self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        indicator = Dataset.objects.filter(catalog__identifier=self.catalog_id, updated=True).count()
-        self.assertEqual(1, indicator)
-
-    def test_multiple_nodes(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
-
-        Node(catalog_id='otro',
-             catalog_url=catalog,
-             indexable=True,
-             catalog=json.dumps(DataJson(catalog))).save()
-        Catalog(identifier='otro', title='test catalog', metadata='{}').save()
-        ReportGenerator(self.task).generate()
-
-        self.assertEqual(2, self.task.indicator_set.filter(type=Indicator.CATALOG_TOTAL).count())
-
-    def test_individual_report(self):
-        user = User(username='test', password='test', email='test@email.com')
-        user.save()
-        self.node.admins.add(user)
-
-        ReportGenerator(self.task).generate()
-        # Expected: se manda un mail con el reporte individual
-        self.assertEqual(1, len(mail.outbox))
-
-    def tearDown(self):
-        IndicatorLoader().clear_indicators()

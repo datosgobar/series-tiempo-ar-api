@@ -7,8 +7,8 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from series_tiempo_ar_api.apps.api.models import Catalog
-from series_tiempo_ar_api.apps.management.models import Indicator, Node
+from django_datajsonar.models import Catalog, Node
+from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
@@ -60,7 +60,7 @@ class ReportGenerator(object):
         start_time = self._format_date(self.task.created)
         if not node:
             recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
-        else:
+        else:  # FIXME AttributeError: 'Node' object has no attribute 'admins'
             recipients = node.admins.all()
 
         msg = render_to_string('indexing/report.txt', context=context)

@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import getpass
 
+from django_datajsonar.models import Node
 from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -10,18 +11,6 @@ from django.db import models, transaction
 from django.utils import timezone
 from . import strings
 from .indicator_names import IndicatorNamesMixin
-
-
-class Node(models.Model):
-
-    catalog_id = models.CharField(max_length=100, unique=True)
-    catalog_url = models.URLField(unique=True)
-    indexable = models.BooleanField()
-    catalog = models.TextField(default='{}')
-    admins = models.ManyToManyField(User, blank=True)
-
-    def __unicode__(self):
-        return self.catalog_id
 
 
 class IndexingTaskCron(models.Model):
@@ -83,7 +72,6 @@ class ReadDataJsonTask(models.Model):
     created = models.DateTimeField()
     finished = models.DateTimeField(null=True)
     logs = models.TextField(default='-')
-    catalogs = models.ManyToManyField(to=Node, blank=True)
 
     stats = models.TextField(default='{}')
 
