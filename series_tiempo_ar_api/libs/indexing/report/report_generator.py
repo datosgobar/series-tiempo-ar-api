@@ -1,6 +1,8 @@
 #!coding=utf8
 from __future__ import unicode_literals
+from datetime import date
 
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.mail.message import EmailMultiAlternatives
@@ -8,6 +10,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from django_datajsonar.models import Catalog, Node
+from series_tiempo_ar_api.apps.analytics.models import Query
 from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
@@ -49,6 +52,7 @@ class ReportGenerator(object):
         context = {
             'finish_time': self._format_date(self.task.finished),
             'is_partial_report': bool(node),
+            'queries': self.get_queries()
         }
         context.update({
             indicator: self._get_indicator_value(indicator, node=node)
@@ -100,3 +104,13 @@ class ReportGenerator(object):
             return 0
 
         return int(sum([indic.value for indic in indicator_queryset]))
+
+    @staticmethod
+    def get_queries():
+        yesterday = date.today() - relativedelta(days=1)
+
+        count = Query.objects.filter(timestamp__day=yesterday.day,
+                                     timestamp__month=yesterday.month,
+                                     timestamp__year=yesterday.year).count()
+
+        return count
