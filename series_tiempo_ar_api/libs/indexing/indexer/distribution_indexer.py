@@ -41,7 +41,7 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-        for field in distribution.field_set.all():
+        for field in distribution.field_set.exclude(title='indice_tiempo'):
             field.enhanced_meta.update_or_create(key='available', value='true')
 
     def init_df(self, distribution, fields):

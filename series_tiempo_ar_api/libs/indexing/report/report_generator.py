@@ -61,7 +61,8 @@ class ReportGenerator(object):
         if not node:
             recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
         else:  # FIXME AttributeError: 'Node' object has no attribute 'admins'
-            recipients = node.admins.all()
+            return
+            #  recipients = node.admins.all()
 
         msg = render_to_string('indexing/report.txt', context=context)
         emails = [user.email for user in recipients]

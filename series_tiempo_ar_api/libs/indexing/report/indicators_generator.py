@@ -5,6 +5,7 @@ from pydatajson import DataJson
 
 from django_datajsonar.models import Catalog, Field, Distribution, Dataset
 from series_tiempo_ar_api.apps.management.models import Indicator
+from series_tiempo_ar_api.utils import get_available_fields
 
 
 # pylint: disable=R0914
@@ -75,7 +76,7 @@ class IndicatorsGenerator(object):
         available = len(data_json.get_datasets(only_time_series=True))
         self.create(type=Indicator.DATASET_AVAILABLE, value=available, node=node)
 
-        total = Field.objects.filter(distribution__dataset__catalog=catalog)\
+        total = get_available_fields().filter(distribution__dataset__catalog=catalog)\
             .values_list('distribution__dataset').distinct().count()
         self.create(type=Indicator.DATASET_TOTAL, value=total, node=node)
 
@@ -115,15 +116,16 @@ class IndicatorsGenerator(object):
                     node=node)
 
         self.create(type=Indicator.DISTRIBUTION_TOTAL,
-                    value=Field.objects.filter(distribution__dataset__catalog=catalog).
+                    value=get_available_fields().filter(distribution__dataset__catalog=catalog).
                     values_list('distribution').distinct().count(),
                     node=node)
 
     def calculate_series_indicators(self, node, data_json):
         catalog = Catalog.objects.get(identifier=node.catalog_id)
 
-        indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
-                                         distribution__dataset__indexable=True)
+        fields = Field.objects.exclude(title='indice_tiempo')
+        indexable = fields.filter(distribution__dataset__catalog=catalog,
+                                  distribution__dataset__indexable=True)
 
         updated = indexable.filter(updated=True).count()
         self.create(type=Indicator.FIELD_UPDATED, value=updated, node=node)
@@ -136,8 +138,8 @@ class IndicatorsGenerator(object):
 
         self.create(type=Indicator.FIELD_INDEXABLE, value=indexable.count(), node=node)
 
-        not_indexable = Field.objects.filter(distribution__dataset__catalog=catalog,
-                                             distribution__dataset__indexable=False)
+        not_indexable = fields.filter(distribution__dataset__catalog=catalog,
+                                      distribution__dataset__indexable=False)
 
         new = not_indexable.filter(new=True).count()
         self.create(type=Indicator.FIELD_NEW, value=new, node=node)
@@ -157,5 +159,5 @@ class IndicatorsGenerator(object):
                     node=node)
 
         self.create(type=Indicator.FIELD_TOTAL,
-                    value=Field.objects.filter(distribution__dataset__catalog=catalog).count(),
+                    value=get_available_fields().filter(distribution__dataset__catalog=catalog).count(),
                     node=node)

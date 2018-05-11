@@ -31,5 +31,5 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e))
         return
 
-    for distribution in Distribution.objects.all():
+    for distribution in Distribution.objects.filter(present=True):
         index_distribution.delay(distribution.identifier, node.id, task.id, read_local, whitelist)
