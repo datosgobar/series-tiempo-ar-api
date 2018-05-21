@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('management', '0001_auto_20180507_1500'),
+        ('django_datajsonar', '0001_initial'),
     ]
 
     operations = [
