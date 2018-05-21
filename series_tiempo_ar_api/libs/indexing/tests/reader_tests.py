@@ -95,6 +95,16 @@ class IndexerTests(TestCase):
 
         self.assertTrue(len(results))
 
+    def test_index_all_zero_series(self):
+        series_id = '212.1_todos_cero'
+        self._index_catalog('ts_all_zero_series.json')
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertTrue(len(results))
+
     @classmethod
     def tearDownClass(cls):
         pass

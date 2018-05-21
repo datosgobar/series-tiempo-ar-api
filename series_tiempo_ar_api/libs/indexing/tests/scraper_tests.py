@@ -4,6 +4,7 @@ import os
 from pydatajson import DataJson
 from django.test import TestCase
 from nose.tools import raises
+from series_tiempo_ar.custom_exceptions import FieldFewValuesError
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.scraping import Scraper
@@ -39,5 +40,20 @@ class ScrapperTests(TestCase):
 
         catalog = DataJson(os.path.join(
             SAMPLES_DIR, 'distribution_missing_column.json'
+        ))
+        self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+
+    def test_validate_all_zero_series(self):
+        catalog = DataJson(os.path.join(
+            SAMPLES_DIR, 'ts_all_zero_series.json'
+        ))
+        valid = self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+
+        self.assertTrue(valid)
+
+    @raises(FieldFewValuesError)
+    def test_validate_all_null_series(self):
+        catalog = DataJson(os.path.join(
+            SAMPLES_DIR, 'ts_all_null_series.json'
         ))
         self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
