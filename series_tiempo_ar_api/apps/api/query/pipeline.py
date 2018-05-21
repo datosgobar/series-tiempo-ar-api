@@ -16,6 +16,7 @@ from series_tiempo_ar_api.apps.api.query.response import \
 from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.management import meta_keys
 
 
 class QueryPipeline(object):
@@ -288,7 +289,7 @@ class IdsField(BaseOperation):
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
             return None
 
-        available = field_model[0].enhanced_meta.filter(key='available')
+        available = field_model[0].enhanced_meta.filter(key=meta_keys.AVAILABLE)
         if not available or available[0] == 'False':
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
             return None

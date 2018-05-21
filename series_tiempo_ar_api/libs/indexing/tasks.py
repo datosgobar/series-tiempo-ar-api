@@ -9,10 +9,11 @@ from pydatajson import DataJson
 
 from django_datajsonar.models import Node
 from django_datajsonar.models import Distribution
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Indicator
+
+from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from .report.report_generator import ReportGenerator
 from .scraping import Scraper
 
@@ -38,16 +39,16 @@ def index_distribution(distribution_id, node_id, task_id,
             return
 
         changed = True
-        _hash = distribution_model.enhanced_meta.filter(key='last_hash')
+        _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
         if _hash:
             changed = _hash[0].value != distribution_model.data_hash
 
         if changed:
             DistributionIndexer(index=index).run(distribution_model)
 
-        distribution_model.enhanced_meta.update_or_create(key='last_hash',
+        distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
                                                           defaults={'value': distribution_model.data_hash})
-        distribution_model.enhanced_meta.update_or_create(key='changed',
+        distribution_model.enhanced_meta.update_or_create(key=meta_keys.CHANGED,
                                                           defaults={'value': str(changed)})
 
     except Exception as e:
@@ -67,7 +68,7 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
         try:
             distribution = Distribution.objects.get(identifier=distribution_id,
                                                     dataset__catalog__identifier=node.catalog_id)
-            distribution.enhanced_meta.create(key='error_msg', value=msg)
+            distribution.enhanced_meta.create(key=meta_keys.ERROR_MSG, value=msg)
             distribution.error = True
             distribution.field_set.update(error=True)
             distribution.save()

@@ -7,6 +7,7 @@ import pandas as pd
 from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
+from series_tiempo_ar_api.apps.management import meta_keys
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
@@ -42,7 +43,7 @@ class DistributionIndexer:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
         for field in distribution.field_set.exclude(title='indice_tiempo'):
-            field.enhanced_meta.update_or_create(key='available', value='true')
+            field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
 
     def init_df(self, distribution, fields):
         """Inicializa el DataFrame del CSV de la distribución pasada,
@@ -80,5 +81,5 @@ class DistributionIndexer:
         time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
         fields.pop('indice_tiempo')
         periodicity = json.loads(time_index.metadata)['specialTypeDetail']
-        distribution.enhanced_meta.update_or_create(key='periodicity', value=periodicity)
+        distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, value=periodicity)
         return periodicity

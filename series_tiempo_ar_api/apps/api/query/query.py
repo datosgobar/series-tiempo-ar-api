@@ -7,6 +7,7 @@ from django.conf import settings
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.management import meta_keys
 from .es_query.es_query import ESQuery
 
 
@@ -49,16 +50,18 @@ class Query(object):
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         periodicities = [
-            get_periodicity_human_format(field.distribution.enhanced_meta.get(key='periodicity').value)
+            get_periodicity_human_format(
+                field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
             for field in self.series_models
         ]
 
         self.series_models.append(field_model)
 
         series_periodicity = get_periodicity_human_format(
-            field_model.distribution.enhanced_meta.get(key='periodicity').value)
+            field_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
-        periodicity = get_periodicity_human_format(field_model.distribution.enhanced_meta.get(key='periodicity').value)
+        periodicity = get_periodicity_human_format(
+            field_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
         if periodicities and series_periodicity not in periodicities:
             # Hay varias series con distintas periodicities, colapso los datos
             periodicities.append(series_periodicity)
@@ -89,7 +92,7 @@ class Query(object):
         order = constants.COLLAPSE_INTERVALS
 
         for serie in self.series_models:
-            periodicity = serie.distribution.enhanced_meta.get(key='periodicity').value
+            periodicity = serie.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value
             periodicity = get_periodicity_human_format(periodicity)
             if order.index(periodicity) > order.index(collapse):
                 raise CollapseError

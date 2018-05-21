@@ -10,6 +10,7 @@ from pydatajson import DataJson
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field, Catalog, Dataset
 from django_datajsonar.models import ReadDataJsonTask, Node
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
@@ -171,7 +172,7 @@ class ReaderTests(TestCase):
         distribution = Distribution.objects.get(identifier='212.1')
 
         # La distribucion es marcada como no indexable hasta que cambien sus datos
-        self.assertEqual(distribution.enhanced_meta.get(key='changed').value, 'False')
+        self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'False')
 
     def test_first_time_distribution_indexable(self):
         read_datajson(self.task, whitelist=True, read_local=True)
@@ -179,7 +180,7 @@ class ReaderTests(TestCase):
 
         distribution = Distribution.objects.get(identifier='212.1')
 
-        self.assertEqual(distribution.enhanced_meta.get(key='changed').value, 'True')
+        self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
     def test_index_same_distribution_if_data_changed(self):
         read_datajson(self.task, whitelist=True, read_local=True)
@@ -193,7 +194,7 @@ class ReaderTests(TestCase):
         distribution = Distribution.objects.get(identifier='212.1')
 
         # La distribución fue indexada nuevamente, está marcada como indexable
-        self.assertEqual(distribution.enhanced_meta.get(key='changed').value, 'True')
+        self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
     def test_error_distribution_logs(self):
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
