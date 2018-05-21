@@ -27,7 +27,8 @@ def index_distribution(distribution_id, node_id, task_id,
     task = ReadDataJsonTask.objects.get(id=task_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution = catalog.get_distribution(identifier=distribution_id)
-    distribution_model = Distribution.objects.get(identifier=distribution_id)
+    distribution_model = Distribution.objects.get(identifier=distribution_id,
+                                                  dataset__catalog__identifier=node.catalog_id)
     if not distribution_model.dataset.indexable:
         return
 
@@ -64,7 +65,8 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
 
     with transaction.atomic():
         try:
-            distribution = Distribution.objects.get(identifier=distribution_id)
+            distribution = Distribution.objects.get(identifier=distribution_id,
+                                                    dataset__catalog__identifier=node.catalog_id)
             distribution.enhanced_meta.create(key='error_msg', value=msg)
             distribution.error = True
             distribution.field_set.update(error=True)
