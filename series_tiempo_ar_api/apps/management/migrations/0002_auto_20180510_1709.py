@@ -14,10 +14,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='node',
-            name='admins',
-        ),
-        migrations.RemoveField(
             model_name='readdatajsontask',
             name='catalogs',
         ),
