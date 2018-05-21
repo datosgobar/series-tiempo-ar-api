@@ -49,7 +49,7 @@ def index_distribution(distribution_id, node_id, task_id,
         distribution_model.enhanced_meta.update_or_create(key='changed',
                                                           defaults={'value': str(changed)})
 
-    except Distribution.DoesNotExist as e:
+    except Exception as e:
         _handle_exception(distribution_model.dataset, distribution, distribution_id, e, node, task)
 
 
@@ -61,16 +61,13 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
         e_msg = format_exc()
     msg = msg.format(distribution_id, node.catalog_id, e_msg)
     ReadDataJsonTask.info(task, msg)
-    indicator_loader = IndicatorLoader()
-    indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
-    indicator_loader.increment_indicator(node.catalog_id,
-                                         Indicator.FIELD_ERROR,
-                                         amt=len(distribution['field'][1:]))
 
     with transaction.atomic():
         try:
             distribution = Distribution.objects.get(identifier=distribution_id)
-            distribution.error = msg
+            distribution.enhanced_meta.create(key='error_msg', value=msg)
+            distribution.error = True
+            distribution.field_set.update(error=True)
             distribution.save()
         except Distribution.DoesNotExist:
             pass
