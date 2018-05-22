@@ -18,11 +18,9 @@ from .report.report_generator import ReportGenerator
 from .scraping import Scraper
 
 
-# juro que es temporal
-# pylint: disable=W0613
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
-                       read_local=False, whitelist=False, index=settings.TS_INDEX):
+                       read_local=False, index=settings.TS_INDEX):
 
     node = Node.objects.get(id=node_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
