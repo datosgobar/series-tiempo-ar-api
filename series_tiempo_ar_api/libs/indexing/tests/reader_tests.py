@@ -135,7 +135,7 @@ class IndexerTests(TestCase):
                 dataset_model.indexable = True
                 dataset_model.save()
 
-        read_datajson(self.task, whitelist=True, read_local=True)
+        read_datajson(self.task, read_local=True)
         for distribution in Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID):
             DistributionIndexer(index=self.test_index).run(distribution)
         self.elastic.indices.forcemerge(index=self.test_index)
@@ -155,9 +155,9 @@ class ReaderTests(TestCase):
 
     def test_index_same_series_different_catalogs(self):
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         count = Field.objects.filter(identifier='212.1_PSCIOS_ERN_0_0_25').count()
 
@@ -165,9 +165,9 @@ class ReaderTests(TestCase):
 
     def test_dont_index_same_distribution_twice(self):
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -176,7 +176,7 @@ class ReaderTests(TestCase):
 
     def test_first_time_distribution_indexable(self):
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True, )
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -184,12 +184,12 @@ class ReaderTests(TestCase):
 
     def test_index_same_distribution_if_data_changed(self):
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True, )
         new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
         self.node.catalog_url = new_catalog
         self.node.save()
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -201,6 +201,6 @@ class ReaderTests(TestCase):
         self.node.catalog_url = catalog
         self.node.save()
         read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, whitelist=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)

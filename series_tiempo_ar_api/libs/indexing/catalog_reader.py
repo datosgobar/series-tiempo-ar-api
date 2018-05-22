@@ -11,7 +11,7 @@ from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
 
 
-def index_catalog(node, task, read_local=False, whitelist=False):
+def index_catalog(node, task, read_local=False):
     """Ejecuta el pipeline de lectura, guardado e indexado de datos
     y metadatos sobre cada distribución del catálogo especificado
 
@@ -20,7 +20,6 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         task (ReadDataJsonTask): Task a loggear acciones
         read_local (bool): Lee las rutas a archivos fuente como archivo
         local o como URL. Default False
-        whitelist (bool): Marcar los datasets nuevos como indexables por defecto. Default False
     """
 
     try:
@@ -32,4 +31,4 @@ def index_catalog(node, task, read_local=False, whitelist=False):
         return
 
     for distribution in Distribution.objects.filter(present=True, dataset__catalog__identifier=node.catalog_id):
-        index_distribution.delay(distribution.identifier, node.id, task.id, read_local, whitelist)
+        index_distribution.delay(distribution.identifier, node.id, task.id, read_local)
