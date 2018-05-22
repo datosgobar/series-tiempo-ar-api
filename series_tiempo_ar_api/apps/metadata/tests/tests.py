@@ -12,6 +12,7 @@ from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
+from .utils import get_mock_search
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 mock.patch.object = mock.patch.object  # Hack for pylint inspection
@@ -42,12 +43,8 @@ class QueryTests(TestCase):
 
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
-        return_value = [{
-            'id': 'algo',
-            'description': 'description',
-            'title': 'title',
-        }]
-        with mock.patch.object(Search, 'execute', return_value=return_value):
+
+        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertEqual(len(result['data']), result['count'])
@@ -58,12 +55,8 @@ class QueryTests(TestCase):
         query = FieldSearchQuery(args={'q': 'aceite',
                                        'limit': limit,
                                        'offset': offset})
-        return_value = [{
-            'id': 'algo',
-            'description': 'description',
-            'title': 'title',
-        }]
-        with mock.patch.object(Search, 'execute', return_value=return_value):
+
+        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertEqual(result['limit'], int(limit))
