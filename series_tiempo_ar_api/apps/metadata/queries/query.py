@@ -63,19 +63,18 @@ class FieldSearchQuery(object):
         for arg, field in constants.FILTER_ARGS.items():
             search = self.add_filters(search, arg, field)
 
-        hits = search.execute()
+        response = search.execute()
         self.response = {
             'data': [],
-            'count': 0
+            'count': response.hits.total
         }
-        for hit in hits:
+        for hit in response:
             self.response['data'].append({
                 'id': hit['id'],
                 'description': hit['description'],
                 'title': hit['title'],
             })
 
-        self.response['count'] = len(self.response['data'])
         self.response['limit'] = self.args[constants.PARAM_LIMIT]
         self.response['offset'] = self.args[constants.PARAM_OFFSET]
 
