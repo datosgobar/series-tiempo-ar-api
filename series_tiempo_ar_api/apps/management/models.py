@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import getpass
 
-from django_datajsonar.models import Node
+from django_datajsonar import models as djar_models
 from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -52,6 +52,18 @@ class IndexingTaskCron(models.Model):
                 job.dow.during('MON', 'FRI')
 
         cron.write()
+
+
+class Node(models.Model):
+
+    catalog_id = models.CharField(max_length=100, unique=True)
+    catalog_url = models.URLField(unique=True)
+    indexable = models.BooleanField()
+    catalog = models.TextField(default='{}')
+    admins = models.ManyToManyField(User, blank=True)
+
+    def __unicode__(self):
+        return self.catalog_id
 
 
 class ReadDataJsonTask(models.Model):
@@ -104,7 +116,7 @@ class Indicator(models.Model, IndicatorNamesMixin):
 
     type = models.CharField(max_length=100, choices=IndicatorNamesMixin.TYPE_CHOICES)
     value = models.FloatField(default=0)
-    node = models.ForeignKey(to=Node, on_delete=models.CASCADE)
+    node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
 
 
@@ -112,7 +124,7 @@ class NodeAdmins(models.Model):
     class Meta:
         verbose_name_plural = 'Node admins'
 
-    node = models.OneToOneField(to=Node)
+    node = models.OneToOneField(to=djar_models.Node)
     admins = models.ManyToManyField(to=User)
 
     def __str__(self):
