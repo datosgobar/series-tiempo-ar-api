@@ -1,14 +1,17 @@
 #!coding=utf8
 from __future__ import unicode_literals
+import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from series_tiempo_ar_api.apps.api.models import Catalog
-from series_tiempo_ar_api.apps.management.models import Indicator, Node
+from django_datajsonar.models import Catalog, Node
+from series_tiempo_ar_api.apps.analytics.models import Query
+from series_tiempo_ar_api.apps.management.models import Indicator, NodeAdmins
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
 from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
@@ -49,6 +52,7 @@ class ReportGenerator(object):
         context = {
             'finish_time': self._format_date(self.task.finished),
             'is_partial_report': bool(node),
+            'queries': self.get_queries()
         }
         context.update({
             indicator: self._get_indicator_value(indicator, node=node)
@@ -61,7 +65,10 @@ class ReportGenerator(object):
         if not node:
             recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
         else:
-            recipients = node.admins.all()
+            try:
+                recipients = NodeAdmins.objects.get(node=node).admins.all()
+            except NodeAdmins.DoesNotExist:
+                recipients = []
 
         msg = render_to_string('indexing/report.txt', context=context)
         emails = [user.email for user in recipients]
@@ -99,3 +106,13 @@ class ReportGenerator(object):
             return 0
 
         return int(sum([indic.value for indic in indicator_queryset]))
+
+    @staticmethod
+    def get_queries():
+        yesterday = datetime.date.today() - relativedelta(days=1)
+
+        count = Query.objects.filter(timestamp__day=yesterday.day,
+                                     timestamp__month=yesterday.month,
+                                     timestamp__year=yesterday.year).count()
+
+        return count

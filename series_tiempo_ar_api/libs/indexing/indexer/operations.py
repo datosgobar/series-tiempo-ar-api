@@ -122,8 +122,8 @@ def index_transform(col, transform_function, index, series_id, freq, name):
         transform_col.index = transform_col.index - offset
         transform_col.index.freq = constants.PANDAS_SEMESTER
 
-    if not transform_col.count():
-        return transform_col
+    if not transform_col.count() or transform_col.isnull().all():
+        return pd.Series()
 
     try:
         handle_missing_values(col, transform_col)

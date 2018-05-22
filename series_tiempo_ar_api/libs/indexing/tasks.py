@@ -7,26 +7,28 @@ from django.db import transaction
 from django_rq import job, get_queue
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
-from series_tiempo_ar_api.apps.api.models import Dataset, Catalog, Distribution
+from django_datajsonar.models import Node
+from django_datajsonar.models import Distribution
+
+from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 from .report.report_generator import ReportGenerator
-from .database_loader import DatabaseLoader
 from .scraping import Scraper
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
-                       read_local=False, whitelist=False, index=settings.TS_INDEX):
+                       read_local=False, index=settings.TS_INDEX):
 
     node = Node.objects.get(id=node_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution = catalog.get_distribution(identifier=distribution_id)
-    dataset_model = _get_dataset(catalog, node.catalog_id, distribution['dataset_identifier'], whitelist)
-    if not dataset_model.indexable:
+    distribution_model = Distribution.objects.get(identifier=distribution_id,
+                                                  dataset__catalog__identifier=node.catalog_id)
+    if not distribution_model.dataset.indexable:
         return
 
     try:
@@ -34,17 +36,21 @@ def index_distribution(distribution_id, node_id, task_id,
         if not result:
             return
 
-        loader = DatabaseLoader(task, read_local=read_local, default_whitelist=whitelist)
+        changed = True
+        _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
+        if _hash:
+            changed = _hash[0].value != distribution_model.data_hash
 
-        distribution_model = loader.run(distribution, catalog, node.catalog_id)
-        if not distribution_model:
-            return
-
-        if distribution_model.indexable:
+        if changed:
             DistributionIndexer(index=index).run(distribution_model)
 
+        distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
+                                                          defaults={'value': distribution_model.data_hash})
+        distribution_model.enhanced_meta.update_or_create(key=meta_keys.CHANGED,
+                                                          defaults={'value': str(changed)})
+
     except Exception as e:
-        _handle_exception(dataset_model, distribution, distribution_id, e, node, task)
+        _handle_exception(distribution_model.dataset, distribution, distribution_id, e, node, task)
 
 
 def _handle_exception(dataset_model, distribution, distribution_id, exc, node, task):
@@ -55,16 +61,14 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
         e_msg = format_exc()
     msg = msg.format(distribution_id, node.catalog_id, e_msg)
     ReadDataJsonTask.info(task, msg)
-    indicator_loader = IndicatorLoader()
-    indicator_loader.increment_indicator(node.catalog_id, Indicator.DISTRIBUTION_ERROR)
-    indicator_loader.increment_indicator(node.catalog_id,
-                                         Indicator.FIELD_ERROR,
-                                         amt=len(distribution['field'][1:]))
 
     with transaction.atomic():
         try:
-            distribution = Distribution.objects.get(identifier=distribution_id)
-            distribution.error = msg
+            distribution = Distribution.objects.get(identifier=distribution_id,
+                                                    dataset__catalog__identifier=node.catalog_id)
+            distribution.enhanced_meta.create(key=meta_keys.ERROR_MSG, value=msg)
+            distribution.error = True
+            distribution.field_set.update(error=True)
             distribution.save()
         except Distribution.DoesNotExist:
             pass
@@ -79,33 +83,6 @@ def _handle_exception(dataset_model, distribution, distribution_id, exc, node, t
 
     if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
         raise exc  # Django-rq / sentry logging
-
-
-def _get_dataset(catalog, catalog_id, dataset_id, whitelist):
-
-    catalog_model, created = Catalog.objects.get_or_create(identifier=catalog_id)
-    if created:
-        IndicatorLoader().increment_indicator(catalog_id, Indicator.CATALOG_NEW)
-        catalog_model.title = catalog['title']
-        catalog_model.identifier = catalog_id
-        catalog_meta = catalog.copy()
-        catalog_meta.pop('dataset')
-        catalog_model.metadata = json.dumps(catalog_meta)
-        catalog_model.save()
-
-    dataset_model, created = Dataset.objects.get_or_create(
-        identifier=dataset_id,
-        catalog=catalog_model,
-    )
-
-    if created:
-        IndicatorLoader().increment_indicator(catalog_id, Indicator.DATASET_NEW)
-        dataset_model.indexable = whitelist
-        dataset_model.metadata = '{}'
-
-    dataset_model.present = True
-    dataset_model.save()
-    return dataset_model
 
 
 # Para correr con el scheduler

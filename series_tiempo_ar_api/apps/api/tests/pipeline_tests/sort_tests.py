@@ -3,7 +3,7 @@ from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
 
-from series_tiempo_ar_api.apps.api.models import Field
+from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query.pipeline import Sort
 from series_tiempo_ar_api.apps.api.query.query import Query
 from ..helpers import get_series_id
@@ -17,7 +17,7 @@ class SortTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.field = Field.objects.get(series_id=SERIES_NAME)
+        cls.field = Field.objects.get(identifier=SERIES_NAME)
         super(cls, SortTests).setUpClass()
 
     def setUp(self):

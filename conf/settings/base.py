@@ -163,6 +163,7 @@ VENDOR_APPS = (
     'sendfile',
     'des',
     'scheduler',
+    'django_datajsonar'
 )
 
 APPS = (
@@ -304,3 +305,5 @@ READ_DATAJSON_SHELL_CMD = env('READ_DATAJSON_BIN_PATH', default='')
 
 PROTECTED_MEDIA_DIR = env('PROTECTED_MEDIA_DIR', default=ROOT_DIR('protected'))
 ANALYTICS_CSV_FILENAME = 'analytics.csv'
+
+DATAJSON_AR_TIME_SERIES_ONLY = True

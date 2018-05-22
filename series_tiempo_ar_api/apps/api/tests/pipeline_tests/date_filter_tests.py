@@ -4,7 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
 
-from series_tiempo_ar_api.apps.api.models import Field
+from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query.pipeline import DateFilter
 from series_tiempo_ar_api.apps.api.query.query import Query
 from ..helpers import get_series_id
@@ -24,7 +24,7 @@ class DateFilterTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.field = Field.objects.get(series_id=cls.single_series)
+        cls.field = Field.objects.get(identifier=cls.single_series)
         super(cls, DateFilterTests).setUpClass()
 
     def test_start_date(self):
@@ -71,7 +71,7 @@ class DateFilterTests(TestCase):
         self.assertTrue(self.cmd.errors)
 
     def test_partial_end_date_is_inclusive(self):
-        field = Field.objects.get(series_id=self.single_series)
+        field = Field.objects.get(identifier=self.single_series)
         query = Query(index=settings.TEST_INDEX)
         query.add_series(self.single_series, self.field, 'value')
         query.sort('asc')

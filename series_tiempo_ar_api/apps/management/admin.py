@@ -2,46 +2,8 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .actions import process_node_register_file, confirm_delete
-from .tasks import bulk_whitelist, read_datajson
-from .models import DatasetIndexingFile, NodeRegisterFile, Node, IndexingTaskCron, ReadDataJsonTask
-
-
-class BaseRegisterFileAdmin(admin.ModelAdmin):
-    actions = ['process_register_file']
-    list_display = ('__unicode__', 'state', )
-    readonly_fields = ('created', 'modified', 'state', 'logs')
-
-    def process_register_file(self, _, queryset):
-        raise NotImplementedError
-    process_register_file.short_description = 'Ejecutar'
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(BaseRegisterFileAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['uploader'].initial = request.user
-        return form
-
-    def save_form(self, request, form, change):
-        return super(BaseRegisterFileAdmin, self).save_form(request, form, change)
-
-
-class DatasetIndexingFileAdmin(BaseRegisterFileAdmin):
-    def process_register_file(self, _, queryset):
-        for model in queryset:
-            model.state = DatasetIndexingFile.state = DatasetIndexingFile.PROCESSING
-            model.logs = u'-'  # Valor default mientras se ejecuta
-            model.save()
-            bulk_whitelist.delay(model.id)
-
-
-class NodeRegisterFileAdmin(BaseRegisterFileAdmin):
-
-    def process_register_file(self, _, queryset):
-        for model in queryset:
-            model.state = NodeRegisterFile.state = NodeRegisterFile.PROCESSING
-            model.logs = u'-'
-            model.save()
-            process_node_register_file(model)
+from .tasks import read_datajson
+from .models import IndexingTaskCron, ReadDataJsonTask, NodeAdmins
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -65,12 +27,6 @@ class NodeAdmin(admin.ModelAdmin):
         queryset.update(indexable=True)
     make_indexable.short_description = 'Marcar como indexable'
 
-    def delete_model(self, _, queryset):
-        register_files = NodeRegisterFile.objects.all()
-        for node in queryset:
-            if node.indexable:
-                confirm_delete(node, register_files)
-
 
 class IndexingTaskAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'enabled', 'weekdays_only')
@@ -91,7 +47,7 @@ class IndexingTaskAdmin(admin.ModelAdmin):
 
 
 class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs', 'catalogs', 'stats')
+    readonly_fields = ('status', 'created', 'finished', 'logs', 'stats')
     list_display = ('__unicode__', 'status')
 
     def save_model(self, request, obj, form, change):
@@ -102,8 +58,6 @@ class DataJsonAdmin(admin.ModelAdmin):
         read_datajson.delay(obj)  # Ejecuta indexación
 
 
-admin.site.register(DatasetIndexingFile, DatasetIndexingFileAdmin)
-admin.site.register(NodeRegisterFile, NodeRegisterFileAdmin)
-admin.site.register(Node, NodeAdmin)
+admin.site.register(NodeAdmins)
 admin.site.register(IndexingTaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)

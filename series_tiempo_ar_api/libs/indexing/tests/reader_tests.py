@@ -2,24 +2,19 @@
 import json
 import os
 
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 from pydatajson import DataJson
-from series_tiempo_ar.search import get_time_series_distributions
 
-from django.core import mail
-
-from series_tiempo_ar_api.apps.api.models import Distribution, Field, Catalog, Dataset
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Node, Indicator
+from django_datajsonar.tasks import read_datajson
+from django_datajsonar.models import Distribution, Field, Catalog, Dataset
+from django_datajsonar.models import ReadDataJsonTask, Node
+from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
-from series_tiempo_ar_api.libs.indexing.database_loader import \
-    DatabaseLoader
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
-from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
@@ -35,14 +30,16 @@ class IndexerTests(TestCase):
     def setUp(self):
         self.task = ReadDataJsonTask()
         self.task.save()
+        self.tearDown()
+        self.elastic.indices.create(self.test_index)
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
 
         distribution = Distribution.objects.get(identifier="212.1")
         fields = distribution.field_set.all()
-        fields = {field.title: field.series_id for field in fields}
-        df = DistributionIndexer.init_df(distribution, fields)
+        fields = {field.title: field.identifier for field in fields}
+        df = DistributionIndexer(None).init_df(distribution, fields)
 
         for field in fields.values():
             self.assertTrue(field in df.columns)
@@ -138,11 +135,7 @@ class IndexerTests(TestCase):
                 dataset_model.indexable = True
                 dataset_model.save()
 
-        distributions = get_time_series_distributions(catalog)
-        db_loader = DatabaseLoader(self.task, read_local=True, default_whitelist=True)
-        for distribution in distributions:
-            db_loader.run(distribution, catalog, CATALOG_ID)
-
+        read_datajson(self.task, read_local=True)
         for distribution in Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID):
             DistributionIndexer(index=self.test_index).run(distribution)
         self.elastic.indices.forcemerge(index=self.test_index)
@@ -154,116 +147,60 @@ class ReaderTests(TestCase):
 
     def setUp(self):
         self.task = ReadDataJsonTask.objects.create()
+        self.task.save()
+        self.mgmt_task = ManagementTask()
+        self.mgmt_task.save()
         self.node = Node(catalog_id=self.catalog_id, catalog_url=self.catalog, indexable=True)
         self.node.save()
 
     def test_index_same_series_different_catalogs(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
-        count = Field.objects.filter(series_id='212.1_PSCIOS_ERN_0_0_25').count()
+        count = Field.objects.filter(identifier='212.1_PSCIOS_ERN_0_0_25').count()
 
         self.assertEqual(count, 1)
 
     def test_dont_index_same_distribution_twice(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
         # La distribucion es marcada como no indexable hasta que cambien sus datos
-        self.assertFalse(distribution.indexable)
+        self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'False')
 
     def test_first_time_distribution_indexable(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True, )
 
         distribution = Distribution.objects.get(identifier='212.1')
 
-        self.assertTrue(distribution.indexable)
+        self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
     def test_index_same_distribution_if_data_changed(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True, )
         new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
         self.node.catalog_url = new_catalog
         self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
         # La distribución fue indexada nuevamente, está marcada como indexable
-        self.assertTrue(distribution.indexable)
+        self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
     def test_error_distribution_logs(self):
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog
         self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
+        read_datajson(self.task, whitelist=True, read_local=True)
+        index_catalog(self.node, self.mgmt_task, read_local=True)
 
         self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)
-
-
-class IndicatorsTests(TestCase):
-    catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
-    catalog_id = 'catalog_id'
-
-    def setUp(self):
-        self.loader = IndicatorLoader()
-        self.loader.clear_indicators()  # Just in case
-        self.task = ReadDataJsonTask.objects.create()
-        self.node = Node(catalog_id=self.catalog_id,
-                         catalog_url=self.catalog,
-                         indexable=True,
-                         catalog=json.dumps(DataJson(self.catalog)))
-        Catalog(identifier=self.catalog_id, title='test catalog', metadata='{}').save()
-        self.node.save()
-
-    def test_error_distribution_indicator(self):
-        self.loader.clear_indicators()
-        catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
-        self.node.catalog_url = catalog
-        self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        indicator = int(self.loader.get(self.catalog_id, Indicator.DISTRIBUTION_ERROR))
-        self.assertEqual(indicator, 1)
-        indicator = int(self.loader.get(self.catalog_id, Indicator.FIELD_ERROR))
-        self.assertEqual(indicator, 3)
-
-        error = Dataset.objects.get(catalog__identifier=self.catalog_id).error
-        self.assertTrue(error)
-
-    def test_dataset_updated(self):
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        self.loader.clear_indicators()
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
-        self.node.catalog_url = catalog
-        self.node.save()
-        index_catalog(self.node, self.task, read_local=True, whitelist=True)
-
-        indicator = Dataset.objects.filter(catalog__identifier=self.catalog_id, updated=True).count()
-        self.assertEqual(1, indicator)
-
-    def test_multiple_nodes(self):
-        catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
-
-        Node(catalog_id='otro',
-             catalog_url=catalog,
-             indexable=True,
-             catalog=json.dumps(DataJson(catalog))).save()
-        Catalog(identifier='otro', title='test catalog', metadata='{}').save()
-        ReportGenerator(self.task).generate()
-
-        self.assertEqual(2, self.task.indicator_set.filter(type=Indicator.CATALOG_TOTAL).count())
-
-    def test_individual_report(self):
-        user = User(username='test', password='test', email='test@email.com')
-        user.save()
-        self.node.admins.add(user)
-
-        ReportGenerator(self.task).generate()
-        # Expected: se manda un mail con el reporte individual
-        self.assertEqual(1, len(mail.outbox))
-
-    def tearDown(self):
-        IndicatorLoader().clear_indicators()

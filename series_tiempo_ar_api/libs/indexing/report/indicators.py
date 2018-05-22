@@ -1,8 +1,9 @@
 #! coding: utf-8
 from redis import Redis
 
+from django_datajsonar.models import Node
 from django.conf import settings
-from series_tiempo_ar_api.apps.management.models import Indicator, Node
+from series_tiempo_ar_api.apps.management.models import Indicator
 
 
 class IndicatorLoader(object):

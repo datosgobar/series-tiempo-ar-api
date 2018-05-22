@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import getpass
 
+from django_datajsonar.models import Node
 from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
@@ -10,60 +11,6 @@ from django.db import models, transaction
 from django.utils import timezone
 from . import strings
 from .indicator_names import IndicatorNamesMixin
-
-
-class BaseRegisterFile(models.Model):
-    """Base de los archivos de registro de datasets y de nodos.
-    Contiene atributos de estado del archivo y fechas de creado / modificado
-    """
-    UPLOADED = "UPLOADED"
-    PROCESSING = "PROCESSING"
-    PROCESSED = "PROCESSED"
-    FAILED = "FAILED"
-
-    STATE_CHOICES = (
-        (UPLOADED, "Cargado"),
-        (PROCESSING, "Procesando"),
-        (PROCESSED, "Procesado"),
-        (FAILED, "Error"),
-    )
-
-    created = models.DateTimeField()
-    modified = models.DateTimeField(null=True)
-    indexing_file = models.FileField(upload_to='register_files/')
-    uploader = models.ForeignKey(User)
-    state = models.CharField(max_length=20, choices=STATE_CHOICES)
-    logs = models.TextField(default=u'-')
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if not self.pk:  # first time only
-            self.created = timezone.now()
-            self.state = self.UPLOADED
-
-        super(BaseRegisterFile, self).save(force_insert, force_update, using, update_fields)
-
-
-class DatasetIndexingFile(BaseRegisterFile):
-    def __unicode__(self):
-        return "Indexing file: {}".format(self.created)
-
-
-class Node(models.Model):
-
-    catalog_id = models.CharField(max_length=100, unique=True)
-    catalog_url = models.URLField(unique=True)
-    indexable = models.BooleanField()
-    catalog = models.TextField(default='{}')
-    admins = models.ManyToManyField(User, blank=True)
-
-    def __unicode__(self):
-        return self.catalog_id
-
-
-class NodeRegisterFile(BaseRegisterFile):
-    def __unicode__(self):
-        return "Node register file: {}".format(self.created)
 
 
 class IndexingTaskCron(models.Model):
@@ -125,7 +72,6 @@ class ReadDataJsonTask(models.Model):
     created = models.DateTimeField()
     finished = models.DateTimeField(null=True)
     logs = models.TextField(default='-')
-    catalogs = models.ManyToManyField(to=Node, blank=True)
 
     stats = models.TextField(default='{}')
 
@@ -160,3 +106,14 @@ class Indicator(models.Model, IndicatorNamesMixin):
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
+
+
+class NodeAdmins(models.Model):
+    class Meta:
+        verbose_name_plural = 'Node admins'
+
+    node = models.OneToOneField(to=Node)
+    admins = models.ManyToManyField(to=User)
+
+    def __str__(self):
+        return "Admins de {}".format(self.node.catalog_id)

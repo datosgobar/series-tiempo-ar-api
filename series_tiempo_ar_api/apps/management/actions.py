@@ -2,8 +2,8 @@
 import unicodecsv
 import yaml
 
+from django_datajsonar.models import Node, NodeRegisterFile
 from series_tiempo_ar_api.apps.api.models import Catalog, Dataset
-from .models import Node, NodeRegisterFile
 from .strings import DATASET_STATUS
 
 CATALOG_HEADER = u'catalog_id'

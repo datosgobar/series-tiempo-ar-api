@@ -1,4 +1,5 @@
 #! coding: utf-8
+import json
 import logging
 from functools import reduce
 
@@ -6,8 +7,8 @@ import pandas as pd
 from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
 from series_tiempo_ar.helpers import freq_iso_to_pandas
+from series_tiempo_ar_api.apps.management import meta_keys
 
-from series_tiempo_ar_api.apps.api.models import Distribution
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
@@ -25,7 +26,7 @@ class DistributionIndexer:
 
     def run(self, distribution):
         fields = distribution.field_set.all()
-        fields = {field.title: field.series_id for field in fields}
+        fields = {field.title: field.identifier for field in fields}
         df = self.init_df(distribution, fields)
 
         # Aplica la operación de procesamiento e indexado a cada columna
@@ -41,8 +42,10 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-    @staticmethod
-    def init_df(distribution, fields):
+        for field in distribution.field_set.exclude(title='indice_tiempo'):
+            field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
+
+    def init_df(self, distribution, fields):
         """Inicializa el DataFrame del CSV de la distribución pasada,
         seteando el índice de tiempo correcto y validando las columnas
         dentro de los datos
@@ -63,7 +66,7 @@ class DistributionIndexer:
         columns = [fields[name] for name in df.columns]
 
         data = df.values
-        freq = freq_iso_to_pandas(distribution.periodicity)
+        freq = freq_iso_to_pandas(self.get_time_index_periodicity(distribution, fields))
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
 
         # Chequeo de series de días hábiles (business days)
@@ -73,3 +76,10 @@ class DistributionIndexer:
                                       freq=constants.BUSINESS_DAILY_FREQ)
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
+
+    def get_time_index_periodicity(self, distribution, fields):
+        time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
+        fields.pop('indice_tiempo')
+        periodicity = json.loads(time_index.metadata)['specialTypeDetail']
+        distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, value=periodicity)
+        return periodicity

@@ -48,7 +48,7 @@ class ViewTests(TestCase):
                                          data={'ids': SERIES_NAME,
                                                'collapse_aggregation': 'SUM'})
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(response.content, response_upper.content)
 
     def test_rep_mode_ignore_case(self):

@@ -15,9 +15,6 @@ class Command(BaseCommand):
     útil para debugging. No correr junto con el rqscheduler para asegurar
     la generación de reportes correcta."""
 
-    def add_arguments(self, parser):
-        parser.add_argument('--whitelist', action='store_true')
-
     def handle(self, *args, **options):
         status = [ReadDataJsonTask.INDEXING, ReadDataJsonTask.RUNNING]
         if ReadDataJsonTask.objects.filter(status__in=status):
@@ -27,7 +24,7 @@ class Command(BaseCommand):
         task = ReadDataJsonTask()
         task.save()
 
-        read_datajson(task, whitelist=options['whitelist'])
+        read_datajson(task)
 
         # Si se corre el comando sincrónicamete (local/testing), generar el reporte
         if not settings.RQ_QUEUES['indexing'].get('ASYNC', True):

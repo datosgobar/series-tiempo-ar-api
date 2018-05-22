@@ -4,15 +4,14 @@ from io import StringIO
 
 import csv
 
-from series_tiempo_ar_api.apps.api.models import Catalog, Dataset, Distribution, Field
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Catalog, Dataset, Distribution, Field, Node
 
 HEADER_ROW = [
     'identifier', 'title', 'description', 'actualizado', 'indexable', 'discontinuado', 'error', 'error_mensaje'
 ]
 
 
-def generate_attachments(queryset, get_indexable, get_present, get_error):
+def generate_attachments(queryset, get_indexable, get_error):
     out = StringIO()
     writer = csv.writer(out)
 
@@ -28,7 +27,7 @@ def generate_attachments(queryset, get_indexable, get_present, get_error):
             meta.get('description'),
             entity.updated,
             get_indexable(entity),
-            get_present(entity),
+            entity.present,
             error,
             error_msg,
         ])
@@ -43,7 +42,6 @@ def generate_catalog_attachment(node=None):
         queryset = queryset.filter(identifier=node.catalog_id)
     return generate_attachments(queryset,
                                 lambda x: Node.objects.get(catalog_id=x.identifier).indexable,
-                                lambda x: True,  # Catálogos no tiene concepto de discontinuado
                                 lambda x: (x.error, ''))
 
 
@@ -54,7 +52,6 @@ def generate_dataset_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.indexable,
-                                lambda x: x.available,
                                 lambda x: (x.error, ''))
 
 
@@ -65,7 +62,6 @@ def generate_distribution_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.dataset.indexable,
-                                lambda x: x.dataset.available,
                                 lambda x: (bool(x.error), x.error))
 
 
@@ -77,5 +73,4 @@ def generate_field_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.distribution.dataset.indexable,
-                                lambda x: x.distribution.dataset.available,
                                 lambda x: (bool(x.distribution.error), x.distribution.error))
