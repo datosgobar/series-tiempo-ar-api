@@ -61,7 +61,6 @@ class ReportGenerator(object):
         self.send_email(context, node)
 
     def send_email(self, context, node=None):
-        start_time = self._format_date(self.task.created)
         if not node:
             recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
         else:
@@ -70,10 +69,13 @@ class ReportGenerator(object):
             except NodeAdmins.DoesNotExist:
                 recipients = []
 
-        msg = render_to_string('indexing/report.txt', context=context)
         emails = [user.email for user in recipients]
+        if not emails:  # Nothing to do here
+            return
+        start_time = self._format_date(self.task.created)
         subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
 
+        msg = render_to_string('indexing/report.txt', context=context)
         mail = EmailMultiAlternatives(subject, msg, settings.EMAIL_HOST_USER, emails)
         html_msg = render_to_string('indexing/report.html', context=context)
         mail.attach_alternative(html_msg, 'text/html')
