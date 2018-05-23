@@ -22,7 +22,7 @@ def generate_attachments(queryset, get_indexable, get_error):
 
         error, error_msg = get_error(entity)
         writer.writerow([
-            entity.identifier if hasattr(entity, 'identifier') else entity.series_id,
+            entity.identifier,
             meta.get('title'),
             meta.get('description'),
             entity.updated,
