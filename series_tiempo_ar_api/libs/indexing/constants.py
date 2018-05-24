@@ -47,6 +47,7 @@ MAPPING = {
         "series_id": {"type": "keyword"},
         "aggregation": {"type": "keyword"},
         "interval": {"type": "keyword"},
+        "raw_value": {"type": "boolean"},
     },
     "_all": {"enabled": False},
     "dynamic": "strict"

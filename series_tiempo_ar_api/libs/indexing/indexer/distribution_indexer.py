@@ -22,6 +22,12 @@ class DistributionIndexer:
         self.elastic = ElasticInstance.get()
         self.index = index
 
+        self.init_index()
+
+    def init_index(self):
+        if not self.elastic.indices.exists(index=self.index):
+            self.elastic.indices.create(index=self.index, body=constants.INDEX_CREATION_BODY)
+
     def run(self, distribution):
         fields = distribution.field_set.all()
         fields = {field.title: field.identifier for field in fields}

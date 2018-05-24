@@ -31,7 +31,6 @@ class IndexerTests(TestCase):
         self.task = ReadDataJsonTask()
         self.task.save()
         self.tearDown()
-        self.elastic.indices.create(self.test_index)
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
@@ -39,7 +38,7 @@ class IndexerTests(TestCase):
         distribution = Distribution.objects.get(identifier="212.1")
         fields = distribution.field_set.all()
         fields = {field.title: field.identifier for field in fields}
-        df = DistributionIndexer(None).init_df(distribution, fields)
+        df = DistributionIndexer(self.test_index).init_df(distribution, fields)
 
         for field in fields.values():
             self.assertTrue(field in df.columns)
