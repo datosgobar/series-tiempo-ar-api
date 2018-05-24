@@ -47,7 +47,8 @@ MAPPING = {
         "series_id": {"type": "keyword"},
         "aggregation": {"type": "keyword"},
         "interval": {"type": "keyword"},
-        "raw_value": {"type": "boolean"},
+        "raw_value": {"type": "boolean"},  # True si el doc tiene el value original de la serie
+        "catalog": {"type": "keyword"},  # catalog identifier de la fuente de los datos
     },
     "_all": {"enabled": False},
     "dynamic": "strict"

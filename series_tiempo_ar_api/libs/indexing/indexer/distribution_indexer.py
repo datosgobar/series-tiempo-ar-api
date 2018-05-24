@@ -42,6 +42,7 @@ class DistributionIndexer:
         # List flatten: si el resultado son múltiples listas las junto en una sola
         actions = reduce(lambda x, y: x + y, result) if isinstance(result[0], list) else result
 
+        self.add_catalog_keyword(actions, distribution)
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
@@ -80,6 +81,10 @@ class DistributionIndexer:
                                       freq=constants.BUSINESS_DAILY_FREQ)
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
+
+    def add_catalog_keyword(self, actions, distribution):
+        for action in actions:
+            action['_source']['catalog'] = distribution.dataset.catalog.identifier
 
 
 def get_time_index_periodicity(distribution, fields):

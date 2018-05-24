@@ -101,6 +101,24 @@ class IndexerTests(TestCase):
 
         self.assertTrue(len(results))
 
+    def test_original_value_flag(self):
+        self._index_catalog('distribution_daily_periodicity.json')
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', raw_value=True).execute()
+
+        self.assertTrue(len(results))
+
+    def test_catalog_value_indexed(self):
+        self._index_catalog('distribution_daily_periodicity.json')
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', catalog=CATALOG_ID).execute()
+
+        self.assertTrue(len(results))
+
     @classmethod
     def tearDownClass(cls):
         pass
