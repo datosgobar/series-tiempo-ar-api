@@ -14,6 +14,7 @@ admin.site.index_template = "custom_index.html"
 api_endpoints = [
     url(r'series/', include('series_tiempo_ar_api.apps.api.urls', namespace="series")),
     url(r'search/', include('series_tiempo_ar_api.apps.metadata.urls', namespace='metadata')),
+    url(r'dump/', include('series_tiempo_ar_api.apps.dump.urls', namespace='dump')),
 ]
 
 urlpatterns = [
