@@ -97,6 +97,8 @@ def process_column(col, index):
         actions.extend(avg.values.flatten())
 
         if orig_freq == freq:
+            for row in avg:  # Marcamos a estos datos como los originales
+                row['_source']['raw_value'] = True
             break
 
         # Suma

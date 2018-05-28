@@ -21,8 +21,17 @@ class DistributionIndexer:
     def __init__(self, index):
         self.elastic = ElasticInstance.get()
         self.index = index
-        self.indexed_fields = set()
-        self.bulk_actions = []
+
+        self.init_index()
+
+    def init_index(self):
+        if not self.elastic.indices.exists(index=self.index):
+            self.elastic.indices.create(index=self.index, body=constants.INDEX_CREATION_BODY)
+
+        # Actualizo el mapping
+        mapping = self.elastic.indices.get_mapping(index=self.index, doc_type=settings.TS_DOC_TYPE)
+        if not mapping[self.index]['mappings'][settings.TS_DOC_TYPE]['properties'].get('raw_value'):
+            self.elastic.indices.put_mapping(index='test_index', doc_type='doc', body=constants.MAPPING)
 
     def run(self, distribution):
         fields = distribution.field_set.all()
@@ -38,6 +47,7 @@ class DistributionIndexer:
         # List flatten: si el resultado son múltiples listas las junto en una sola
         actions = reduce(lambda x, y: x + y, result) if isinstance(result[0], list) else result
 
+        self.add_catalog_keyword(actions, distribution)
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
@@ -66,7 +76,7 @@ class DistributionIndexer:
         columns = [fields[name] for name in df.columns]
 
         data = df.values
-        freq = freq_iso_to_pandas(self.get_time_index_periodicity(distribution, fields))
+        freq = freq_iso_to_pandas(get_time_index_periodicity(distribution, fields))
         new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
 
         # Chequeo de series de días hábiles (business days)
@@ -77,9 +87,14 @@ class DistributionIndexer:
 
         return pd.DataFrame(index=new_index, data=data, columns=columns)
 
-    def get_time_index_periodicity(self, distribution, fields):
-        time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
-        fields.pop('indice_tiempo')
-        periodicity = json.loads(time_index.metadata)['specialTypeDetail']
-        distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, value=periodicity)
-        return periodicity
+    def add_catalog_keyword(self, actions, distribution):
+        for action in actions:
+            action['_source']['catalog'] = distribution.dataset.catalog.identifier
+
+
+def get_time_index_periodicity(distribution, fields):
+    time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
+    fields.pop('indice_tiempo')
+    periodicity = json.loads(time_index.metadata)['specialTypeDetail']
+    distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, value=periodicity)
+    return periodicity
