@@ -2,31 +2,11 @@
 import logging
 
 from django.core.management import BaseCommand
-from django.conf import settings
+from series_tiempo_ar_api.apps.management.tasks import schedule_api_indexing
 
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
-from series_tiempo_ar_api.apps.management.tasks import read_datajson
-from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    """Comando para ejecutar la indexación manualmente de manera sincrónica,
-    útil para debugging. No correr junto con el rqscheduler para asegurar
-    la generación de reportes correcta."""
-
     def handle(self, *args, **options):
-        status = [ReadDataJsonTask.INDEXING, ReadDataJsonTask.RUNNING]
-        if ReadDataJsonTask.objects.filter(status__in=status):
-            logger.info(u'Ya está corriendo una indexación')
-            return
-
-        task = ReadDataJsonTask()
-        task.save()
-
-        read_datajson(task)
-
-        # Si se corre el comando sincrónicamete (local/testing), generar el reporte
-        if not settings.RQ_QUEUES['indexing'].get('ASYNC', True):
-            task = ReadDataJsonTask.objects.get(id=task.id)
-            ReportGenerator(task).generate()
+        schedule_api_indexing()
