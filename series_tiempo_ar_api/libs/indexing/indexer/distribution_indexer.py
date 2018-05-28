@@ -28,6 +28,11 @@ class DistributionIndexer:
         if not self.elastic.indices.exists(index=self.index):
             self.elastic.indices.create(index=self.index, body=constants.INDEX_CREATION_BODY)
 
+        # Actualizo el mapping
+        mapping = self.elastic.indices.get_mapping(index=self.index, doc_type=settings.TS_DOC_TYPE)
+        if not mapping[self.index]['mappings'][settings.TS_DOC_TYPE]['properties'].get('raw_value'):
+            self.elastic.indices.put_mapping(index='test_index', doc_type='doc', body=constants.MAPPING)
+
     def run(self, distribution):
         fields = distribution.field_set.all()
         fields = {field.title: field.identifier for field in fields}
