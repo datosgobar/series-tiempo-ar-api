@@ -6,6 +6,9 @@ VALUES_CSV = 'series-tiempo-valores.csv'
 METADATA_CSV = 'series-tiempo-metadata.csv'
 SOURCES_CSV = 'series-tiempo-fuentes.csv'
 
+FULL_CSV = 'series-tiempo.csv'
+
+# Archivos a servir por endpoint
 FILES = [
     FULL_CSV_ZIPPED,
     VALUES_CSV,
