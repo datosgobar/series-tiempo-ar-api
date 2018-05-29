@@ -1,21 +1,25 @@
 #!coding=utf8
-
+import os
 import csv
 
+from django.conf import settings
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from elasticsearch.helpers import scan
 
+from . import constants
 
-def generate_csv():
+
+def generate_values_csv():
     periodicities = {
         'year': 'R/P1Y',
         'quarter': 'R/P3M',
         'month': 'R/P1M',
         'day': 'R/P1D',
-        'semseter': 'semester'
+        'semseter': 'R/P6M'
     }
 
+    filepath = os.path.join(settings.MEDIA_ROOT, constants.VALUES_CSV)
     fields = Field.objects.all().prefetch_related('distribution',
                                                   'distribution__dataset',
                                                   'distribution__dataset__catalog')
@@ -29,9 +33,9 @@ def generate_csv():
         }
 
     client = ElasticInstance.get()
-    with open('test.csv', 'w') as test_file:
-        writer = csv.writer(test_file)
-        writer.writerow([
+    with open(filepath, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow([  # Header
             'catalogo_id',
             'dataset_id',
             'distribucion_id',
@@ -55,4 +59,3 @@ def generate_csv():
                    source.get('value'),
                    periodicities[source.get('interval')]]
             writer.writerow(row)
-

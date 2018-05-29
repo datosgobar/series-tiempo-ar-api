@@ -1,11 +1,11 @@
-from django.shortcuts import render
+#!coding:utf-8
+import os
 
-from django.http import FileResponse
-from .csv import generate_csv
+import sendfile
+from django.conf import settings
 
 
-def test_view(request):
-    generate_csv()
+def test_view(request, filename):
 
-    return FileResponse(open('test.csv', 'rb'))
-
+    path = os.path.join(settings.MEDIA_ROOT, filename)
+    return sendfile.sendfile(request, path)
