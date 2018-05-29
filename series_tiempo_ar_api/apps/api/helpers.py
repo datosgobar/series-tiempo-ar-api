@@ -14,6 +14,17 @@ def get_periodicity_human_format(periodicity):
     return periodicities[periodicity]
 
 
+def periodicity_human_format_to_iso(periodicity):
+    periodicities = {
+        'year': 'R/P1Y',
+        'quarter': 'R/P3M',
+        'month': 'R/P1M',
+        'day': 'R/P1D',
+        'semester': 'R/P6M'
+    }
+    return periodicities[periodicity]
+
+
 def freq_pandas_to_index_offset(freq):
     """Dada una lista de datos de una serie de frecuencia 'freq',
     devuelve la distancia de elementos separados por un año en esa
