@@ -7,10 +7,10 @@ import zipfile
 from django.conf import settings
 from django_datajsonar.models import Field, Node
 from pydatajson import DataJson
+from elasticsearch.helpers import scan
 
 from series_tiempo_ar_api.apps.api.helpers import periodicity_human_format_to_iso
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from elasticsearch.helpers import scan
 
 from . import constants
 
