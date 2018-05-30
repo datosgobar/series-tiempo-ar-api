@@ -6,6 +6,7 @@ import csv
 import shutil
 import zipfile
 
+from django.conf import settings
 from django.test import TestCase
 from django_datajsonar.models import Field, Node
 
@@ -20,15 +21,13 @@ samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples
 class CSVTest(TestCase):
     index = 'csv_dump_test_index'
     # noinspection PyUnresolvedReferences
-    directory = os.path.join(samples_dir, 'output')
+    directory = os.path.join(settings.MEDIA_ROOT, 'test_dump')
 
     @classmethod
     def setUpClass(cls):
         super(CSVTest, cls).setUpClass()
         cls.catalog_id = 'csv_dump_test_catalog'
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
-        if not os.path.isdir(cls.directory):
-            os.mkdir(cls.directory)
         index_catalog(cls.catalog_id, path, cls.index)
         gen = CSVDumpGenerator(index=cls.index, output_directory=cls.directory)
         gen.generate()

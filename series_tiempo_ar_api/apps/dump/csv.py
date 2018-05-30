@@ -5,10 +5,12 @@ import json
 import zipfile
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django_datajsonar.models import Field, Node
 from pydatajson import DataJson
 from elasticsearch.helpers import scan
 
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.helpers import periodicity_human_format_to_iso
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
@@ -30,9 +32,15 @@ class CSVDumpGenerator:
         """Inicializa en un diccionario con IDs de series como clave los valores a escribir en cada
         uno de los CSV.
         """
-        fields = Field.objects.all().prefetch_related('distribution',
-                                                      'distribution__dataset',
-                                                      'distribution__dataset__catalog')
+        fields = Field.objects.filter(
+            enhanced_meta__key=meta_keys.AVAILABLE,
+            enhanced_meta__value='true'
+        ).prefetch_related(
+            'distribution',
+            'distribution__dataset',
+            'distribution__dataset__catalog',
+            'enhanced_meta',
+        )
 
         for field in fields:
             meta = json.loads(field.metadata)
@@ -53,6 +61,9 @@ class CSVDumpGenerator:
             }
 
     def generate(self):
+        if not os.path.isdir(self.output_directory):
+            os.mkdir(self.output_directory)
+
         self.generate_values_csv()
         self.generate_full_csv()
         self.zip_full_csv()
@@ -60,7 +71,7 @@ class CSVDumpGenerator:
     def generate_values_csv(self):
         filepath = os.path.join(self.output_directory, constants.VALUES_CSV)
 
-        with open(filepath, 'w') as f:
+        with default_storage.open(filepath, 'w') as f:
             writer = csv.writer(f)
             writer.writerow([  # Header
                 'catalogo_id',
@@ -91,7 +102,7 @@ class CSVDumpGenerator:
 
     def generate_full_csv(self):
         filepath = os.path.join(self.output_directory, constants.FULL_CSV)
-        with open(filepath, 'w') as f:
+        with default_storage.open(filepath, 'w') as f:
             writer = csv.writer(f)
             writer.writerow([  # Header
                 'catalogo_id',
