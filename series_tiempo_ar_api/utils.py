@@ -1,9 +1,8 @@
 #!coding=utf8
 import json
 
-from coverage.annotate import os
-from django_datajsonar.models import Field, Metadata, Node, Catalog, Dataset, ReadDataJsonTask, \
-    Distribution
+from django_datajsonar.models import Metadata, Node, ReadDataJsonTask, \
+    Field, Distribution
 from django_datajsonar.tasks import read_datajson
 from pydatajson import DataJson
 
@@ -30,24 +29,10 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
     catalog = DataJson(node.catalog_url)
     node.catalog = json.dumps(catalog)
     node.save()
-    catalog_model, created = Catalog.objects.get_or_create(identifier=node.catalog_id)
-    if created:
-        catalog_model.title = catalog['title'],
-        catalog_model.metadata = '{}'
-        catalog_model.save()
-    for dataset in catalog.get_datasets(only_time_series=True):
-        dataset_model, created = Dataset.objects.get_or_create(
-            catalog=catalog_model,
-            identifier=dataset['identifier']
-        )
-        if created:
-            dataset_model.metadata = '{}'
-            dataset_model.indexable = True
-            dataset_model.save()
     task = ReadDataJsonTask()
     task.save()
 
-    read_datajson(task, read_local=True)
+    read_datajson(task, read_local=True, whitelist=True)
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
         DistributionIndexer(index=index).run(distribution)
     ElasticInstance.get().indices.forcemerge(index=index)

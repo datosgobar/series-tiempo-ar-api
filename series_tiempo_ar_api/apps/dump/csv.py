@@ -15,7 +15,11 @@ from . import constants
 
 
 class CSVDumpGenerator:
-    def __init__(self):
+    def __init__(self, index=settings.TS_INDEX, output_directory=None):
+        if not output_directory:
+            output_directory = os.path.join(settings.MEDIA_ROOT, 'dump')
+        self.index = index
+        self.output_directory = output_directory
         self.fields = {}
         self.elastic = ElasticInstance.get()
         self.init_fields_dict()
@@ -49,7 +53,7 @@ class CSVDumpGenerator:
         self.zip_full_csv()
 
     def generate_values_csv(self):
-        filepath = os.path.join(settings.MEDIA_ROOT, constants.VALUES_CSV)
+        filepath = os.path.join(self.output_directory, constants.VALUES_CSV)
 
         with open(filepath, 'w') as f:
             writer = csv.writer(f)
@@ -63,7 +67,7 @@ class CSVDumpGenerator:
                 'indice_tiempo_frecuencia'])
 
             query = {'query': {'match': {'raw_value': True}}}  # solo valores crudos
-            for res in scan(self.elastic, index='indicators', query=query):
+            for res in scan(self.elastic, index=self.index, query=query):
                 source = res['_source']
 
                 field = source['series_id']
@@ -81,7 +85,7 @@ class CSVDumpGenerator:
                 writer.writerow(row)
 
     def generate_full_csv(self):
-        filepath = os.path.join(settings.MEDIA_ROOT, constants.FULL_CSV)
+        filepath = os.path.join(self.output_directory, constants.FULL_CSV)
         with open(filepath, 'w') as f:
             writer = csv.writer(f)
             writer.writerow([  # Header
@@ -102,7 +106,7 @@ class CSVDumpGenerator:
                 'dataset_titulo',
             ])
             query = {'query': {'match': {'raw_value': True}}}  # solo valores crudos
-            for res in scan(self.elastic, index='indicators', query=query):
+            for res in scan(self.elastic, index=self.index, query=query):
                 source = res['_source']
 
                 field = source['series_id']
@@ -128,7 +132,7 @@ class CSVDumpGenerator:
                 writer.writerow(row)
 
     def zip_full_csv(self):
-        zip_path = os.path.join(settings.MEDIA_ROOT, constants.FULL_CSV_ZIPPED)
+        zip_path = os.path.join(self.output_directory, constants.FULL_CSV_ZIPPED)
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
-            filepath = os.path.join(settings.MEDIA_ROOT, constants.FULL_CSV)
+            filepath = os.path.join(self.output_directory, constants.FULL_CSV)
             zip_name.write(filepath, arcname=constants.FULL_CSV)

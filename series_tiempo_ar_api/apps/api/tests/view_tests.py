@@ -19,7 +19,6 @@ class ViewTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         super(ViewTests, cls).setUpClass()
 
     def test_series_default_type(self):

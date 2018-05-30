@@ -8,9 +8,6 @@ from series_tiempo_ar_api.apps.management import meta_keys
 
 
 def setup_database():
-    if Catalog.objects.count():  # Garantiza que solo corra una vez
-        return
-
     catalog = Catalog.objects.create(title='test_catalog', metadata='{}')
     dataset = Dataset.objects.create(identifier="132",
                                      metadata='{}',

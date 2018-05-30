@@ -15,7 +15,6 @@ class CollapseTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         super(cls, CollapseTest).setUpClass()
 
     def setUp(self):
