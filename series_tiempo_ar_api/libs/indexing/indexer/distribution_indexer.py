@@ -34,7 +34,7 @@ class DistributionIndexer:
             self.elastic.indices.put_mapping(index=self.index,
                                              doc_type=settings.TS_DOC_TYPE,
                                              body=constants.MAPPING)
- 
+
     def run(self, distribution):
         fields = distribution.field_set.all()
         fields = {field.title: field.identifier for field in fields}
