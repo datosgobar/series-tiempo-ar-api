@@ -1,12 +1,13 @@
 #! coding: utf-8
 import io
+import json
 import os
 import csv
 import shutil
 import zipfile
 
 from django.test import TestCase
-from django_datajsonar.models import Field
+from django_datajsonar.models import Field, Node
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
@@ -26,7 +27,8 @@ class CSVTest(TestCase):
         super(CSVTest, cls).setUpClass()
         cls.catalog_id = 'csv_dump_test_catalog'
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
-        os.mkdir(cls.directory)
+        if not os.path.isdir(cls.directory):
+            os.mkdir(cls.directory)
         index_catalog(cls.catalog_id, path, cls.index)
         gen = CSVDumpGenerator(index=cls.index, output_directory=cls.directory)
         gen.generate()
@@ -70,7 +72,7 @@ class CSVTest(TestCase):
 
         self.assertEqual(len(header), 15)
 
-    def test_full_csv_fields(self):
+    def test_full_csv_identifier_fields(self):
         reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
         next(reader)  # Header
 
@@ -81,6 +83,54 @@ class CSVTest(TestCase):
         self.assertEqual(row[1], field.distribution.dataset.identifier)
         self.assertEqual(row[2], field.distribution.identifier)
         self.assertEqual(row[5], field.distribution.enhanced_meta.get(key='periodicity').value)
+
+    def test_full_csv_metadata_fields(self):
+        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        next(reader)  # Header
+
+        row = next(reader)
+
+        field = Field.objects.get(identifier=row[3])
+
+        field_meta = json.loads(field.metadata)
+        distribution_meta = json.loads(field.distribution.metadata)
+        self.assertEqual(row[7], field.title)
+        self.assertEqual(row[8], field_meta['units'])
+        self.assertEqual(row[9], field_meta['description'])
+        self.assertEqual(row[10], distribution_meta['description'])
+
+    def test_full_csv_dataset_metadata_fields(self):
+        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        next(reader)  # Header
+
+        row = next(reader)
+
+        field = Field.objects.get(identifier=row[3])
+
+        dataset_meta = json.loads(field.distribution.dataset.metadata)
+        self.assertEqual(row[12], dataset_meta['publisher']['name'])
+        self.assertEqual(row[13], dataset_meta['source'])
+        self.assertEqual(row[14], field.distribution.dataset.title)
+
+    def test_full_csv_dataset_theme_field(self):
+        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        next(reader)  # Header
+
+        row = next(reader)
+
+        field = Field.objects.get(identifier=row[3])
+
+        dataset_meta = json.loads(field.distribution.dataset.metadata)
+
+        themes = json.loads(Node.objects.get(catalog_id=self.catalog_id).catalog)['themeTaxonomy']
+
+        theme_label = ''
+        for theme in themes:
+            if theme['id'] == dataset_meta['theme'][0]:
+                theme_label = theme['label']
+                break
+
+        self.assertEqual(theme_label, row[11])
 
     @classmethod
     def tearDownClass(cls):

@@ -112,5 +112,47 @@
         }
       ]
     }
+  ],
+  "themeTaxonomy": [
+    {
+      "label": "Actividad",
+      "id": "actividad",
+      "description": "Series de actividad: cuentas nacionales, consumo, producción, etc."
+    },
+    {
+      "label": "Empleo e Ingresos",
+      "id": "empleo",
+      "description": "Series de empleo e ingresos: mercado laboral, salarios, etc."
+    },
+    {
+      "label": "Sector Externo",
+      "id": "externo",
+      "description": "Series externas: Balance de Pagos, Intercambio Comercial, etc."
+    },
+    {
+      "label": "Dinero y Bancos",
+      "id": "moneda",
+      "description": "Series monetarias y bancarias"
+    },
+    {
+      "label": "Precios",
+      "id": "precios",
+      "description": "Series de precios"
+    },
+    {
+      "label": "Economía Internacional",
+      "id": "internacional",
+      "description": "Series económicas mundiales"
+    },
+    {
+      "label": "Finanzas Públicas",
+      "id": "fiscal",
+      "description": "Series de recaudación, ingresos, gastos, etc."
+    },
+    {
+      "label": "Mercados Financieros",
+      "id": "finanzas",
+      "description": "Series financieras y de mercado de capitales"
+    }
   ]
 }

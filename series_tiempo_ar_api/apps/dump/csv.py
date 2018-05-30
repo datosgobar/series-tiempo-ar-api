@@ -5,7 +5,8 @@ import json
 import zipfile
 
 from django.conf import settings
-from django_datajsonar.models import Field
+from django_datajsonar.models import Field, Node
+from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.api.helpers import periodicity_human_format_to_iso
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
@@ -21,6 +22,7 @@ class CSVDumpGenerator:
         self.index = index
         self.output_directory = output_directory
         self.fields = {}
+        self.catalog_themes = {}
         self.elastic = ElasticInstance.get()
         self.init_fields_dict()
 
@@ -41,7 +43,7 @@ class CSVDumpGenerator:
                 'serie_unidades': meta.get('units'),
                 'serie_descripcion': meta.get('description'),
                 'distribucion_descripcion': dist_meta.get('description'),
-                'dataset_tema': dataset_meta.get('theme'),
+                'dataset_tema': self.get_theme(field.distribution.dataset.catalog.identifier, dataset_meta),
                 'dataset_responsable': dataset_meta.get('publisher', {}).get('name'),
                 'dataset_titulo': field.distribution.dataset.title,
                 'dataset_fuente': dataset_meta.get('source'),
@@ -136,3 +138,22 @@ class CSVDumpGenerator:
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
             filepath = os.path.join(self.output_directory, constants.FULL_CSV)
             zip_name.write(filepath, arcname=constants.FULL_CSV)
+
+    def get_catalog_themes(self, catalog_id):
+        if catalog_id in self.catalog_themes:
+            return self.catalog_themes[catalog_id]
+
+        catalog = DataJson(json.loads(Node.objects.get(catalog_id=catalog_id).catalog))
+
+        self.catalog_themes[catalog_id] = {}
+        for theme in catalog.get_themes():
+            self.catalog_themes[catalog_id][theme['id']] = theme['label']
+
+        return self.catalog_themes[catalog_id]
+
+    def get_theme(self, catalog_id, dataset_meta):
+        result = ''
+        for theme in dataset_meta.get('theme', []):
+            result += self.get_catalog_themes(catalog_id)[theme]
+
+        return result
