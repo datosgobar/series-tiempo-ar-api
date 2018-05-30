@@ -52,8 +52,10 @@ class CSVTest(TestCase):
         field_id = row[3]
         field = Field.objects.get(identifier=field_id)
 
+        self.assertEqual(self.catalog_id, row[0])
         self.assertEqual(field.distribution.identifier, row[2])
         self.assertEqual(field.distribution.dataset.identifier, row[1])
+        self.assertEqual(row[6], field.distribution.enhanced_meta.get(key='periodicity').value)
 
     def test_full_csv_zipped(self):
         csv_zipped = zipfile.ZipFile(os.path.join(self.directory, constants.FULL_CSV_ZIPPED))
@@ -67,6 +69,18 @@ class CSVTest(TestCase):
         header = next(reader)
 
         self.assertEqual(len(header), 15)
+
+    def test_full_csv_fields(self):
+        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        next(reader)  # Header
+
+        row = next(reader)
+
+        field = Field.objects.get(identifier=row[3])
+        self.assertEqual(row[0], self.catalog_id)
+        self.assertEqual(row[1], field.distribution.dataset.identifier)
+        self.assertEqual(row[2], field.distribution.identifier)
+        self.assertEqual(row[5], field.distribution.enhanced_meta.get(key='periodicity').value)
 
     @classmethod
     def tearDownClass(cls):
