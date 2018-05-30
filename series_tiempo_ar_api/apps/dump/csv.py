@@ -20,7 +20,7 @@ from . import constants
 class CSVDumpGenerator:
     def __init__(self,
                  index=settings.TS_INDEX,
-                 output_directory=os.path.join(settings.MEDIA_ROOT, 'dump')):
+                 output_directory=constants.DUMP_DIR):
         self.index = index
         self.output_directory = output_directory
         self.fields = {}
@@ -34,7 +34,6 @@ class CSVDumpGenerator:
         """
         fields = Field.objects.filter(
             enhanced_meta__key=meta_keys.AVAILABLE,
-            enhanced_meta__value='true'
         ).prefetch_related(
             'distribution',
             'distribution__dataset',
@@ -73,14 +72,7 @@ class CSVDumpGenerator:
 
         with default_storage.open(filepath, 'w') as f:
             writer = csv.writer(f)
-            writer.writerow([  # Header
-                'catalogo_id',
-                'dataset_id',
-                'distribucion_id',
-                'serie_id',
-                'indice_tiempo',
-                'valor',
-                'indice_tiempo_frecuencia'])
+            writer.writerow(constants.VALUES_HEADER)
 
             query = {'query': {'match': {'raw_value': True}}}  # solo valores crudos
             for res in scan(self.elastic, index=self.index, query=query):
@@ -102,25 +94,11 @@ class CSVDumpGenerator:
 
     def generate_full_csv(self):
         filepath = os.path.join(self.output_directory, constants.FULL_CSV)
+
         with default_storage.open(filepath, 'w') as f:
             writer = csv.writer(f)
-            writer.writerow([  # Header
-                'catalogo_id',
-                'dataset_id',
-                'distribucion_id',
-                'serie_id',
-                'indice_tiempo',
-                'indice_tiempo_frecuencia',
-                'valor',
-                'serie_titulo',
-                'serie_unidades',
-                'serie_descripcion',
-                'distribucion_descripcion',
-                'dataset_tema',
-                'dataset_responsable',
-                'dataset_fuente',
-                'dataset_titulo',
-            ])
+            writer.writerow(constants.FULL_CSV_HEADER)
+
             query = {'query': {'match': {'raw_value': True}}}  # solo valores crudos
             for res in scan(self.elastic, index=self.index, query=query):
                 source = res['_source']
