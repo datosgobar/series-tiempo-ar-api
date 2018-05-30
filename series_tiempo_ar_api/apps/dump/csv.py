@@ -16,9 +16,9 @@ from . import constants
 
 
 class CSVDumpGenerator:
-    def __init__(self, index=settings.TS_INDEX, output_directory=None):
-        if not output_directory:
-            output_directory = os.path.join(settings.MEDIA_ROOT, 'dump')
+    def __init__(self,
+                 index=settings.TS_INDEX,
+                 output_directory=os.path.join(settings.MEDIA_ROOT, 'dump')):
         self.index = index
         self.output_directory = output_directory
         self.fields = {}
@@ -27,6 +27,9 @@ class CSVDumpGenerator:
         self.init_fields_dict()
 
     def init_fields_dict(self):
+        """Inicializa en un diccionario con IDs de series como clave los valores a escribir en cada
+        uno de los CSV.
+        """
         fields = Field.objects.all().prefetch_related('distribution',
                                                       'distribution__dataset',
                                                       'distribution__dataset__catalog')
@@ -139,10 +142,12 @@ class CSVDumpGenerator:
             filepath = os.path.join(self.output_directory, constants.FULL_CSV)
             zip_name.write(filepath, arcname=constants.FULL_CSV)
 
-    def get_catalog_themes(self, catalog_id):
+    def get_or_init_catalog_themes(self, catalog_id):
+        """Devuelve un dict ID: label de los themes del catálogo"""
         if catalog_id in self.catalog_themes:
             return self.catalog_themes[catalog_id]
 
+        # No lo tenemos guardado, parseo el datajson
         catalog = DataJson(json.loads(Node.objects.get(catalog_id=catalog_id).catalog))
 
         self.catalog_themes[catalog_id] = {}
@@ -152,8 +157,9 @@ class CSVDumpGenerator:
         return self.catalog_themes[catalog_id]
 
     def get_theme(self, catalog_id, dataset_meta):
-        result = ''
+        """Devuelve un string con los themes del dataset separados por comas"""
+        labels = []
         for theme in dataset_meta.get('theme', []):
-            result += self.get_catalog_themes(catalog_id)[theme]
+            labels.append(self.get_or_init_catalog_themes(catalog_id)[theme])
 
-        return result
+        return ','.join(labels)
