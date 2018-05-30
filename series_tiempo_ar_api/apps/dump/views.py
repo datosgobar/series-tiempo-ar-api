@@ -5,7 +5,7 @@ import sendfile
 from django.conf import settings
 
 
-def test_view(request, filename):
+def serve_global_dump(request, filename):
 
     path = os.path.join(settings.MEDIA_ROOT, filename)
     return sendfile.sendfile(request, path)
