@@ -7,13 +7,16 @@ import shutil
 import zipfile
 
 from django.conf import settings
+from django.core.management import call_command
 from django.test import TestCase
 from django_datajsonar.models import Field, Node
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
+from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.utils import index_catalog
+
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
@@ -135,3 +138,14 @@ class CSVTest(TestCase):
     def tearDownClass(cls):
         shutil.rmtree(cls.directory)
         ElasticInstance.get().indices.delete(cls.index)
+
+
+class CSVDumpCommandTests(TestCase):
+    directory = os.path.join(settings.MEDIA_ROOT, 'dump')
+
+    def test_command_creates_model(self):
+        self.assertEqual(CSVDumpTask.objects.count(), 0)
+        call_command('generate_dump')
+        self.assertEqual(CSVDumpTask.objects.count(), 1)
+
+        self.assertTrue(os.path.isfile(os.path.join(self.directory, constants.FULL_CSV)))

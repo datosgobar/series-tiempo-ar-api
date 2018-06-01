@@ -63,66 +63,61 @@ class CSVDumpGenerator:
         if not os.path.isdir(self.output_directory):
             os.mkdir(self.output_directory)
 
-        self.generate_values_csv()
-        self.generate_full_csv()
+        self.generate_csv(os.path.join(self.output_directory, constants.FULL_CSV),
+                          constants.FULL_CSV_HEADER,
+                          self.full_csv_row)
+        self.generate_csv(os.path.join(self.output_directory, constants.VALUES_CSV),
+                          constants.VALUES_HEADER,
+                          self.values_csv_row)
         self.zip_full_csv()
 
-    def generate_values_csv(self):
-        filepath = os.path.join(self.output_directory, constants.VALUES_CSV)
+    def values_csv_row(self, field, source):
+        return [
+            self.fields[field]['catalog_id'],
+            self.fields[field]['dataset_id'],
+            self.fields[field]['distribution_id'],
+            field,
+            source.get('timestamp'),
+            source.get('value'),
+            periodicity_human_format_to_iso(source.get('interval')),
+        ]
 
+    def full_csv_row(self, field, source):
+        return [
+            self.fields[field]['catalog_id'],
+            self.fields[field]['dataset_id'],
+            self.fields[field]['distribution_id'],
+            field,
+            source.get('timestamp'),
+            periodicity_human_format_to_iso(source.get('interval')),
+            source.get('value'),
+            self.fields[field]['serie_titulo'],
+            self.fields[field]['serie_unidades'],
+            self.fields[field]['serie_descripcion'],
+            self.fields[field]['distribucion_descripcion'],
+            self.fields[field]['dataset_tema'],
+            self.fields[field]['dataset_responsable'],
+            self.fields[field]['dataset_fuente'],
+            self.fields[field]['dataset_titulo'],
+        ]
+
+    def generate_csv(self, filepath, header, row_gen):
+        """Escribe el dump al filepath especificado, con el header row especificado,
+        sacando los datos a partir del callable 'row_gen', llamado una vez por valor
+        guardado en la base de datos
+        """
         with default_storage.open(filepath, 'w') as f:
             writer = csv.writer(f)
-            writer.writerow(constants.VALUES_HEADER)
+            writer.writerow(header)
 
-            query = {'query': {'match': {'raw_value': True}}}  # solo valores crudos
+            query = {'query': {'match': {'raw_value': True}}}
             for res in scan(self.elastic, index=self.index, query=query):
                 source = res['_source']
 
                 field = source['series_id']
                 if field not in self.fields:
                     continue
-                row = [
-                    self.fields[field]['catalog_id'],
-                    self.fields[field]['dataset_id'],
-                    self.fields[field]['distribution_id'],
-                    field,
-                    source.get('timestamp'),
-                    source.get('value'),
-                    periodicity_human_format_to_iso(source.get('interval')),
-                ]
-                writer.writerow(row)
-
-    def generate_full_csv(self):
-        filepath = os.path.join(self.output_directory, constants.FULL_CSV)
-
-        with default_storage.open(filepath, 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(constants.FULL_CSV_HEADER)
-
-            query = {'query': {'match': {'raw_value': True}}}  # solo valores crudos
-            for res in scan(self.elastic, index=self.index, query=query):
-                source = res['_source']
-
-                field = source['series_id']
-                if field not in self.fields:
-                    continue
-                row = [
-                    self.fields[field]['catalog_id'],
-                    self.fields[field]['dataset_id'],
-                    self.fields[field]['distribution_id'],
-                    field,
-                    source.get('timestamp'),
-                    periodicity_human_format_to_iso(source.get('interval')),
-                    source.get('value'),
-                    self.fields[field]['serie_titulo'],
-                    self.fields[field]['serie_unidades'],
-                    self.fields[field]['serie_descripcion'],
-                    self.fields[field]['distribucion_descripcion'],
-                    self.fields[field]['dataset_tema'],
-                    self.fields[field]['dataset_responsable'],
-                    self.fields[field]['dataset_fuente'],
-                    self.fields[field]['dataset_titulo'],
-                ]
+                row = row_gen(field, source)
                 writer.writerow(row)
 
     def zip_full_csv(self):

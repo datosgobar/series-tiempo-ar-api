@@ -13,7 +13,7 @@ def dump_db_to_csv(task_id):
         csv_gen = CSVDumpGenerator()
         csv_gen.generate()
     except Exception as e:
-        CSVDumpTask.info(task, e)
+        CSVDumpTask.info(task, str(e))
 
     task.status = task.FINISHED
     task.finished = timezone.now()
