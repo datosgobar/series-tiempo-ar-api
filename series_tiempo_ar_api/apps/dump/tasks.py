@@ -20,7 +20,9 @@ def dump_db_to_csv(task_id):
     task.save()
 
 
-def enqueue_csv_task():
-    task = CSVDumpTask()
-    task.save()
+def enqueue_csv_task(task=None):
+    if task is None:
+        task = CSVDumpTask()
+        task.save()
+
     dump_db_to_csv.delay(task.id)
