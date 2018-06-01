@@ -3,9 +3,10 @@ from django.core.management import BaseCommand
 
 from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
 
+from series_tiempo_ar_api.apps.dump.tasks import enqueue_csv_task
+
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        csv_gen = CSVDumpGenerator()
-        csv_gen.generate()
+        enqueue_csv_task()
