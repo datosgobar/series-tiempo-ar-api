@@ -50,3 +50,7 @@ FULL_CSV_HEADER = [
     'dataset_fuente',
     'dataset_titulo',
 ]
+
+
+DUMPS_NOT_GENERATED = "Dumps no generados"
+DUMP_ERROR = "Error en la lectura del archivo pedido"

@@ -61,8 +61,7 @@ class CSVDumpGenerator:
             }
 
     def generate(self):
-        if not os.path.isdir(self.output_directory):
-            os.mkdir(self.output_directory)
+        os.makedirs(self.output_directory, exist_ok=True)
 
         self.generate_csv(constants.FULL_CSV,
                           constants.FULL_CSV_HEADER,
