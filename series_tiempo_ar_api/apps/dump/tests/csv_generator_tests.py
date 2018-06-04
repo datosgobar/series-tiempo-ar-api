@@ -144,7 +144,8 @@ class CSVDumpCommandTests(TestCase):
     directory = os.path.join(settings.MEDIA_ROOT, 'dump')
 
     def setUp(self):
-        shutil.rmtree(self.directory)
+        if os.path.isdir(self.directory):
+            shutil.rmtree(self.directory)
 
     def test_command_creates_model(self):
         self.assertEqual(CSVDumpTask.objects.count(), 0)
