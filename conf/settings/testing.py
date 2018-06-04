@@ -60,3 +60,5 @@ RQ_QUEUES = {
         'ASYNC': False,
     },
 }
+
+SENDFILE_BACKEND = 'sendfile.backends.development'

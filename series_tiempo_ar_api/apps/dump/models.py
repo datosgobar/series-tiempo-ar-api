@@ -23,4 +23,3 @@ class DumpFile(models.Model):
 
     file_name = models.CharField(max_length=64, choices=FILE_CHOICES)
     task = models.ForeignKey(CSVDumpTask, on_delete=models.CASCADE)
-
