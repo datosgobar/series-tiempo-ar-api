@@ -1,4 +1,5 @@
 #!coding=utf8
+from traceback import format_exc
 
 from django.utils import timezone
 from django_rq import job
@@ -13,7 +14,8 @@ def dump_db_to_csv(task_id):
         csv_gen = CSVDumpGenerator(task)
         csv_gen.generate()
     except Exception as e:
-        CSVDumpTask.info(task, str(e))
+        msg = "Error generando el dump: {}".format(str(e) or format_exc(e))
+        CSVDumpTask.info(task, msg)
 
     task.status = task.FINISHED
     task.finished = timezone.now()
