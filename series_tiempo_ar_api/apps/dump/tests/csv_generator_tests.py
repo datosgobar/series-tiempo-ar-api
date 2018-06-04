@@ -3,7 +3,6 @@ import io
 import json
 import os
 import csv
-import shutil
 import zipfile
 
 from django.conf import settings
@@ -32,23 +31,31 @@ class CSVTest(TestCase):
         cls.catalog_id = 'csv_dump_test_catalog'
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
         index_catalog(cls.catalog_id, path, cls.index)
-        gen = CSVDumpGenerator(index=cls.index, output_directory=cls.directory)
+        cls.task = CSVDumpTask()
+        cls.task.save()
+        gen = CSVDumpGenerator(cls.task, index=cls.index, output_directory=cls.directory)
         gen.generate()
 
     def test_values_dump(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.VALUES_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         next(reader)  # skip header
         row = next(reader)
         self.assertEqual(row[0], self.catalog_id)
         self.assertEqual(row[6], 'R/P1D')
 
     def test_values_length(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.VALUES_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         header = next(reader)
         self.assertEqual(len(header), 7)
 
     def test_entity_identifiers(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.VALUES_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         next(reader)
 
         row = next(reader)
@@ -62,7 +69,8 @@ class CSVTest(TestCase):
         self.assertEqual(row[6], field.distribution.enhanced_meta.get(key='periodicity').value)
 
     def test_full_csv_zipped(self):
-        csv_zipped = zipfile.ZipFile(os.path.join(self.directory, constants.FULL_CSV_ZIPPED))
+        path = self.task.dumpfile_set.get(file_name=constants.FULL_CSV_ZIPPED).file.path
+        csv_zipped = zipfile.ZipFile(path)
 
         # Necesario para abrir archivos zippeados en modo texto (no bytes)
         src_file = io.TextIOWrapper(csv_zipped.open(constants.FULL_CSV),
@@ -75,7 +83,9 @@ class CSVTest(TestCase):
         self.assertEqual(len(header), 15)
 
     def test_full_csv_identifier_fields(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -87,7 +97,9 @@ class CSVTest(TestCase):
         self.assertEqual(row[5], field.distribution.enhanced_meta.get(key='periodicity').value)
 
     def test_full_csv_metadata_fields(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -102,7 +114,9 @@ class CSVTest(TestCase):
         self.assertEqual(row[10], distribution_meta['description'])
 
     def test_full_csv_dataset_metadata_fields(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -115,7 +129,9 @@ class CSVTest(TestCase):
         self.assertEqual(row[14], field.distribution.dataset.title)
 
     def test_full_csv_dataset_theme_field(self):
-        reader = csv.reader(open(os.path.join(self.directory, constants.FULL_CSV)))
+        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file.open('r')
+        reader = csv.reader(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -136,7 +152,6 @@ class CSVTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        shutil.rmtree(cls.directory)
         ElasticInstance.get().indices.delete(cls.index)
 
 
@@ -144,16 +159,11 @@ class CSVDumpCommandTests(TestCase):
     directory = os.path.join(settings.MEDIA_ROOT, 'dump')
 
     def setUp(self):
-        if os.path.isdir(self.directory):
-            shutil.rmtree(self.directory)
+        CSVDumpTask.objects.all().delete()
 
     def test_command_creates_model(self):
         self.assertEqual(CSVDumpTask.objects.count(), 0)
         call_command('generate_dump')
         self.assertEqual(CSVDumpTask.objects.count(), 1)
 
-        self.assertTrue(os.path.isfile(os.path.join(self.directory, constants.FULL_CSV)))
-
-    def tearDown(self):
-        if os.path.isdir(self.directory):
-            shutil.rmtree(self.directory)
+        self.assertTrue(CSVDumpTask.objects.first().dumpfile_set.count())

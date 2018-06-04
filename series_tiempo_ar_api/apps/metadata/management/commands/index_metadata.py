@@ -4,7 +4,7 @@ import logging
 from django.core.management import BaseCommand
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
 
 

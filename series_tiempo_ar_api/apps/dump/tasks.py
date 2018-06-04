@@ -10,7 +10,7 @@ from .csv import CSVDumpGenerator
 def dump_db_to_csv(task_id):
     task = CSVDumpTask.objects.get(id=task_id)
     try:
-        csv_gen = CSVDumpGenerator()
+        csv_gen = CSVDumpGenerator(task)
         csv_gen.generate()
     except Exception as e:
         CSVDumpTask.info(task, str(e))

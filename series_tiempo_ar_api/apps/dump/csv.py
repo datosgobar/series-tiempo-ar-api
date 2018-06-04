@@ -5,7 +5,7 @@ import json
 import zipfile
 
 from django.conf import settings
-from django.core.files.storage import default_storage
+from django.core.files import File
 from django_datajsonar.models import Field, Node
 from pydatajson import DataJson
 from elasticsearch.helpers import scan
@@ -13,14 +13,15 @@ from elasticsearch.helpers import scan
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.helpers import periodicity_human_format_to_iso
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-
 from . import constants
 
 
 class CSVDumpGenerator:
     def __init__(self,
+                 task,
                  index=settings.TS_INDEX,
                  output_directory=constants.DUMP_DIR):
+        self.task = task
         self.index = index
         self.output_directory = output_directory
         self.fields = {}
@@ -63,10 +64,10 @@ class CSVDumpGenerator:
         if not os.path.isdir(self.output_directory):
             os.mkdir(self.output_directory)
 
-        self.generate_csv(os.path.join(self.output_directory, constants.FULL_CSV),
+        self.generate_csv(constants.FULL_CSV,
                           constants.FULL_CSV_HEADER,
                           self.full_csv_row)
-        self.generate_csv(os.path.join(self.output_directory, constants.VALUES_CSV),
+        self.generate_csv(constants.VALUES_CSV,
                           constants.VALUES_HEADER,
                           self.values_csv_row)
         self.zip_full_csv()
@@ -101,12 +102,13 @@ class CSVDumpGenerator:
             self.fields[field]['dataset_titulo'],
         ]
 
-    def generate_csv(self, filepath, header, row_gen):
+    def generate_csv(self, filename, header, row_gen):
         """Escribe el dump al filepath especificado, con el header row especificado,
         sacando los datos a partir del callable 'row_gen', llamado una vez por valor
         guardado en la base de datos
         """
-        with default_storage.open(filepath, 'w') as f:
+        path = os.path.join(self.output_directory, filename)
+        with open(path, 'w+') as f:
             writer = csv.writer(f)
             writer.writerow(header)
 
@@ -120,11 +122,16 @@ class CSVDumpGenerator:
                 row = row_gen(field, source)
                 writer.writerow(row)
 
+            self.task.dumpfile_set.create(file_name=filename, file=File(f))
+
     def zip_full_csv(self):
         zip_path = os.path.join(self.output_directory, constants.FULL_CSV_ZIPPED)
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
-            filepath = os.path.join(self.output_directory, constants.FULL_CSV)
+            filepath = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file.path
             zip_name.write(filepath, arcname=constants.FULL_CSV)
+
+        self.task.dumpfile_set.create(file_name=constants.FULL_CSV_ZIPPED,
+                                      file=File(open(zip_path, 'rb')))
 
     def get_or_init_catalog_themes(self, catalog_id):
         """Devuelve un dict ID: label de los themes del catálogo"""
