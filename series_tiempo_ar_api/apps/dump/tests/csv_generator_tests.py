@@ -156,14 +156,13 @@ class CSVTest(TestCase):
 
 
 class CSVDumpCommandTests(TestCase):
-    directory = os.path.join(settings.MEDIA_ROOT, 'dump')
-
     def setUp(self):
         CSVDumpTask.objects.all().delete()
 
     def test_command_creates_model(self):
-        self.assertEqual(CSVDumpTask.objects.count(), 0)
         call_command('generate_dump')
         self.assertEqual(CSVDumpTask.objects.count(), 1)
 
-        self.assertTrue(CSVDumpTask.objects.first().dumpfile_set.count())
+        task = CSVDumpTask.objects.first()
+        self.assertTrue(task.dumpfile_set.count(), task.logs)
+
