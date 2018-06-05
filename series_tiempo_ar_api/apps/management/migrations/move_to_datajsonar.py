@@ -1,7 +1,7 @@
 #!coding=utf8
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import migrations
 import django_datajsonar.models
 import series_tiempo_ar_api.apps.api.models as api_models
 
@@ -45,7 +45,7 @@ def move(*_):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('management', '0002_auto_20180510_1709'),
+        ('management', 'rename_node_tmp'),
         ('api', '0034_distribution_error'),
         ('django_datajsonar', '0002_auto_20180507_1752'),
     ]

@@ -31,9 +31,9 @@ class Migration(migrations.Migration):
             name='catalogs',
         ),
         migrations.RunPython(migrate_nodes),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='indicator',
-            name='node',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_datajsonar.Node'),
+            name='node_tmp',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_datajsonar.Node', null=True),
         )
     ]

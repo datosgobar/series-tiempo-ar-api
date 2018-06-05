@@ -116,7 +116,7 @@ class Indicator(models.Model, IndicatorNamesMixin):
 
     type = models.CharField(max_length=100, choices=IndicatorNamesMixin.TYPE_CHOICES)
     value = models.FloatField(default=0)
-    node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
+    node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE, null=True)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
 
 
