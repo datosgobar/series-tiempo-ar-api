@@ -10,6 +10,7 @@ from django_datajsonar.models import Field, Node
 from pydatajson import DataJson
 from elasticsearch.helpers import scan
 
+from series_tiempo_ar_api.apps.dump.models import DumpFile
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.helpers import periodicity_human_format_to_iso
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
@@ -70,6 +71,9 @@ class CSVDumpGenerator:
                           constants.VALUES_HEADER,
                           self.values_csv_row)
         self.zip_full_csv()
+
+        for filename in constants.FILES + [constants.FULL_CSV]:
+            self.remove_old_dumps(filename)
 
     def values_csv_row(self, field, source):
         return [
@@ -153,3 +157,14 @@ class CSVDumpGenerator:
             labels.append(self.get_or_init_catalog_themes(catalog_id)[theme])
 
         return ','.join(labels)
+
+    def remove_old_dumps(self, dump_file_name):
+        same_file = DumpFile.objects.filter(file_name=dump_file_name)
+        old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
+        for dump_file in old:
+            try:
+                os.remove(dump_file.file.path)
+            except FileNotFoundError:
+                pass
+
+        same_file.filter(id__in=old.values_list('id', flat=True)).delete()

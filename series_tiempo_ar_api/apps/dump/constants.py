@@ -54,3 +54,4 @@ FULL_CSV_HEADER = [
 
 DUMPS_NOT_GENERATED = "Dumps no generados"
 DUMP_ERROR = "Error en la lectura del archivo pedido"
+OLD_DUMP_FILES_AMOUNT = 3  # Cantidad de dumps a retener en disco (incluyendo el más reciente)
