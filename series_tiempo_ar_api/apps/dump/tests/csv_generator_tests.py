@@ -11,6 +11,7 @@ from django.test import TestCase
 from django_datajsonar.models import Field, Node
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY
 from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
 from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.dump import constants
@@ -156,13 +157,23 @@ class CSVTest(TestCase):
 
 
 class CSVDumpCommandTests(TestCase):
+    index = 'csv_dump_cmd_test_index'
+
+    @classmethod
+    def setUpClass(cls):
+        super(CSVDumpCommandTests, cls).setUpClass()
+        ElasticInstance.get().indices.create(cls.index)
+
     def setUp(self):
         CSVDumpTask.objects.all().delete()
 
     def test_command_creates_model(self):
-        call_command('generate_dump')
+        call_command('generate_dump', index=self.index)
         self.assertEqual(CSVDumpTask.objects.count(), 1)
 
         task = CSVDumpTask.objects.first()
         self.assertTrue(task.dumpfile_set.count(), task.logs)
 
+    @classmethod
+    def tearDownClass(cls):
+        ElasticInstance.get().indices.delete(cls.index)

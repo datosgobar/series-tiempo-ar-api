@@ -8,10 +8,10 @@ from .csv import CSVDumpGenerator
 
 
 @job('default', timeout=0)
-def dump_db_to_csv(task_id):
+def dump_db_to_csv(task_id, ts_index=None):
     task = CSVDumpTask.objects.get(id=task_id)
     try:
-        csv_gen = CSVDumpGenerator(task)
+        csv_gen = CSVDumpGenerator(task, index=ts_index)
         csv_gen.generate()
     except Exception as e:
         msg = "Error generando el dump: {}".format(str(e) or format_exc(e))
@@ -22,9 +22,9 @@ def dump_db_to_csv(task_id):
     task.save()
 
 
-def enqueue_csv_task(task=None):
+def enqueue_csv_dump_task(task=None, ts_index=None):
     if task is None:
         task = CSVDumpTask()
         task.save()
 
-    dump_db_to_csv.delay(task.id)
+    dump_db_to_csv.delay(task.id, ts_index)
