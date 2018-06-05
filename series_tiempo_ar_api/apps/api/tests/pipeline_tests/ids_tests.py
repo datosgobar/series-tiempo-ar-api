@@ -25,7 +25,6 @@ class IdsTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        setup_database()
         super(cls, IdsTest).setUpClass()
 
     def setUp(self):

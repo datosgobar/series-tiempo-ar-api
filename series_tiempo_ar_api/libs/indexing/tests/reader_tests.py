@@ -1,15 +1,14 @@
 #! coding: utf-8
-import json
 import os
 
 from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
-from pydatajson import DataJson
 
 from django_datajsonar.tasks import read_datajson
-from django_datajsonar.models import Distribution, Field, Catalog, Dataset
+from django_datajsonar.models import Distribution, Field
 from django_datajsonar.models import ReadDataJsonTask, Node
+from series_tiempo_ar_api import utils
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
@@ -26,11 +25,6 @@ class IndexerTests(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.elastic = ElasticInstance()
-
-    def setUp(self):
-        self.task = ReadDataJsonTask()
-        self.task.save()
-        self.tearDown()
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
@@ -129,33 +123,8 @@ class IndexerTests(TestCase):
         Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID).delete()
 
     def _index_catalog(self, catalog_path, node=None):
-        if not node:
-            node = Node(catalog_id=CATALOG_ID,
-                        catalog_url=os.path.join(SAMPLES_DIR, catalog_path),
-                        indexable=True)
-
-        catalog = DataJson(node.catalog_url)
-        node.catalog = json.dumps(catalog)
-        node.save()
-        catalog_model, created = Catalog.objects.get_or_create(identifier=node.catalog_id)
-        if created:
-            catalog_model.title = catalog['title'],
-            catalog_model.metadata = '{}'
-            catalog_model.save()
-        for dataset in catalog.get_datasets(only_time_series=True):
-            dataset_model, created = Dataset.objects.get_or_create(
-                catalog=catalog_model,
-                identifier=dataset['identifier']
-            )
-            if created:
-                dataset_model.metadata = '{}'
-                dataset_model.indexable = True
-                dataset_model.save()
-
-        read_datajson(self.task, read_local=True)
-        for distribution in Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID):
-            DistributionIndexer(index=self.test_index).run(distribution)
-        self.elastic.indices.forcemerge(index=self.test_index)
+        path = os.path.join(SAMPLES_DIR, catalog_path)
+        utils.index_catalog(CATALOG_ID, path, self.test_index, node=node)
 
 
 class ReaderTests(TestCase):
