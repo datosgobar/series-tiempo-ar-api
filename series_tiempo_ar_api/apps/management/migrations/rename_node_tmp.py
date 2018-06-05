@@ -21,7 +21,11 @@ class Migration(migrations.Migration):
             model_name='indicator',
             old_name='node_tmp',
             new_name='node',
-        )
+        ),
+        migrations.AlterUniqueTogether(
+            name='indicator',
+            unique_together=set([('type', 'node', 'task')]),
+        ),
     ]
 
 
