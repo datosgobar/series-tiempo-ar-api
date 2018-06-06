@@ -6,6 +6,7 @@ import zipfile
 
 from django.conf import settings
 from django.core.files import File
+from django.core.files.storage import default_storage
 from django_datajsonar.models import Field, Node
 from pydatajson import DataJson
 from elasticsearch.helpers import scan
@@ -111,7 +112,7 @@ class CSVDumpGenerator:
         guardado en la base de datos
         """
         path = os.path.join(self.output_directory, filename)
-        with open(path, 'w+') as f:
+        with default_storage.open(path, 'w+') as f:
             writer = csv.writer(f)
             writer.writerow(header)
 
@@ -134,7 +135,7 @@ class CSVDumpGenerator:
             zip_name.write(filepath, arcname=constants.FULL_CSV)
 
         self.task.dumpfile_set.create(file_name=constants.FULL_CSV_ZIPPED,
-                                      file=File(open(zip_path, 'rb')))
+                                      file=File(default_storage.open(zip_path, 'rb')))
 
     def get_or_init_catalog_themes(self, catalog_id):
         """Devuelve un dict ID: label de los themes del catálogo"""
