@@ -50,10 +50,10 @@ def index_distribution(distribution_id, node_id, task_id,
                                                           defaults={'value': str(changed)})
 
     except Exception as e:
-        _handle_exception(distribution_model.dataset, distribution, distribution_id, e, node, task)
+        _handle_exception(distribution_model.dataset, distribution_id, e, node, task)
 
 
-def _handle_exception(dataset_model, distribution, distribution_id, exc, node, task):
+def _handle_exception(dataset_model, distribution_id, exc, node, task):
     msg = u"Excepción en distrbución {} del catálogo {}: {}"
     if exc:
         e_msg = exc
