@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from series_tiempo_ar_api.apps.analytics.models import Query
+from series_tiempo_ar_api.apps.analytics.models import Query, ImportConfig
+from solo.admin import SingletonModelAdmin
 
 
 class QueryAdmin(admin.ModelAdmin):
@@ -14,3 +15,4 @@ class QueryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Query, QueryAdmin)
+admin.site.register(ImportConfig, SingletonModelAdmin)

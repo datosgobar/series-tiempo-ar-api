@@ -163,7 +163,8 @@ VENDOR_APPS = (
     'sendfile',
     'des',
     'scheduler',
-    'django_datajsonar'
+    'django_datajsonar',
+    'solo',
 )
 
 APPS = (
