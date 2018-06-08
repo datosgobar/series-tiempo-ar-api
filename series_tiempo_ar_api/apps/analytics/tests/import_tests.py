@@ -26,7 +26,8 @@ def mocked_requests_get():
         def __call__(self, *args, **kwargs):
             return self
 
-    return MockResponse({
+    return MockResponse(
+        {
             'next': None,
             'results': [
                 {
@@ -35,7 +36,8 @@ def mocked_requests_get():
                     'start_time': '2018-06-07T05:00:00-03:00',
                 }
             ]
-        })
+        }
+    )
 
 
 class ImportTests(TestCase):
@@ -71,6 +73,7 @@ class ImportTests(TestCase):
             self.assertEqual(Query.objects.count(), 1)
 
     def test_multiple_page_results(self):
+        """Emula una query con dos páginas de resultados, cada una con una query"""
         return_value = {
             'next': 'next_page_url',
             'results': [
