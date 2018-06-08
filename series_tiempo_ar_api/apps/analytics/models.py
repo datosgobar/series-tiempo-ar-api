@@ -22,6 +22,7 @@ class Query(models.Model):
 class ImportConfig(SingletonModel):
     endpoint = models.URLField()
     token = models.CharField(max_length=64)
+    kong_api_id = models.CharField(max_length=64)
 
     def clean(self):
         status_code = requests.head(
@@ -31,3 +32,14 @@ class ImportConfig(SingletonModel):
 
         if status_code != 200:
             raise ValidationError('URL / Token inválido')
+
+    def get_results(self, from_date=None, to_date=None, limit=1000, offset=0):
+        return requests.get(
+            self.endpoint,
+            headers={'Authorization': 'Token {}'.format(self.token)},
+            params={'from_date': from_date,
+                    'to_date': to_date,
+                    'limit': limit,
+                    'offset': offset,
+                    'kong_api_id': self.kong_api_id}
+        ).json()
