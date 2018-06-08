@@ -14,5 +14,10 @@ class QueryAdmin(admin.ModelAdmin):
     search_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids')
 
 
+class ImportConfigAdmin(SingletonModelAdmin):
+    # django-des overridea el change_form_template de la clase padre(!), volvemos al default de django
+    change_form_template = 'admin/change_form.html'
+
+
 admin.site.register(Query, QueryAdmin)
-admin.site.register(ImportConfig, SingletonModelAdmin)
+admin.site.register(ImportConfig, ImportConfigAdmin)
