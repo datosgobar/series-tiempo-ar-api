@@ -34,12 +34,17 @@ class ImportConfig(SingletonModel):
             raise ValidationError('URL / Token inválido')
 
     def get_results(self, from_date=None, to_date=None, limit=1000, offset=0):
+        """Wrapper sobre requests para pegarle al endpoint configurado"""
         return requests.get(
             self.endpoint,
-            headers={'Authorization': 'Token {}'.format(self.token)},
+            headers=self.get_authorization_header(),
             params={'from_date': from_date,
                     'to_date': to_date,
                     'limit': limit,
                     'offset': offset,
                     'kong_api_id': self.kong_api_id}
         ).json()
+
+    def get_authorization_header(self):
+        """Devuelve el header de auth formateado para usar en la libreria de requests"""
+        return {'Authorization': 'Token {}'.format(self.token)}

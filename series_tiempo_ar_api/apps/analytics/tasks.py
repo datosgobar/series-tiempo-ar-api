@@ -60,7 +60,7 @@ def import_last_day_analytics_from_api_mgmt(limit=1000):
     while next_results:
         response = requests.get(
             next_results,
-            headers={'Authorization': 'Token {}'.format(import_config_model.token)}
+            headers=import_config_model.get_authorization_header()
         ).json()
         _load_queries_into_db(response)
         next_results = response['next']
