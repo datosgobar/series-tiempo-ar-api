@@ -1,6 +1,7 @@
 #! coding: utf-8
 import os
 import json
+from urllib.parse import parse_qs
 
 import iso8601
 import requests
@@ -10,8 +11,10 @@ from django_rq import job
 from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldError
+
 from .models import Query, ImportConfig
 from .utils import kong_milliseconds_to_tzdatetime
+
 
 @job("default")
 def analytics(ids, args_string, ip_address, params, timestamp_milliseconds):
@@ -68,12 +71,13 @@ def import_last_day_analytics_from_api_mgmt(limit=1000):
 def _load_queries_into_db(query_results):
     queries = []
     for result in query_results['results']:
+        parsed_querystring = parse_qs(result['querystring'], keep_blank_values=True)
         queries.append(Query(
             ip_address=result['ip_address'],
             args=result['querystring'],
             timestamp=iso8601.parse_date(result['start_time']),
-            ids='nada',
-            params='nada'
+            ids=parsed_querystring.get('ids', ''),
+            params=parsed_querystring,
         ))
 
     Query.objects.bulk_create(queries)
