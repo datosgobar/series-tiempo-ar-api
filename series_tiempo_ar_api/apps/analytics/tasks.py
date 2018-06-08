@@ -12,7 +12,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldError
 
-from .models import Query, ImportConfig
+from .models import Query, ImportConfig, AnalyticsImportTask
 from .utils import kong_milliseconds_to_tzdatetime
 
 
@@ -45,7 +45,26 @@ def export(path=None):
             writer.writerow([val(query) for val in fields.values()])
 
 
+@job('default', timeout=1000)
 def import_last_day_analytics_from_api_mgmt(limit=1000):
+    task = AnalyticsImportTask(status=AnalyticsImportTask.RUNNING,
+                               timestamp=timezone.now())
+    import_config_model = ImportConfig.get_solo()
+    task.write_logs("Usando config: endpoint {}, api_id {}, token {}".format(
+        import_config_model.endpoint,
+        import_config_model.kong_api_id,
+        import_config_model.token
+    ))
+    try:
+        count = _run_import(limit)
+        task.write_logs("Todo OK. Queries importadas: {}".format(count))
+    except Exception as e:
+        task.write_logs("Error importando analytics: {}".format(e))
+    task.status = task.FINISHED
+    task.save()
+
+
+def _run_import(limit):
     today = timezone.now().date()
     yesterday = today - relativedelta(days=1)
     import_config_model = ImportConfig.get_solo()
@@ -53,8 +72,8 @@ def import_last_day_analytics_from_api_mgmt(limit=1000):
             not import_config_model.token or
             not import_config_model.kong_api_id):
         raise FieldError("Configuración de importación de analytics no inicializada")
-
     response = import_config_model.get_results(from_date=yesterday, limit=limit)
+    count = response['count']
     _load_queries_into_db(response)
     next_results = response['next']
     while next_results:
@@ -65,7 +84,7 @@ def import_last_day_analytics_from_api_mgmt(limit=1000):
         _load_queries_into_db(response)
         next_results = response['next']
 
-    return response
+    return count
 
 
 def _load_queries_into_db(query_results):

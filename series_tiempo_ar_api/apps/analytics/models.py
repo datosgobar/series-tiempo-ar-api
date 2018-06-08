@@ -48,3 +48,28 @@ class ImportConfig(SingletonModel):
     def get_authorization_header(self):
         """Devuelve el header de auth formateado para usar en la libreria de requests"""
         return {'Authorization': 'Token {}'.format(self.token)}
+
+
+class AnalyticsImportTask(models.Model):
+
+    RUNNING = 'running'
+    FINISHED = 'finished'
+
+    STATUS_CHOICES = (
+        (RUNNING, "Corriendo"),
+        (FINISHED, "Finalizada"),
+    )
+
+    status = models.CharField(max_length=64, choices=STATUS_CHOICES)
+    logs = models.TextField(blank=True)
+    timestamp = models.DateTimeField()
+
+    def __str__(self):
+        return "Analytics import task at {}".format(self.timestamp)
+
+    def write_logs(self, text):
+        if not self.logs:
+            self.logs = ''
+
+        self.logs += text + '\n'
+        self.save()

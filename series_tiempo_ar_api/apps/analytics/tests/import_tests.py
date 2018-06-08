@@ -1,18 +1,16 @@
 #!coding=utf8
 
 import mock
-from nose.tools import raises
-from django.core.exceptions import FieldError
 from django.test import TestCase
 from series_tiempo_ar_api.apps.analytics.tasks import import_last_day_analytics_from_api_mgmt
-from series_tiempo_ar_api.apps.analytics.models import ImportConfig, Query
+from series_tiempo_ar_api.apps.analytics.models import ImportConfig, Query, AnalyticsImportTask
 
 
 class UninitializedImportConfigTests(TestCase):
 
-    @raises(FieldError)
     def test_not_initialized_model(self):
         import_last_day_analytics_from_api_mgmt()
+        self.assertTrue('Error' in AnalyticsImportTask.objects.last().logs)
 
 
 def mocked_requests_get():
@@ -29,6 +27,7 @@ def mocked_requests_get():
     return MockResponse(
         {
             'next': None,
+            'count': 2,
             'results': [
                 {
                     'ip_address': '127.0.0.1',
@@ -52,6 +51,7 @@ class ImportTests(TestCase):
     def test_single_empty_result(self):
         with mock.patch.object(ImportConfig, 'get_results', return_value={
             'next': None,
+            'count': 0,
             'results': []
         }):
             import_last_day_analytics_from_api_mgmt()
@@ -61,6 +61,7 @@ class ImportTests(TestCase):
     def test_single_page_results(self):
         with mock.patch.object(ImportConfig, 'get_results', return_value={
             'next': None,
+            'count': 1,
             'results': [
                 {
                     'ip_address': '127.0.0.1',
@@ -76,6 +77,7 @@ class ImportTests(TestCase):
         """Emula una query con dos páginas de resultados, cada una con una query"""
         return_value = {
             'next': 'next_page_url',
+            'count': 2,
             'results': [
                 {
                     'ip_address': '127.0.0.1',
