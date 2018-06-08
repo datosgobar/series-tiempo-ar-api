@@ -3,14 +3,15 @@ import os
 import json
 
 import iso8601
+import requests
 import unicodecsv
 from dateutil.relativedelta import relativedelta
 from django_rq import job
 from django.conf import settings
 from django.utils import timezone
+from django.core.exceptions import FieldError
 from .models import Query, ImportConfig
 from .utils import kong_milliseconds_to_tzdatetime
-
 
 @job("default")
 def analytics(ids, args_string, ip_address, params, timestamp_milliseconds):
@@ -41,13 +42,32 @@ def export(path=None):
             writer.writerow([val(query) for val in fields.values()])
 
 
-def import_last_day_analytics():
+def import_last_day_analytics_from_api_mgmt(limit=1000):
     today = timezone.now().date()
-    yesterday = today
-    response = ImportConfig.get_solo().get_results(to_date=yesterday.strftime('%Y-%m-%d'))
+    yesterday = today - relativedelta(days=1)
+    import_config_model = ImportConfig.get_solo()
+    if (not import_config_model.endpoint or
+            not import_config_model.token or
+            not import_config_model.kong_api_id):
+        raise FieldError("Configuración de importación de analytics no inicializada")
 
+    response = import_config_model.get_results(from_date=yesterday, limit=limit)
+    _load_queries_into_db(response)
+    next_results = response['next']
+    while next_results:
+        response = requests.get(
+            next_results,
+            headers={'Authorization': 'Token {}'.format(import_config_model.token)}
+        ).json()
+        _load_queries_into_db(response)
+        next_results = response['next']
+
+    return response
+
+
+def _load_queries_into_db(query_results):
     queries = []
-    for result in response['results']:
+    for result in query_results['results']:
         queries.append(Query(
             ip_address=result['ip_address'],
             args=result['querystring'],
@@ -57,4 +77,3 @@ def import_last_day_analytics():
         ))
 
     Query.objects.bulk_create(queries)
-    return response
