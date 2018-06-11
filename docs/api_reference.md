@@ -126,7 +126,7 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
     <tr>
         <td>flatten</td>
         <td>No</td>
-        <td>Aplana la respuesta de metadatos en un objeto con un único nivel. No es necesario darle valor</td>
+        <td>Aplana la respuesta de metadatos en un objeto con un único nivel (sin objetos anidados). No es necesario darle valor</td>
         <td></td>
         <td>flatten</td>
     </tr>
