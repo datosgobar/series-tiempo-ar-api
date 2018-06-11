@@ -308,7 +308,7 @@ Las opciones disponibles son:
 Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía _plana_.
 
 Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
-```json
+```
     {
         "catalog": [<catalog_meta>],
         "dataset": [<dataset_meta>],
@@ -319,7 +319,7 @@ Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
 
 Una query con parámetro flatten incluido tendrá la siguiente respuesta de metadatos:
 
-```json
+```
     {
         catalog_meta1: ...,
         catalog_meta2: ...,
