@@ -123,6 +123,13 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
         <td>.</td>
         <td>metadata=,</td>
     </tr>
+    <tr>
+        <td>flatten</td>
+        <td>No</td>
+        <td>Aplana la respuesta de metadatos en un objeto con un único nivel. No es necesario darle valor</td>
+        <td></td>
+        <td>flatten</td>
+    </tr>
 </table>
 
 ### `ids`
@@ -296,4 +303,28 @@ Las opciones disponibles son:
 * *,*: Coma.
 * *.*: Punto.
 
+### `flatten`
 
+Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía _plana_.
+
+Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
+```json
+    {
+        "catalog": [<catalog_meta>],
+        "dataset": [<dataset_meta>],
+        "distribution": [<distribution_meta>],
+        "field": [<field_meta>],
+    }
+```
+
+Una query con parámetro flatten incluido tendrá la siguiente respuesta de metadatos:
+
+```json
+    {
+        catalog_meta1: ...,
+        catalog_meta2: ...,
+        dataset_meta1: ...,
+        <nivel>_<meta_key>: <meta_value>
+        ...
+    }
+```
