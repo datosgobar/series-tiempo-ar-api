@@ -22,6 +22,7 @@ class Query(object):
         self.es_query = ESQuery(index)
         self.series_models = []
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
+        self.metadata_flatten = False
 
     def get_series_ids(self, how=constants.API_DEFAULT_VALUES[constants.PARAM_HEADER]):
         """Devuelve una lista con strings que identifican a las series
@@ -134,18 +135,20 @@ class Query(object):
         de la serie:
 
         {
-            <catalog_meta>
-            "dataset": [
-                <dataset_meta>
-                "distribution": [
-                    <distribution_meta>
-                    "field": [
-                        <field_meta>
-                    ]
-                ]
-            ]
+            "catalog": [<catalog_meta>],
+            "dataset": [<dataset_meta>],
+            "distribution": [<distribution_meta>],
+            "field": [<field_meta>],
         }
 
+        Si está seteado el flag self.metadata_flatten, aplana la respuesta:
+        {
+            catalog_meta1: ...,
+            catalog_meta2: ...,
+            dataset_meta1: ...,
+            <nivel>_<meta_key>: <meta_value>
+            ...
+        }
         """
 
         metadata = None
@@ -154,6 +157,14 @@ class Query(object):
             metadata = self._get_full_metadata(serie_model)
         elif self.metadata_config == constants.METADATA_SIMPLE:
             metadata = self._get_simple_metadata(serie_model)
+
+        if self.metadata_flatten:
+            for level in list(metadata):
+                for meta_field in list(metadata[level]):
+                    metadata['{}_{}'.format(level, meta_field)] = metadata[level][meta_field]
+
+                metadata.pop(level)
+
         return metadata
 
     @staticmethod
@@ -221,3 +232,6 @@ class Query(object):
                 field.pop(meta_field)
 
         return meta
+
+    def flatten_metadata_response(self):
+        self.metadata_flatten = True

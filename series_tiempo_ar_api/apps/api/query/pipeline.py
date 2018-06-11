@@ -360,6 +360,11 @@ class Collapse(BaseOperation):
 class Metadata(BaseOperation):
 
     def run(self, query, args):
+        self.check_meta(query, args)
+        if args.get(constants.PARAM_FLATTEN) is not None:
+            query.flatten_metadata_response()
+
+    def check_meta(self, query, args):
         metadata = args.get(constants.PARAM_METADATA)
         if not metadata:
             return
