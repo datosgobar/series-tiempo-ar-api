@@ -49,6 +49,7 @@ PARAM_START_DATE = 'start_date'
 PARAM_END_DATE = 'end_date'
 PARAM_DELIM = 'sep'
 PARAM_DEC_CHAR = 'decimal'
+PARAM_FLATTEN = 'flatten'
 
 METADATA_SIMPLE = 'simple'
 METADATA_FULL = 'full'

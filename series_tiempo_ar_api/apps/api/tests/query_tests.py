@@ -101,7 +101,7 @@ class QueryTests(TestCase):
 
         self.query.add_series(self.single_series, self.field)
         self.query.run()
-        index_meta = self.query.get_metadata()[1]
+        index_meta = self.query.get_metadata()[1]['catalog']
         self.assertNotIn('extra_field', index_meta)
         self.assertIn('title', index_meta)
 
@@ -112,9 +112,9 @@ class QueryTests(TestCase):
 
         self.query.add_series(self.single_series, self.field)
         self.query.run()
-        index_meta = self.query.get_metadata()[1]
+        index_meta = self.query.get_metadata()[1]['dataset']
         self.assertNotIn('extra_field', index_meta)
-        self.assertIn('title', index_meta['dataset'][0])
+        self.assertIn('title', index_meta)
 
     def test_simple_metadata_remove_distribution(self):
         dist = self.field.distribution
@@ -123,9 +123,9 @@ class QueryTests(TestCase):
 
         self.query.add_series(self.single_series, self.field)
         self.query.run()
-        index_meta = self.query.get_metadata()[1]
+        index_meta = self.query.get_metadata()[1]['distribution']
         self.assertNotIn('extra_field', index_meta)
-        self.assertIn('title', index_meta['dataset'][0]['distribution'][0])
+        self.assertIn('title', index_meta)
 
     def test_simple_metadata_remove_field(self):
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
@@ -133,6 +133,70 @@ class QueryTests(TestCase):
 
         self.query.add_series(self.single_series, self.field)
         self.query.run()
-        index_meta = self.query.get_metadata()[1]
+        index_meta = self.query.get_metadata()[1]['field']
         self.assertNotIn('extra_field', index_meta)
-        self.assertIn('id', index_meta['dataset'][0]['distribution'][0]['field'][0])
+        self.assertIn('id', index_meta)
+
+    def test_flatten_metadata_response(self):
+        catalog = self.field.distribution.dataset.catalog
+        catalog.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        catalog.save()
+
+        dataset = self.field.distribution.dataset
+        dataset.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        dataset.save()
+
+        dist = self.field.distribution
+        dist.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        dist.save()
+
+        self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
+        self.field.save()
+
+        self.query.add_series(self.single_series, self.field)
+        self.query.flatten_metadata_response()
+        self.query.run()
+
+        flat_meta = self.query.get_metadata()[1]
+
+        other_query = Query(index=settings.TEST_INDEX)
+        other_query.add_series(self.single_series, self.field)
+        other_query.run()
+        meta = other_query.get_metadata()[1]
+
+        for key in meta:
+            for in_key in meta[key]:
+                self.assertEqual(meta[key][in_key], flat_meta['{}_{}'.format(key, in_key)])
+
+    def test_full_metadata_flat_response(self):
+        catalog = self.field.distribution.dataset.catalog
+        catalog.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        catalog.save()
+
+        dataset = self.field.distribution.dataset
+        dataset.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        dataset.save()
+
+        dist = self.field.distribution
+        dist.metadata = '{"title": "test_title", "extra_field": "extra"}'
+        dist.save()
+
+        self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
+        self.field.save()
+
+        self.query.add_series(self.single_series, self.field)
+        self.query.set_metadata_config('full')
+        self.query.flatten_metadata_response()
+        self.query.run()
+
+        flat_meta = self.query.get_metadata()[1]
+
+        other_query = Query(index=settings.TEST_INDEX)
+        other_query.add_series(self.single_series, self.field)
+        other_query.set_metadata_config('full')
+        other_query.run()
+        meta = other_query.get_metadata()[1]
+
+        for key in meta:
+            for in_key in meta[key]:
+                self.assertEqual(meta[key][in_key], flat_meta['{}_{}'.format(key, in_key)])
