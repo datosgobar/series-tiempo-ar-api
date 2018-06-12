@@ -17,14 +17,9 @@ class Command(BaseCommand):
         parser.add_argument('datajson_url', nargs='*')
 
     def handle(self, *args, **options):
-        if options['datajson_url']:
-            urls = options['datajson_url']
-        else:
-            urls = [node.catalog_url for node in Node.objects.filter(indexable=True)]
-
-        for url in urls:
+        for node in Node.objects.filter(indexable=True):
             try:
-                data_json = DataJson(url)
-                MetadataIndexer(data_json).index()
+                data_json = DataJson(node.catalog_url)
+                MetadataIndexer(data_json, node.catalog_id).index()
             except Exception as e:
                 logger.exception(u'Error en la lectura del catálogo: %s', e)

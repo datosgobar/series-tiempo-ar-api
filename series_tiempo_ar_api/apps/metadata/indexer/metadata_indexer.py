@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 
 class MetadataIndexer(object):
 
-    def __init__(self, data_json):
+    def __init__(self, data_json, catalog_id):
         self.data_json = data_json
+        self.catalog_id = catalog_id
         self.elastic = ElasticInstance.get()
         logger.info('Hosts de ES: %s', self.elastic.transport.hosts)
 
@@ -57,7 +58,8 @@ class MetadataIndexer(object):
                 dataset_source_keyword=dataset.get('source'),
                 dataset_description=dataset.get('description'),
                 dataset_publisher_name=dataset.get('publisher', {}).get('name'),
-                dataset_theme=themes.get(dataset.get('theme', [None])[0])
+                dataset_theme=themes.get(dataset.get('theme', [None])[0]),
+                catalog_id=self.catalog_id
             )
             actions.append(doc.to_dict(include_meta=True))
         return actions
