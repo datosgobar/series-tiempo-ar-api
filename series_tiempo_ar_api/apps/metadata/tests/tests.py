@@ -10,7 +10,7 @@ from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
-from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
+from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 from .utils import get_mock_search
 
@@ -84,20 +84,20 @@ class IndexerTests(TestCase):
 
     def setUp(self):
         # No mandar datos a la instancia de ES
-        MetadataIndexer.init_index = mock.Mock()
-        MetadataIndexer.index_actions = mock.Mock()
+        CatalogMetadataIndexer.init_index = mock.Mock()
+        CatalogMetadataIndexer.index_actions = mock.Mock()
 
     def test_scraping(self):
         catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
         datajson = DataJson(catalog)
-        result = MetadataIndexer(datajson, 'test_node').scrap_datajson()
+        result = CatalogMetadataIndexer(datajson, 'test_node').scrap_datajson()
 
         self.assertEqual(len(result), len(datajson.get_fields()) - 1)
 
     def test_scraping_result(self):
         catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
         datajson = DataJson(catalog)
-        result = MetadataIndexer(datajson, 'test_node').scrap_datajson()
+        result = CatalogMetadataIndexer(datajson, 'test_node').scrap_datajson()
 
         mapping = Field._doc_type.mapping.properties.properties.to_dict()
         mapping_fields = mapping.keys()

@@ -36,3 +36,9 @@ def dataset_theme(request):
     response = query_field_terms(field='dataset_theme')
 
     return JsonResponse(response)
+
+
+def catalog_id(request):
+    response = query_field_terms(field='catalog_id')
+
+    return JsonResponse(response)
