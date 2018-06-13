@@ -108,5 +108,3 @@ class CatalogIndexerTests(TestCase):
                 self.assertIn(key, mapping_fields)
 
             self.assertEqual(field['_index'], constants.FIELDS_INDEX)
-
-
