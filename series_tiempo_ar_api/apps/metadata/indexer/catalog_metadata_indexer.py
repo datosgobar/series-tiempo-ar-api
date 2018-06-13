@@ -14,9 +14,10 @@ logger = logging.getLogger(__name__)
 
 class CatalogMetadataIndexer(object):
 
-    def __init__(self, data_json, catalog_id):
+    def __init__(self, data_json, catalog_id, doc_type=Field):
         self.data_json = data_json
         self.catalog_id = catalog_id
+        self.doc_type = doc_type
         self.elastic = ElasticInstance.get()
         logger.info('Hosts de ES: %s', self.elastic.transport.hosts)
 
@@ -41,7 +42,7 @@ class CatalogMetadataIndexer(object):
             dataset = datasets.setdefault(field['dataset_identifier'],
                                           self.get_dataset(identifier=field['dataset_identifier']))
 
-            doc = Field(
+            doc = self.doc_type(
                 title=field.get('title'),
                 description=field.get('description'),
                 id=field.get('id'),

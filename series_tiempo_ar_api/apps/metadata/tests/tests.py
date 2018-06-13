@@ -80,7 +80,7 @@ class QueryTests(TestCase):
         self.assertEqual(prev_dict, search)
 
 
-class IndexerTests(TestCase):
+class CatalogIndexerTests(TestCase):
 
     def setUp(self):
         # No mandar datos a la instancia de ES
@@ -108,3 +108,5 @@ class IndexerTests(TestCase):
                 self.assertIn(key, mapping_fields)
 
             self.assertEqual(field['_index'], constants.FIELDS_INDEX)
+
+
