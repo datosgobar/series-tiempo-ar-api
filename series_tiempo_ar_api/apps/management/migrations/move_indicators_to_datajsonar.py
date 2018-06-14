@@ -7,10 +7,10 @@ import series_tiempo_ar_api.apps.management.models as mgmt_models
 
 
 def assign_nodes(apps, *_):
-    indics = apps.get_model('management', 'Indicator').objects.all()
+    indicator_model = apps.get_model('management', 'Indicator')
     node_model = apps.get_model('django_datajsonar', 'Node')
 
-    for indic in indics:
+    for indic in indicator_model.objects.iterator():
         node = node_model.objects.get(catalog_id=indic.node.catalog_id)
         indic.node_tmp = node
         indic.save()

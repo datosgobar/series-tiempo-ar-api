@@ -36,8 +36,4 @@ class Migration(migrations.Migration):
             name='node_tmp',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_datajsonar.Node', null=True),
         ),
-        migrations.AlterUniqueTogether(
-            name='indicator',
-            unique_together=set([('type', 'task')]),
-        ),
     ]

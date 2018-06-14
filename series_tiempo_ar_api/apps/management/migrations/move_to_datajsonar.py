@@ -37,17 +37,16 @@ def move(*_):
             data_file=distribution.data_file
         )
 
-    for field in api_models.Field.objects.all():
-        distribution = django_datajsonar.models.Distribution.objects.get(
-            identifier=field.distribution.identifier,
-            dataset__catalog__identifier=field.distribution.dataset.catalog.identifier
-        )
-        django_datajsonar.models.Field.objects.get_or_create(
+    for field in api_models.Field.objects.iterator():
+        django_datajsonar.models.Field(
             title=field.title,
             identifier=field.series_id,
             metadata=field.metadata,
-            distribution=distribution
-        )
+            distribution=django_datajsonar.models.Distribution.objects.get(
+                identifier=field.distribution.identifier,
+                dataset__catalog__identifier=field.distribution.dataset.catalog.identifier
+            )
+        ).save()
 
 
 class Migration(migrations.Migration):
