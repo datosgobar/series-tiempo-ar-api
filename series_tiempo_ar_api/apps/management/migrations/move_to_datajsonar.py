@@ -24,21 +24,29 @@ def move(*_):
         )
 
     for distribution in api_models.Distribution.objects.all():
+        dataset = django_datajsonar.models.Dataset.objects.get(
+            identifier=distribution.dataset.identifier,
+            catalog__identifier=distribution.dataset.catalog.identifier
+        )
         django_datajsonar.models.Distribution.objects.get_or_create(
             identifier=distribution.identifier,
             metadata=distribution.metadata,
-            dataset=django_datajsonar.models.Dataset.objects.get(identifier=distribution.dataset.identifier),
+            dataset=dataset,
             download_url=distribution.download_url,
             data_hash=distribution.data_hash,
             data_file=distribution.data_file
         )
 
     for field in api_models.Field.objects.all():
+        distribution = django_datajsonar.models.Distribution.objects.get(
+            identifier=field.distribution.identifier,
+            dataset__catalog__identifier=field.distribution.dataset.catalog.identifier
+        )
         django_datajsonar.models.Field.objects.get_or_create(
             title=field.title,
             identifier=field.series_id,
             metadata=field.metadata,
-            distribution=django_datajsonar.models.Distribution.objects.get(identifier=field.distribution.identifier),
+            distribution=distribution
         )
 
 
