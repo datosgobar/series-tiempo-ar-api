@@ -9,7 +9,7 @@ services:
       - "http.host=0.0.0.0"
       - "transport.host=127.0.0.1"
   postgres:
-    image: postgres:9.6.5
+    image: postgres:9.5.12
     ports:
       - "5432:5432"
   redis:
