@@ -1,6 +1,5 @@
 #!coding=utf8
 
-import mock
 from django.test import TestCase
 from series_tiempo_ar_api.apps.analytics.tasks import import_last_day_analytics_from_api_mgmt
 from series_tiempo_ar_api.apps.analytics.models import ImportConfig, Query, AnalyticsImportTask
@@ -78,8 +77,7 @@ class ImportTests(TestCase):
                     'start_time': '2018-06-07T05:00:00-03:00',
                 }
             ]
-        },
-        {
+        }, {
             'next': None,
             'count': 2,
             'results': [
@@ -93,4 +91,3 @@ class ImportTests(TestCase):
         import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests(responses=return_value))
 
         self.assertEqual(Query.objects.count(), 2)
-
