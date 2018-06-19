@@ -33,14 +33,18 @@ class AnalyticsImporter:
         task.save()
 
     def _run_import(self):
-        today = timezone.now().date()
-        yesterday = today - relativedelta(days=1)
+        last_query = Query.objects.last()
+        if last_query is None:
+            start_date = None
+        else:
+            start_date = last_query.timestamp.date()
         import_config_model = ImportConfig.get_solo()
         if (not import_config_model.endpoint or
                 not import_config_model.token or
                 not import_config_model.kong_api_id):
             raise FieldError("Configuración de importación de analytics no inicializada")
-        response = self.exec_request(from_date=yesterday, limit=self.limit)
+
+        response = self.exec_request(from_date=start_date, limit=self.limit)
         count = response['count']
         self._load_queries_into_db(response)
         next_results = response['next']
@@ -52,8 +56,11 @@ class AnalyticsImporter:
         return count
 
     def _load_queries_into_db(self, query_results):
+        last = Query.objects.last()
+        last_id = last.id if last is not None else -1
+        results = filter(lambda x: x['id'] > last_id, query_results['results'])
         queries = []
-        for result in query_results['results']:
+        for result in results:
             parsed_querystring = parse_qs(result['querystring'], keep_blank_values=True)
             queries.append(Query(
                 ip_address=result['ip_address'],
@@ -61,6 +68,7 @@ class AnalyticsImporter:
                 timestamp=iso8601.parse_date(result['start_time']),
                 ids=parsed_querystring.get('ids', ''),
                 params=parsed_querystring,
+                api_mgmt_id=result['id'],
             ))
 
         Query.objects.bulk_create(queries)

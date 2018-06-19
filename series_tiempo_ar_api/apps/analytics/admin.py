@@ -10,7 +10,7 @@ from .tasks import import_last_day_analytics_from_api_mgmt
 
 class QueryAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'ip_address', 'params',)
-    readonly_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids')
+    readonly_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids', 'api_mgmt_id')
 
     search_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids')
 

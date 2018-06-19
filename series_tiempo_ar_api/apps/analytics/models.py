@@ -15,6 +15,8 @@ class Query(models.Model):
     ip_address = models.CharField(max_length=200, null=True)
     params = models.TextField()
 
+    api_mgmt_id = models.IntegerField(blank=True, null=True, unique=True)
+
     def __unicode__(self):
         return u'Query at %s: %s' % (self.timestamp, self.ids)
 

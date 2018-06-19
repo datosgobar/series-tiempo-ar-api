@@ -59,6 +59,7 @@ class ImportTests(TestCase):
                         'ip_address': '127.0.0.1',
                         'querystring': '',
                         'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
                     }
                 ]
             }
@@ -75,6 +76,7 @@ class ImportTests(TestCase):
                     'ip_address': '127.0.0.1',
                     'querystring': '',
                     'start_time': '2018-06-07T05:00:00-03:00',
+                    'id': 2,
                 }
             ]
         }, {
@@ -85,9 +87,30 @@ class ImportTests(TestCase):
                     'ip_address': '127.0.0.1',
                     'querystring': '',
                     'start_time': '2018-06-07T05:00:00-03:00',
+                    'id': 3,
                 }
             ]
         }]
         import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests(responses=return_value))
 
         self.assertEqual(Query.objects.count(), 2)
+
+    def test_run_import_twice(self):
+        results = [
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                    }
+                ]
+            }
+        ]
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests(results))
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests(results))
+        # Esperado: que haya un solo objeto query, no se dupliquen los resultados
+        self.assertEqual(Query.objects.count(), 1)
