@@ -13,30 +13,23 @@ class UninitializedImportConfigTests(TestCase):
         self.assertTrue('Error' in AnalyticsImportTask.objects.last().logs)
 
 
-def mocked_requests_get():
-    class MockResponse:
-        def __init__(self, json_data):
-            self.json_data = json_data
+class FakeRequests:
+
+    class Response:
+        def __init__(self, response):
+            self.response = response
 
         def json(self):
-            return self.json_data
+            return self.response
 
-        def __call__(self, *args, **kwargs):
-            return self
+    def __init__(self, responses):
+        self.responses = responses
+        self.index = 0
 
-    return MockResponse(
-        {
-            'next': None,
-            'count': 2,
-            'results': [
-                {
-                    'ip_address': '127.0.0.1',
-                    'querystring': '',
-                    'start_time': '2018-06-07T05:00:00-03:00',
-                }
-            ]
-        }
-    )
+    def get(self, *args, **kwargs):
+        response = self.Response(self.responses[self.index])
+        self.index += 1
+        return response
 
 
 class ImportTests(TestCase):
@@ -49,33 +42,33 @@ class ImportTests(TestCase):
         config_model.save()
 
     def test_single_empty_result(self):
-        with mock.patch.object(ImportConfig, 'get_results', return_value={
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests([{
             'next': None,
             'count': 0,
             'results': []
-        }):
-            import_last_day_analytics_from_api_mgmt()
+        }]))
 
         self.assertEqual(Query.objects.count(), 0)
 
     def test_single_page_results(self):
-        with mock.patch.object(ImportConfig, 'get_results', return_value={
-            'next': None,
-            'count': 1,
-            'results': [
-                {
-                    'ip_address': '127.0.0.1',
-                    'querystring': '',
-                    'start_time': '2018-06-07T05:00:00-03:00',
-                }
-            ]
-        }):
-            import_last_day_analytics_from_api_mgmt()
-            self.assertEqual(Query.objects.count(), 1)
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 1)
 
     def test_multiple_page_results(self):
         """Emula una query con dos páginas de resultados, cada una con una query"""
-        return_value = {
+        return_value = [{
             'next': 'next_page_url',
             'count': 2,
             'results': [
@@ -85,10 +78,19 @@ class ImportTests(TestCase):
                     'start_time': '2018-06-07T05:00:00-03:00',
                 }
             ]
-        }
-        with mock.patch.object(ImportConfig, 'get_results', return_value=return_value):
-            with mock.patch('series_tiempo_ar_api.apps.analytics.tasks.requests.get',
-                            new_callable=mocked_requests_get):
-                import_last_day_analytics_from_api_mgmt()
+        },
+        {
+            'next': None,
+            'count': 2,
+            'results': [
+                {
+                    'ip_address': '127.0.0.1',
+                    'querystring': '',
+                    'start_time': '2018-06-07T05:00:00-03:00',
+                }
+            ]
+        }]
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests(responses=return_value))
 
         self.assertEqual(Query.objects.count(), 2)
+
