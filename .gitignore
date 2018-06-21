@@ -39,4 +39,4 @@ node_modules/
 
 scripts/deploy/files/
 scripts/deploy/files.tar.gz
-
+site/*
