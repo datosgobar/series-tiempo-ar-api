@@ -56,9 +56,8 @@ class AnalyticsImporter:
 
     def _load_queries_into_db(self, query_results):
         # Filtramos las queries ya agregadas
-        last = Query.objects.order_by('api_mgmt_id').last()
-        last_id = last.id if last is not None else -1
-        results = filter(lambda x: x['id'] > last_id, query_results['results'])
+        ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
+        results = filter(lambda x: x['id'] not in ids, query_results['results'])
 
         queries = []
         for result in results:
