@@ -26,4 +26,7 @@ swaggerdocs:
 
 serveswaggerdocs:
 	echo "Browse to http://localhost:8000/docs/swagger/"
-	python -m SimpleHTTPServer 8000	
+	python -m SimpleHTTPServer 8000
+
+test-queries:
+	python scripts/api_queries.py $(num)
