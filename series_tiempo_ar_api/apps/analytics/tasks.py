@@ -1,19 +1,15 @@
 #! coding: utf-8
 import os
 import json
-from urllib.parse import parse_qs
-
-import iso8601
 import requests
 import unicodecsv
-from dateutil.relativedelta import relativedelta
 from django_rq import job
 from django.conf import settings
 from django.utils import timezone
-from django.core.exceptions import FieldError
 
-from .models import Query, ImportConfig, AnalyticsImportTask
+from .models import Query
 from .utils import kong_milliseconds_to_tzdatetime
+from .importer import AnalyticsImporter
 
 
 @job("default")
@@ -46,57 +42,5 @@ def export(path=None):
 
 
 @job('default', timeout=1000)
-def import_last_day_analytics_from_api_mgmt(limit=1000):
-    task = AnalyticsImportTask(status=AnalyticsImportTask.RUNNING,
-                               timestamp=timezone.now())
-    import_config_model = ImportConfig.get_solo()
-    task.write_logs("Usando config: endpoint {}, api_id {}, token {}".format(
-        import_config_model.endpoint,
-        import_config_model.kong_api_id,
-        import_config_model.token
-    ))
-    try:
-        count = _run_import(limit)
-        task.write_logs("Todo OK. Queries importadas: {}".format(count))
-    except Exception as e:
-        task.write_logs("Error importando analytics: {}".format(e))
-    task.status = task.FINISHED
-    task.save()
-
-
-def _run_import(limit):
-    today = timezone.now().date()
-    yesterday = today - relativedelta(days=1)
-    import_config_model = ImportConfig.get_solo()
-    if (not import_config_model.endpoint or
-            not import_config_model.token or
-            not import_config_model.kong_api_id):
-        raise FieldError("Configuración de importación de analytics no inicializada")
-    response = import_config_model.get_results(from_date=yesterday, limit=limit)
-    count = response['count']
-    _load_queries_into_db(response)
-    next_results = response['next']
-    while next_results:
-        response = requests.get(
-            next_results,
-            headers=import_config_model.get_authorization_header()
-        ).json()
-        _load_queries_into_db(response)
-        next_results = response['next']
-
-    return count
-
-
-def _load_queries_into_db(query_results):
-    queries = []
-    for result in query_results['results']:
-        parsed_querystring = parse_qs(result['querystring'], keep_blank_values=True)
-        queries.append(Query(
-            ip_address=result['ip_address'],
-            args=result['querystring'],
-            timestamp=iso8601.parse_date(result['start_time']),
-            ids=parsed_querystring.get('ids', ''),
-            params=parsed_querystring,
-        ))
-
-    Query.objects.bulk_create(queries)
+def import_last_day_analytics_from_api_mgmt(limit=1000, requests_lib=requests):
+    AnalyticsImporter(limit, requests_lib).run()
