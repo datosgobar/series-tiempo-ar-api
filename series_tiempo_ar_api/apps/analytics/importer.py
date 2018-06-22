@@ -1,7 +1,6 @@
 #! coding: utf-8
 from urllib.parse import parse_qs
 
-from dateutil.relativedelta import relativedelta
 from django.core.exceptions import FieldError
 from django.utils import timezone
 from iso8601 import iso8601
@@ -56,9 +55,11 @@ class AnalyticsImporter:
         return count
 
     def _load_queries_into_db(self, query_results):
-        last = Query.objects.last()
+        # Filtramos las queries ya agregadas
+        last = Query.objects.order_by('api_mgmt_id').last()
         last_id = last.id if last is not None else -1
         results = filter(lambda x: x['id'] > last_id, query_results['results'])
+
         queries = []
         for result in results:
             parsed_querystring = parse_qs(result['querystring'], keep_blank_values=True)
@@ -74,6 +75,7 @@ class AnalyticsImporter:
         Query.objects.bulk_create(queries)
 
     def exec_request(self, url=None, **kwargs):
+        """Wrapper sobre la llamada a la API de api-mgmt"""
         import_config_model = ImportConfig.get_solo()
 
         if url is None:
