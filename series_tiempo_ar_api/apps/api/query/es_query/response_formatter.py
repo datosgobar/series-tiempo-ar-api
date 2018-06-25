@@ -35,6 +35,9 @@ class ResponseFormatter(object):
             else:
                 for hit in response:
                     data = hit[rep_mode] if rep_mode in hit else None
+                    if data is None:
+                        continue
+
                     timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
                     timestamp_dict[self._data_dict_series_key(self.series[i])] = data
 
