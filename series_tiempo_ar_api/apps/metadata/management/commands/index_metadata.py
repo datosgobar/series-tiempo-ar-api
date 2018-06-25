@@ -4,8 +4,6 @@ import logging
 from django.core.management import BaseCommand
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
 
-logger = logging.getLogger(__name__)
-
 
 class Command(BaseCommand):
 
@@ -13,4 +11,4 @@ class Command(BaseCommand):
         parser.add_argument('datajson_url', nargs='*')
 
     def handle(self, *args, **options):
-        MetadataIndexer()
+        MetadataIndexer().run()

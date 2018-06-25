@@ -24,6 +24,7 @@ class MetadataIndexer:
 
     def run(self):
         self.init_index()
+        logger.info("Inicio la lectura de metadatos")
         for node in Node.objects.filter(indexable=True):
             try:
                 data_json = DataJson(node.catalog_url)
