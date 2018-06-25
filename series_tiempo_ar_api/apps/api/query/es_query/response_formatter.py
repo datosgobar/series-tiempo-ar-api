@@ -33,7 +33,7 @@ class ResponseFormatter(object):
                     timestamp_dict = self.data_dict.setdefault(hit['key_as_string'], {})
                     timestamp_dict[self._data_dict_series_key(self.series[i])] = data
             else:
-                response = filter(lambda hit: rep_mode in hit, response)
+                response = filter(lambda hit, mode=rep_mode: mode in hit, response)
                 for hit in response:
                     timestamp_dict = self.data_dict.setdefault(hit.timestamp, {})
                     series = self._data_dict_series_key(self.series[i])
