@@ -3,7 +3,7 @@ import os
 
 from django.test import TestCase
 
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
 from series_tiempo_ar_api.apps.metadata.tests.tests import SAMPLES_DIR

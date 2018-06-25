@@ -2,7 +2,7 @@
 import logging
 from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.management.models import Node
+from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.metadata.indexer.catalog_metadata_indexer import \
     CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
