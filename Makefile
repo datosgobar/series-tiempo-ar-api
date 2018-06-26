@@ -28,5 +28,6 @@ serveswaggerdocs:
 	echo "Browse to http://localhost:8000/docs/swagger/"
 	python -m SimpleHTTPServer 8000
 
+# se puede hacer `make test-queries num=200` para hacer un numero de queries
 test-queries:
 	python scripts/api_queries.py $(num)
