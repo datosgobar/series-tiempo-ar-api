@@ -57,8 +57,8 @@ class IdsTest(TestCase):
         other_query.sort('asc')
         other_data = other_query.run()['data']
 
-        for index, row in enumerate(other_data[1:], start=1):
-            change = data[index][1] - data[index - 1][1]
+        for index, row in enumerate(other_data):
+            change = data[index + 1][1] - data[index][1]
             # La resta anterior trae pérdida de precisión si los números de 'data' son grandes
             self.assertAlmostEqual(row[1], change, places=5)
 

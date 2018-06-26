@@ -342,8 +342,8 @@ class QueryTest(TestCase):
         orig_eop.sort('asc')
         end_of_period = orig_eop.run()
 
-        for i, row in enumerate(data[1:], 1):  # El primero es nulo en pct change
-            value = end_of_period[i][1] / end_of_period[i - 1][1] - 1
+        for i, row in enumerate(data):  # El primero es nulo en pct change
+            value = end_of_period[i + 1][1] / end_of_period[i][1] - 1
 
             self.assertAlmostEqual(value, row[1])
 
@@ -462,3 +462,15 @@ class QueryTest(TestCase):
         min_val = max([row[1] for row in data])
 
         self.assertAlmostEqual(min_val, other_data[0][1], places=5)
+
+    def test_rep_mode_has_no_leading_nulls(self):
+        self.query.add_series(self.single_series, 'percent_change', self.series_periodicity)
+        data = self.query.run()
+
+        self.assertIsNotNone(data[0][1])
+
+    def test_year_rep_mode_has_no_leading_nulls(self):
+        self.query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
+        data = self.query.run()
+
+        self.assertIsNotNone(data[0][1])
