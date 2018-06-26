@@ -9,5 +9,7 @@ def get_mock_search():
         'id': 'algo',
         'description': 'description',
         'title': 'title',
+        'dataset_title': 'data_title',
+        'dataset_publisher_name': 'pub_name',
     }]
     return mock_search
