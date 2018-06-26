@@ -22,6 +22,9 @@ class MetadataIndexer:
         if not self.elastic.indices.exists(self.index):
             self.doc_type.init(using=self.elastic)
 
+        # Actualizo el mapping por si se agregan nuevos campos
+        self.doc_type._doc_type.refresh()
+
     def run(self):
         self.init_index()
         logger.info("Inicio la lectura de metadatos")
