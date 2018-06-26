@@ -28,16 +28,13 @@ def api_series_head(serie_id):
 
 
 def main(queries_cant=None):
-    queries_cant = int(queries_cant)
-    print("Realizando {} queries de prueba".format(queries_cant))
-
     series_metadata = pd.read_csv(METADATA_URL)
 
-    if queries_cant:
-        series_ids = series_metadata.serie_id[:queries_cant]
-    else:
-        series_ids = series_metadata.serie_id
+    queries_cant = int(queries_cant) if queries_cant else len(
+        series_metadata.serie_id.unique())
+    print("Realizando {} queries de prueba".format(queries_cant))
 
+    series_ids = series_metadata.serie_id[:queries_cant]
     for idx, serie_id in enumerate(series_ids):
         print("Ping serie {} de {} ({}): {}".format(
             idx + 1, len(series_ids), serie_id, api_series_head(serie_id)))
