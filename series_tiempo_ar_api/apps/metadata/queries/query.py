@@ -70,9 +70,17 @@ class FieldSearchQuery(object):
         }
         for hit in response:
             self.response['data'].append({
-                'id': hit['id'],
-                'description': hit['description'],
-                'title': hit['title'],
+                'field': {
+                    'id': hit['id'],
+                    'description': hit['description'],
+                    'title': hit['title'],
+                },
+                'dataset': {
+                    'title': hit['dataset_title'],
+                    'publisher': {
+                        'name': hit['dataset_publisher_name'],
+                    }
+                }
             })
 
         self.response['limit'] = self.args[constants.PARAM_LIMIT]
