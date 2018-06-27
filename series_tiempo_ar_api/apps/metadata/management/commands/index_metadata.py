@@ -1,8 +1,8 @@
 #! coding: utf-8
 
-import logging
 from django.core.management import BaseCommand
-from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
+from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
+from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import run_metadata_indexer
 
 
 class Command(BaseCommand):
@@ -11,4 +11,7 @@ class Command(BaseCommand):
         parser.add_argument('datajson_url', nargs='*')
 
     def handle(self, *args, **options):
-        MetadataIndexer().run()
+        task = IndexMetadataTask()
+        task.save()
+        run_metadata_indexer.delay(task)
+        self.stdout.write("Indexación inicializada")
