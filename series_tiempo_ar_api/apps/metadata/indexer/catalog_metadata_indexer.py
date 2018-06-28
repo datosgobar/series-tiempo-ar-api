@@ -5,6 +5,7 @@ import logging
 from elasticsearch.helpers import parallel_bulk
 
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
+from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 from . import strings
@@ -14,20 +15,21 @@ logger = logging.getLogger(__name__)
 
 class CatalogMetadataIndexer(object):
 
-    def __init__(self, data_json, catalog_id, doc_type=Field):
+    def __init__(self, data_json, catalog_id, task, doc_type=Field):
+        self.task = task
         self.data_json = data_json
         self.catalog_id = catalog_id
         self.doc_type = doc_type
         self.elastic = ElasticInstance.get()
-        logger.info('Hosts de ES: %s', self.elastic.transport.hosts)
 
     def index(self):
-        logger.info(u'Inicio de la indexación de metadatos de %s', self.catalog_id)
+        IndexMetadataTask.info(self.task,
+                               u'Inicio de la indexación de metadatos de {}'.format(self.catalog_id))
 
         actions = self.scrap_datajson()
 
         self.index_actions(actions)
-        logger.info(u'Fin de la indexación de metadatos')
+        IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'.format(self.catalog_id))
 
     def index_actions(self, actions):
         for success, info in parallel_bulk(self.elastic, actions):

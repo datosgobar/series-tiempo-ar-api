@@ -171,7 +171,7 @@ APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
     'series_tiempo_ar_api.apps.analytics',
     'series_tiempo_ar_api.apps.management',
-    'series_tiempo_ar_api.apps.metadata',
+    'series_tiempo_ar_api.apps.metadata.apps.MetadataConfig',
     'series_tiempo_ar_api.apps.dump',
     'series_tiempo_ar_api.libs.indexing',
 )

@@ -6,6 +6,7 @@ from django.test import TestCase
 from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
+from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.apps.metadata.tests.tests import SAMPLES_DIR
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
@@ -30,7 +31,9 @@ class IndexerTests(TestCase):
              catalog_url=os.path.join(SAMPLES_DIR, 'second_single_distribution.json'),
              indexable=True).save()
 
-        MetadataIndexer(doc_type=self.FakeField).run()
+        task = IndexMetadataTask()
+        task.save()
+        MetadataIndexer(task, doc_type=self.FakeField).run()
 
         first_catalog_fields = self.FakeField.search(using=ElasticInstance.get())\
             .filter('term', catalog_id='first_catalog')\
