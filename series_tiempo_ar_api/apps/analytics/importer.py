@@ -48,7 +48,7 @@ class AnalyticsImporter:
         self._load_queries_into_db(response)
         next_results = response['next']
         while next_results:
-            response = self.exec_request()
+            response = self.exec_request(url=next_results)
             self._load_queries_into_db(response)
             next_results = response['next']
 
