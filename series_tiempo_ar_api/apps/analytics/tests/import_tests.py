@@ -60,6 +60,7 @@ class ImportTests(TestCase):
                         'querystring': '',
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
+                        'uri': '/series/api/series/',
                     }
                 ]
             }
@@ -77,6 +78,7 @@ class ImportTests(TestCase):
                     'querystring': '',
                     'start_time': '2018-06-07T05:00:00-03:00',
                     'id': 2,
+                    'uri': '/series/api/series/',
                 }
             ]
         }, {
@@ -88,6 +90,7 @@ class ImportTests(TestCase):
                     'querystring': '',
                     'start_time': '2018-06-07T05:00:00-03:00',
                     'id': 3,
+                    'uri': '/series/api/series/',
                 }
             ]
         }]
@@ -106,6 +109,7 @@ class ImportTests(TestCase):
                         'querystring': '',
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
+                        'uri': '/series/api/series/',
                     }
                 ]
             }
@@ -114,3 +118,21 @@ class ImportTests(TestCase):
         import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests(results))
         # Esperado: que haya un solo objeto query, no se dupliquen los resultados
         self.assertEqual(Query.objects.count(), 1)
+
+    def test_ignore_not_series_uri(self):
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'uri': '/series/not_series_endpoint/',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 0)

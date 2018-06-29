@@ -58,6 +58,7 @@ class AnalyticsImporter:
         # Filtramos las queries ya agregadas
         ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
         results = filter(lambda x: x['id'] not in ids, query_results['results'])
+        results = filter(lambda x: x['uri'].find('/series/api/') > -1, results)
 
         queries = []
         for result in results:
