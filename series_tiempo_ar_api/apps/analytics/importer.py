@@ -14,6 +14,9 @@ class AnalyticsImporter:
         self.requests = requests_lib
         self.limit = limit
 
+        # Precálculo
+        self.loaded_api_mgmt_ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
+
     def run(self):
         task = AnalyticsImportTask(status=AnalyticsImportTask.RUNNING,
                                    timestamp=timezone.now())
@@ -56,7 +59,7 @@ class AnalyticsImporter:
 
     def _load_queries_into_db(self, query_results):
         # Filtramos las queries ya agregadas
-        ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
+        ids = self.loaded_api_mgmt_ids
         results = filter(lambda x: x['id'] not in ids, query_results['results'])
         results = filter(lambda x: x['uri'].find('/series/api/') > -1, results)
 
