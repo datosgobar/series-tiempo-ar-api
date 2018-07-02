@@ -46,7 +46,9 @@ class AnalyticsImporter:
                 not import_config_model.kong_api_id):
             raise FieldError("Configuración de importación de analytics no inicializada")
 
-        response = self.exec_request(from_date=start_date, limit=self.limit)
+        response = self.exec_request(from_date=start_date,
+                                     limit=self.limit,
+                                     kong_api_id=import_config_model.kong_api_id)
         count = response['count']
         self._load_queries_into_db(response)
         next_results = response['next']
@@ -74,20 +76,22 @@ class AnalyticsImporter:
                 params=parsed_querystring,
                 api_mgmt_id=result['id'],
             ))
+            self.loaded_api_mgmt_ids.update([result['id']])
 
         Query.objects.bulk_create(queries)
 
-    def exec_request(self, url=None, **kwargs):
+    def exec_request(self, url=None, **params):
         """Wrapper sobre la llamada a la API de api-mgmt"""
+        if url and params:
+            raise ValueError
+
         import_config_model = ImportConfig.get_solo()
 
         if url is None:
             url = import_config_model.endpoint
 
-        params = {'kong_api_id': import_config_model.kong_api_id}
-        params.update(kwargs)
         return self.requests.get(
             url,
             headers=import_config_model.get_authorization_header(),
-            params=params
+            params=params,
         ).json()
