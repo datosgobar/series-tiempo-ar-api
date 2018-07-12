@@ -20,7 +20,7 @@ def analytics(ids, args_string, ip_address, params, timestamp_milliseconds):
     query.save()
 
 
-@job("default")
+@job("default", timeout=360)
 def export(path=None):
     queryset = Query.objects.all()
     filepath = path or os.path.join(settings.PROTECTED_MEDIA_DIR, settings.ANALYTICS_CSV_FILENAME)
