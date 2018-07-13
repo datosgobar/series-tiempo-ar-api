@@ -12,17 +12,19 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
 class FieldEnhancedMetaTests(TestCase):
-
-    def setUp(self):
-        catalog = Catalog.objects.create(identifier='test_catalog', metadata='{}')
-        dataset = catalog.dataset_set.create(identifier="1", metadata='{}')
+    catalog_id = 'test_catalog'
+    @classmethod
+    def setUpClass(cls):
+        super(TestCase, cls).setUpClass()
+        cls.catalog = Catalog.objects.create(identifier=cls.catalog_id, metadata='{}')
+        dataset = cls.catalog.dataset_set.create(identifier="1", metadata='{}')
         distribution = dataset.distribution_set.create(identifier="1.1", metadata='{}')
-        self.field = distribution.field_set.create(identifier='test_series', metadata='{}')
+        cls.field = distribution.field_set.create(identifier='test_series', metadata='{}')
 
     def test_start_end_dates(self):
         df = self.init_df()
 
-        update_enhanced_meta(df[df.columns[0]])
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id)
 
         self.assertEqual(str(df.index[0]), meta_keys.get(self.field, meta_keys.INDEX_START))
         self.assertEqual(str(df.index[-1]), meta_keys.get(self.field, meta_keys.INDEX_END))
@@ -31,7 +33,7 @@ class FieldEnhancedMetaTests(TestCase):
         df = self.init_df()
 
         serie = df[df.columns[-1]]
-        update_enhanced_meta(df[df.columns[0]])
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id)
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.LAST_VALUE), str(serie[-1]))
         self.assertEqual(meta_keys.get(self.field, meta_keys.SECOND_TO_LAST_VALUE), str(serie[-2]))
@@ -40,27 +42,27 @@ class FieldEnhancedMetaTests(TestCase):
         df = self.init_df()
 
         serie = df[df.columns[-1]]
-        update_enhanced_meta(df[df.columns[0]])
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id)
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.LAST_PCT_CHANGE), str(serie[-1] / serie[-2] - 1))
 
     def test_periodicity(self):
         df = self.init_df()
-        update_enhanced_meta(df[df.columns[0]])
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id)
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.PERIODICITY),
                          meta_keys.get(self.field.distribution, meta_keys.PERIODICITY))
 
     def test_size(self):
         df = self.init_df()
-        update_enhanced_meta(df[df.columns[0]])
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id)
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.INDEX_SIZE),
                          str(len(df)))
 
     def test_days_since_last_update(self):
         df = self.init_df()
-        update_enhanced_meta(df[df.columns[0]])
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id)
 
         last_date = df.index[-1]
 
@@ -82,3 +84,7 @@ class FieldEnhancedMetaTests(TestCase):
              'indice_tiempo': 'indice_tiempo'}
         )
         return df
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.catalog.delete()
