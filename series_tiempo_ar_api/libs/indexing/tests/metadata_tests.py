@@ -13,6 +13,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 class FieldEnhancedMetaTests(TestCase):
     catalog_id = 'test_catalog'
+
     @classmethod
     def setUpClass(cls):
         super(TestCase, cls).setUpClass()
