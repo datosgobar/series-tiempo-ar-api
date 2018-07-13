@@ -58,6 +58,7 @@ class DistributionIndexer:
         for field in distribution.field_set.exclude(title='indice_tiempo'):
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
 
+        # Cálculo de metadatos adicionales sobre cada serie
         df.apply(update_enhanced_meta, args=(distribution.dataset.catalog.identifier,))
 
     def init_df(self, distribution, fields):

@@ -17,6 +17,7 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str):
     second_to_last = serie[-2] if serie.index.size > 1 else None
     last_pct_change = last / second_to_last - 1
 
+    # Cálculos
     meta = {
         meta_keys.INDEX_START: serie.index.min(),
         meta_keys.INDEX_END: serie.index.max(),
