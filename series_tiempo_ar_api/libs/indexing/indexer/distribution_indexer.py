@@ -13,6 +13,7 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 from .operations import process_column
+from .metadata import update_enhanced_meta
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,9 @@ class DistributionIndexer:
 
         for field in distribution.field_set.exclude(title='indice_tiempo'):
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
+
+        # Cálculo de metadatos adicionales sobre cada serie
+        df.apply(update_enhanced_meta, args=(distribution.dataset.catalog.identifier,))
 
     def init_df(self, distribution, fields):
         """Inicializa el DataFrame del CSV de la distribución pasada,
