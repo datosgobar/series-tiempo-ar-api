@@ -11,6 +11,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--force', default=False, action='store_true')
+
     def handle(self, *args, **options):
         force = options['force']
         schedule_api_indexing(force)
