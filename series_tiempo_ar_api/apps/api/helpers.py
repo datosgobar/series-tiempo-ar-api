@@ -86,3 +86,15 @@ def get_relative_delta(periodicity):
     }
 
     return deltas[periodicity]
+
+
+def get_periodicity_human_format_es(periodicity):
+    periodicities = {
+        'R/P1Y': 'anual',
+        'R/P3M': 'trimestral',
+        'R/P1M': 'mensual',
+        'R/P1D': 'diaria',
+        'R/P6M': 'semestral'
+    }
+
+    return periodicities[periodicity]

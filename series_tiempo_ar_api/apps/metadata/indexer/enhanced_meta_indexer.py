@@ -1,6 +1,8 @@
 #! coding: utf-8
 
 from django_datajsonar.models import Field, Node, Metadata, ContentType
+
+from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format_es
 from series_tiempo_ar_api.apps.management import meta_keys
 from elasticsearch.helpers import parallel_bulk
 
@@ -33,7 +35,7 @@ class EnhancedMetaIndexer:
             end_date = meta_keys.get(field, meta_keys.INDEX_END)
 
             doc = self.doc_type(
-                periodicity=periodicity,
+                periodicity=get_periodicity_human_format_es(periodicity),
                 start_date=start_date,
                 end_date=end_date,
             )
