@@ -57,6 +57,9 @@ class CatalogMetadataIndexer(object):
                 dataset_theme=themes.get(dataset.get('theme', [None])[0]),
                 catalog_id=self.catalog_id
             )
+
+            doc.meta.id = field.get('id') or doc.meta.id
+
             actions.append(doc.to_dict(include_meta=True))
         return actions
 
