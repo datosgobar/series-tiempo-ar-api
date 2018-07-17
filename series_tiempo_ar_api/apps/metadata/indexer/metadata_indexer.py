@@ -10,6 +10,7 @@ from series_tiempo_ar_api.apps.metadata.indexer.catalog_metadata_indexer import 
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from .enhanced_meta_indexer import EnhancedMetaIndexer
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,8 @@ class MetadataIndexer:
             try:
                 data_json = DataJson(node.catalog_url)
                 CatalogMetadataIndexer(data_json, node.catalog_id, self.task, self.doc_type).index()
-            except Exception as e:
+                EnhancedMetaIndexer(node, self.task, self.doc_type).index()
+            except IOError as e:
                 IndexMetadataTask.info(self.task,
                                        u'Error en la lectura del catálogo {}: {}'.format(node.catalog_id, e))
 

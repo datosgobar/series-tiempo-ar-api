@@ -1,5 +1,5 @@
 #!coding=utf8
-from elasticsearch_dsl import DocType, Keyword, Text
+from elasticsearch_dsl import DocType, Keyword, Text, Date, MetaField
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
@@ -21,6 +21,11 @@ class Field(DocType):
     dataset_source = Text()
     dataset_source_keyword = Keyword()
 
+    periodicity = Keyword()
+    start_date = Date()
+    end_date = Date()
+
     class Meta:
+        dynamic = MetaField('strict')
         index = constants.FIELDS_INDEX
         using = ElasticInstance.get()
