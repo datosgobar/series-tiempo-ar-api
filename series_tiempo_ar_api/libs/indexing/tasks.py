@@ -20,7 +20,7 @@ from .scraping import Scraper
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
-                       read_local=False, index=settings.TS_INDEX):
+                       read_local=False, index=settings.TS_INDEX, force=False):
 
     node = Node.objects.get(id=node_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
@@ -37,7 +37,7 @@ def index_distribution(distribution_id, node_id, task_id,
         if _hash:
             changed = _hash[0].value != distribution_model.data_hash
 
-        if changed:
+        if changed or force:
             DistributionIndexer(index=index).run(distribution_model)
 
         distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
