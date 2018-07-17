@@ -28,13 +28,9 @@ def index_distribution(distribution_id, node_id, task_id,
     distribution = catalog.get_distribution(identifier=distribution_id)
     distribution_model = Distribution.objects.get(identifier=distribution_id,
                                                   dataset__catalog__identifier=node.catalog_id)
-    if not distribution_model.dataset.indexable:
-        return
 
     try:
-        result = Scraper(read_local).run(distribution, catalog)
-        if not result:
-            return
+        Scraper(read_local).run(distribution, catalog)
 
         changed = True
         _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
