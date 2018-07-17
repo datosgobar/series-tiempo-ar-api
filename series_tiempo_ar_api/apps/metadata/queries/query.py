@@ -74,6 +74,9 @@ class FieldSearchQuery(object):
                     'id': hit['id'],
                     'description': hit['description'],
                     'title': hit['title'],
+                    'periodicity': hit['periodicity'],
+                    'start_date': hit['start_date'].date(),
+                    'end_date': hit['end_date'].date(),
                 },
                 'dataset': {
                     'title': hit['dataset_title'],
