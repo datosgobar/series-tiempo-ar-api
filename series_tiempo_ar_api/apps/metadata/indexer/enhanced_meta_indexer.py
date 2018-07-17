@@ -1,11 +1,10 @@
 #! coding: utf-8
 
 from django_datajsonar.models import Field, Node, Metadata, ContentType
+from elasticsearch.helpers import parallel_bulk
 
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format_es
 from series_tiempo_ar_api.apps.management import meta_keys
-from elasticsearch.helpers import parallel_bulk
-
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
