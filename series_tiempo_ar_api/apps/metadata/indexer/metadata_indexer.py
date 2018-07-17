@@ -38,7 +38,7 @@ class MetadataIndexer:
                 data_json = DataJson(node.catalog_url)
                 CatalogMetadataIndexer(data_json, node.catalog_id, self.task, self.doc_type).index()
                 EnhancedMetaIndexer(node, self.task, self.doc_type).index()
-            except IOError as e:
+            except Exception as e:
                 IndexMetadataTask.info(self.task,
                                        u'Error en la lectura del catálogo {}: {}'.format(node.catalog_id, e))
 

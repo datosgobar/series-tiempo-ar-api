@@ -24,6 +24,7 @@ class EnhancedMetaIndexer:
             value='true',
             content_type=field_content_type).values_list('object_id', flat=True)
         fields = Field.objects.filter(
+            distribution__dataset__catalog__identifier=self.node.catalog_id,
             id__in=available_fields,
         )
 
