@@ -17,4 +17,8 @@ LAST_PCT_CHANGE = 'last_pct_change'
 
 
 def get(model, key):
-    return model.enhanced_meta.get(key=key).value
+    values = model.enhanced_meta.filter(key=key).values_list('value', flat=True)
+
+    if values:
+        return values[0]
+    return None
