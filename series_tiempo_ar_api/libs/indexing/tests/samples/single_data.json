@@ -1,0 +1,134 @@
+{
+  "publisher": {
+    "mbox": "datoseconomicos@mecon.gov.ar",
+    "name": "Subsecretaría de Programación Macroeconómica."
+  },
+  "license": "Creative Commons Attribution 4.0",
+  "description": "Catálogo de datos abiertos de la Subsecretaría de Programación Macroeconómica.",
+  "language": [
+    "SPA"
+  ],
+  "superThemeTaxonomy": "http://datos.gob.ar/superThemeTaxonomy.json",
+  "issued": "2017-09-28",
+  "themeTaxonomy": [
+    {
+      "label": "Actividad",
+      "id": "actividad",
+      "description": "Series de actividad: cuentas nacionales, consumo, producción, etc."
+    },
+    {
+      "label": "Empleo e Ingresos",
+      "id": "empleo",
+      "description": "Series de empleo e ingresos: mercado laboral, salarios, etc."
+    },
+    {
+      "label": "Sector Externo",
+      "id": "externo",
+      "description": "Series externas: Balance de Pagos, Intercambio Comercial, etc."
+    },
+    {
+      "label": "Dinero y Bancos",
+      "id": "moneda",
+      "description": "Series monetarias y bancarias"
+    },
+    {
+      "label": "Precios",
+      "id": "precios",
+      "description": "Series de precios"
+    },
+    {
+      "label": "Economía Internacional",
+      "id": "internacional",
+      "description": "Series económicas mundiales"
+    },
+    {
+      "label": "Finanzas Públicas",
+      "id": "fiscal",
+      "description": "Series de recaudación, ingresos, gastos, etc."
+    },
+    {
+      "label": "Mercados Financieros",
+      "id": "finanzas",
+      "description": "Series financieras y de mercado de capitales"
+    }
+  ],
+  "rights": "2017-09-28",
+  "modified": "2017-09-28",
+  "dataset": [
+    {
+      "publisher": {
+        "mbox": "datoseconomicos@mecon.gov.ar",
+        "name": "Subsecretaría de Programación Macroeconómica."
+      },
+      "landingPage": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+      "keyword": [
+        "Información Económica al Día",
+        "Precios"
+      ],
+      "superTheme": [
+        "ECON"
+      ],
+      "title": "Índice de Precios al Consumidor. Bienes y Servicios. Base abril 2016.",
+      "language": [
+        "SPA"
+      ],
+      "issued": "2017-09-28",
+      "temporal": "2016-04-01/2017-06-01",
+      "source": "Instituto Nacional de Estadística y Censos (INDEC)",
+      "theme": [
+        "precios"
+      ],
+      "accrualPeriodicity": "R/P1M",
+      "spatial": "ARG",
+      "identifier": "102",
+      "license": "Creative Commons Attribution 4.0",
+      "contactPoint": {
+        "fn": "Subsecretaría de Programación Macroeconómica."
+      },
+      "accessLevel": "ABIERTO",
+      "distribution": [
+        {
+          "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+          "scrapingFileSheet": "4.2.2",
+          "description": "Índice de Precios al Consumidor. Bienes y servicios. Valores mensuales. (Base abril 2016).",
+          "format": "CSV",
+          "dataset_identifier": "102",
+          "issued": "2017-09-28",
+          "title": "Índice de Precios al Consumidor. Bienes y servicios. Base abril 2016. Valores mensuales",
+          "fileName": "indice-precios-al-consumidor-bienes-servicios-base-abril-2016-mensual.csv",
+          "downloadURL": "series_tiempo_ar_api/libs/indexing/tests/samples/single_data.csv",
+          "field": [
+            {
+              "distribution_identifier": "102.1",
+              "title": "indice_tiempo",
+              "dataset_identifier": "102",
+              "scrapingIdentifierCell": "A24",
+              "specialTypeDetail": "R/P1M",
+              "specialType": "time_index",
+              "type": "date",
+              "id": "102.1_IT_ABRI_M_13",
+              "scrapingDataStartCell": "A25"
+            },
+            {
+              "distribution_identifier": "102.1",
+              "description": "IPC Nivel General. Base abr 2016. Mensual",
+              "title": "ipc_2016_nivel_general",
+              "dataset_identifier": "102",
+              "scrapingIdentifierCell": "B24",
+              "specialTypeDetail": "",
+              "units": "Índice Dic-2016=100",
+              "type": "number",
+              "id": "102.1_I2NG_ABRI_M_22",
+              "scrapingDataStartCell": "B25"
+            }
+          ],
+          "identifier": "102.1",
+          "scrapingFileURL": "https://www.economia.gob.ar/download/infoeco/apendice4.xlsx"
+        }
+      ]
+    }
+  ],
+      "spatial": "ARG",
+    "title": "Datos Programación Macroeconómica",
+    "identifier": "sspm"
+}

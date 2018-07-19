@@ -29,8 +29,6 @@ class ReportGenerator(object):
         self.task.status = self.task.FINISHED
         self.task.save()
 
-        self.indicators_loader.load_indicators_into_db(self.task)
-
         for node in Node.objects.filter(indexable=True):
             IndicatorsGenerator(node, self.task).generate()
 
