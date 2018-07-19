@@ -8,7 +8,6 @@ from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.utils import get_available_fields
 
 
-# pylint: disable=R0914
 class IndicatorsGenerator(object):
 
     def __init__(self, node, task):
