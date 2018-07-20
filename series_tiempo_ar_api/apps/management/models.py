@@ -53,6 +53,7 @@ class IndexingTaskCron(models.Model):
 
         cron.write()
 
+
 class ReadDataJsonTask(models.Model):
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
     RUNNING = "RUNNING"
