@@ -32,12 +32,17 @@ class MetadataIndexer:
 
     def run(self):
         self.init_index()
-        IndexMetadataTask.info(self.task, "Inicio la lectura de metadatos")
         for node in Node.objects.filter(indexable=True):
             try:
                 data_json = DataJson(node.catalog_url)
+                IndexMetadataTask.info(self.task,
+                                       u'Inicio de la indexación de metadatos de {}'
+                                           .format(node.catalog_id))
                 CatalogMetadataIndexer(data_json, node.catalog_id, self.task, self.doc_type).index()
                 EnhancedMetaIndexer(node, self.task, self.doc_type).index()
+                IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'
+                                           .format(node.catalog_id))
+
             except Exception as e:
                 IndexMetadataTask.info(self.task,
                                        u'Error en la lectura del catálogo {}: {}'.format(node.catalog_id, e))

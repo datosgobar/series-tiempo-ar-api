@@ -23,13 +23,9 @@ class CatalogMetadataIndexer(object):
         self.elastic = ElasticInstance.get()
 
     def index(self):
-        IndexMetadataTask.info(self.task,
-                               u'Inicio de la indexación de metadatos de {}'.format(self.catalog_id))
-
         actions = self.scrap_datajson()
 
         self.index_actions(actions)
-        IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'.format(self.catalog_id))
 
     def index_actions(self, actions):
         for success, info in parallel_bulk(self.elastic, actions):
