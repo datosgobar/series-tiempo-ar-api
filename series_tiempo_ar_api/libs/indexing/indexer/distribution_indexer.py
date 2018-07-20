@@ -59,7 +59,7 @@ class DistributionIndexer:
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
 
         # Cálculo de metadatos adicionales sobre cada serie
-        df.apply(update_enhanced_meta, args=(distribution.dataset.catalog.identifier,))
+        df.apply(update_enhanced_meta, args=(distribution.dataset.catalog.identifier, distribution.identifier))
 
     def init_df(self, distribution, fields):
         """Inicializa el DataFrame del CSV de la distribución pasada,
