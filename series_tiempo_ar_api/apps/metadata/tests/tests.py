@@ -13,7 +13,7 @@ from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
-from .utils import get_mock_search, MOCK_DATA
+from .utils import get_mock_search, MockData
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 mock.patch.object = mock.patch.object  # Hack for pylint inspection
@@ -86,9 +86,9 @@ class QueryTests(TestCase):
         with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = q.execute()
 
-        self.assertTrue(result['data'][0]['field']['periodicity'], MOCK_DATA['periodicity'])
-        self.assertTrue(result['data'][0]['field']['start_date'], MOCK_DATA['start_date'])
-        self.assertTrue(result['data'][0]['field']['end_date'], MOCK_DATA['end_date'])
+        self.assertTrue(result['data'][0]['field']['periodicity'], MockData.periodicity)
+        self.assertTrue(result['data'][0]['field']['start_date'], MockData.start_date)
+        self.assertTrue(result['data'][0]['field']['end_date'], MockData.end_date)
 
 
 class CatalogIndexerTests(TestCase):

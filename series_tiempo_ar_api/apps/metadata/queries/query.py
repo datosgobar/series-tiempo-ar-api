@@ -69,19 +69,27 @@ class FieldSearchQuery(object):
             'count': response.hits.total
         }
         for hit in response:
+            start_date = getattr(hit, 'start_date')
+            if start_date:
+                start_date = start_date.date()
+
+            end_date = getattr(hit, 'end_date')
+            if end_date:
+                end_date = end_date.date()
+
             self.response['data'].append({
                 'field': {
-                    'id': hit['id'],
-                    'description': hit['description'],
-                    'title': hit['title'],
-                    'periodicity': hit['periodicity'],
-                    'start_date': hit['start_date'].date(),
-                    'end_date': hit['end_date'].date(),
+                    'id': getattr(hit, 'id'),
+                    'description': getattr(hit, 'description'),
+                    'title': getattr(hit, 'title'),
+                    'periodicity': getattr(hit, 'periodicity'),
+                    'start_date': start_date,
+                    'end_date': end_date,
                 },
                 'dataset': {
-                    'title': hit['dataset_title'],
+                    'title': getattr(hit, 'dataset_title'),
                     'publisher': {
-                        'name': hit['dataset_publisher_name'],
+                        'name': getattr(hit, 'dataset_publisher_name'),
                     }
                 }
             })

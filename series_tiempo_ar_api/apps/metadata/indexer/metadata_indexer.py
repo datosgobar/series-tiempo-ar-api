@@ -37,11 +37,11 @@ class MetadataIndexer:
                 data_json = DataJson(node.catalog_url)
                 IndexMetadataTask.info(self.task,
                                        u'Inicio de la indexación de metadatos de {}'
-                                           .format(node.catalog_id))
+                                       .format(node.catalog_id))
                 CatalogMetadataIndexer(data_json, node.catalog_id, self.task, self.doc_type).index()
                 EnhancedMetaIndexer(node, self.task, self.doc_type).index()
                 IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'
-                                           .format(node.catalog_id))
+                                       .format(node.catalog_id))
 
             except Exception as e:
                 IndexMetadataTask.info(self.task,
@@ -50,7 +50,7 @@ class MetadataIndexer:
         self.elastic.indices.forcemerge(self.index)
 
 
-@job('indexing', timeout=1000)
+@job('indexing', timeout=10000)
 def run_metadata_indexer(task):
     MetadataIndexer(task).run()
     task.refresh_from_db()
