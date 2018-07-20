@@ -14,7 +14,6 @@ from series_tiempo_ar_api.apps.analytics.models import Query
 from series_tiempo_ar_api.apps.management.models import Indicator, NodeAdmins
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 
 
 class ReportGenerator(object):
@@ -22,7 +21,6 @@ class ReportGenerator(object):
 
     def __init__(self, task):
         self.task = task
-        self.indicators_loader = IndicatorLoader()
 
     def generate(self):
         self.task.finished = timezone.now()
@@ -38,8 +36,6 @@ class ReportGenerator(object):
         # Reportes de catálogo individual
         for node in Node.objects.filter(indexable=True, catalog_id__in=ids):
             self.generate_email(node=node)
-
-        self.indicators_loader.clear_indicators()
 
     def generate_email(self, node=None):
         """Genera y manda el mail con el reporte de indexación. Si node es especificado, genera el reporte

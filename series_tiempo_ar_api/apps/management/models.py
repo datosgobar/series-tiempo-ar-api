@@ -53,19 +53,6 @@ class IndexingTaskCron(models.Model):
 
         cron.write()
 
-
-class Node(models.Model):
-
-    catalog_id = models.CharField(max_length=100, unique=True)
-    catalog_url = models.URLField(unique=True)
-    indexable = models.BooleanField()
-    catalog = models.TextField(default='{}')
-    admins = models.ManyToManyField(User, blank=True)
-
-    def __unicode__(self):
-        return self.catalog_id
-
-
 class ReadDataJsonTask(models.Model):
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
     RUNNING = "RUNNING"

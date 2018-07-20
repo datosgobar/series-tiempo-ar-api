@@ -16,6 +16,7 @@ class EnhancedMetaIndexer:
         self.task = task
         self.doc_type = doc_type
         self.elastic = ElasticInstance.get()
+        self.fields_meta = {}
 
     def index(self):
         field_content_type = ContentType.objects.get_for_model(Field)
@@ -29,12 +30,13 @@ class EnhancedMetaIndexer:
             present=True,
             error=False,
         )
+        self.struct()
 
         actions = []
         for field in fields:
-            periodicity = meta_keys.get(field, meta_keys.PERIODICITY)
-            start_date = meta_keys.get(field, meta_keys.INDEX_START)
-            end_date = meta_keys.get(field, meta_keys.INDEX_END)
+            periodicity = self.fields_meta[field.id].get(meta_keys.PERIODICITY)
+            start_date = self.fields_meta[field.id].get(meta_keys.INDEX_START)
+            end_date = self.fields_meta[field.id].get(meta_keys.INDEX_END)
 
             if not periodicity or not start_date or not end_date:
                 msg = "Metadatos enriquecidos faltantes en serie {} ({})" \
@@ -59,3 +61,13 @@ class EnhancedMetaIndexer:
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
                 self.task.info(self.task, 'Error indexando: {}'.format(info))
+
+    def struct(self):
+        field_content_type = ContentType.objects.get_for_model(Field)
+        metas = Metadata.objects.filter(
+            key=meta_keys.AVAILABLE,
+            value='true',
+            content_type=field_content_type)
+
+        for metadata in metas:
+            self.fields_meta.setdefault(metadata.object_id, {})[metadata.key] = metadata.value
