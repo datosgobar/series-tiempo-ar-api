@@ -19,6 +19,11 @@ class EnhancedMetaIndexer:
         self.fields_meta = {}
 
     def index(self):
+        for success, info in parallel_bulk(self.elastic, self.generate_actions()):
+            if not success:
+                self.task.info(self.task, 'Error indexando: {}'.format(info))
+
+    def generate_actions(self):
         field_content_type = ContentType.objects.get_for_model(Field)
         available_fields = Metadata.objects.filter(
             key=meta_keys.AVAILABLE,
@@ -32,7 +37,6 @@ class EnhancedMetaIndexer:
         )
         self.struct()
 
-        actions = []
         for field in fields:
             periodicity = self.fields_meta[field.id].get(meta_keys.PERIODICITY)
             start_date = self.fields_meta[field.id].get(meta_keys.INDEX_START)
@@ -56,17 +60,11 @@ class EnhancedMetaIndexer:
             action = doc.to_dict(include_meta=True)
             action['_op_type'] = 'update'
             action['_source'] = {'doc': action['_source']}
-            actions.append(action)
-
-        for success, info in parallel_bulk(self.elastic, actions):
-            if not success:
-                self.task.info(self.task, 'Error indexando: {}'.format(info))
+            yield action
 
     def struct(self):
         field_content_type = ContentType.objects.get_for_model(Field)
         metas = Metadata.objects.filter(
-            key=meta_keys.AVAILABLE,
-            value='true',
             content_type=field_content_type)
 
         for metadata in metas:
