@@ -26,6 +26,8 @@ class EnhancedMetaIndexer:
         fields = Field.objects.filter(
             distribution__dataset__catalog__identifier=self.node.catalog_id,
             id__in=available_fields,
+            present=True,
+            error=False,
         )
 
         actions = []
@@ -33,6 +35,12 @@ class EnhancedMetaIndexer:
             periodicity = meta_keys.get(field, meta_keys.PERIODICITY)
             start_date = meta_keys.get(field, meta_keys.INDEX_START)
             end_date = meta_keys.get(field, meta_keys.INDEX_END)
+
+            if not periodicity or not start_date or not end_date:
+                msg = "Metadatos enriquecidos faltantes en serie {} ({})" \
+                    .format(field.identifier, field.distribution.identifier)
+                self.task.info(self.task, msg)
+                continue
 
             doc = self.doc_type(
                 periodicity=get_periodicity_human_format_es(periodicity),
