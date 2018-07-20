@@ -45,7 +45,7 @@ def move(*_):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('management', '0002_auto_20180510_1709'),
+        ('management', '0003_auto_20180720_1504'),
         ('api', '0034_distribution_error'),
         ('django_datajsonar', '0002_auto_20180507_1752'),
     ]
