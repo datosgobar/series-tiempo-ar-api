@@ -2,15 +2,12 @@
 import logging
 
 from django_rq import job
-from pydatajson import DataJson
 
 from django_datajsonar.models import Node
-from series_tiempo_ar_api.apps.metadata.indexer.catalog_metadata_indexer import \
-    CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from .enhanced_meta_indexer import EnhancedMetaIndexer
+from .enhanced_meta_indexer import CatalogMetadataIndexer
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +31,10 @@ class MetadataIndexer:
         self.init_index()
         for node in Node.objects.filter(indexable=True):
             try:
-                data_json = DataJson(node.catalog_url)
                 IndexMetadataTask.info(self.task,
                                        u'Inicio de la indexación de metadatos de {}'
                                        .format(node.catalog_id))
-                CatalogMetadataIndexer(data_json, node.catalog_id, self.task, self.doc_type).index()
-                EnhancedMetaIndexer(node, self.task, self.doc_type).index()
+                CatalogMetadataIndexer(node, self.task, self.doc_type).index()
                 IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'
                                        .format(node.catalog_id))
 
