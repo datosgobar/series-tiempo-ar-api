@@ -1,50 +1,67 @@
-#! coding: utf-8
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import os
 
+import faker
 from django.test import TestCase
+from django_datajsonar.tasks import read_datajson
+from django_datajsonar.models import ReadDataJsonTask, Node, Field as datajsonar_Field
 
-from django_datajsonar.models import Node
+from series_tiempo_ar_api.apps.metadata.indexer.catalog_meta_indexer import CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
-from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import MetadataIndexer
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
-from series_tiempo_ar_api.apps.metadata.tests.tests import SAMPLES_DIR
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from series_tiempo_ar_api.apps.management import meta_keys
+SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
-from faker import Faker
-
-fake = Faker()
+fake = faker.Faker()
 
 
 class IndexerTests(TestCase):
+
     class FakeField(Field):
         class Meta:
             index = fake.word()
 
     def setUp(self):
         self.elastic = ElasticInstance.get()
+        self.task = ReadDataJsonTask.objects.create()
+        self.meta_task = IndexMetadataTask.objects.create()
+        self.FakeField.init(using=self.elastic)
 
-    def test_index_two_nodes(self):
-        Node(catalog_id='first_catalog',
-             catalog_url=os.path.join(SAMPLES_DIR, 'single_distribution.json'),
-             indexable=True).save()
-        Node(catalog_id='second_catalog',
-             catalog_url=os.path.join(SAMPLES_DIR, 'second_single_distribution.json'),
-             indexable=True).save()
+    def test_index(self):
+        self._index(catalog_id='test_catalog', catalog_url='single_distribution.json')
+        search = self.FakeField.search(
+            using=self.elastic
+        ).filter('term',
+                 catalog_id='test_catalog')
 
-        task = IndexMetadataTask()
-        task.save()
-        MetadataIndexer(task, doc_type=self.FakeField).run()
+        self.assertTrue(search.execute())
 
-        first_catalog_fields = self.FakeField.search(using=ElasticInstance.get())\
-            .filter('term', catalog_id='first_catalog')\
-            .execute()
+    def test_index_unavailable_fields(self):
+        self._index(catalog_id='test_catalog', catalog_url='single_distribution.json', set_availables=False)
+        search = self.FakeField.search(
+            using=self.elastic
+        ).filter('term',
+                 catalog_id='test_catalog')
 
-        second_catalog_fields = self.FakeField.search(using=ElasticInstance.get())\
-            .filter('term', catalog_id='second_catalog')\
-            .execute()
+        self.assertFalse(search.execute())
 
-        self.assertTrue(first_catalog_fields)
-        self.assertTrue(second_catalog_fields)
+    def _index(self, catalog_id, catalog_url, set_availables=True):
+        node = Node.objects.create(
+            catalog_id=catalog_id,
+            catalog_url=os.path.join(SAMPLES_DIR, catalog_url),
+            indexable=True,
+        )
+
+        read_datajson(self.task, whitelist=True, read_local=True)
+        if set_availables:
+            for field in datajsonar_Field.objects.all():
+                field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
+
+        CatalogMetadataIndexer(node, self.meta_task, self.FakeField).index()
+        self.elastic.indices.forcemerge()
 
     def tearDown(self):
         self.elastic.indices.delete(self.FakeField._doc_type.index)
