@@ -20,9 +20,14 @@ class IndicatorsGenerator(object):
     def generate(self):
         node = self.node
 
-        self.calculate_catalog_indicators(node)
-        data_json = DataJson(json.loads(node.catalog))
+        try:
+            data_json = DataJson(json.loads(node.catalog_url))
+            data_json.get_fields(only_time_series=True)
+        except Exception as e:
+            self.task.info(self.task, "Error en la lectura del data.json de {}: {}".format(node.catalog_id, e))
+            return
 
+        self.calculate_catalog_indicators(node)
         self.calculate_series_indicators(node, data_json)
         self.calculate_distribution_indicators(node, data_json)
         self.calculate_dataset_indicators(node, data_json)
