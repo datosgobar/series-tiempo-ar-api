@@ -6,13 +6,8 @@ import os
 import mock
 from django.test import TestCase
 from elasticsearch_dsl import Search
-from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.metadata import constants
-from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
-from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
-from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from .utils import get_mock_search, MockData
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
@@ -89,34 +84,3 @@ class QueryTests(TestCase):
         self.assertTrue(result['data'][0]['field']['periodicity'], MockData.periodicity)
         self.assertTrue(result['data'][0]['field']['start_date'], MockData.start_date)
         self.assertTrue(result['data'][0]['field']['end_date'], MockData.end_date)
-
-
-class CatalogIndexerTests(TestCase):
-
-    def setUp(self):
-        self.task = IndexMetadataTask()
-        # No mandar datos a la instancia de ES
-        CatalogMetadataIndexer.init_index = mock.Mock()
-        CatalogMetadataIndexer.index_actions = mock.Mock()
-
-    def test_scraping(self):
-        catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
-        datajson = DataJson(catalog)
-        result = CatalogMetadataIndexer(datajson, 'test_node', self.task).scrap_datajson()
-
-        self.assertEqual(len(result), len(datajson.get_fields()) - 1)
-
-    def test_scraping_result(self):
-        catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
-        datajson = DataJson(catalog)
-        result = CatalogMetadataIndexer(datajson, 'test_node', self.task).scrap_datajson()
-
-        mapping = Field._doc_type.mapping.properties.properties.to_dict()
-        mapping_fields = mapping.keys()
-
-        # Me aseguro que los resultados sean legibles por el indexer de ES
-        for field in result:
-            for key in field['_source'].keys():
-                self.assertIn(key, mapping_fields)
-
-            self.assertEqual(field['_index'], constants.FIELDS_INDEX)
