@@ -2,7 +2,7 @@
 import json
 from pydatajson import DataJson
 from django_datajsonar.models import Field, Node, Metadata, ContentType
-from elasticsearch.helpers import bulk
+from elasticsearch.helpers import streaming_bulk
 
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format_es
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -20,7 +20,7 @@ class CatalogMetadataIndexer:
         self.fields_meta = {}
         self.init_fields_meta_cache()
         try:
-            data_json = DataJson(json.loads(node.catalog))
+            data_json = DataJson(node.catalog_url)
             themes = data_json['themeTaxonomy']
             self.themes = self.get_themes(themes)
         except Exception:
@@ -31,7 +31,7 @@ class CatalogMetadataIndexer:
             self.task.info(self.task, "No hay series para indexar en este catálogo")
             return
 
-        for success, info in bulk(self.elastic, iter(self.generate_actions())):
+        for success, info in streaming_bulk(self.elastic, self.generate_actions()):
             if not success:
                 self.task.info(self.task, 'Error indexando: {}'.format(info))
 
@@ -47,12 +47,11 @@ class CatalogMetadataIndexer:
                 msg = "Metadatos enriquecidos faltantes en serie {} ({})" \
                     .format(field.identifier, field.distribution.identifier)
                 self.task.info(self.task, msg)
-                continue
 
             field_meta = json.loads(field.metadata)
             dataset = json.loads(field.distribution.dataset.metadata)
             doc = self.doc_type(
-                periodicity=get_periodicity_human_format_es(periodicity),
+                periodicity=get_periodicity_human_format_es(periodicity) if periodicity else None,
                 start_date=start_date,
                 end_date=end_date,
                 title=field_meta.get('title'),

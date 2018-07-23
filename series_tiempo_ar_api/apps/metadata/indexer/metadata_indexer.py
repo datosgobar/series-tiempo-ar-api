@@ -7,7 +7,7 @@ from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from .enhanced_meta_indexer import CatalogMetadataIndexer
+from .catalog_meta_indexer import CatalogMetadataIndexer
 
 logger = logging.getLogger(__name__)
 
