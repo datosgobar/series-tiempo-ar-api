@@ -109,6 +109,9 @@ class IndicatorsGenerator(object):
         previous = not_indexable.filter(new=False, present=True).count()
         self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE_PREVIOUS, value=previous, node=node)
 
+        error = Distribution.objects.filter(dataset__catalog=catalog, error=True).count()
+        self.create(type=Indicator.DISTRIBUTION_ERROR, value=error, node=node)
+
         not_indexable_discontinued = not_indexable.filter(present=False).count()
         self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE_DISCONTINUED,
                     value=not_indexable_discontinued,
@@ -151,6 +154,9 @@ class IndicatorsGenerator(object):
 
         previous = not_indexable.filter(new=False, present=True).count()
         self.create(type=Indicator.FIELD_NOT_INDEXABLE_PREVIOUS, value=previous, node=node)
+
+        error = Field.objects.filter(distribution__dataset__catalog=catalog, error=True).count()
+        self.create(type=Indicator.FIELD_ERROR, value=error, node=node)
 
         not_indexable_discontinued = not_indexable.filter(present=False).count()
         self.create(type=Indicator.FIELD_NOT_INDEXABLE_DISCONTINUED,
