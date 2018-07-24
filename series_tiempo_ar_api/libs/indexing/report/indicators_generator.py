@@ -21,7 +21,7 @@ class IndicatorsGenerator(object):
         node = self.node
 
         try:
-            data_json = DataJson(json.loads(node.catalog_url))
+            data_json = DataJson(node.catalog_url)
             data_json.get_fields(only_time_series=True)
         except Exception as e:
             self.task.info(self.task, "Error en la lectura del data.json de {}: {}".format(node.catalog_id, e))
