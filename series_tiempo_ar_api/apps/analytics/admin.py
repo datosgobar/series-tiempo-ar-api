@@ -5,7 +5,7 @@ from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 
 from .models import Query, ImportConfig, AnalyticsImportTask
-from .tasks import import_last_day_analytics_from_api_mgmt
+from .tasks import import_analytics_from_api_mgmt
 
 
 class QueryAdmin(admin.ModelAdmin):
@@ -26,7 +26,7 @@ class ImportTaskAdmin(admin.ModelAdmin):
     readonly_fields = ('status', 'logs', 'timestamp')
 
     def save_model(self, request, obj, form, change):
-        import_last_day_analytics_from_api_mgmt.delay()
+        import_analytics_from_api_mgmt.delay()
 
 
 admin.site.register(Query, QueryAdmin)
