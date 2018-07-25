@@ -25,7 +25,7 @@ class FakeRequests:
         self.responses = responses
         self.index = 0
 
-    def get(self, *args, **kwargs):
+    def get(self, *_, **__):
         response = self.Response(self.responses[self.index])
         self.index += 1
         return response
@@ -65,6 +65,75 @@ class ImportTests(TestCase):
                 ]
             }
         ]))
+        self.assertEqual(Query.objects.count(), 1)
+
+    def test_many_results(self):
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'uri': '/series/api/series/',
+                    },
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:01-03:00',
+                        'id': 2,
+                        'uri': '/series/api/series/',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 2)
+
+    def test_import_all_flag(self):
+        self.test_many_results()
+
+        # Borro un dato, y me aseguro que se regenera con import_all
+        Query.objects.first().delete()
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'uri': '/series/api/series/',
+                    },
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-08T05:00:01-03:00',
+                        'id': 2,
+                        'uri': '/series/api/series/',
+                    }
+                ]
+            }
+        ]), import_all=True)
+        self.assertEqual(Query.objects.count(), 2)
+
+    def test_without_import_all_model_is_not_recreated(self):
+        self.test_many_results()
+
+        # Borro un dato. Si no le paso import_all=True, no se va a crear de nuevo
+        Query.objects.all().order_by('-timestamp').last().delete()
+        import_last_day_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 0,
+                'results': [
+                ]
+            }
+        ]), import_all=False)
         self.assertEqual(Query.objects.count(), 1)
 
     def test_multiple_page_results(self):

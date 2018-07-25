@@ -42,5 +42,5 @@ def export(path=None):
 
 
 @job('default', timeout=1000)
-def import_last_day_analytics_from_api_mgmt(limit=1000, requests_lib=requests):
-    AnalyticsImporter(limit, requests_lib).run()
+def import_last_day_analytics_from_api_mgmt(limit=1000, requests_lib=requests, import_all=False):
+    AnalyticsImporter(limit, requests_lib).run(import_all)
