@@ -75,6 +75,10 @@ class AnalyticsImporter:
                 ids=parsed_querystring.get('ids', ''),
                 params=parsed_querystring,
                 api_mgmt_id=result['id'],
+                uri=result.get('uri') or '',
+                request_time=result.get('request_time') or 0,
+                user_agent=result.get('user_agent') or '',
+                status_code=result.get('status_code') or 0,
             ))
             self.loaded_api_mgmt_ids.update([result['id']])
 

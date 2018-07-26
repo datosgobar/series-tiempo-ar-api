@@ -1,8 +1,12 @@
 #!coding=utf8
+from decimal import Decimal
 
+from faker import Faker
 from django.test import TestCase
 from series_tiempo_ar_api.apps.analytics.tasks import import_analytics_from_api_mgmt
 from series_tiempo_ar_api.apps.analytics.models import ImportConfig, Query, AnalyticsImportTask
+
+fake = Faker()
 
 
 class UninitializedImportConfigTests(TestCase):
@@ -205,3 +209,86 @@ class ImportTests(TestCase):
             }
         ]))
         self.assertEqual(Query.objects.count(), 0)
+
+    def test_import_uri_field(self):
+        uri = '/series/api/series'
+        import_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'uri': uri,
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 1)
+        self.assertEqual(Query.objects.first().uri, uri)
+
+    def test_import_status_code_field(self):
+        status_code = 200
+        import_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'status_code': status_code,
+                        'uri': '/series/api/series',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 1)
+        self.assertEqual(Query.objects.first().status_code, status_code)
+
+    def test_import_user_agent_field(self):
+        agent = fake.word()
+        import_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'user_agent': agent,
+                        'uri': '/series/api/series',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 1)
+        self.assertEqual(Query.objects.first().user_agent, agent)
+
+    def test_import_response_time(self):
+        request_time = str(fake.pyfloat(left_digits=1, right_digits=10, positive=True))
+        import_analytics_from_api_mgmt(requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 1,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'request_time': request_time,
+                        'uri': '/series/api/series',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 1)
+        self.assertEqual(Query.objects.first().request_time, Decimal(request_time))

@@ -11,10 +11,13 @@ from .tasks import import_analytics_from_api_mgmt
 class QueryAdmin(admin.ModelAdmin):
     date_hierarchy = 'timestamp'
 
-    list_display = ('timestamp', 'ip_address', 'params',)
-    readonly_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids', 'api_mgmt_id')
+    list_display = ('timestamp', 'status_code', 'uri', 'ip_address', 'params',)
+    list_filter = ('status_code', 'uri')
 
-    search_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids')
+    search_fields = ('timestamp', 'uri', 'status_code', 'params', 'ip_address', 'args', 'ids')
+
+    def get_readonly_fields(self, request, obj=None):
+        return [field.name for field in self.opts.local_fields]
 
 
 class ImportConfigAdmin(SingletonModelAdmin):

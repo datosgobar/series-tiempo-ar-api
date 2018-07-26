@@ -17,6 +17,11 @@ class Query(models.Model):
 
     api_mgmt_id = models.IntegerField(blank=True, null=True, unique=True)
 
+    uri = models.TextField(default='')
+    status_code = models.IntegerField(default=0)
+    user_agent = models.TextField(default='')
+    request_time = models.DecimalField(max_digits=30, decimal_places=25, default=0)
+
     def __unicode__(self):
         return u'Query at %s: %s' % (self.timestamp, self.ids)
 
