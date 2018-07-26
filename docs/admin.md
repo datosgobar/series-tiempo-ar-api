@@ -2,7 +2,7 @@
 
 ## Configuración del rq-scheduler
 
-Para asegurar la funcionalidad correcta de la indexación, es necesario agregar varios `Repeatable Job` desde el admin de Django. A continuación se muestra una configuración ejemplo. Se recomienda setear la queue a `indexing`. El scheduled time puede ser arbitrario, es ignorado.
+Para asegurar la funcionalidad correcta de la indexación, es necesario agregar varios `Repeatable Job` desde el admin de Django. A continuación se muestra una configuración ejemplo. Se recomienda setear la queue a `indexing`.
 
 ![scheduler](assets/scheduler.png)
 
