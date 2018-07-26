@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import IndexMetadataTask
+from .models import IndexMetadataTask, CatalogAlias
 from .indexer.metadata_indexer import run_metadata_indexer
 from django.contrib import messages
 
@@ -23,6 +23,15 @@ class IndexMetadataTaskAdmin(admin.ModelAdmin):
         else:
             messages.error(request, "Ya está corriendo una indexación")
             return super(IndexMetadataTaskAdmin, self).changelist_view(request, None)
+
+
+@admin.register(CatalogAlias)
+class CatalogAliasAdmin(admin.ModelAdmin):
+    list_display = ('alias', 'ids')
+
+    def ids(self, obj: CatalogAlias):
+        return ', '.join(obj.resolve()) or None
+    ids.short_description = 'catalog_ids'
 
 
 admin.site.register(IndexMetadataTask, IndexMetadataTaskAdmin)
