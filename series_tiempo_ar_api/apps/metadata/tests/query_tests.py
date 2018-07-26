@@ -19,7 +19,8 @@ class QueryTests(TestCase):
     def test_no_querystring_is_valid(self):
         query = FieldSearchQuery(args={})
 
-        result = query.execute()
+        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+            result = query.execute()
 
         self.assertFalse(result.get('errors'))
 
