@@ -21,14 +21,14 @@ La vista de tareas programadas debería parecerse al siguiente ejemplo. Notar qu
 
 En el caso de querer reconfigurar las tareas, la manera más segura de hacerlo es realizando los siguientes pasos. **No** se recomienda editar directamente la tarea.
 
-- Ubicar el Job ID de la tarea a reprogramar (ver screenshots anteriores), y ubicarla en la vista de _finished jobs_ de `django-rq`, en la URL `/series/django-rq/`. En este ejemplo, si queremos editar el job de "datajson ar indexing", que está bajo la cola default, debemos ver el detalle de la cola haciendo click en el número `9` de _finished jobs_. Allí deberíamos poder ver el job referenciado, `1425c8c4-35d6-4d0c-b716-b3496f64f1d2`.
+- En la vista de _Repeatable Jobs_, ubicar el Job ID de la tarea a reprogramar (ver screenshots anteriores), y ubicarla en la vista de _finished jobs_ de `django-rq`, en la URL `/series/django-rq/`. En este ejemplo, si queremos editar el job de "datajson ar indexing", que está bajo la cola default, debemos ver el detalle de la cola haciendo click en el número `9` de _finished jobs_. Allí deberíamos poder ver el job referenciado, `1425c8c4-35d6-4d0c-b716-b3496f64f1d2`.
 
 ![repeatable_jobs](assets/django-rq.png)
 
 ![repeatable_jobs](assets/django-rq-finished-jobs.png)
 
 
-**Borrar** esta tarea, utilizando el menú de _Actions_ provisto, **No** el _Empty Queue_.
+**Borrar** esta tarea, utilizando el menú de _Actions_ provisto en la vista de _finished jobs_, **No** el _Empty Queue_.
 
 - Volver a la vista de _Repeatable Jobs_, y borrar la tarea que se queire editar.
 - Crear la tarea nuevamente con los nuevos parámetros deseados. El _Job ID_ de la nueva tarea debería ser distinto a la anterior.
