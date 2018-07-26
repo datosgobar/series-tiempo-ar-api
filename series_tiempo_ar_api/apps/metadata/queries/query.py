@@ -27,9 +27,6 @@ class FieldSearchQuery(object):
         except ValueError:
             self.append_error(strings.INVALID_PARAMETER.format(constants.PARAM_OFFSET, offset))
 
-        if not self.args.get(constants.PARAM_QUERYSTRING):
-            self.append_error(strings.EMPTY_QUERYSTRING)
-
     def execute(self):
         """Ejecuta la query. Devuelve un diccionario con el siguiente formato
         {
@@ -53,11 +50,14 @@ class FieldSearchQuery(object):
             return self.response
 
         es_client = ElasticInstance.get()
+        search = Field.search(using=es_client)
 
-        querystring = self.args[constants.PARAM_QUERYSTRING]
+        querystring = self.args.get(constants.PARAM_QUERYSTRING)
+        if querystring is not None:
+            search = search.query('match', _all=querystring)
+
         offset = self.args[constants.PARAM_OFFSET]
         limit = self.args[constants.PARAM_LIMIT]
-        search = Field.search(using=es_client).query('match', _all=querystring)
         search = search[offset:limit + offset]
 
         for arg, field in constants.FILTER_ARGS.items():

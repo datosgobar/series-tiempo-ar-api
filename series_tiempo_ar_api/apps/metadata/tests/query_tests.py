@@ -16,12 +16,12 @@ mock.patch.object = mock.patch.object  # Hack for pylint inspection
 
 class QueryTests(TestCase):
 
-    def test_no_querystring(self):
+    def test_no_querystring_is_valid(self):
         query = FieldSearchQuery(args={})
 
         result = query.execute()
 
-        self.assertTrue(result['errors'])
+        self.assertFalse(result.get('errors'))
 
     def test_bad_limit(self):
         query = FieldSearchQuery(args={'limit': 'invalid'})
