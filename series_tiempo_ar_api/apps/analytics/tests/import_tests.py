@@ -1,4 +1,5 @@
 #!coding=utf8
+from decimal import Decimal
 
 from faker import Faker
 from django.test import TestCase
@@ -272,7 +273,7 @@ class ImportTests(TestCase):
         self.assertEqual(Query.objects.first().user_agent, agent)
 
     def test_import_response_time(self):
-        request_time = fake.pyfloat()
+        request_time = str(fake.pyfloat(left_digits=1, right_digits=10, positive=True))
         import_analytics_from_api_mgmt(requests_lib=FakeRequests([
             {
                 'next': None,
@@ -290,4 +291,4 @@ class ImportTests(TestCase):
             }
         ]))
         self.assertEqual(Query.objects.count(), 1)
-        self.assertEqual(float(Query.objects.first().request_time), request_time)
+        self.assertEqual(Query.objects.first().request_time, Decimal(request_time))
