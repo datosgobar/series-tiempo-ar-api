@@ -9,7 +9,7 @@ import series_tiempo_ar_api.apps.metadata.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('django_datajsonar', '0010_merge_20180724_1531'),
+        ('django_datajsonar', '0010_auto_20180724_1946'),
         ('metadata', '0001_initial'),
     ]
 
