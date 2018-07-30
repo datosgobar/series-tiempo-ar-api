@@ -154,6 +154,7 @@ class CSVTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         ElasticInstance.get().indices.delete(cls.index)
+        Node.objects.all().delete()
 
 
 class CSVDumpCommandTests(TestCase):

@@ -1,4 +1,7 @@
 #! coding: utf-8
+from elasticsearch_dsl import Search
+
+from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 
@@ -102,13 +105,19 @@ class FieldSearchQuery(object):
     def append_error(self, msg):
         self.errors.append({'error': msg})
 
-    def add_filters(self, search, arg_name, field_name):
+    def add_filters(self, search: Search, arg_name: str, field_name: str):
         """Agrega filtro por field_name al objeto search de Elasticsearch,
         obtenido desde el campo arg_name de la query.
         """
-        units = self.args.get(arg_name)
-        if units:
-            units = units.split(',')
-            search = search.filter('terms', **{field_name: units})
+
+        terms = self.args.get(arg_name)
+        if not terms:
+            return search
+
+        terms = terms.split(',')
+        if arg_name == 'catalog_id':
+            terms = resolve_catalog_id_aliases(terms)
+
+        search = search.filter('terms', **{field_name: terms})
 
         return search

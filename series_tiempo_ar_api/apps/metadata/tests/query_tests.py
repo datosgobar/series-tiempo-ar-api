@@ -7,6 +7,7 @@ import mock
 from django.test import TestCase
 from elasticsearch_dsl import Search
 
+from series_tiempo_ar_api.apps.metadata.models import CatalogAlias
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 from .utils import get_mock_search, MockData
 
@@ -85,3 +86,15 @@ class QueryTests(TestCase):
         self.assertTrue(result['data'][0]['field']['periodicity'], MockData.periodicity)
         self.assertTrue(result['data'][0]['field']['start_date'], MockData.start_date)
         self.assertTrue(result['data'][0]['field']['end_date'], MockData.end_date)
+
+    def test_catalog_id_filter_with_alias(self):
+        alias = CatalogAlias.objects.create(alias='alias_id')
+        alias.nodes.create(catalog_id='catalog_1', catalog_url='http://example.com/1', indexable=True)
+        alias.nodes.create(catalog_id='catalog_2', catalog_url='http://example.com/2', indexable=True)
+        q = FieldSearchQuery(args={'catalog_id': 'alias_id'})
+
+        search = Search()
+        filtered_search = q.add_filters(search, 'catalog_id', 'catalog_id')
+
+        filtered_catalogs = filtered_search.to_dict()['query']['bool']['filter'][0]['terms']['catalog_id']
+        self.assertEqual(set(filtered_catalogs), {'catalog_1', 'catalog_2'})
