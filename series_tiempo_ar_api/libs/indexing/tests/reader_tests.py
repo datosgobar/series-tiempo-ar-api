@@ -1,5 +1,6 @@
 #! coding: utf-8
 import os
+from unittest import skip
 
 from django.db import transaction
 from django.test import TestCase
@@ -19,6 +20,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
 
 
+@skip
 class IndexerTests(TestCase):
     test_index = 'indexer_test_index'
 
