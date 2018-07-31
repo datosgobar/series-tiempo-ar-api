@@ -20,7 +20,6 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
 
 
-@skip
 class IndexerTests(TestCase):
     test_index = 'indexer_test_index'
 

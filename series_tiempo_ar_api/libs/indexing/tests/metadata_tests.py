@@ -1,7 +1,8 @@
 #! coding: utf-8
 import os
 import datetime
-from django.test import TestCase
+
+from django.test import TransactionTestCase
 from django_datajsonar.models import Catalog
 from django.core.files import File
 
@@ -11,17 +12,15 @@ from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import Dist
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
-class FieldEnhancedMetaTests(TestCase):
+class FieldEnhancedMetaTests(TransactionTestCase):
     catalog_id = 'test_catalog'
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestCase, cls).setUpClass()
-        cls.catalog = Catalog.objects.create(identifier=cls.catalog_id, metadata='{}')
-        dataset = cls.catalog.dataset_set.create(identifier="1", metadata='{}')
-        cls.distribution_id = "1.1"
-        distribution = dataset.distribution_set.create(identifier=cls.distribution_id, metadata='{}')
-        cls.field = distribution.field_set.create(identifier='test_series', metadata='{}')
+    def setUp(self):
+        self.catalog = Catalog.objects.create(identifier=self.catalog_id, metadata='{}')
+        dataset = self.catalog.dataset_set.create(identifier="1", metadata='{}')
+        self.distribution_id = "1.1"
+        distribution = dataset.distribution_set.create(identifier=self.distribution_id, metadata='{}')
+        self.field = distribution.field_set.create(identifier='test_series', metadata='{}')
 
     def test_start_end_dates(self):
         df = self.init_df()
@@ -86,7 +85,3 @@ class FieldEnhancedMetaTests(TestCase):
              'indice_tiempo': 'indice_tiempo'}
         )
         return df
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.catalog.delete()
