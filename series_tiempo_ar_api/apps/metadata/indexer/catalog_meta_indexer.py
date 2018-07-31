@@ -51,7 +51,7 @@ class CatalogMetadataIndexer:
             field_meta = json.loads(field.metadata)
             dataset = json.loads(field.distribution.dataset.metadata)
             doc = self.doc_type(
-                periodicity=get_periodicity_human_format_es(periodicity) if periodicity else None,
+                periodicity=periodicity,
                 start_date=start_date,
                 end_date=end_date,
                 title=field_meta.get('title'),

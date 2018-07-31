@@ -82,18 +82,21 @@ class FieldSearchQuery(object):
 
             self.response['data'].append({
                 'field': {
-                    'id': getattr(hit, 'id'),
-                    'description': getattr(hit, 'description'),
-                    'title': getattr(hit, 'title'),
-                    'periodicity': getattr(hit, 'periodicity'),
+                    'id': getattr(hit, 'id', None),
+                    'description': getattr(hit, 'description', None),
+                    'title': getattr(hit, 'title', None),
+                    'periodicity': getattr(hit, 'periodicity', None),
                     'start_date': start_date,
                     'end_date': end_date,
+                    'units': getattr(hit, 'units', None),
                 },
                 'dataset': {
-                    'title': getattr(hit, 'dataset_title'),
+                    'title': getattr(hit, 'dataset_title', None),
                     'publisher': {
-                        'name': getattr(hit, 'dataset_publisher_name'),
-                    }
+                        'name': getattr(hit, 'dataset_publisher_name', None),
+                    },
+                    'source': getattr(hit, 'dataset_source', None),
+                    'theme': getattr(hit, 'dataset_theme', None),
                 }
             })
 
