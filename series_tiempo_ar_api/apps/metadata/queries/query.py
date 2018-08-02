@@ -57,7 +57,7 @@ class FieldSearchQuery(object):
 
         querystring = self.args.get(constants.PARAM_QUERYSTRING)
         if querystring is not None:
-            search = search.query('match', _all=querystring)
+            search = search.query('match', all=querystring)
 
         offset = self.args[constants.PARAM_OFFSET]
         limit = self.args[constants.PARAM_LIMIT]
