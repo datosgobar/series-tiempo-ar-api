@@ -4,6 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
@@ -200,3 +201,22 @@ class QueryTests(TestCase):
         for key in meta:
             for in_key in meta[key]:
                 self.assertEqual(meta[key][in_key], flat_meta['{}_{}'.format(key, in_key)])
+
+    def test_full_metadata_includes_enhanced_meta(self):
+        self.query.add_series(self.single_series, self.field)
+        self.query.set_metadata_config('full')
+        meta = self.query.get_metadata()
+
+        for enhanced_meta in self.field.enhanced_meta.all():
+            self.assertEqual(meta[1]['field'][enhanced_meta.key], enhanced_meta.value)
+
+    def test_full_metadata_periodicty_with_collapse(self):
+        self.query.add_series(self.single_series, self.field)
+        self.query.add_collapse('year')
+        self.query.set_metadata_config('full')
+
+        resp = self.query.run()
+
+        self.assertEqual(resp['meta'][0]['frequency'], 'year')
+        self.assertEqual(resp['meta'][1]['field'][meta_keys.PERIODICITY],
+                         meta_keys.get(self.field, meta_keys.PERIODICITY))

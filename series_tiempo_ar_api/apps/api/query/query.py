@@ -1,14 +1,18 @@
 #! coding: utf-8
 import json
 from collections import OrderedDict
+from typing import Union
 
 from django.conf import settings
+from django_datajsonar.models import Catalog, Dataset, Distribution, Field
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.management import meta_keys
 from .es_query.es_query import ESQuery
+
+datajson_entity = Union[Catalog, Dataset, Distribution, Field]
 
 
 class Query(object):
@@ -167,17 +171,26 @@ class Query(object):
 
         return metadata
 
-    @staticmethod
-    def _get_full_metadata(field):
+    def _get_full_metadata(self, field):
         distribution = field.distribution
         dataset = distribution.dataset
         catalog = dataset.catalog
         return {
-            'catalog': json.loads(catalog.metadata),
-            'dataset': json.loads(dataset.metadata),
-            'distribution': json.loads(distribution.metadata),
-            'field': json.loads(field.metadata)
+            'catalog': self._get_full_metadata_for_model(catalog),
+            'dataset': self._get_full_metadata_for_model(dataset),
+            'distribution': self._get_full_metadata_for_model(distribution),
+            'field': self._get_full_metadata_for_model(field),
         }
+
+    def _get_full_metadata_for_model(self, model: datajson_entity):
+        metadata = {}
+        json_fields = json.loads(model.metadata)
+
+        metadata.update(json_fields)
+
+        for enhanced_meta in model.enhanced_meta.all():
+            metadata.update({enhanced_meta.key: enhanced_meta.value})
+        return metadata
 
     def _calculate_data_frequency(self):
         """Devuelve la periodicidad de la o las series pedidas. Si son
