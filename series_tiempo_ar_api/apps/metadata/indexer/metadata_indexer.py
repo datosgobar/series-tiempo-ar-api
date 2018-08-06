@@ -9,14 +9,14 @@ from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .doc_types import Field
 from .catalog_meta_indexer import CatalogMetadataIndexer
-from .index import fields_meta
+from .index import get_fields_meta_index
 
 logger = logging.getLogger(__name__)
 
 
 class MetadataIndexer:
 
-    def __init__(self, task, doc_type=Field, index: Index = fields_meta):
+    def __init__(self, task, doc_type=Field, index: Index = get_fields_meta_index()):
         self.task = task
         self.elastic = ElasticInstance.get()
         self.index = index

@@ -3,7 +3,7 @@ from elasticsearch_dsl import DocType, Keyword, Text, Date, MetaField
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from .index import fields_meta
+from .index import get_fields_meta_index
 
 
 class Field(DocType):
@@ -30,5 +30,5 @@ class Field(DocType):
 
     class Meta:
         dynamic = MetaField('strict')
-        index = fields_meta._name
+        index = get_fields_meta_index()._name
         using = ElasticInstance.get()
