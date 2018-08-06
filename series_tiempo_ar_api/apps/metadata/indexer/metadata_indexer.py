@@ -6,7 +6,6 @@ from django_rq import job
 from elasticsearch_dsl import Index
 from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .doc_types import Field
 from .catalog_meta_indexer import CatalogMetadataIndexer
 from .index import get_fields_meta_index
@@ -18,20 +17,19 @@ class MetadataIndexer:
 
     def __init__(self, task, doc_type=Field, index: Index = get_fields_meta_index()):
         self.task = task
-        self.elastic = ElasticInstance.get()
         self.index = index
         self.doc_type = doc_type
 
-    def init_index(self):
+    def setup_index(self):
         if not self.index.exists():
             self.index.doc_type(self.doc_type)
             self.index.create()
-
-        # Actualizo el mapping por si se agregan nuevos campos
-        self.doc_type._doc_type.refresh()
+        else:
+            # Actualizo el mapping por si se agregan nuevos campos
+            self.index.refresh()
 
     def run(self):
-        self.init_index()
+        self.setup_index()
         for node in Node.objects.filter(indexable=True):
             try:
                 IndexMetadataTask.info(self.task,
@@ -45,7 +43,7 @@ class MetadataIndexer:
                 IndexMetadataTask.info(self.task,
                                        u'Error en la lectura del catálogo {}: {}'.format(node.catalog_id, e))
 
-        self.elastic.indices.forcemerge(self.index)
+        self.index.forcemerge()
 
 
 @job('indexing', timeout=10000)
