@@ -14,3 +14,6 @@ FILTER_ARGS = {
     'dataset_source': 'dataset_source_keyword',
     'catalog_id': 'catalog_id',
 }
+
+
+ANALYZER = 'spanish_asciifold'
