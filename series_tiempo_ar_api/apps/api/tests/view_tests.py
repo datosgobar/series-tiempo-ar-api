@@ -116,3 +116,10 @@ class ViewTests(TestCase):
                                          'start': '999999'})
 
         self.assertEqual(response.status_code, 400)
+
+    def test_start_over_10000_returns_200(self):
+        response = self.client.get(self.endpoint,
+                                   data={'ids': SERIES_NAME,
+                                         'start': '10001'})
+
+        self.assertEqual(response.status_code, 200)
