@@ -11,8 +11,7 @@ def tseries_index(name: str) -> Index:
 
     # Fija el límite superior de valores en una respuesta. Si filtramos por serie, sería
     # la cantidad de valores máximas que puede tener una única serie temporal.
-    max_window = settings.MAX_ALLOWED_VALUES['start'] - settings.MAX_ALLOWED_VALUES['limit']
-    index.settings(max_result_window=max_window)
+    index.settings(max_result_window=settings.MAX_SERIES_VALUES)
 
     if not index.exists():
         index.create()

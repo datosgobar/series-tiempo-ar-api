@@ -26,9 +26,12 @@ VALID_STATUS_CODES = (
     201
 )
 
+MAX_SERIES_VALUES = 100000
+MAX_LIMIT = 1000
+
 MAX_ALLOWED_VALUES = {
-    'start': 100000,  # tbd
-    'limit': 1000,
+    'start': MAX_SERIES_VALUES - MAX_LIMIT,  # Offset máximo
+    'limit': MAX_LIMIT,  # Tamaño de página
     'ids': 20  # Cantidad máxima de series que se pueden pedir
 }
 
