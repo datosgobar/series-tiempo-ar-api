@@ -2,8 +2,8 @@
 
 from elasticsearch_dsl import Index
 from django.conf import settings
-from .. import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from .. import constants
 
 
 def tseries_index(name: str) -> Index:
