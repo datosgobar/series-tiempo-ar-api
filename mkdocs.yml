@@ -1,8 +1,9 @@
 site_name: API de Series de Tiempo
 pages:
 - Inicio: index.md
-- Comienzo rápido: quick_start.md
-- Integración con planillas de cálculo: spreadsheet_integration.md
+- Comenzar a usar la API: quick_start.md
+- Filtrar y transformar las series: additional_parameters.md
+- Integrar la API en planillas de cálculo: spreadsheet_integration.md
 - Referencia API: api_reference.md
 - Proyectos de terceros: third_party.md
 theme: readthedocs

@@ -25,11 +25,10 @@ def _get_endpoint(api_series_ip=None):
 
 
 def api_series_head(serie_id, api_series_ip=None):
-    msg = "Pingeando serie {}".format(serie_id)
-    sys.stdout.flush()
-    return requests.head(
-        _get_endpoint(api_series_ip),
-        params={'ids': serie_id}).status_code == 200
+    endpoint = _get_endpoint(api_series_ip)
+    result = requests.head(
+        endpoint, params={'ids': serie_id}).status_code == 200
+    return result, endpoint
 
 
 def main(queries_cant=None, api_series_ip=None):
