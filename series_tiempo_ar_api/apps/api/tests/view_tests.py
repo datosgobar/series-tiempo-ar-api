@@ -7,8 +7,6 @@ from django.http import JsonResponse
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
-
 SERIES_NAME = settings.TEST_SERIES_NAME.format('month')
 
 
@@ -111,3 +109,10 @@ class ViewTests(TestCase):
 
         for line in reader:
             self.assertTrue(len(line), 2)
+
+    def test_start_over_limit_returns_400(self):
+        response = self.client.get(self.endpoint,
+                                   data={'ids': SERIES_NAME,
+                                         'start': '999999'})
+
+        self.assertEqual(response.status_code, 400)
