@@ -4,7 +4,7 @@
 
 Para asegurar la funcionalidad correcta de la indexación, es necesario agregar varios `Repeatable Job` desde el admin de Django. A continuación se muestra una configuración ejemplo. Se recomienda setear la queue a `indexing`.
 
-![scheduler](assets/scheduler.png)
+![scheduler](../assets/scheduler.png)
 
 Configurar las siguientes tareas:
 
@@ -15,7 +15,7 @@ Configurar las siguientes tareas:
 
 La vista de tareas programadas debería parecerse al siguiente ejemplo. Notar que _api indexing_ está programada a las 3 am, y _django_datajsonar indexing_ está a las 12 am, tres horas antes.
 
-![repeatable_jobs](assets/repeatable_jobs.png)
+![repeatable_jobs](../assets/repeatable_jobs.png)
 
 ## Replanificación de tareas
 
@@ -23,9 +23,9 @@ En el caso de querer reconfigurar las tareas, la manera más segura de hacerlo e
 
 - En la vista de _Repeatable Jobs_, ubicar el Job ID de la tarea a reprogramar (ver screenshots anteriores), y ubicarla en la vista de _finished jobs_ de `django-rq`, en la URL `/series/django-rq/`. En este ejemplo, si queremos editar el job de "datajson ar indexing", que está bajo la cola default, debemos ver el detalle de la cola haciendo click en el número `9` de _finished jobs_. Allí deberíamos poder ver el job referenciado, `1425c8c4-35d6-4d0c-b716-b3496f64f1d2`.
 
-![repeatable_jobs](assets/django-rq.png)
+![repeatable_jobs](../assets/django-rq.png)
 
-![repeatable_jobs](assets/django-rq-finished-jobs.png)
+![repeatable_jobs](../assets/django-rq-finished-jobs.png)
 
 
 **Borrar** esta tarea, utilizando el menú de _Actions_ provisto en la vista de _finished jobs_, **No** el _Empty Queue_.

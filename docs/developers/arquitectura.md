@@ -10,7 +10,7 @@ El almacenamiento de los datos se realiza en un cluster de [Elastic](https://www
 
 ## Componentes de la arquitectura
 
-![Diagrama de alto nivel de la arquitectura de la API de Series de Tiempo](https://raw.githubusercontent.com/datosgobar/series-tiempo-ar-api/master/docs/arquitectura-time-series-ar-api.png)
+![Diagrama de alto nivel de la arquitectura de la API de Series de Tiempo](../assets/arquitectura-time-series-ar-api.png)
 
 ### Servidor Web
 

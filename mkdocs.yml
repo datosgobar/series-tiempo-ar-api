@@ -6,4 +6,9 @@ pages:
 - Integrar la API en planillas de cálculo: spreadsheet_integration.md
 - Referencia API: api_reference.md
 - Proyectos de terceros: third_party.md
+- Desarrollo:
+  - Arquitectura: 'developers/arquitectura.md'
+  - Instalación: 'developers/development.md'
+  - Administración: 'developers/admin.md'
+
 theme: readthedocs
