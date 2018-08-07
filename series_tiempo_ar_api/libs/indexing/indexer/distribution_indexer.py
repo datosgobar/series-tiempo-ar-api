@@ -14,27 +14,16 @@ from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 from .operations import process_column
 from .metadata import update_enhanced_meta
+from .index import tseries_index
 
 logger = logging.getLogger(__name__)
 
 
 class DistributionIndexer:
-    def __init__(self, index):
+    def __init__(self, index: str):
         self.elastic = ElasticInstance.get()
-        self.index = index
-
-        self.init_index()
-
-    def init_index(self):
-        if not self.elastic.indices.exists(index=self.index):
-            self.elastic.indices.create(index=self.index, body=constants.INDEX_CREATION_BODY)
-
-        # Actualizo el mapping
-        mapping = self.elastic.indices.get_mapping(index=self.index, doc_type=settings.TS_DOC_TYPE)
-        if not mapping[self.index]['mappings'][settings.TS_DOC_TYPE]['properties'].get('raw_value'):
-            self.elastic.indices.put_mapping(index=self.index,
-                                             doc_type=settings.TS_DOC_TYPE,
-                                             body=constants.MAPPING)
+        self.index_name = index
+        self.index = tseries_index(index)
 
     def run(self, distribution):
         fields = distribution.field_set.all()
@@ -42,7 +31,7 @@ class DistributionIndexer:
         df = self.init_df(distribution, fields)
 
         # Aplica la operación de procesamiento e indexado a cada columna
-        result = [process_column(df[col], self.index) for col in df.columns]
+        result = [process_column(df[col], self.index_name) for col in df.columns]
 
         if not result:  # Distribución sin series cargadas
             return
