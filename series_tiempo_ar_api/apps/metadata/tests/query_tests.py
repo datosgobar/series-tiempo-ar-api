@@ -9,7 +9,7 @@ from elasticsearch_dsl import Search
 
 from series_tiempo_ar_api.apps.metadata.models import CatalogAlias
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
-from .utils import get_mock_search, MockData
+from .utils import get_mock_search
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 mock.patch.object = mock.patch.object  # Hack for pylint inspection
@@ -80,12 +80,13 @@ class QueryTests(TestCase):
     def test_enhanced_meta(self):
         q = FieldSearchQuery(args={'q': 'a'})
 
+        mock_search = get_mock_search()
         with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = q.execute()
 
-        self.assertTrue(result['data'][0]['field']['periodicity'], MockData.periodicity)
-        self.assertTrue(result['data'][0]['field']['start_date'], MockData.start_date)
-        self.assertTrue(result['data'][0]['field']['end_date'], MockData.end_date)
+        self.assertTrue(result['data'][0]['field']['periodicity'], mock_search.periodicity)
+        self.assertTrue(result['data'][0]['field']['start_date'], mock_search.start_date)
+        self.assertTrue(result['data'][0]['field']['end_date'], mock_search.end_date)
 
     def test_catalog_id_filter_with_alias(self):
         alias = CatalogAlias.objects.create(alias='alias_id')

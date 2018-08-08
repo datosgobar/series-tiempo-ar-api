@@ -11,7 +11,7 @@ from django.test import TestCase
 from django_datajsonar.models import Field, Node
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
 from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.dump import constants
@@ -67,7 +67,7 @@ class CSVTest(TestCase):
         self.assertEqual(self.catalog_id, row[0])
         self.assertEqual(field.distribution.identifier, row[2])
         self.assertEqual(field.distribution.dataset.identifier, row[1])
-        self.assertEqual(row[6], field.distribution.enhanced_meta.get(key='periodicity').value)
+        self.assertEqual(row[6], field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
     def test_full_csv_zipped(self):
         path = self.task.dumpfile_set.get(file_name=constants.FULL_CSV_ZIPPED).file.path
@@ -95,7 +95,7 @@ class CSVTest(TestCase):
         self.assertEqual(row[0], self.catalog_id)
         self.assertEqual(row[1], field.distribution.dataset.identifier)
         self.assertEqual(row[2], field.distribution.identifier)
-        self.assertEqual(row[5], field.distribution.enhanced_meta.get(key='periodicity').value)
+        self.assertEqual(row[5], field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
     def test_full_csv_metadata_fields(self):
         file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
