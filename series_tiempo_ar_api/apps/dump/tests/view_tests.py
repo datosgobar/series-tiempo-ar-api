@@ -26,7 +26,10 @@ class ViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(ViewTests, cls).setUpClass()
-        ElasticInstance.get().indices.create(cls.index, body=INDEX_CREATION_BODY)
+        es_client = ElasticInstance.get()
+        if es_client.indices.exists(cls.index):
+            es_client.indices.delete(cls.index)
+        es_client.indices.create(cls.index, body=INDEX_CREATION_BODY)
 
         cls.catalog_id = 'csv_dump_test_catalog'
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
