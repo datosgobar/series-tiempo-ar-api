@@ -1,19 +1,21 @@
 #! coding: utf-8
 import mock
 from datetime import datetime
+from series_tiempo_ar_api.apps.management import meta_keys
 
 
 class MockData:
-    id = 'algo'
-    description = 'description'
-    title = 'title'
-    dataset_title = 'data_title'
-    dataset_publisher_name = 'pub_name'
-    periodicity = 'mensual'
-    units = 'unidades'
-    dataset_source = 'fuente'
-    start_date = datetime(2018, 1, 1, 0, 0, 0)
-    end_date = datetime(2018, 7, 12, 0, 0, 0)
+    def __init__(self):
+        self.id = 'algo'
+        self.description = 'description'
+        self.title = 'title'
+        self.dataset_title = 'data_title'
+        self.dataset_publisher_name = 'pub_name'
+        setattr(self, meta_keys.PERIODICITY, 'mensual')
+        self.units = 'unidades'
+        self.dataset_source = 'fuente'
+        setattr(self, meta_keys.INDEX_START, datetime(2018, 1, 1, 0, 0, 0))
+        setattr(self, meta_keys.INDEX_END,datetime(2018, 7, 12, 0, 0, 0))
 
 
 def get_mock_search():

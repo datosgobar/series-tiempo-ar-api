@@ -72,11 +72,11 @@ class FieldSearchQuery(object):
             'count': response.hits.total
         }
         for hit in response:
-            start_date = getattr(hit, meta_keys.INDEX_START)
+            start_date = getattr(hit, meta_keys.INDEX_START, None)
             if start_date:
                 start_date = start_date.date()
 
-            end_date = getattr(hit, meta_keys.INDEX_END)
+            end_date = getattr(hit, meta_keys.INDEX_END, None)
             if end_date:
                 end_date = end_date.date()
 
