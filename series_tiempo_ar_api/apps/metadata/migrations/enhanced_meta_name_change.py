@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django_datajsonar.models import Metadata
+
 
 def migrate_enhanced_meta(apps, schema_editor):
     Metadata = apps.get_model('django_datajsonar', 'Metadata')

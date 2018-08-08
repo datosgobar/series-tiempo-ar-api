@@ -4,7 +4,6 @@ from elasticsearch_dsl import Search
 from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
-from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.metadata import strings, constants
 
 
@@ -72,11 +71,11 @@ class FieldSearchQuery(object):
             'count': response.hits.total
         }
         for hit in response:
-            start_date = getattr(hit, meta_keys.INDEX_START, None)
+            start_date = getattr(hit, 'start_date', None)
             if start_date:
                 start_date = start_date.date()
 
-            end_date = getattr(hit, meta_keys.INDEX_END, None)
+            end_date = getattr(hit, 'end_date', None)
             if end_date:
                 end_date = end_date.date()
 
@@ -85,7 +84,7 @@ class FieldSearchQuery(object):
                     'id': getattr(hit, 'id', None),
                     'description': getattr(hit, 'description', None),
                     'title': getattr(hit, 'title', None),
-                    'periodicity': getattr(hit, meta_keys.PERIODICITY, None),
+                    'periodicity': getattr(hit, 'periodicity', None),
                     'start_date': start_date,
                     'end_date': end_date,
                     'units': getattr(hit, 'units', None),
