@@ -220,3 +220,11 @@ class QueryTests(TestCase):
         self.assertEqual(resp['meta'][0]['frequency'], 'year')
         self.assertEqual(resp['meta'][1]['field'][meta_keys.PERIODICITY],
                          meta_keys.get(self.field, meta_keys.PERIODICITY))
+
+    def test_query_count(self):
+        self.query.add_series(self.single_series, self.field)
+
+        resp = self.query.run()
+
+        # Longitud de la serie pedida. Ver support/generate_data.py
+        self.assertEqual(resp['count'], 1000)

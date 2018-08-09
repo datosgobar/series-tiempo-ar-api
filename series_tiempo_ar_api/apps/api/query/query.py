@@ -104,12 +104,14 @@ class Query(object):
 
     def run(self):
         response = OrderedDict()  # Garantiza el orden de los objetos cargados
+        self.es_query.run()
         if self.metadata_config != constants.METADATA_ONLY:
-            response['data'] = self.es_query.run()
+            response['data'] = self.es_query.get_results_data()
 
         if self.metadata_config != constants.METADATA_NONE:
             response['meta'] = self.get_metadata()
 
+        response['count'] = self.es_query.get_results_count()
         return response
 
     def get_metadata(self):
