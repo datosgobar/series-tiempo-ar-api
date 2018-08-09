@@ -27,8 +27,8 @@ class FieldEnhancedMetaTests(TransactionTestCase):
 
         update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
 
-        self.assertEqual(str(df.index[0]), meta_keys.get(self.field, meta_keys.INDEX_START))
-        self.assertEqual(str(df.index[-1]), meta_keys.get(self.field, meta_keys.INDEX_END))
+        self.assertEqual(str(df.index[0].date()), meta_keys.get(self.field, meta_keys.INDEX_START))
+        self.assertEqual(str(df.index[-1].date()), meta_keys.get(self.field, meta_keys.INDEX_END))
 
     def test_last_values(self):
         df = self.init_df()
