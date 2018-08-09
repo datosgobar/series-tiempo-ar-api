@@ -99,8 +99,8 @@ class FieldSearchQuery(object):
                 }
             })
 
-        self.response['limit'] = self.args[constants.PARAM_LIMIT]
-        self.response['offset'] = self.args[constants.PARAM_OFFSET]
+        self.response[constants.PARAM_LIMIT] = self.args[constants.PARAM_LIMIT]
+        self.response[constants.PARAM_OFFSET] = self.args[constants.PARAM_OFFSET]
 
         return self.response
 
