@@ -75,6 +75,15 @@ class ReadDataJsonTask(models.Model):
 
     stats = models.TextField(default='{}')
 
+    UPDATED_ONLY = 'updated'
+    ALL = 'all'
+    INDEXING_CHOICES = (
+        (UPDATED_ONLY, 'Sólo actualizados'),
+        (ALL, 'Todos (forzar indexación)')
+    )
+
+    indexing_mode = models.CharField(choices=INDEXING_CHOICES, default=UPDATED_ONLY, max_length=200)
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.pk:  # first time only
