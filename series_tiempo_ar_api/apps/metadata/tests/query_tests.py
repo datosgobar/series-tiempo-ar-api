@@ -33,7 +33,7 @@ class QueryTests(TestCase):
         self.assertTrue(result['errors'])
 
     def test_bad_offset(self):
-        query = FieldSearchQuery(args={'offset': 'invalid'})
+        query = FieldSearchQuery(args={'start': 'invalid'})
 
         result = query.execute()
 
@@ -52,13 +52,13 @@ class QueryTests(TestCase):
         offset = '15'
         query = FieldSearchQuery(args={'q': 'aceite',
                                        'limit': limit,
-                                       'offset': offset})
+                                       'start': offset})
 
         with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertEqual(result['limit'], int(limit))
-        self.assertEqual(result['offset'], int(offset))
+        self.assertEqual(result['start'], int(offset))
 
     def test_add_filter(self):
         q = FieldSearchQuery(args={'units': 'unit_test'})

@@ -21,7 +21,7 @@ class ViewTests(TestCase):
         self.assertIn('data', response_json)
         self.assertIn('limit', response_json)
         self.assertIn('count', response_json)
-        self.assertIn('offset', response_json)
+        self.assertIn('start', response_json)
 
 
 class DatasetSourceTests(TestCase):

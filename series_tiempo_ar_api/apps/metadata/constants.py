@@ -3,7 +3,7 @@
 FIELDS_INDEX = 'fields_meta'
 
 PARAM_LIMIT = 'limit'
-PARAM_OFFSET = 'offset'
+PARAM_OFFSET = 'start'
 PARAM_QUERYSTRING = 'q'
 
 FILTER_ARGS = {
