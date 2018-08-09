@@ -4,11 +4,14 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask, Indicator
+from series_tiempo_ar_api.apps.management.models import Indicator
 
 
-def clean_duplicates(*_):
-    tasks = ReadDataJsonTask.objects.all()
+def clean_duplicates(apps, schema_editor):
+    ReadDataJsonTask = apps.get_model('management', 'ReadDataJsonTask')
+    db_alias = schema_editor.connection.alias
+
+    tasks = ReadDataJsonTask.objects.using(db_alias).all()
 
     for task in tasks:
         for indicator_type, _ in Indicator.TYPE_CHOICES:
