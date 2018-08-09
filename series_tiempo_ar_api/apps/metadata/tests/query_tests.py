@@ -33,7 +33,7 @@ class QueryTests(TestCase):
         self.assertTrue(result['errors'])
 
     def test_bad_offset(self):
-        query = FieldSearchQuery(args={'offset': 'invalid'})
+        query = FieldSearchQuery(args={'https://github.com/datosgobar/series-tiempo-ar-api/issues/318': 'invalid'})
 
         result = query.execute()
 
