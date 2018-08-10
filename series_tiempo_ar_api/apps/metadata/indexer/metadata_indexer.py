@@ -21,12 +21,13 @@ class MetadataIndexer:
         self.doc_type = doc_type
 
     def setup_index(self):
-        if not self.index.exists():
-            self.index.doc_type(self.doc_type)
-            self.index.create()
-        else:
-            # Actualizo el mapping por si se agregan nuevos campos
-            self.index.refresh()
+        """Borra y regenera el índice entero. Esto es 'safe' porque
+        todos los datos a indexar en este índice están guardados en
+        la base de datos relacional
+        """
+        self.index.delete()
+        self.index.create()
+        self.index.doc_type(self.doc_type)
 
     def run(self):
         self.setup_index()
