@@ -17,7 +17,7 @@ class MetadataIndexer:
 
     def __init__(self, task, doc_type=Field, index: Index = None):
         self.task = task
-        self.index = index if index is None else get_fields_meta_index()
+        self.index = index if index is not None else get_fields_meta_index()
         self.doc_type = doc_type
 
     def setup_index(self):
