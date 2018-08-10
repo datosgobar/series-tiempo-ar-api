@@ -2,6 +2,7 @@
 from elasticsearch_dsl import Index, analyzer, token_filter
 
 from series_tiempo_ar_api.apps.metadata import constants
+from series_tiempo_ar_api.apps.metadata.models import Synonym
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
@@ -12,14 +13,18 @@ def add_analyzer(index: Index):
     texto en español
     """
 
-    synonyms_filter = token_filter(constants.SYNONYM_FILTER,
-                                   type='synonym',
-                                   synonyms=['motos,example_synonym'])
+    synonyms = Synonym.get_synonyms_list()
+
+    filters = ['lowercase', 'asciifolding']
+    if synonyms:
+        filters.append(token_filter(constants.SYNONYM_FILTER,
+                                    type='synonym',
+                                    synonyms=synonyms))
 
     index.analyzer(
         analyzer(constants.ANALYZER,
                  tokenizer='standard',
-                 filter=['lowercase', 'asciifolding', synonyms_filter])
+                 filter=filters)
     )
 
 
