@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 class MetadataIndexer:
 
-    def __init__(self, task, doc_type=Field, index: Index = get_fields_meta_index()):
+    def __init__(self, task, doc_type=Field, index: Index = None):
         self.task = task
-        self.index = index
+        self.index = index if index is None else get_fields_meta_index()
         self.doc_type = doc_type
 
     def setup_index(self):
