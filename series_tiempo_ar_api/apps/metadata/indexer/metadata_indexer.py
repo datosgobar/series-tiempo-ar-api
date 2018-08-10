@@ -25,9 +25,10 @@ class MetadataIndexer:
         todos los datos a indexar en este índice están guardados en
         la base de datos relacional
         """
-        self.index.delete()
-        self.index.create()
+        if self.index.exists():
+            self.index.delete()
         self.index.doc_type(self.doc_type)
+        self.index.create()
 
     def run(self):
         self.setup_index()
