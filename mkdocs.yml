@@ -1,6 +1,8 @@
 site_name: API de Series de Tiempo
+site_url: http://apis.datos.gob.ar/series/
 site_description: Documentación de la API de Series de Tiempo de la República Argentina
 site_author: Datos Argentina
+repo_url: https://github.com/datosgobar/series-tiempo-ar-api/
 
 nav:
   - Inicio: index.md
@@ -10,7 +12,7 @@ nav:
     - Integrar la API en planillas de cálculo: spreadsheet_integration.md
     - Referencia API: api_reference.md
     - Referencia OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api
-  - Aplicaciones: third_party.md
+  - Aplicaciones: applications.md
   - Desarrolladores:
     - Arquitectura: 'developers/arquitectura.md'
     - Instalación: 'developers/development.md'
