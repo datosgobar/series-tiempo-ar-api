@@ -1,8 +1,10 @@
 # API de Series de Tiempo de la República Argentina
 
+La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
+
 Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secuencia de observaciones o valores, medidos en determinados momentos del tiempo y ordenados cronológicamente.
 
-<table style="text-align: center;">
+<table>
     <tr><td>indice_tiempo</td><td>ipc_2016_nivel_general</td></tr>
     <tr><td>2017-04</td><td>0.28</td></tr>
     <tr><td>2017-05</td><td>0.24</td></tr>
@@ -19,8 +21,6 @@ Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secue
 </table>
 
 Un [servicio web](https://es.wikipedia.org/wiki/Servicio_web), es una tecnología que permite intercambiar datos entre aplicaciones.
-
-La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
 
 [`apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&format=csv`](http://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&format=csv)
 
