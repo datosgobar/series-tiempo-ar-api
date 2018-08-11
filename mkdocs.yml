@@ -2,14 +2,14 @@ site_name: API de Series de Tiempo
 site_description: Documentación de la API de Series de Tiempo de la República Argentina
 site_author: Datos Argentina
 
-nav:
+pages:
   - Inicio: index.md
   - Usuarios:
     - Comenzar a usar la API: quick_start.md
     - Filtrar y transformar las series: additional_parameters.md
     - Integrar la API en planillas de cálculo: spreadsheet_integration.md
     - Referencia API: api_reference.md
-    # - Referencia OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api
+    - Referencia OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api
   - Aplicaciones: third_party.md
   - Desarrolladores:
     - Arquitectura: 'developers/arquitectura.md'
