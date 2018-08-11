@@ -24,3 +24,5 @@ INVALID_QUERY_TYPE = u"Este tipo de Query no soporta operaciones de collapse"
 END_OF_PERIOD_ERROR = u"Agregación End of Period no soportada para series con índice menor a 1970"
 
 INVALID_PARAM_LENGTH = u"El parámetro {} debe ser un solo caracter"
+
+DATA_NOT_INITIALIZED = "Data aún no inicializada. Correr .run()"

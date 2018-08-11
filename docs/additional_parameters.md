@@ -2,7 +2,7 @@
 
 ## Descargar una tabla con una o varias series
 
-El parámetro `ids` permite la consulta simultánea de hasta 20 series a la vez, separadas por comas.
+El parámetro `ids` permite la consulta simultánea de hasta 4 series a la vez, separadas por comas.
 
 *Tipo de cambio, índice de precios núcleo e índice de precios nivel general*
 

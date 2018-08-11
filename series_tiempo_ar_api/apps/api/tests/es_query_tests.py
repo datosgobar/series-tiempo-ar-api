@@ -474,3 +474,26 @@ class QueryTest(TestCase):
         data = self.query.run()
 
         self.assertIsNotNone(data[0][1])
+
+    @raises(RuntimeError)
+    def test_get_uninitialized_data(self):
+        self.query.get_results_data()
+
+    @raises(RuntimeError)
+    def test_get_uninitialized_count(self):
+        self.query.get_results_count()
+
+    def test_get_data_and_run_equivalence(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.add_collapse('year')
+        self.query.run()
+
+        self.assertEqual(self.query.get_results_data(),
+                         self.query.run())
+
+    def test_query_count(self):
+        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
+        self.query.run()
+
+        # Todas las series generadas tienen max_limit como longitud. Ver support/generate_data.py
+        self.assertEqual(self.query.get_results_count(), self.max_limit)

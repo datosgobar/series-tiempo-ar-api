@@ -20,8 +20,8 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
 
     # Cálculos
     meta = {
-        meta_keys.INDEX_START: serie.index.min(),
-        meta_keys.INDEX_END: serie.index.max(),
+        meta_keys.INDEX_START: serie.index.min().date(),
+        meta_keys.INDEX_END: serie.index.max().date(),
         meta_keys.PERIODICITY: meta_keys.get(field.distribution, meta_keys.PERIODICITY),
         meta_keys.INDEX_SIZE: serie.index.size,
         meta_keys.DAYS_SINCE_LAST_UPDATE: days_since_update,
