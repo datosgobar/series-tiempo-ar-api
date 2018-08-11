@@ -19,20 +19,7 @@ nav:
     - Instalación: 'developers/development.md'
     - Administración: 'developers/admin.md'
 
-theme:
-  name: readthedocs
-  highlightjs: true
-  hljs_languages:
-      - yaml
-      - django
-      - python
+theme: readthedocs
 
 extra_css:
   - css/extra.css
-
-markdown_extensions:
-  - toc:
-      permalink: True
-  - attr_list
-  - fenced_code
-  - sane_lists
