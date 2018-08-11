@@ -4,7 +4,6 @@ site_description: Documentación de la API de Series de Tiempo de la República 
 site_author: Datos Argentina
 
 repo_url: https://github.com/datosgobar/series-tiempo-ar-api
-edit_uri: ""
 
 pages:
   - Inicio: index.md
@@ -30,10 +29,6 @@ theme:
 
 extra_css:
   - css/extra.css
-
-plugins:
-  - search:
-      lang: es
 
 markdown_extensions:
   - toc:
