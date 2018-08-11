@@ -2,7 +2,7 @@ site_name: API de Series de Tiempo
 site_description: Documentación de la API de Series de Tiempo de la República Argentina
 site_author: Datos Argentina
 
-pages:
+nav:
   - Inicio: index.md
   - Usuarios:
     - Comenzar a usar la API: quick_start.md
