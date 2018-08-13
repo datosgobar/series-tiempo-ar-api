@@ -1,5 +1,5 @@
 #! coding: utf-8
-from typing import Sequence
+from typing import Sequence, List
 from django.core.exceptions import ValidationError
 from django.db import models
 from django_datajsonar.models import AbstractTask, Node
@@ -25,3 +25,9 @@ class CatalogAlias(models.Model):
 
     def resolve(self) -> Sequence[str]:
         return self.nodes.values_list('catalog_id', flat=True)
+
+
+class Synonym(models.Model):
+    terms = models.TextField(
+        help_text='Lista de términos similares, separados por coma, sin espacios ni mayúsculas.'
+        ' Ejemplo "ipc,inflacion"', unique=True)

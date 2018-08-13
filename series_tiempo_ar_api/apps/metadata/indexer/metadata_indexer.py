@@ -15,18 +15,20 @@ logger = logging.getLogger(__name__)
 
 class MetadataIndexer:
 
-    def __init__(self, task, doc_type=Field, index: Index = get_fields_meta_index()):
+    def __init__(self, task, doc_type=Field, index: Index = None):
         self.task = task
-        self.index = index
+        self.index = index if index is not None else get_fields_meta_index()
         self.doc_type = doc_type
 
     def setup_index(self):
-        if not self.index.exists():
-            self.index.doc_type(self.doc_type)
-            self.index.create()
-        else:
-            # Actualizo el mapping por si se agregan nuevos campos
-            self.index.refresh()
+        """Borra y regenera el índice entero. Esto es 'safe' porque
+        todos los datos a indexar en este índice están guardados en
+        la base de datos relacional
+        """
+        if self.index.exists():
+            self.index.delete()
+        self.index.doc_type(self.doc_type)
+        self.index.create()
 
     def run(self):
         self.setup_index()

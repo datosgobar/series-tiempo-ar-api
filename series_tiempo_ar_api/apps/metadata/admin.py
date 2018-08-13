@@ -2,11 +2,12 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import IndexMetadataTask, CatalogAlias
+from .models import IndexMetadataTask, CatalogAlias, Synonym
 from .indexer.metadata_indexer import run_metadata_indexer
 from django.contrib import messages
 
 
+@admin.register(IndexMetadataTask)
 class IndexMetadataTaskAdmin(admin.ModelAdmin):
     readonly_fields = ('status', 'created', 'finished', 'logs',)
     list_display = ('__unicode__', 'status')
@@ -34,4 +35,6 @@ class CatalogAliasAdmin(admin.ModelAdmin):
     ids.short_description = 'catalog_ids'
 
 
-admin.site.register(IndexMetadataTask, IndexMetadataTaskAdmin)
+@admin.register(Synonym)
+class SynonymAdmin(admin.ModelAdmin):
+    list_display = ('terms', )

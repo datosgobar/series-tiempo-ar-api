@@ -17,3 +17,4 @@ FILTER_ARGS = {
 
 
 ANALYZER = 'spanish_asciifold'
+SYNONYM_FILTER = 'synonyms_filter'
