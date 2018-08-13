@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from django_datajsonar.models import Catalog, Node
 from series_tiempo_ar_api.apps.analytics.models import Query
-from series_tiempo_ar_api.apps.management.models import Indicator, NodeAdmins
+from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
 
@@ -58,10 +58,7 @@ class ReportGenerator(object):
         if not node:
             recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
         else:
-            try:
-                recipients = NodeAdmins.objects.get(node=node).admins.all()
-            except NodeAdmins.DoesNotExist:
-                recipients = []
+            recipients = node.admins.all()
 
         emails = [user.email for user in recipients]
         if not emails:  # Nothing to do here

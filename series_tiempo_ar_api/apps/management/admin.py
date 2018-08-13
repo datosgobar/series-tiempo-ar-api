@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from .tasks import read_datajson
-from .models import IndexingTaskCron, ReadDataJsonTask, NodeAdmins
+from .models import IndexingTaskCron, ReadDataJsonTask
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -65,6 +65,5 @@ class DataJsonAdmin(admin.ModelAdmin):
         read_datajson.delay(obj, force=force)  # Ejecuta indexación
 
 
-admin.site.register(NodeAdmins)
 admin.site.register(IndexingTaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
