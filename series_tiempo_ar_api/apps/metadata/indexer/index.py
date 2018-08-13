@@ -13,7 +13,7 @@ def add_analyzer(index: Index):
     texto en español
     """
 
-    synonyms = Synonym.objects.values_list('terms', flat=True)
+    synonyms = list(Synonym.objects.values_list('terms', flat=True))
 
     filters = ['lowercase', 'asciifolding']
     if synonyms:
