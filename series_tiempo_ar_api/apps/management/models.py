@@ -115,14 +115,3 @@ class Indicator(models.Model, IndicatorNamesMixin):
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
-
-
-class NodeAdmins(models.Model):
-    class Meta:
-        verbose_name_plural = 'Node admins'
-
-    node = models.OneToOneField(to=djar_models.Node)
-    admins = models.ManyToManyField(to=User)
-
-    def __str__(self):
-        return "Admins de {}".format(self.node.catalog_id)
