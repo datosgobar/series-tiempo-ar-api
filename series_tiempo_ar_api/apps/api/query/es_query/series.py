@@ -2,6 +2,7 @@
 from django.conf import settings
 from elasticsearch_dsl import Search, Q, A
 
+from series_tiempo_ar_api.apps.api.helpers import extra_offset
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
@@ -53,3 +54,10 @@ class Series(object):
         else:  # Ignoramos la in memory ag
             self.collapse_agg = constants.AGG_DEFAULT
             self.search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
+
+        self.args[constants.PARAM_PERIODICITY] = periodicity
+
+    def add_pagination(self, start, limit):
+        # ☢️☢️☢️
+        es_offset = limit + extra_offset(self.args[constants.PARAM_PERIODICITY])
+        self.search = self.search[start:es_offset]
