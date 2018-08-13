@@ -228,3 +228,13 @@ class QueryTests(TestCase):
 
         # Longitud de la serie pedida. Ver support/generate_data.py
         self.assertEqual(resp['count'], 1000)
+
+    def test_day_series_length_with_limit_and_rep_mode(self):
+        day_series_name = settings.TEST_SERIES_NAME.format('day')
+        field = Field.objects.get(identifier=day_series_name)
+
+        self.query.add_series(day_series_name, field, rep_mode='percent_change_a_year_ago')
+        self.query.add_pagination(start=0, limit=2)
+        result = self.query.run()
+
+        self.assertEqual(len(result['data']), 2)

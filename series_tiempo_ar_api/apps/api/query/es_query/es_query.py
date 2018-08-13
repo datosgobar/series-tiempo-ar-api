@@ -78,7 +78,7 @@ class ESQuery(object):
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:
-            serie.search = serie.search[start:limit]
+            serie.add_pagination(start, limit)
 
         # Guardo estos parámetros, necesarios en el evento de hacer un collapse
         self.args[constants.PARAM_START] = start
