@@ -31,9 +31,3 @@ class Synonym(models.Model):
     terms = models.TextField(
         help_text='Lista de términos similares, separados por coma, sin espacios ni mayúsculas.'
         ' Ejemplo "ipc,inflacion"', unique=True)
-
-    @classmethod
-    def get_synonyms_list(cls) -> List[str]:
-        synonyms = cls.objects.all()
-
-        return [s.terms for s in synonyms]

@@ -22,12 +22,12 @@ class IndexTests(TestCase):
         self.assertIn(terms, filters['synonyms'])
 
     def test_add_many_synonyms(self):
-        Synonym.objects.create(terms="one,two")
-        Synonym.objects.create(terms="three,four")
-        Synonym.objects.create(terms="five,six")
+        terms = ["one,two", "three,four", "five,six"]
+        for term in terms:
+            Synonym.objects.create(terms=term)
 
         index = get_fields_meta_index().to_dict()
         filters = index['settings']['analysis']['filter'][constants.SYNONYM_FILTER]
 
         self.assertEqual(len(filters['synonyms']), 3)
-        self.assertEqual(set(filters['synonyms']), set(Synonym.get_synonyms_list()))
+        self.assertEqual(set(filters['synonyms']), set(terms))
