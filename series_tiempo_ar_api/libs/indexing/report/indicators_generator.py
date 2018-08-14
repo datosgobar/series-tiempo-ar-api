@@ -1,6 +1,4 @@
 #! coding: utf-8
-import json
-
 from pydatajson import DataJson
 
 from django_datajsonar.models import Catalog, Field, Distribution, Dataset
