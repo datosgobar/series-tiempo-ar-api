@@ -40,10 +40,19 @@ def main(queries_cant=None, api_series_ip=None):
     print("Realizando {} queries de prueba".format(queries_cant))
 
     series_ids = series_metadata.serie_id[:queries_cant]
+    result = {}
     for idx, serie_id in enumerate(series_ids):
+        status_code = api_series_head(serie_id, api_series_ip)
         print("Ping serie {} de {} ({}): {}".format(
-            idx + 1, len(series_ids), serie_id, api_series_head(
-                serie_id, api_series_ip)))
+            idx + 1, len(series_ids), serie_id, status_code))
+
+        # cuenta los resultados
+        if result_code in result:
+            result[status_code] += 1
+        else:
+            result[status_code] = 0
+
+    print(result)
 
 
 if __name__ == '__main__':
