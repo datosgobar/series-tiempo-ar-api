@@ -54,18 +54,6 @@ class IndexingTaskCron(models.Model):
         cron.write()
 
 
-class Node(models.Model):
-
-    catalog_id = models.CharField(max_length=100, unique=True)
-    catalog_url = models.URLField(unique=True)
-    indexable = models.BooleanField()
-    catalog = models.TextField(default='{}')
-    admins = models.ManyToManyField(User, blank=True)
-
-    def __unicode__(self):
-        return self.catalog_id
-
-
 class ReadDataJsonTask(models.Model):
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
     RUNNING = "RUNNING"
@@ -86,6 +74,15 @@ class ReadDataJsonTask(models.Model):
     logs = models.TextField(default='-')
 
     stats = models.TextField(default='{}')
+
+    UPDATED_ONLY = 'updated'
+    ALL = 'all'
+    INDEXING_CHOICES = (
+        (UPDATED_ONLY, 'Sólo actualizados'),
+        (ALL, 'Todos (forzar indexación)')
+    )
+
+    indexing_mode = models.CharField(choices=INDEXING_CHOICES, default=UPDATED_ONLY, max_length=200)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -118,14 +115,3 @@ class Indicator(models.Model, IndicatorNamesMixin):
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
-
-
-class NodeAdmins(models.Model):
-    class Meta:
-        verbose_name_plural = 'Node admins'
-
-    node = models.OneToOneField(to=djar_models.Node)
-    admins = models.ManyToManyField(to=User)
-
-    def __str__(self):
-        return "Admins de {}".format(self.node.catalog_id)

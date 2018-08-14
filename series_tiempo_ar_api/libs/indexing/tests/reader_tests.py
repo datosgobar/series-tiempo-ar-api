@@ -1,5 +1,6 @@
 #! coding: utf-8
 import os
+from unittest import skip
 
 from django.db import transaction
 from django.test import TestCase
@@ -25,6 +26,7 @@ class IndexerTests(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.elastic = ElasticInstance()
+        super(IndexerTests, cls).setUpClass()
 
     def test_init_dataframe_columns(self):
         self._index_catalog('full_ts_data.json')
@@ -95,15 +97,6 @@ class IndexerTests(TestCase):
 
         self.assertTrue(len(results))
 
-    def test_original_value_flag(self):
-        self._index_catalog('distribution_daily_periodicity.json')
-
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
-            .filter('match', raw_value=True).execute()
-
-        self.assertTrue(len(results))
-
     def test_catalog_value_indexed(self):
         self._index_catalog('distribution_daily_periodicity.json')
 
@@ -113,6 +106,28 @@ class IndexerTests(TestCase):
 
         self.assertTrue(len(results))
 
+    def test_distribution_update(self):
+        series_id = '102.1_I2NG_ABRI_M_22'
+        self._index_catalog('single_data.json')
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertEqual(len(results), 2)
+
+        node = Node.objects.get(catalog_id=CATALOG_ID)
+        node.catalog_url = os.path.join(SAMPLES_DIR, 'single_data_updated.json')
+        node.save()
+
+        self._index_catalog('single_data_updated.json', node)
+
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertEqual(len(results), 3)
+
     @classmethod
     def tearDownClass(cls):
         pass
@@ -121,6 +136,7 @@ class IndexerTests(TestCase):
         if self.elastic.indices.exists(self.test_index):
             self.elastic.indices.delete(self.test_index)
         Distribution.objects.filter(dataset__catalog__identifier=CATALOG_ID).delete()
+        Node.objects.all().delete()
 
     def _index_catalog(self, catalog_path, node=None):
         path = os.path.join(SAMPLES_DIR, catalog_path)

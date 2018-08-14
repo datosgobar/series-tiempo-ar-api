@@ -11,10 +11,9 @@ from django.utils import timezone
 
 from django_datajsonar.models import Catalog, Node
 from series_tiempo_ar_api.apps.analytics.models import Query
-from series_tiempo_ar_api.apps.management.models import Indicator, NodeAdmins
+from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
-from series_tiempo_ar_api.libs.indexing.report.indicators import IndicatorLoader
 
 
 class ReportGenerator(object):
@@ -22,14 +21,11 @@ class ReportGenerator(object):
 
     def __init__(self, task):
         self.task = task
-        self.indicators_loader = IndicatorLoader()
 
     def generate(self):
         self.task.finished = timezone.now()
         self.task.status = self.task.FINISHED
         self.task.save()
-
-        self.indicators_loader.load_indicators_into_db(self.task)
 
         for node in Node.objects.filter(indexable=True):
             IndicatorsGenerator(node, self.task).generate()
@@ -40,8 +36,6 @@ class ReportGenerator(object):
         # Reportes de catálogo individual
         for node in Node.objects.filter(indexable=True, catalog_id__in=ids):
             self.generate_email(node=node)
-
-        self.indicators_loader.clear_indicators()
 
     def generate_email(self, node=None):
         """Genera y manda el mail con el reporte de indexación. Si node es especificado, genera el reporte
@@ -64,10 +58,7 @@ class ReportGenerator(object):
         if not node:
             recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
         else:
-            try:
-                recipients = NodeAdmins.objects.get(node=node).admins.all()
-            except NodeAdmins.DoesNotExist:
-                recipients = []
+            recipients = node.admins.all()
 
         emails = [user.email for user in recipients]
         if not emails:  # Nothing to do here

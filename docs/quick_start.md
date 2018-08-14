@@ -1,142 +1,78 @@
-# Comienzo rápido
+# Comenzar a usar la API
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
  
 
-- [Pasos](#pasos)
-  - [1. Buscar series](#1-buscar-series)
-  - [2. Armar consulta](#2-armar-consulta)
-  - [3. Descargar o integrar consulta](#3-descargar-o-integrar-consulta)
-- [Tipos de consulta](#tipos-de-consulta)
-  - [Descargar una tabla con una o varias series](#descargar-una-tabla-con-una-o-varias-series)
-  - [Filtrar por fechas](#filtrar-por-fechas)
-  - [Cambiar la agregación temporal](#cambiar-la-agregacion-temporal)
-  - [Cambiar la función de agregación temporal](#cambiar-la-funcion-de-agregaci%C3%B3n-temporal)
-  - [Aplicar transformaciones](#aplicar-transformaciones)
-  - [Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez](#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez)
+- [1. Buscar series](#1-buscar-series)
+    - [En un archivo](#en-un-archivo)
+    - [En aplicaciones web](#en-aplicaciones-web)
+- [2. Armar consulta](#2-armar-consulta)
+    - [Manualmente](#manualmente)
+    - [Generador de consultas](#generador-de-consultas)
+- [3. Realizar consulta](#3-realizar-consulta)
+    - [Consultar o integrar JSON](#consultar-o-integrar-json)
+    - [Descargar CSV](#descargar-csv)
+    - [Integrar en planilla de cálculo](#integrar-en-planilla-de-calculo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Pasos
+## 1. Buscar series
 
-### 1. Buscar series
+Para usar la API, debes buscar los _ids_ de las series que te interesan.
 
-**En datos.gob.ar**
+### En un archivo
 
-En http://www.datos.gob.ar podés encontrar la [base completa de series de tiempo](http://datos.gob.ar/dataset/base-series-tiempo-administracion-publica-nacional).
+En [datos.gob.ar](http://datos.gob.ar) podés encontrar la [base completa de series de tiempo](http://datos.gob.ar/dataset/modernizacion-base-series-tiempo-administracion-publica-nacional), que contiene la lista de series disponibles en:
 
-**Descargar lista de series**: [CSV](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv) - [XLSX](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.6/download/series-tiempo-metadatos.xlsx) - [DTA](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.10/download/series-tiempo-metadatos.dta).
++ [CSV](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv)
++ [XLSX](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.6/download/series-tiempo-metadatos.xlsx)
++ [DTA](http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.10/download/series-tiempo-metadatos.dta)
 
-**En aplicaciones web**
+![](assets/busqueda_excel.png)
+<br><br>
 
-* **Generador de URLs**: https://datosgobar.github.io/series-tiempo-ar-explorador
-* **Buscador y visualizador**: http://series-de-tiempo-ar-graficos.netlify.com/
+### En aplicaciones web
 
-### 2. Armar consulta
+* [Generador de consultas](https://datosgobar.github.io/series-tiempo-ar-call-generator)
 
-Los ids de las series deben pasarse al parámetro `ids` del *endpoint* principal `series`:
+![](assets/busqueda_generador.png)
 
-```md
-http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15
-```
+## 2. Armar consulta
 
-Hay varios parámetros opcionales para hacer distintos tipos de consulta ([Ver referencia API](api_reference.md))
+### Manualmente
 
-### 3. Descargar o integrar consulta
+Los ids de las series deben pasarse al parámetro `ids`. Se pueden usar parámetros adicionales para [filtrar y transformar las series](additional_parameters.md).
 
-* Integrar con aplicaciones: usar con `format=json` y el nivel de metadatos necesario `metadata=none, only, simple o full`.
-* Integrar con planillas de cálculo: usar con `format=csv` ([ver "Integración con planillas de cálculo"](spreadsheet_integration.md)).
+[![](assets/ejemplo_consulta.png)](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv)
 
-## Tipos de consulta
+Ver la [referencia API](api_reference.md) para consultar la documentación completa de todos los parámetros disponibles.
 
-### Descargar una tabla con una o varias series
+### Generador de consultas
 
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general*
+[Generador de consultas](https://datosgobar.github.io/series-tiempo-ar-call-generator)
 
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv
-)
+![](assets/generacion_consulta_generador.png)
 
-### Filtrar por fechas
+## 3. Realizar consulta
 
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016*
+### Consultar o integrar JSON
 
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&start_date=2016-01-01
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&start_date=2016-01-01
-)
+Para realizar la consulta directamente en el navegador, o integrarla en una aplicación:
 
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general hasta Diciembre de 2016*
+* Usar `format=json` (valor default).
+* Elegir el nivel de detalle de los metadatos `metadata=none`, `only`, `simple` o `full`.
 
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&end_date=2016-12-01
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&end_date=2016-12-01
-)
+[`http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=json&metadata=full`](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=json&metadata=full)
 
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, hasta Diciembre de 2016*
+### Descargar CSV
 
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&start_date=2016-01-01&end_date=2016-12-01
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&start_date=2016-01-01&end_date=2016-12-01
-)
+Para descargar un archivo CSV:
 
-### Cambiar la agregación temporal
+* Usar `format=csv`.
 
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales*
+[`http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv`](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15)
 
-```md
-http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=138.1_PAPDE_0_M_41,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
-)
+### Integrar en planilla de cálculo
 
-### Cambiar la función de agregación temporal
-
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales a último valor del período*
-
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter&collapse_aggregation=end_of_period
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter&collapse_aggregation=end_of_period
-)
-
-*Tipo de cambio (último valor del período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales*
-
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
-)
-### Aplicar transformaciones
-
-*Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, en valores mensuales y variación porcentual*
-
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&collapse=month&format=csv&start_date=2016-01-01&representation_mode=percent_change
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&collapse=month&format=csv&start_date=2016-01-01&representation_mode=percent_change
-)
-
-*Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales*
-
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&collapse=month&format=csv&start_date=2016-01-01
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&collapse=month&format=csv&start_date=2016-01-01
-)
-
-### Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez
-
-*Tipo de cambio (variaciones porcentuales entre los últimos valores de cada período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales*
-
-```md
-http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
-```
-[Descargar](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&format=csv&collapse=quarter
-)
+Tanto la consulta en CSV como en JSON se pueden [integrar en planillas de cálculo](spreadsheet_integration.md).

@@ -20,9 +20,14 @@ class IndicatorsGenerator(object):
     def generate(self):
         node = self.node
 
-        self.calculate_catalog_indicators(node)
-        data_json = DataJson(json.loads(node.catalog))
+        try:
+            data_json = DataJson(node.catalog_url)
+            data_json.get_fields(only_time_series=True)
+        except Exception as e:
+            self.task.info(self.task, "Error en la lectura del data.json de {}: {}".format(node.catalog_id, e))
+            return
 
+        self.calculate_catalog_indicators(node)
         self.calculate_series_indicators(node, data_json)
         self.calculate_distribution_indicators(node, data_json)
         self.calculate_dataset_indicators(node, data_json)
@@ -104,6 +109,9 @@ class IndicatorsGenerator(object):
         previous = not_indexable.filter(new=False, present=True).count()
         self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE_PREVIOUS, value=previous, node=node)
 
+        error = Distribution.objects.filter(dataset__catalog=catalog, error=True).count()
+        self.create(type=Indicator.DISTRIBUTION_ERROR, value=error, node=node)
+
         not_indexable_discontinued = not_indexable.filter(present=False).count()
         self.create(type=Indicator.DISTRIBUTION_NOT_INDEXABLE_DISCONTINUED,
                     value=not_indexable_discontinued,
@@ -146,6 +154,9 @@ class IndicatorsGenerator(object):
 
         previous = not_indexable.filter(new=False, present=True).count()
         self.create(type=Indicator.FIELD_NOT_INDEXABLE_PREVIOUS, value=previous, node=node)
+
+        error = Field.objects.filter(distribution__dataset__catalog=catalog, error=True).count()
+        self.create(type=Indicator.FIELD_ERROR, value=error, node=node)
 
         not_indexable_discontinued = not_indexable.filter(present=False).count()
         self.create(type=Indicator.FIELD_NOT_INDEXABLE_DISCONTINUED,

@@ -86,3 +86,32 @@ def get_relative_delta(periodicity):
     }
 
     return deltas[periodicity]
+
+
+def get_periodicity_human_format_es(periodicity):
+    periodicities = {
+        'R/P1Y': 'anual',
+        'R/P3M': 'trimestral',
+        'R/P1M': 'mensual',
+        'R/P1D': 'diaria',
+        'R/P6M': 'semestral'
+    }
+
+    return periodicities[periodicity]
+
+
+def extra_offset(periodicity):
+    """Cantidad de valores extra a pedir en el offset de ES cuando se aplica
+    la periodicidad pasada. Es necesario para que al aplicar transformaciones
+    de variación, se devuelva la cantidad exacta esperada por el usuario.
+    Ejemplo: limit=100, rep_mode=change_a_year_ago, devolvería 99 resultados
+    en una serie anual, necesitamos sumar el valor devuelto por esta función
+    """
+    offsets = {
+        'year': 1,
+        'semester': 2,
+        'quarter': 4,
+        'month': 12,
+        'day': 365,
+    }
+    return offsets.get(periodicity, 0)

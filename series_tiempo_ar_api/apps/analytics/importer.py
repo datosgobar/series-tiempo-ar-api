@@ -17,7 +17,7 @@ class AnalyticsImporter:
         # Precálculo
         self.loaded_api_mgmt_ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
 
-    def run(self):
+    def run(self, import_all=False):
         task = AnalyticsImportTask(status=AnalyticsImportTask.RUNNING,
                                    timestamp=timezone.now())
         import_config_model = ImportConfig.get_solo()
@@ -27,16 +27,16 @@ class AnalyticsImporter:
             import_config_model.token
         ))
         try:
-            count = self._run_import()
+            count = self._run_import(import_all)
             task.write_logs("Todo OK. Queries importadas: {}".format(count))
         except Exception as e:
             task.write_logs("Error importando analytics: {}".format(e))
         task.status = task.FINISHED
         task.save()
 
-    def _run_import(self):
+    def _run_import(self, import_all=False):
         last_query = Query.objects.last()
-        if last_query is None:
+        if import_all or last_query is None:
             start_date = None
         else:
             start_date = last_query.timestamp.date()
@@ -75,6 +75,10 @@ class AnalyticsImporter:
                 ids=parsed_querystring.get('ids', ''),
                 params=parsed_querystring,
                 api_mgmt_id=result['id'],
+                uri=result.get('uri') or '',
+                request_time=result.get('request_time') or 0,
+                user_agent=result.get('user_agent') or '',
+                status_code=result.get('status_code') or 0,
             ))
             self.loaded_api_mgmt_ids.update([result['id']])
 

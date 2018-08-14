@@ -22,7 +22,8 @@ class ESQuery(object):
         self.index = index
         self.series = []
         self.elastic = ElasticInstance()
-        self.data = []
+        self.data = None
+        self.count = None
 
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
@@ -77,7 +78,7 @@ class ESQuery(object):
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:
-            serie.search = serie.search[start:limit]
+            serie.add_pagination(start, limit)
 
         # Guardo estos parámetros, necesarios en el evento de hacer un collapse
         self.args[constants.PARAM_START] = start
@@ -99,10 +100,9 @@ class ESQuery(object):
             constants.PARAM_END_DATE: self.data[-1][0]
         }
 
-    def run(self):
-        """Ejecuta la query de todas las series agregadas. Devuelve una
-        'tabla' (lista de listas) con los resultados, siendo cada columna
-        una serie.
+    def execute_searches(self):
+        """Ejecuta la query de todas las series agregadas, e inicializa
+        los atributos data y count a partir de las respuestas.
         """
         if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
@@ -118,5 +118,23 @@ class ESQuery(object):
         responses = multi_search.execute()
         formatter = ResponseFormatter(self.series, responses, self.args)
         self.data = formatter.format_response()
+
+        self.count = max([response.hits.total for response in responses])
+
+    def get_results_data(self) -> list:
+        if self.data is None:
+            raise RuntimeError(strings.DATA_NOT_INITIALIZED)
+
         # Devuelvo hasta LIMIT values
         return self.data[:self.args[constants.PARAM_LIMIT]]
+
+    def get_results_count(self) -> int:
+        if self.count is None:
+            raise RuntimeError(strings.DATA_NOT_INITIALIZED)
+
+        return self.count
+
+    def run(self) -> list:
+        """Equivalente a execute_searches + get_results_data"""
+        self.execute_searches()
+        return self.get_results_data()

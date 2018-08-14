@@ -6,13 +6,9 @@ import os
 import mock
 from django.test import TestCase
 from elasticsearch_dsl import Search
-from pydatajson import DataJson
 
-from series_tiempo_ar_api.apps.metadata import constants
-from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
-from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import CatalogMetadataIndexer
+from series_tiempo_ar_api.apps.metadata.models import CatalogAlias
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
-from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from .utils import get_mock_search
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
@@ -21,12 +17,13 @@ mock.patch.object = mock.patch.object  # Hack for pylint inspection
 
 class QueryTests(TestCase):
 
-    def test_no_querystring(self):
+    def test_no_querystring_is_valid(self):
         query = FieldSearchQuery(args={})
 
-        result = query.execute()
+        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+            result = query.execute()
 
-        self.assertTrue(result['errors'])
+        self.assertFalse(result.get('errors'))
 
     def test_bad_limit(self):
         query = FieldSearchQuery(args={'limit': 'invalid'})
@@ -36,7 +33,7 @@ class QueryTests(TestCase):
         self.assertTrue(result['errors'])
 
     def test_bad_offset(self):
-        query = FieldSearchQuery(args={'offset': 'invalid'})
+        query = FieldSearchQuery(args={'start': 'invalid'})
 
         result = query.execute()
 
@@ -55,13 +52,13 @@ class QueryTests(TestCase):
         offset = '15'
         query = FieldSearchQuery(args={'q': 'aceite',
                                        'limit': limit,
-                                       'offset': offset})
+                                       'start': offset})
 
         with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertEqual(result['limit'], int(limit))
-        self.assertEqual(result['offset'], int(offset))
+        self.assertEqual(result['start'], int(offset))
 
     def test_add_filter(self):
         q = FieldSearchQuery(args={'units': 'unit_test'})
@@ -80,33 +77,25 @@ class QueryTests(TestCase):
         # Esperado: no se modifica la query si no hay parámetros
         self.assertEqual(prev_dict, search)
 
+    def test_enhanced_meta(self):
+        q = FieldSearchQuery(args={'q': 'a'})
 
-class CatalogIndexerTests(TestCase):
+        mock_search = get_mock_search()
+        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+            result = q.execute()
 
-    def setUp(self):
-        self.task = IndexMetadataTask()
-        # No mandar datos a la instancia de ES
-        CatalogMetadataIndexer.init_index = mock.Mock()
-        CatalogMetadataIndexer.index_actions = mock.Mock()
+        self.assertTrue(result['data'][0]['field']['frequency'], mock_search.periodicity)
+        self.assertTrue(result['data'][0]['field']['time_index_start'], mock_search.start_date)
+        self.assertTrue(result['data'][0]['field']['time_index_end'], mock_search.end_date)
 
-    def test_scraping(self):
-        catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
-        datajson = DataJson(catalog)
-        result = CatalogMetadataIndexer(datajson, 'test_node', self.task).scrap_datajson()
+    def test_catalog_id_filter_with_alias(self):
+        alias = CatalogAlias.objects.create(alias='alias_id')
+        alias.nodes.create(catalog_id='catalog_1', catalog_url='http://example.com/1', indexable=True)
+        alias.nodes.create(catalog_id='catalog_2', catalog_url='http://example.com/2', indexable=True)
+        q = FieldSearchQuery(args={'catalog_id': 'alias_id'})
 
-        self.assertEqual(len(result), len(datajson.get_fields()) - 1)
+        search = Search()
+        filtered_search = q.add_filters(search, 'catalog_id', 'catalog_id')
 
-    def test_scraping_result(self):
-        catalog = os.path.join(SAMPLES_DIR, 'single_distribution.json')
-        datajson = DataJson(catalog)
-        result = CatalogMetadataIndexer(datajson, 'test_node', self.task).scrap_datajson()
-
-        mapping = Field._doc_type.mapping.properties.properties.to_dict()
-        mapping_fields = mapping.keys()
-
-        # Me aseguro que los resultados sean legibles por el indexer de ES
-        for field in result:
-            for key in field['_source'].keys():
-                self.assertIn(key, mapping_fields)
-
-            self.assertEqual(field['_index'], constants.FIELDS_INDEX)
+        filtered_catalogs = filtered_search.to_dict()['query']['bool']['filter'][0]['terms']['catalog_id']
+        self.assertEqual(set(filtered_catalogs), {'catalog_1', 'catalog_2'})

@@ -5,14 +5,19 @@ from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 
 from .models import Query, ImportConfig, AnalyticsImportTask
-from .tasks import import_last_day_analytics_from_api_mgmt
+from .tasks import import_analytics_from_api_mgmt
 
 
 class QueryAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'ip_address', 'params',)
-    readonly_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids', 'api_mgmt_id')
+    date_hierarchy = 'timestamp'
 
-    search_fields = ('timestamp', 'params', 'ip_address', 'args', 'ids')
+    list_display = ('timestamp', 'status_code', 'uri', 'ip_address', 'params',)
+    list_filter = ('status_code', 'uri')
+
+    search_fields = ('timestamp', 'uri', 'status_code', 'params', 'ip_address', 'args', 'ids')
+
+    def get_readonly_fields(self, request, obj=None):
+        return [field.name for field in self.opts.local_fields]
 
 
 class ImportConfigAdmin(SingletonModelAdmin):
@@ -24,7 +29,7 @@ class ImportTaskAdmin(admin.ModelAdmin):
     readonly_fields = ('status', 'logs', 'timestamp')
 
     def save_model(self, request, obj, form, change):
-        import_last_day_analytics_from_api_mgmt.delay()
+        import_analytics_from_api_mgmt.delay()
 
 
 admin.site.register(Query, QueryAdmin)
