@@ -84,9 +84,9 @@ class QueryTests(TestCase):
         with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
             result = q.execute()
 
-        self.assertTrue(result['data'][0]['field']['periodicity'], mock_search.periodicity)
-        self.assertTrue(result['data'][0]['field']['start_date'], mock_search.start_date)
-        self.assertTrue(result['data'][0]['field']['end_date'], mock_search.end_date)
+        self.assertTrue(result['data'][0]['field']['frequency'], mock_search.periodicity)
+        self.assertTrue(result['data'][0]['field']['time_index_start'], mock_search.start_date)
+        self.assertTrue(result['data'][0]['field']['time_index_end'], mock_search.end_date)
 
     def test_catalog_id_filter_with_alias(self):
         alias = CatalogAlias.objects.create(alias='alias_id')

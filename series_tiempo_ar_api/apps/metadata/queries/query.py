@@ -84,9 +84,9 @@ class FieldSearchQuery(object):
                     'id': getattr(hit, 'id', None),
                     'description': getattr(hit, 'description', None),
                     'title': getattr(hit, 'title', None),
-                    'periodicity': getattr(hit, 'periodicity', None),
-                    'start_date': start_date,
-                    'end_date': end_date,
+                    'frequency': getattr(hit, 'periodicity', None),
+                    'time_index_start': start_date,
+                    'time_index_end': end_date,
                     'units': getattr(hit, 'units', None),
                 },
                 'dataset': {
