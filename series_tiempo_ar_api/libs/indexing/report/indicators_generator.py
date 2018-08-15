@@ -1,6 +1,4 @@
 #! coding: utf-8
-import json
-
 from pydatajson import DataJson
 
 from django_datajsonar.models import Catalog, Field, Distribution, Dataset
@@ -23,28 +21,26 @@ class IndicatorsGenerator(object):
         try:
             data_json = DataJson(node.catalog_url)
             data_json.get_fields(only_time_series=True)
+            catalog = Catalog.objects.get(identifier=node.catalog_id)
         except Exception as e:
             self.task.info(self.task, "Error en la lectura del data.json de {}: {}".format(node.catalog_id, e))
             return
 
-        self.calculate_catalog_indicators(node)
-        self.calculate_series_indicators(node, data_json)
-        self.calculate_distribution_indicators(node, data_json)
-        self.calculate_dataset_indicators(node, data_json)
+        self.calculate_catalog_indicators(node, catalog)
+        self.calculate_series_indicators(node, data_json, catalog)
+        self.calculate_distribution_indicators(node, data_json, catalog)
+        self.calculate_dataset_indicators(node, data_json, catalog)
 
-    def calculate_catalog_indicators(self, node):
-        catalog_model = Catalog.objects.get(identifier=node.catalog_id)
-        updated = catalog_model.updated
+    def calculate_catalog_indicators(self, node, catalog):
+        updated = catalog.updated
         self.create(type=Indicator.CATALOG_UPDATED, value=updated, node=node)
         self.create(type=Indicator.CATALOG_NOT_UPDATED, value=not updated, node=node)
         self.create(type=Indicator.CATALOG_TOTAL, value=1, node=node)
 
-        error = catalog_model.error
+        error = catalog.error
         self.create(type=Indicator.CATALOG_ERROR, value=error, node=node)
 
-    def calculate_dataset_indicators(self, node, data_json):
-        catalog = Catalog.objects.get(identifier=node.catalog_id)
-
+    def calculate_dataset_indicators(self, node, data_json, catalog):
         indexable = Dataset.objects.filter(catalog=catalog, indexable=True)
 
         updated = indexable.filter(updated=True).count()
@@ -85,9 +81,7 @@ class IndicatorsGenerator(object):
             .values_list('distribution__dataset').distinct().count()
         self.create(type=Indicator.DATASET_TOTAL, value=total, node=node)
 
-    def calculate_distribution_indicators(self, node, data_json):
-        catalog = Catalog.objects.get(identifier=node.catalog_id)
-
+    def calculate_distribution_indicators(self, node, data_json, catalog):
         indexable = Distribution.objects.filter(dataset__catalog=catalog, dataset__indexable=True)
 
         updated = indexable.filter(updated=True).count()
@@ -128,9 +122,7 @@ class IndicatorsGenerator(object):
                     values_list('distribution').distinct().count(),
                     node=node)
 
-    def calculate_series_indicators(self, node, data_json):
-        catalog = Catalog.objects.get(identifier=node.catalog_id)
-
+    def calculate_series_indicators(self, node, data_json, catalog):
         fields = Field.objects.exclude(title='indice_tiempo')
         indexable = fields.filter(distribution__dataset__catalog=catalog,
                                   distribution__dataset__indexable=True)
