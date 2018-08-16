@@ -9,6 +9,7 @@ from django_datajsonar.models import Catalog, Dataset, Distribution, Field
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.api.query.metadata_response import MetadataResponse
 from series_tiempo_ar_api.apps.management import meta_keys
 from .es_query.es_query import ESQuery
 
@@ -159,10 +160,11 @@ class Query(object):
 
         metadata = None
         full_meta_values = (constants.METADATA_ONLY, constants.METADATA_FULL)
+        meta_response = MetadataResponse(serie_model)
         if self.metadata_config in full_meta_values:
-            metadata = self._get_full_metadata(serie_model)
+            metadata = meta_response.get_full_metadata()
         elif self.metadata_config == constants.METADATA_SIMPLE:
-            metadata = self._get_simple_metadata(serie_model)
+            metadata = meta_response.get_simple_metadata()
 
         if self.metadata_flatten:
             for level in list(metadata):
@@ -171,27 +173,6 @@ class Query(object):
 
                 metadata.pop(level)
 
-        return metadata
-
-    def _get_full_metadata(self, field):
-        distribution = field.distribution
-        dataset = distribution.dataset
-        catalog = dataset.catalog
-        return {
-            'catalog': self._get_full_metadata_for_model(catalog),
-            'dataset': self._get_full_metadata_for_model(dataset),
-            'distribution': self._get_full_metadata_for_model(distribution),
-            'field': self._get_full_metadata_for_model(field),
-        }
-
-    def _get_full_metadata_for_model(self, model: datajson_entity):
-        metadata = {}
-        json_fields = json.loads(model.metadata)
-
-        metadata.update(json_fields)
-
-        for enhanced_meta in model.enhanced_meta.all():
-            metadata.update({enhanced_meta.key: enhanced_meta.value})
         return metadata
 
     def _calculate_data_frequency(self):
@@ -216,37 +197,6 @@ class Query(object):
                 'dataset': field.distribution.dataset.identifier
             })
         return result
-
-    def _get_simple_metadata(self, serie_model):
-        """Obtiene los campos de metadatos marcados como simples en
-        la configuración de un modelo de una serie. La estructura
-        final de metadatos respeta el formato de un data.json
-        """
-
-        # Idea: obtener todos los metadatos y descartar los que no queremos
-        meta = self._get_full_metadata(serie_model)
-
-        catalog = meta['catalog']
-        for meta_field in list(catalog):
-            if meta_field not in constants.CATALOG_SIMPLE_META_FIELDS:
-                catalog.pop(meta_field)
-
-        dataset = meta['dataset']
-        for meta_field in list(dataset):
-            if meta_field not in constants.DATASET_SIMPLE_META_FIELDS:
-                dataset.pop(meta_field)
-
-        distribution = meta['distribution']
-        for meta_field in list(distribution):
-            if meta_field not in constants.DISTRIBUTION_SIMPLE_META_FIELDS:
-                distribution.pop(meta_field)
-
-        field = meta['field']
-        for meta_field in list(field):
-            if meta_field not in constants.FIELD_SIMPLE_META_FIELDS:
-                field.pop(meta_field)
-
-        return meta
 
     def flatten_metadata_response(self):
         self.metadata_flatten = True
