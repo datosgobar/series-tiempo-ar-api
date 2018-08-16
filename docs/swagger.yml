@@ -258,6 +258,19 @@ El parámetro `collapse` afecta globalmente a todas las series seleccionadas por
               $ref: "#/definitions/ApiResponse"
         400:
           description: "Solicitud incorrecta"
+  /search:
+    get:
+      tags:
+      - "series"
+      summary: "Permite obtener datos de una o más series de tiempo"
+      description: "La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones."
+      operationId: "series"
+      produces:
+      - "application/json"
+      parameters:
+        - name: q
+          
+
 definitions:
   ApiResponse:
     type: "object"
@@ -268,6 +281,18 @@ definitions:
         type: "string"
       params:
         type: "string"
+  MetaResponse:
+    type: "object"
+    properties:
+      data:
+        type: "string"
+      count:
+        type: "number"
+      limit:
+        type: "number"
+      start:
+        type: "number"
+
 externalDocs:
   description: "Conocé al equipo de Datos Argentina"
   url: "https://datosgobar.github.io/"
