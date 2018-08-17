@@ -1,298 +1,430 @@
-swagger: "2.0"
+swagger: '2.0'
 info:
-  description: "Documentación de la API de Series de Tiempo del [Paquete de Apertura de Datos de la República Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/)."
-  version: "1.0.3-beta"
-  title: "API de Series de Tiempo de la República Argentina"
+  description: >-
+    Documentación de la API de Series de Tiempo del [Paquete de Apertura de
+    Datos de la República
+    Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/).
+  version: 1.0.3-beta
+  title: API de Series de Tiempo de la República Argentina
   contact:
-    email: "datos@modernizacion.gob.ar"
-host: "apis.datos.gob.ar"
-basePath: "/series/api"
+    email: datos@modernizacion.gob.ar
+host: apis.datos.gob.ar
+basePath: /series/api
 tags:
-- name: "series"
-  description: "La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones."
+  - name: series
+    description: >-
+      La API de Series de Tiempo permite obtener datos de una o más series,
+      permitiendo hacer filtros por el índice de tiempo, cambios de granularidad
+      en la dimensión temporal y cambios en la unidad de los valores de la
+      serie, entre otras operaciones.
 schemes:
-- "http"
+  - http
 paths:
   /series:
     get:
       tags:
-      - "series"
-      summary: "Permite obtener datos de una o más series de tiempo"
-      description: "La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones."
-      operationId: "series"
+        - series
+      summary: Permite obtener datos de una o más series de tiempo
+      description: >-
+        La API de Series de Tiempo permite obtener datos de una o más series,
+        permitiendo hacer filtros por el índice de tiempo, cambios de
+        granularidad en la dimensión temporal y cambios en la unidad de los
+        valores de la serie, entre otras operaciones.
+      operationId: series
       produces:
-      - "application/json"
+        - application/json
       parameters:
-      - name: "ids"
-        in: "query"
-        description: "Lista separada por comas de los identificadores de las series a seleccionar para armar la respuesta. Los datos del resultado de la llamada tendrán una columna por cada serie seleccionada, en el mismo orden."
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "csv"
-      - name: "representation_mode"
-        in: "query"
-        description: "Este parámetro indica el modo de representación de las series, y se aplica a todas aquéllas que no tengan otro modo de representación distinto indicado en el parámetro `ids` en forma individual.
-          El modo de representación por defecto es el valor medido en la serie (value).
+        - name: ids
+          in: query
+          description: >-
+            Lista separada por comas de los identificadores de las series a
+            seleccionar para armar la respuesta. Los datos del resultado de la
+            llamada tendrán una columna por cada serie seleccionada, en el mismo
+            orden.
+          required: true
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: representation_mode
+          in: query
+          description: >
+            Este parámetro indica el modo de representación de las series, y se
+            aplica a todas aquéllas que no tengan otro modo de representación
+            distinto indicado en el parámetro `ids` en forma individual. El modo
+            de representación por defecto es el valor medido en la serie
+            (value).
 
-Los modos de representación disponibles son:
+            Los modos de representación disponibles son:
 
-* `value`: Es el modo de representación por defecto. Devuelve el valor medido en la serie.
+            * `value`: Es el modo de representación por defecto. Devuelve el
+            valor medido en la serie.
 
-* `change`: Devuelve la diferencia absoluta entre el valor del período `t` y el de `t-1`.
+            * `change`: Devuelve la diferencia absoluta entre el valor del
+            período `t` y el de `t-1`.
 
-* `percent_change`: Devuelve la variación porcentual entre el valor del período t y el de `t-1`.
+            * `percent_change`: Devuelve la variación porcentual entre el valor
+            del período t y el de `t-1`.
 
-* `change_a_year_ago`: Devuelve la diferencia absoluta entre el valor del período `t` y el del período `t` equivalente de hace un año atrás.
+            * `change_a_year_ago`: Devuelve la diferencia absoluta entre el
+            valor del período `t` y el del período `t` equivalente de hace un
+            año atrás.
 
-* `percent_change_a_year_ago`: Devuelve la variación porcentual entre el valor del período `t` y el del período `t` equivalente de hace un año atrás.
-
-
-Las funciones de transformación disponibles en `representation_mode` también pueden especificarse para series individuales usando la notación `:percent_change` junto al `id` de la serie:
-
-`http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010`
-
-
-El parámetro `representation_mode` seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.
-
-"
-        required: false
-        type: "string"
-        default: "value"
-        enum: [
-          "value",
-          "change",
-          "percent_change",
-          "change_a_year_ago",
-          "percent_change_a_year_ago",
-        ]
-      - name: collapse
-        in: query
-        description: "El parámetro `collapse` modifica la frecuencia de muestreo de los datos de la serie o las series solicitadas. Debe usarse en combinación con `collapse_aggregation` para indicar una funnción de agregación temporal, cuando corresponda.
-
-Las opciones disponibles son:
-
-* `year`: Muestra datos agregados anualmente.
-
-* `quarter`: Muestra datos agregados trimestralmente.
-
-* `semester`: Muestra datos agregados semestralmente.
-
-* `month`: Muestra datos agregados mensualmente.
-
-* `week`: Muestra datos agregados semanalmente.
-
-* `day`: Muestra datos agregados diariamente.
+            * `percent_change_a_year_ago`: Devuelve la variación porcentual
+            entre el valor del período `t` y el del período `t` equivalente de
+            hace un año atrás.
 
 
-Si no se indica, se retornan los datos con la frecuencia original de la serie.
+            Las funciones de transformación disponibles en `representation_mode`
+            también pueden especificarse para series individuales usando la
+            notación `:percent_change` junto al `id` de la serie:
 
-Si se solicitan *múltiples series de distintas frecuencias*, se utilizará la menor frecuencia de todas ellas (Ej.: si se solicitan a la vez una serie diaria, una mensual y una trimestral, se convertirán todas las series a la frecuencia trimestral).
-
-Si la granularidad temporal solicitada en el valor de collapse es menor a la granularidad propia de alguna de las series solicitadas, la consulta devolverá un error.
-
-El parámetro `collapse` afecta globalmente a todas las series seleccionadas por el parámetro `ids` en la llamada."
-        required: false
-        type: "string"
-        enum: [
-          "year",
-          "quarter",
-          "semester",
-          "month",
-          "week",
-          "day",
-        ]
-      - name: collapse_aggregation
-        in: query
-        description: "El parámetro `collapse_aggregation` indica la función de agregación temporal que debe usarse para homogeneizar la frecuencia temporal de todas las series solicitadas (Ej.: qué operación realizar para convertir una serie mensual en anual).
-
-          Esta función de agregación actuará sobre:
-          
-          
-          * Las series agrupadas de mayor granularidad temporal (frecuencia más alta) que la granularidad indicada por el parámetro `collapse`.
-
-          * En caso de que no se especifique el parámetro `collapse`, las series agrupadas de mayor granularidad temporal que la de la serie de menor frecuencia temporal.
-
-          Los valores disponibles para el parámetro son:
-
-          * `avg`: Realiza el promedio de todos los valores agrupados. Es la opción por defecto si no se indica valor para  `collapse_aggregation`.
-
-          * `sum`: Suma todos los valores agrupados.
-
-          * `end_of_period`: Último valor del período.
-
-          * `min`: Mínimo entre los valores agrupados.
-
-          * `max`: Máximo entre los valores agrupados.
-          
-          
-          Las funciones de agregación temporal disponibles en `collapse_aggregation` también pueden especificarse para **series individuales** usando la notación `:sum` junto al `id` de la serie:
-          
-          * `http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010`
-          
-          * `http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010`
+            `http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010`
 
 
-          El parámetro `collapse_aggregation` seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal."
-        required: false
-        type: "string"
-        default: "avg"
-        enum: [
-          "avg",
-          "sum",
-          "end_of_period",
-          "min",
-          "max",
-        ]
-      - name: limit
-        in: query
-        description: "Este parámetro es utilizado junto a `start` para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo, no mayor que 1000, ya que esa es la cantidad máxima de resultados devueltos por la API. El valor por defecto si no se especifica valor alguno es 100."
-        required: false
-        type: integer
-        default: 100
-        minimum: 1
-        maximum: 1000
-      - name: start
-        in: query
-        description: "Este parámetro es utilizado junto a `limit` para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo o 0. El valor por defecto si no se especifica valor alguno es 0.
-        
-        El `start` indica el \"número de períodos después de `start_date`\" (o el \"número de períodos antes de  `end_date`\", dependiendo del ordenamiento *asc* o *desc* del parámetro `sort`) que se saltean desde el comienzo o el final de la serie antes de empezar a devolver valores."
-        required: false
-        type: integer
-        default: 0
-        minimum: 0
-      - name: start_date
-        in: query
-        description: "Fecha y hora en formato ISO 8601.
- 
-        El parámetro `start_date` indica la fecha menor a partir de la cual se comenzarán a recolectar datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de `start_date` se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos."
-        required: false
-        type: string
-      - name: end_date
-        in: query
-        description: "Fecha y hora en formato ISO 8601.
+            El parámetro `representation_mode` seguirá afectando a todas las
+            series para las cuales no se especifique individualmente una función
+            de transformación.
+          required: false
+          type: string
+          default: value
+          enum:
+            - value
+            - change
+            - percent_change
+            - change_a_year_ago
+            - percent_change_a_year_ago
+        - name: collapse
+          in: query
+          description: >-
+            El parámetro `collapse` modifica la frecuencia de muestreo de los
+            datos de la serie o las series solicitadas. Debe usarse en
+            combinación con `collapse_aggregation` para indicar una funnción de
+            agregación temporal, cuando corresponda.
+
+            Las opciones disponibles son:
+
+            * `year`: Muestra datos agregados anualmente.
+
+            * `quarter`: Muestra datos agregados trimestralmente.
+
+            * `semester`: Muestra datos agregados semestralmente.
+
+            * `month`: Muestra datos agregados mensualmente.
+
+            * `week`: Muestra datos agregados semanalmente.
+
+            * `day`: Muestra datos agregados diariamente.
 
 
-        El parámetro `end_date` indica la fecha mayor hasta la cual se recolectarán datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de `end_date` se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos."
-        required: false
-        type: string
-      - name: format
-        in: query
-        description: "Especifica el formato de la respuesta, siendo json el valor por defecto.
+            Si no se indica, se retornan los datos con la frecuencia original de
+            la serie.
 
-          Las opciones disponibles son:
-          
-          * `json`: Devuelve un objeto json con datos y metadatos de las series.
-          
-          * `csv`: Devuelve las series seleccionadas en formato separado por comas. Este tipo de formato no incluye metadatos de las series seleccionadas."
-        required: false
-        type: string
-        enum: [
-          json,
-          csv
-        ]
-      - name: header
-        in: query
-        description: "Especifica los atributos de las series a utilizar como *headers* (cabeceras) de las columnas del archivo CSV generado. Por defecto usa *titles*, que son los títulos de las series.
+            Si se solicitan *múltiples series de distintas frecuencias*, se
+            utilizará la menor frecuencia de todas ellas (Ej.: si se solicitan a
+            la vez una serie diaria, una mensual y una trimestral, se
+            convertirán todas las series a la frecuencia trimestral).
 
-          Las opciones disponibles son:
+            Si la granularidad temporal solicitada en el valor de collapse es
+            menor a la granularidad propia de alguna de las series solicitadas,
+            la consulta devolverá un error.
 
-          * `titles`: Títulos de las series, por ejemplo **oferta_global_pib** (default).
+            El parámetro `collapse` afecta globalmente a todas las series
+            seleccionadas por el parámetro `ids` en la llamada.
+          required: false
+          type: string
+          enum:
+            - year
+            - quarter
+            - semester
+            - month
+            - week
+            - day
+        - name: collapse_aggregation
+          in: query
+          description: >-
+            El parámetro `collapse_aggregation` indica la función de agregación
+            temporal que debe usarse para homogeneizar la frecuencia temporal de
+            todas las series solicitadas (Ej.: qué operación realizar para
+            convertir una serie mensual en anual).
 
-          * `ids`: Identificadores únicos de las series, los mismos pasados al parámetro `ids`.
-          
-          * `descriptions`: Descripciones completas de las series, por ejemplo **Plazo fijo entre 60-89 días en millones de pesos. Categoría II-VI**."
-        required: false
-        default: titles
-        type: string
-        enum: [
-          titles,
-          ids,
-          descriptions,
-        ]
-      - name: sort
-        in: query
-        description: "Especifica el orden temporal de los resultados devueltos, siendo asc el valor por defecto.
-        
-          Las opciones disponibles son:
+            Esta función de agregación actuará sobre:
 
-          * `asc`: Se devuelven los valores más antiguos primero (default).
 
-          * `desc`: Se devuelven los valores más recientes primero."
-        required: false
-        default: asc
-        type: string
-        enum: [
-          asc,
-          desc,
-        ]
-      - name: metadata
-        in: query
-        description: "Especifica el nivel de detalle de metadatos requerido por el usuario, siendo simple el valor por defecto. Sólo aplica cuando `format=json`.
-        
-        Las opciones disponibles son:
+            * Las series agrupadas de mayor granularidad temporal (frecuencia
+            más alta) que la granularidad indicada por el parámetro `collapse`.
 
-        * `none`: No se devuelven metadatos, sólo datos.
+            * En caso de que no se especifique el parámetro `collapse`, las
+            series agrupadas de mayor granularidad temporal que la de la serie
+            de menor frecuencia temporal.
 
-        * `only`: No se devuelven datos, sólo metadatos.
+            Los valores disponibles para el parámetro son:
 
-        * `simple`: Se devuelven los metadatos más importantes para comprender y utilizar las series (default).
+            * `avg`: Realiza el promedio de todos los valores agrupados. Es la
+            opción por defecto si no se indica valor para 
+            `collapse_aggregation`.
 
-        * `full`: Se devuelven todos los metadatos disponibles que tengan relación con cada serie."
-        required: false
-        default: simple
-        type: string
-        enum: [
-          none,
-          only,
-          simple,
-          full,
-        ]
+            * `sum`: Suma todos los valores agrupados.
+
+            * `end_of_period`: Último valor del período.
+
+            * `min`: Mínimo entre los valores agrupados.
+
+            * `max`: Máximo entre los valores agrupados.
+
+
+            Las funciones de agregación temporal disponibles en
+            `collapse_aggregation` también pueden especificarse para **series
+            individuales** usando la notación `:sum` junto al `id` de la serie:
+
+            *
+            `http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010`
+
+            *
+            `http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010`
+
+
+            El parámetro `collapse_aggregation` seguirá afectando a todas las
+            series para las cuales no se especifique individualmente una función
+            de agregación temporal.
+          required: false
+          type: string
+          default: avg
+          enum:
+            - avg
+            - sum
+            - end_of_period
+            - min
+            - max
+        - name: limit
+          in: query
+          description: >-
+            Este parámetro es utilizado junto a `start` para controlar el
+            paginado de los resultados devueltos por la API. Debe especificarse
+            un número entero positivo, no mayor que 1000, ya que esa es la
+            cantidad máxima de resultados devueltos por la API. El valor por
+            defecto si no se especifica valor alguno es 100.
+          required: false
+          type: integer
+          default: 100
+          minimum: 1
+          maximum: 1000
+        - name: start
+          in: query
+          description: >-
+            Este parámetro es utilizado junto a `limit` para controlar el
+            paginado de los resultados devueltos por la API. Debe especificarse
+            un número entero positivo o 0. El valor por defecto si no se
+            especifica valor alguno es 0.
+
+            El `start` indica el "número de períodos después de `start_date`" (o
+            el "número de períodos antes de  `end_date`", dependiendo del
+            ordenamiento *asc* o *desc* del parámetro `sort`) que se saltean
+            desde el comienzo o el final de la serie antes de empezar a devolver
+            valores.
+          required: false
+          type: integer
+          default: 0
+          minimum: 0
+        - name: start_date
+          in: query
+          description: >-
+            Fecha y hora en formato ISO 8601.
+
+            El parámetro `start_date` indica la fecha menor a partir de la cual
+            se comenzarán a recolectar datos para la respuesta. Los valores cuyo
+            índice de tiempo coincida con el valor de `start_date` se incluirán
+            en el resultado retornado. Se utilizará como filtro sobre el índice
+            de tiempo de las series de datos.
+          required: false
+          type: string
+        - name: end_date
+          in: query
+          description: >-
+            Fecha y hora en formato ISO 8601.
+
+
+            El parámetro `end_date` indica la fecha mayor hasta la cual se
+            recolectarán datos para la respuesta. Los valores cuyo índice de
+            tiempo coincida con el valor de `end_date` se incluirán en el
+            resultado retornado. Se utilizará como filtro sobre el índice de
+            tiempo de las series de datos.
+          required: false
+          type: string
+        - name: format
+          in: query
+          description: >-
+            Especifica el formato de la respuesta, siendo json el valor por
+            defecto.
+
+            Las opciones disponibles son:
+
+            * `json`: Devuelve un objeto json con datos y metadatos de las
+            series.
+
+            * `csv`: Devuelve las series seleccionadas en formato separado por
+            comas. Este tipo de formato no incluye metadatos de las series
+            seleccionadas.
+          required: false
+          type: string
+          enum:
+            - json
+            - csv
+        - name: header
+          in: query
+          description: >-
+            Especifica los atributos de las series a utilizar como *headers*
+            (cabeceras) de las columnas del archivo CSV generado. Por defecto
+            usa *titles*, que son los títulos de las series.
+
+            Las opciones disponibles son:
+
+            * `titles`: Títulos de las series, por ejemplo **oferta_global_pib**
+            (default).
+
+            * `ids`: Identificadores únicos de las series, los mismos pasados al
+            parámetro `ids`.
+
+            * `descriptions`: Descripciones completas de las series, por ejemplo
+            **Plazo fijo entre 60-89 días en millones de pesos. Categoría
+            II-VI**.
+          required: false
+          default: titles
+          type: string
+          enum:
+            - titles
+            - ids
+            - descriptions
+        - name: sort
+          in: query
+          description: >-
+            Especifica el orden temporal de los resultados devueltos, siendo asc
+            el valor por defecto.
+
+            Las opciones disponibles son:
+
+            * `asc`: Se devuelven los valores más antiguos primero (default).
+
+            * `desc`: Se devuelven los valores más recientes primero.
+          required: false
+          default: asc
+          type: string
+          enum:
+            - asc
+            - desc
+        - name: metadata
+          in: query
+          description: >-
+            Especifica el nivel de detalle de metadatos requerido por el
+            usuario, siendo simple el valor por defecto. Sólo aplica cuando
+            `format=json`.
+
+            Las opciones disponibles son:
+
+            * `none`: No se devuelven metadatos, sólo datos.
+
+            * `only`: No se devuelven datos, sólo metadatos.
+
+            * `simple`: Se devuelven los metadatos más importantes para
+            comprender y utilizar las series (default).
+
+            * `full`: Se devuelven todos los metadatos disponibles que tengan
+            relación con cada serie.
+          required: false
+          default: simple
+          type: string
+          enum:
+            - none
+            - only
+            - simple
+            - full
       responses:
-        200:
-          description: "La consulta se ejecutó exitosamente"
+        '200':
+          description: La consulta se ejecutó exitosamente
           schema:
-            type: "array"
+            type: array
             items:
-              $ref: "#/definitions/ApiResponse"
-        400:
-          description: "Solicitud incorrecta"
+              $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Solicitud incorrecta
   /search:
     get:
       tags:
-      - "series"
-      summary: "Permite obtener datos de una o más series de tiempo"
-      description: "La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones."
-      operationId: "series"
+        - series
+      summary: Permite obtener datos de una o más series de tiempo
+      description: >-
+        Se provee un endpoint adicional para funcionar como buscador de series a partir de un texto, proporcionando además algunos filtros como por tema o por unidades de las series.
+      operationId: search
       produces:
-      - "application/json"
+        - application/json
       parameters:
         - name: q
-          
+          in: query
+          description: >-
+            Texto de entrada a buscar en la base de series de tiempo. Puede ser abritrariamente largo, pero se recomienda ingresar una o más palabras clave.
+          required: true
+          type: string
+        - name: dataset_theme
+          in: query
+          description: >-
+            Filtro por tema del dataset. Ver el endpoint /search/dataset_theme para ver las opciones disponibles
+          required: false
+          type: string
+        - name: units
+          in: query
+          description: >-
+            Filtro por unidades de la serie. Ver el endpoint /search/field_units para ver las opciones disponibles
+          required: false
+          type: string
+        - name: dataset_source
+          in: query
+          description: >-
+            Filtro por fuente del dataset. Ver el endpoint /search/dataset_source para ver las opciones disponibles
+          required: false
+          type: string
+        - name: dataset_publisher_name
+          in: query
+          description: >-
+            Filtro por publicador del dataset. Ver el endpoint /search/dataset_publisher_name para ver las opciones disponibles
+          required: false
+          type: string
+        - name: catalog_id
+          in: query
+          description: >-
+            Filtro por catálogo de publicación. Ver el endpoint /search/catalog_id para ver las opciones disponibles
+          required: false
+          type: string
+      responses:
+        '200':
+          description: La consulta se ejecutó exitosamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MetaResponse'
+        '400':
+          description: Solicitud incorrecta
 
 definitions:
   ApiResponse:
-    type: "object"
+    type: object
     properties:
       data:
-        type: "string"
+        type: string
       meta:
-        type: "string"
+        type: string
       params:
-        type: "string"
+        type: string
   MetaResponse:
-    type: "object"
+    type: object
     properties:
       data:
-        type: "string"
+        type: string
       count:
-        type: "number"
+        type: number
       limit:
-        type: "number"
+        type: number
       start:
-        type: "number"
-
+        type: number
 externalDocs:
-  description: "Conocé al equipo de Datos Argentina"
-  url: "https://datosgobar.github.io/"
+  description: Conocé al equipo de Datos Argentina
+  url: 'https://datosgobar.github.io/'
