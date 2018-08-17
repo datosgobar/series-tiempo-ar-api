@@ -18,7 +18,7 @@ tags:
       en la dimensión temporal y cambios en la unidad de los valores de la
       serie, entre otras operaciones.
 schemes:
-  - http
+  - https
 paths:
   /series:
     get:
