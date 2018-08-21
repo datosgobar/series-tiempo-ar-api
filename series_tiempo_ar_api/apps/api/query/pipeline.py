@@ -111,7 +111,7 @@ class Pagination(BaseOperation):
             return
 
         start = int(start)
-        limit = start + int(limit)
+        limit = int(limit)
         query.add_pagination(start, limit)
 
     def validate_arg(self, arg, min_value=0, name=constants.PARAM_LIMIT):
