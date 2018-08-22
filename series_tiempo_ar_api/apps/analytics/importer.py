@@ -27,8 +27,8 @@ class AnalyticsImporter:
             import_config_model.token
         ))
         try:
-            count = self._run_import(import_all)
-            task.write_logs("Todo OK. Queries importadas: {}".format(count))
+            self._run_import(import_all)
+            task.write_logs("Todo OK")
         except Exception as e:
             task.write_logs("Error importando analytics: {}".format(e))
         task.status = task.FINISHED
@@ -49,15 +49,12 @@ class AnalyticsImporter:
         response = self.exec_request(from_date=start_date,
                                      limit=self.limit,
                                      kong_api_id=import_config_model.kong_api_id)
-        count = response['count']
         self._load_queries_into_db(response)
         next_results = response['next']
         while next_results:
             response = self.exec_request(url=next_results)
             self._load_queries_into_db(response)
             next_results = response['next']
-
-        return count
 
     def _load_queries_into_db(self, query_results):
         # Filtramos las queries ya agregadas
