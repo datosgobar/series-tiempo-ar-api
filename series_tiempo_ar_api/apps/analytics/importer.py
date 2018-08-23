@@ -1,5 +1,5 @@
 #! coding: utf-8
-from urllib.parse import parse_qs
+from urllib import parse
 
 from django.core.exceptions import FieldError
 from django.utils import timezone
@@ -35,23 +35,24 @@ class AnalyticsImporter:
         task.save()
 
     def _run_import(self, import_all=False):
-        last_query = Query.objects.last()
-        if import_all or last_query is None:
-            start_date = None
-        else:
-            start_date = last_query.timestamp.date()
         import_config_model = ImportConfig.get_solo()
         if (not import_config_model.endpoint or
                 not import_config_model.token or
                 not import_config_model.kong_api_id):
             raise FieldError("Configuración de importación de analytics no inicializada")
 
-        response = self.exec_request(from_date=start_date,
-                                     limit=self.limit,
+        cursor = import_config_model.last_cursor or None
+        if import_all:
+            cursor = None
+
+        response = self.exec_request(cursor=cursor,
                                      kong_api_id=import_config_model.kong_api_id)
         self._load_queries_into_db(response)
         next_results = response['next']
         while next_results:
+            # Actualizo el cursor en cada iteración en caso de error
+            import_config_model.last_cursor = parse.parse_qs(parse.urlsplit(next_results).query)['cursor'][0]
+            import_config_model.save()
             response = self.exec_request(url=next_results)
             self._load_queries_into_db(response)
             next_results = response['next']
@@ -64,7 +65,7 @@ class AnalyticsImporter:
 
         queries = []
         for result in results:
-            parsed_querystring = parse_qs(result['querystring'], keep_blank_values=True)
+            parsed_querystring = parse.parse_qs(result['querystring'], keep_blank_values=True)
             queries.append(Query(
                 ip_address=result['ip_address'],
                 args=result['querystring'],

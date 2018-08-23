@@ -31,6 +31,8 @@ class ImportConfig(SingletonModel):
     token = models.CharField(max_length=64)
     kong_api_id = models.CharField(max_length=64)
 
+    last_cursor = models.CharField(max_length=64, blank=True)
+
     def clean(self):
         status_code = requests.head(
             self.endpoint,

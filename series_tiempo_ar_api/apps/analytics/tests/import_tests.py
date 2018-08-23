@@ -143,7 +143,7 @@ class ImportTests(TestCase):
     def test_multiple_page_results(self):
         """Emula una query con dos páginas de resultados, cada una con una query"""
         return_value = [{
-            'next': 'next_page_url',
+            'next': 'http://next_page_url/?cursor=next_cursor',
             'count': 2,
             'results': [
                 {
@@ -292,3 +292,33 @@ class ImportTests(TestCase):
         ]))
         self.assertEqual(Query.objects.count(), 1)
         self.assertEqual(Query.objects.first().request_time, Decimal(request_time))
+
+    def test_cursor_is_preserved_between_runs(self):
+        return_value = [{
+            'next': 'http://next_page_url/?cursor=next_cursor',
+            'count': 2,
+            'results': [
+                {
+                    'ip_address': '127.0.0.1',
+                    'querystring': '',
+                    'start_time': '2018-06-07T05:00:00-03:00',
+                    'id': 2,
+                    'uri': '/series/api/series/',
+                }
+            ]
+        }, {
+            'next': None,
+            'count': 2,
+            'results': [
+                {
+                    'ip_address': '127.0.0.1',
+                    'querystring': '',
+                    'start_time': '2018-06-07T05:00:00-03:00',
+                    'id': 3,
+                    'uri': '/series/api/series/',
+                }
+            ]
+        }]
+        import_analytics_from_api_mgmt(requests_lib=FakeRequests(responses=return_value))
+
+        self.assertIsNotNone(ImportConfig.get_solo().last_cursor)
