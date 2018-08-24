@@ -19,6 +19,8 @@ doctoc: ## generate table of contents, doctoc command line tool required
 	bash fix_github_links.sh docs/api_reference.md
 	doctoc --github --title " " docs/spreadsheet_integration.md
 	bash fix_github_links.sh docs/spreadsheet_integration.md
+	doctoc --github --title " " docs/python_usage.md
+	bash fix_github_links.sh docs/python_usage.md
 
 swaggerdocs:
 	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/; rm temp.zip

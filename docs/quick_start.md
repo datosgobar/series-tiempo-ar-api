@@ -46,7 +46,7 @@ Los ids de las series deben pasarse al parámetro `ids`. Se pueden usar parámet
 
 [![](assets/ejemplo_consulta.png)](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv)
 
-Ver la [referencia API](api_reference.md) para consultar la documentación completa de todos los parámetros disponibles.
+Ver la [referencia API](reference/api_reference.md) para consultar la documentación completa de todos los parámetros disponibles.
 
 ### Generador de consultas
 
