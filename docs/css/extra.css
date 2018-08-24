@@ -6,3 +6,7 @@ table {
 tbody {
 	display: inline;
 }
+
+.wy-nav-top {
+	background: rgb(0, 0, 185);
+}

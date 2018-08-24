@@ -1,5 +1,18 @@
 # Filtrar y transformar las series
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+ 
+
+- [Descargar una tabla con una o varias series](#descargar-una-tabla-con-una-o-varias-series)
+- [Filtrar por fechas](#filtrar-por-fechas)
+- [Cambiar la agregación temporal](#cambiar-la-agregacion-temporal)
+- [Cambiar la función de agregación temporal](#cambiar-la-funcion-de-agregaci%C3%B3n-temporal)
+- [Aplicar transformaciones](#aplicar-transformaciones)
+- [Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez](#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Descargar una tabla con una o varias series
 
 El parámetro `ids` permite la consulta simultánea de hasta 4 series a la vez, separadas por comas.
