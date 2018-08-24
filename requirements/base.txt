@@ -17,5 +17,5 @@ django-sendfile==0.3.11
 python-crontab==2.2.8
 django-des==2.2.0
 django-rq-scheduler==1.1.1
--e git+git://github.com/datosgobar/django-datajsonar#egg=django_datajsonar
+-e git+git://github.com/datosgobar/django-datajsonar@0.1.0#egg=django_datajsonar
 django-solo==1.1.2
