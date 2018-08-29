@@ -19,3 +19,10 @@ DATABASES = {
 }
 
 SENDFILE_BACKEND = 'sendfile.backends.development'
+
+for queue in RQ_QUEUES.values():
+    queue['ASYNC'] = False
+
+DATAJSON_AR_DISTRIBUTION_STORAGE = 'minio_storage.storage.MinioMediaStorage'
+MINIO_STORAGE_ACCESS_KEY = env('MINIO_ACCESS_KEY')
+MINIO_STORAGE_SECRET_KEY = env('MINIO_SECRET_KEY')
