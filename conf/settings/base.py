@@ -165,6 +165,7 @@ VENDOR_APPS = (
     'scheduler',
     'django_datajsonar',
     'solo',
+    'minio_storage',
 )
 
 APPS = (
@@ -309,3 +310,11 @@ PROTECTED_MEDIA_DIR = env('PROTECTED_MEDIA_DIR', default=ROOT_DIR('protected'))
 ANALYTICS_CSV_FILENAME = 'analytics.csv'
 
 DATAJSON_AR_TIME_SERIES_ONLY = True
+DATAJSON_AR_DISTRIBUTION_STORAGE = 'minio_storage.storage.MinioMediaStorage'
+
+MINIO_STORAGE_ACCESS_KEY = env('MINIO_ACCESS_KEY')
+MINIO_STORAGE_SECRET_KEY = env('MINIO_SECRET_KEY')
+MINIO_STORAGE_ENDPOINT = env('MINIO_STORAGE_ENDPOINT', default="localhost:9000")
+MINIO_STORAGE_USE_HTTPS = False
+MINIO_STORAGE_MEDIA_BUCKET_NAME = env('MINIO_STORAGE_BUCKET_NAME', default='tsapi.dev.media.bucket')
+MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
