@@ -22,12 +22,8 @@ services:
       - "9000:9000"
     entrypoint: minio server /data
     volumes:
-      - type: volume
-        source: /mnt/data
-        target: /data
-      - type: volume
-        source: /mnt/config
-        target: /root/.minio
+      - /mnt/data:/data
+      - /mnt/config:/root/.minio
     environment:
       - "MINIO_ACCESS_KEY=development"
       - "MINIO_SECRET_KEY=development"
