@@ -19,6 +19,7 @@ def dataset_errors(dataset: Dataset):
 
 def catalog_errors(catalog: Catalog):
     errors = [dataset_errors(dataset) for dataset in catalog.dataset_set.all()]
+    errors = filter(lambda x: x, errors)
     return '\n'.join(errors)
 
 
