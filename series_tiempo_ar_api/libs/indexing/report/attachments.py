@@ -42,7 +42,7 @@ def generate_catalog_attachment(node=None):
         queryset = queryset.filter(identifier=node.catalog_id)
     return generate_attachments(queryset,
                                 lambda x: Node.objects.get(catalog_id=x.identifier).indexable,
-                                lambda x: (x.error, ''))
+                                lambda x: (x.error, x.error_msg))
 
 
 def generate_dataset_attachment(node=None):
@@ -52,7 +52,7 @@ def generate_dataset_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.indexable,
-                                lambda x: (x.error, ''))
+                                lambda x: (x.error, x.error_msg))
 
 
 def generate_distribution_attachment(node=None):
@@ -62,7 +62,7 @@ def generate_distribution_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.dataset.indexable,
-                                lambda x: (bool(x.error), x.error))
+                                lambda x: (bool(x.error), x.error_msg))
 
 
 def generate_field_attachment(node=None):
@@ -73,4 +73,4 @@ def generate_field_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.distribution.dataset.indexable,
-                                lambda x: (bool(x.distribution.error), x.distribution.error))
+                                lambda x: (bool(x.distribution.error), x.distribution.error_msg))
