@@ -5,7 +5,6 @@ AVAILABLE = 'available'
 PERIODICITY = 'frequency'
 CHANGED = 'changed'
 LAST_HASH = 'last_hash'
-ERROR_MSG = 'error_msg'
 
 INDEX_START = 'time_index_start'
 INDEX_END = 'time_index_end'

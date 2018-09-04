@@ -62,7 +62,7 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
         try:
             distribution = Distribution.objects.get(identifier=distribution_id,
                                                     dataset__catalog__identifier=node.catalog_id)
-            distribution.enhanced_meta.create(key=meta_keys.ERROR_MSG, value=msg)
+            distribution.error_msg = msg
             distribution.error = True
             distribution.field_set.update(error=True)
             distribution.save()
