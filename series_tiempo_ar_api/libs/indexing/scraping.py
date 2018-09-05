@@ -27,12 +27,6 @@ class Scraper(object):
         """
         distribution_id = distribution.get(IDENTIFIER)
         url = distribution.get(DOWNLOAD_URL)
-        if not self.read_local:
-            if not url or requests.head(url).status_code != 200:
-                msg = u'{} {}'.format(strings.INVALID_DISTRIBUTION_URL,
-                                      distribution_id)
-                raise ValueError(msg)
-
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
         url = urllib.parse.quote(url, safe='/:')
