@@ -23,7 +23,7 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
         meta_keys.INDEX_START: serie.index.min().date(),
         meta_keys.INDEX_END: serie.index.max().date(),
         meta_keys.PERIODICITY: meta_keys.get(field.distribution, meta_keys.PERIODICITY),
-        meta_keys.INDEX_SIZE: serie.index.size,
+        meta_keys.INDEX_SIZE: _get_index_size(serie),
         meta_keys.DAYS_SINCE_LAST_UPDATE: days_since_update,
         meta_keys.LAST_VALUE: last,
         meta_keys.SECOND_TO_LAST_VALUE: second_to_last,
@@ -34,7 +34,7 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
         field.enhanced_meta.update_or_create(key=meta_key, defaults={'value': value})
 
 
-def _get_last_day_of_period(serie: pd.Series, periodicity: str) -> int:
+def _get_last_day_of_period(serie: pd.Series, periodicity: str) -> pd.datetime:
     frequencies_map_end = {
         "R/P1Y": "A",
         "R/P6M": "6M",
@@ -45,3 +45,8 @@ def _get_last_day_of_period(serie: pd.Series, periodicity: str) -> int:
     period = pd.to_datetime(serie.index.max()).to_period(frequencies_map_end[periodicity])
     last_day = period.to_timestamp(how='end')
     return last_day
+
+
+def _get_index_size(serie: pd.Series):
+    # Filtro los NaN antes y después de la serie
+    return len(serie[serie.first_valid_index():serie.last_valid_index()])
