@@ -3,12 +3,10 @@ import logging
 import urllib.parse
 
 import pandas as pd
-import requests
 from django.conf import settings
 from series_tiempo_ar.validations import validate_distribution
 
-from series_tiempo_ar_api.libs.indexing import strings
-from .constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
+from .constants import DOWNLOAD_URL, DATASET_IDENTIFIER
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +23,6 @@ class Scraper(object):
         Returns:
             bool: True si la distribución pasa las validaciones, False caso contrario
         """
-        distribution_id = distribution.get(IDENTIFIER)
         url = distribution.get(DOWNLOAD_URL)
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
