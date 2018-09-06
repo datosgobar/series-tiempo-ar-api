@@ -1,7 +1,9 @@
 #! coding: utf-8
 import logging
 import urllib.parse
+from io import BytesIO
 
+import requests
 import pandas as pd
 from django.conf import settings
 from series_tiempo_ar.validations import validate_distribution
@@ -29,9 +31,21 @@ class Scraper(object):
         url = urllib.parse.quote(url, safe='/:')
 
         dataset = catalog.get_dataset(distribution[DATASET_IDENTIFIER])
-        df = pd.read_csv(url, parse_dates=[settings.INDEX_COLUMN])
-        df = df.set_index(settings.INDEX_COLUMN)
+        df = self.init_df(url)
 
         validate_distribution(df, catalog, dataset, distribution)
 
         return True
+
+    def init_df(self, url):
+        """Wrapper de descarga de una distribución y carga en un pandas dataframe.
+        No le pasamos la url a read_csv directamente para evitar problemas de
+        verificación de certificados SSL
+        """
+        if self.read_local:
+            csv = url
+        else:
+            csv = BytesIO(requests.get(url, verify=False).content)
+        return pd.read_csv(csv,
+                           parse_dates=[settings.INDEX_COLUMN],
+                           index_col=settings.INDEX_COLUMN)
