@@ -94,7 +94,7 @@ class DumpGenerator:
             dataset.identifier,
             self.fields[field]['distribution'].identifier,
             field,
-            value[0],  # Index
+            value[0].date(),  # Index
             periodicity,
             value[1],  # Value
             self.fields[field]['serie_titulo'],
