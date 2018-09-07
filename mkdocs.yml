@@ -21,7 +21,7 @@ nav:
     - Instalación: 'developers/development.md'
     - Administración: 'developers/admin.md'
 
-theme: readthedocs
+theme: datosgobar_docs
 
 extra_css:
   - css/extra.css
