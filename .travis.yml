@@ -19,7 +19,7 @@ env:
 
 before_install:
 - docker-compose pull
-- docker-compose up -d elasticsearch redis
+- docker-compose up -d elasticsearch redis minio
 - docker-compose ps
 
 install:

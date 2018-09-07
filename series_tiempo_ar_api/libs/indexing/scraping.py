@@ -1,14 +1,14 @@
 #! coding: utf-8
 import logging
 import urllib.parse
+from io import BytesIO
 
-import pandas as pd
 import requests
+import pandas as pd
 from django.conf import settings
 from series_tiempo_ar.validations import validate_distribution
 
-from series_tiempo_ar_api.libs.indexing import strings
-from .constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
+from .constants import DOWNLOAD_URL, DATASET_IDENTIFIER
 
 logger = logging.getLogger(__name__)
 
@@ -25,22 +25,27 @@ class Scraper(object):
         Returns:
             bool: True si la distribución pasa las validaciones, False caso contrario
         """
-        distribution_id = distribution.get(IDENTIFIER)
         url = distribution.get(DOWNLOAD_URL)
-        if not self.read_local:
-            if not url or requests.head(url).status_code != 200:
-                msg = u'{} {}'.format(strings.INVALID_DISTRIBUTION_URL,
-                                      distribution_id)
-                raise ValueError(msg)
-
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
         url = urllib.parse.quote(url, safe='/:')
 
         dataset = catalog.get_dataset(distribution[DATASET_IDENTIFIER])
-        df = pd.read_csv(url, parse_dates=[settings.INDEX_COLUMN])
-        df = df.set_index(settings.INDEX_COLUMN)
+        df = self.init_df(url)
 
         validate_distribution(df, catalog, dataset, distribution)
 
         return True
+
+    def init_df(self, url):
+        """Wrapper de descarga de una distribución y carga en un pandas dataframe.
+        No le pasamos la url a read_csv directamente para evitar problemas de
+        verificación de certificados SSL
+        """
+        if self.read_local:
+            csv = url
+        else:
+            csv = BytesIO(requests.get(url, verify=False).content)
+        return pd.read_csv(csv,
+                           parse_dates=[settings.INDEX_COLUMN],
+                           index_col=settings.INDEX_COLUMN)

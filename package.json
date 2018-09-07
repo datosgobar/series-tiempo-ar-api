@@ -14,12 +14,7 @@
   },
   "author": "",
   "devDependencies": {
-    "eslint": "^3.9.1",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-plugin-promise": "^3.3.0",
-    "eslint-plugin-standard": "^2.0.1",
-    "jscpd": "^0.6.15"
+    "jscpd": "0.6.22"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

@@ -62,3 +62,6 @@ RQ_QUEUES = {
 }
 
 SENDFILE_BACKEND = 'sendfile.backends.development'
+MINIO_STORAGE_MEDIA_BUCKET_NAME = 'tsapi.testing.media.bucket'
+MINIO_STORAGE_ACCESS_KEY = "development"
+MINIO_STORAGE_SECRET_KEY = "development"

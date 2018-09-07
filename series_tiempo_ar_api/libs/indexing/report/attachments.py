@@ -11,6 +11,18 @@ HEADER_ROW = [
 ]
 
 
+def dataset_errors(dataset: Dataset):
+    errors = dataset.distribution_set.all().values_list('error_msg', flat=True)
+    errors = filter(lambda x: x, errors)
+    return '\n'.join(errors)
+
+
+def catalog_errors(catalog: Catalog):
+    errors = [dataset_errors(dataset) for dataset in catalog.dataset_set.all()]
+    errors = filter(lambda x: x, errors)
+    return '\n'.join(errors)
+
+
 def generate_attachments(queryset, get_indexable, get_error):
     out = StringIO()
     writer = csv.writer(out)
@@ -42,7 +54,7 @@ def generate_catalog_attachment(node=None):
         queryset = queryset.filter(identifier=node.catalog_id)
     return generate_attachments(queryset,
                                 lambda x: Node.objects.get(catalog_id=x.identifier).indexable,
-                                lambda x: (x.error, ''))
+                                lambda x: (x.error, catalog_errors(x)))
 
 
 def generate_dataset_attachment(node=None):
@@ -52,7 +64,7 @@ def generate_dataset_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.indexable,
-                                lambda x: (x.error, ''))
+                                lambda x: (x.error, dataset_errors(x)))
 
 
 def generate_distribution_attachment(node=None):
@@ -62,7 +74,7 @@ def generate_distribution_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.dataset.indexable,
-                                lambda x: (bool(x.error), x.error))
+                                lambda x: (bool(x.error), x.error_msg))
 
 
 def generate_field_attachment(node=None):
@@ -73,4 +85,4 @@ def generate_field_attachment(node=None):
 
     return generate_attachments(queryset,
                                 lambda x: x.distribution.dataset.indexable,
-                                lambda x: (bool(x.distribution.error), x.distribution.error))
+                                lambda x: (bool(x.distribution.error), x.distribution.error_msg))

@@ -1,5 +1,6 @@
 #! coding: utf-8
 import json
+import logging
 from traceback import format_exc
 
 from django.conf import settings
@@ -16,6 +17,9 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from .report.report_generator import ReportGenerator
 from .scraping import Scraper
+
+
+logger = logging.getLogger(__name__)
 
 
 @job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
@@ -57,12 +61,13 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
         e_msg = format_exc()
     msg = msg.format(distribution_id, node.catalog_id, e_msg)
     ReadDataJsonTask.info(task, msg)
+    logger.info(msg)
 
     with transaction.atomic():
         try:
             distribution = Distribution.objects.get(identifier=distribution_id,
                                                     dataset__catalog__identifier=node.catalog_id)
-            distribution.enhanced_meta.create(key=meta_keys.ERROR_MSG, value=msg)
+            distribution.error_msg = msg
             distribution.error = True
             distribution.field_set.update(error=True)
             distribution.save()
