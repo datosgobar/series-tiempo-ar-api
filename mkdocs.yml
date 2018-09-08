@@ -24,3 +24,6 @@ nav:
 theme: datosgobar_docs
 
 markdown_extensions: [fenced_code, codehilite, admonition]
+
+extra_css:
+  - css/extra_rtd.css
