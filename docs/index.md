@@ -5,7 +5,7 @@ La API de Series de Tiempo de Argentina, permite consultar indicadores con evolu
 Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secuencia de observaciones o valores, medidos en determinados momentos del tiempo y ordenados cronológicamente.
 
 <table>
-    <tr><td>indice_tiempo</td><td>ipc_2016_nivel_general</td></tr>
+    <tr><th>indice_tiempo</th><th>ipc_2016_nivel_general</th></tr>
     <tr><td>2017-04</td><td>0.28</td></tr>
     <tr><td>2017-05</td><td>0.24</td></tr>
     <tr><td>2017-06</td><td>0.22</td></tr>
