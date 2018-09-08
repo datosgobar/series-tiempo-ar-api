@@ -23,5 +23,4 @@ nav:
 
 theme: datosgobar_docs
 
-extra_css:
-  - css/extra.css
+markdown_extensions: [fenced_code, codehilite, admonition]
