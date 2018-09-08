@@ -2,12 +2,25 @@ SHELL = bash
 
 .PHONY: docs servedocs doctoc
 
-docs:
-	mkdocs build
-	$(BROWSER) site/index.html
-
 servedocs:
 	mkdocs serve
+
+mkdocsdocs:
+	mkdocs build
+	rsync -vau --remove-source-files site/ docs/
+	rm -rf site
+
+serveswaggerdocs:
+	echo "Browse to http://localhost:8000/docs/swagger/"
+	python -m SimpleHTTPServer 8000
+
+swaggerdocs:
+	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/open_api/; rm temp.zip
+	sed -i.bak "s/url: \".*\"/url: \"\.\/swagger\.yml\", validatorUrl: null/g" docs/open_api/index.html
+	echo ".download-url-wrapper { display: none!important; }" >> docs/open_api/swagger-ui.css
+	rm -f docs/open_api/index.html.bak
+
+docs: mkdocsdocs swaggerdocs
 
 doctoc: ## generate table of contents, doctoc command line tool required
         ## https://github.com/thlorenz/doctoc
@@ -22,15 +35,7 @@ doctoc: ## generate table of contents, doctoc command line tool required
 	doctoc --github --title " " docs/python_usage.md
 	bash fix_github_links.sh docs/python_usage.md
 
-swaggerdocs:
-	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/; rm temp.zip
-	sed -i.bak "s/url: \".*\"/url: \"\.\/swagger\.yml\",\n    validatorUrl: null/g" docs/index.html
-	echo ".download-url-wrapper { display: none!important; }" >> docs/swagger-ui.css
-	rm -f docs/index.html.bak
 
-serveswaggerdocs:
-	echo "Browse to http://localhost:8000/docs/swagger/"
-	python -m SimpleHTTPServer 8000
 
 # se puede hacer `make test-queries num=200` para hacer un numero de queries
 test-queries:
