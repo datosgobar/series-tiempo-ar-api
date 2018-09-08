@@ -104,7 +104,7 @@ hr {
     font-weight: bold;
 }
 
-tr:nth-child(even) {background: #CCC}
+tr:nth-child(even) {background: rgba(0, 0, 0, 0.04)}
 tr:nth-child(odd) {background: #FFF}
 
 table {
