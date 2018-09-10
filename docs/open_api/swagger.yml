@@ -1,29 +1,27 @@
 swagger: '2.0'
 info:
-  description: >-
-    Documentación de la API de Series de Tiempo del [Paquete de Apertura de
-    Datos de la República
-    Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/).
-  version: 1.0.3-beta
   title: API de Series de Tiempo de la República Argentina
+  description: >-
+    API de Series de Tiempo de la República Argentina.
+
+    Para ver ejemplos de uso de la API, dirigirse a la [documentación del proyecto](https://apis.datos.gob.ar/series).
+
+    Para leer el código de la API, acceder a [GitHub](https://github.com/datosgobar/series-tiempo-ar-api).
+  version: 1.2.0-beta.3
   contact:
+    name: Equipo de Datos Argentina
+    url: https://github.com/datosgobar
     email: datos@modernizacion.gob.ar
 host: apis.datos.gob.ar
 basePath: /series/api
-tags:
-  - name: series
-    description: >-
-      La API de Series de Tiempo permite obtener datos de una o más series,
-      permitiendo hacer filtros por el índice de tiempo, cambios de granularidad
-      en la dimensión temporal y cambios en la unidad de los valores de la
-      serie, entre otras operaciones.
 schemes:
+  - http
   - https
 paths:
   /series:
     get:
       tags:
-        - series
+          - Recursos
       summary: Permite obtener datos de una o más series de tiempo
       description: >-
         La API de Series de Tiempo permite obtener datos de una o más series,
@@ -353,8 +351,8 @@ paths:
           default: "."
           type: string
           enum:
-            - ,
-            - .
+            - ","
+            - "."
         - name: sep
           in: query
           description: >-
@@ -365,47 +363,19 @@ paths:
           required: false
           default: ","
           type: string
-        - name: flatten
-          in: query
-          description: >-
-            Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía _plana_.
-
-            Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
-
-            ```
-                {
-                    "catalog": [<catalog_meta>],
-                    "dataset": [<dataset_meta>],
-                    "distribution": [<distribution_meta>],
-                    "field": [<field_meta>],
-                }
-            ```
-
-            Una consulta con parámetro `flatten` incluido tendrá la siguiente respuesta de metadatos:
-
-            ```
-                {
-                    catalog_meta1: ...,
-                    catalog_meta2: ...,
-                    dataset_meta1: ...,
-                    <nivel>_<meta_key>: <meta_value>
-                    ...
-                }
-            ```
-          required: false
       responses:
         '200':
           description: La consulta se ejecutó exitosamente
           schema:
             type: array
             items:
-              $ref: '#/definitions/ApiResponse'
+              $ref: '#/definitions/SeriesResponse'
         '400':
           description: Solicitud incorrecta
   /search:
     get:
       tags:
-        - series
+        - Recursos
       summary: Permite obtener datos de una o más series de tiempo
       description: >-
         Se provee un endpoint adicional para funcionar como buscador de series a partir de un texto, proporcionando además algunos filtros como por tema o por unidades de las series.
@@ -455,25 +425,25 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/MetaResponse'
+              $ref: '#/definitions/SearchResponse'
         '400':
           description: Solicitud incorrecta
 
 definitions:
-  ApiResponse:
+  SeriesResponse:
     type: object
     properties:
       data:
-        type: string
+        type: object
       meta:
-        type: string
+        type: object
       params:
-        type: string
-  MetaResponse:
+        type: object
+  SearchResponse:
     type: object
     properties:
       data:
-        type: string
+        type: object
       count:
         type: number
       limit:
