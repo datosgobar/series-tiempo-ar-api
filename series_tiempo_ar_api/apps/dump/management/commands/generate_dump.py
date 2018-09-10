@@ -10,5 +10,4 @@ class Command(BaseCommand):
         parser.add_argument('--index', type=str, default=None)
 
     def handle(self, *args, **options):
-        index = options.get('index')
-        enqueue_csv_dump_task(ts_index=index)
+        enqueue_csv_dump_task()

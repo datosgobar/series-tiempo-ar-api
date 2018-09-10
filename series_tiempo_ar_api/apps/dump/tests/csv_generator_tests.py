@@ -12,7 +12,7 @@ from django_datajsonar.models import Field, Node
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
+from series_tiempo_ar_api.apps.dump.generator.csv import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.utils import index_catalog
@@ -34,13 +34,12 @@ class CSVTest(TestCase):
         index_catalog(cls.catalog_id, path, cls.index)
         cls.task = CSVDumpTask()
         cls.task.save()
-        gen = CSVDumpGenerator(cls.task, index=cls.index, output_directory=cls.directory)
+        gen = DumpGenerator(cls.task)
         gen.generate()
 
     def test_values_dump(self):
         file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         next(reader)  # skip header
         row = next(reader)
         self.assertEqual(row[0], self.catalog_id)
@@ -48,15 +47,13 @@ class CSVTest(TestCase):
 
     def test_values_length(self):
         file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         header = next(reader)
         self.assertEqual(len(header), 7)
 
     def test_entity_identifiers(self):
         file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         next(reader)
 
         row = next(reader)
@@ -85,8 +82,7 @@ class CSVTest(TestCase):
 
     def test_full_csv_identifier_fields(self):
         file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -99,8 +95,7 @@ class CSVTest(TestCase):
 
     def test_full_csv_metadata_fields(self):
         file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -116,8 +111,7 @@ class CSVTest(TestCase):
 
     def test_full_csv_dataset_metadata_fields(self):
         file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -131,10 +125,8 @@ class CSVTest(TestCase):
 
     def test_full_csv_dataset_theme_field(self):
         file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
-        file.open('r')
-        reader = csv.reader(file)
+        reader = self.read_file_as_csv(file)
         next(reader)  # Header
-
         row = next(reader)
 
         field = Field.objects.get(identifier=row[3])
@@ -156,25 +148,27 @@ class CSVTest(TestCase):
         ElasticInstance.get().indices.delete(cls.index)
         Node.objects.all().delete()
 
+    def read_file_as_csv(self, file):
+        ios = io.StringIO()
+        ios.write(file.read().decode('utf-8'))
+
+        ios.seek(0)
+        reader = csv.reader(ios)
+        return reader
+
 
 class CSVDumpCommandTests(TestCase):
-    index = 'csv_dump_cmd_test_index'
 
     @classmethod
     def setUpClass(cls):
         super(CSVDumpCommandTests, cls).setUpClass()
-        ElasticInstance.get().indices.create(cls.index)
 
     def setUp(self):
         CSVDumpTask.objects.all().delete()
 
     def test_command_creates_model(self):
-        call_command('generate_dump', index=self.index)
+        call_command('generate_dump')
         self.assertEqual(CSVDumpTask.objects.count(), 1)
 
         task = CSVDumpTask.objects.first()
         self.assertTrue(task.dumpfile_set.count(), task.logs)
-
-    @classmethod
-    def tearDownClass(cls):
-        ElasticInstance.get().indices.delete(cls.index)

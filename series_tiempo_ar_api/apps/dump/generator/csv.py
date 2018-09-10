@@ -15,12 +15,11 @@ from .full_csv import FullCsvGenerator
 class DumpGenerator:
     dump_dir = os.path.join(settings.MEDIA_ROOT, 'dump')
 
-    def __init__(self):
+    def __init__(self, task: CSVDumpTask):
         self.fields = {}
         self.themes = {}
 
-        self.task = CSVDumpTask.objects.create()
-
+        self.task = task
         self.init_data()
 
     def init_data(self):

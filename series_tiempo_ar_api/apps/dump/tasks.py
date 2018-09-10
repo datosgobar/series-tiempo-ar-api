@@ -4,14 +4,14 @@ from traceback import format_exc
 from django.utils import timezone
 from django_rq import job
 from .models import CSVDumpTask
-from .csv import CSVDumpGenerator
+from .generator.csv import DumpGenerator
 
 
 @job('default', timeout=0)
-def dump_db_to_csv(task_id, ts_index=None):
+def dump_db_to_csv(task_id):
     task = CSVDumpTask.objects.get(id=task_id)
     try:
-        csv_gen = CSVDumpGenerator(task, index=ts_index)
+        csv_gen = DumpGenerator(task)
         csv_gen.generate()
     except Exception as e:
         msg = "Error generando el dump: {}".format(str(e) or format_exc(e))
@@ -22,9 +22,8 @@ def dump_db_to_csv(task_id, ts_index=None):
     task.save()
 
 
-def enqueue_csv_dump_task(task=None, ts_index=None):
+def enqueue_csv_dump_task(task=None):
     if task is None:
-        task = CSVDumpTask()
-        task.save()
+        task = CSVDumpTask.objects.create()
 
-    dump_db_to_csv.delay(task.id, ts_index)
+    dump_db_to_csv.delay(task.id)
