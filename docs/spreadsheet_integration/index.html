@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.4">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.3">
     
     
       
@@ -60,8 +60,8 @@
     <script src="../js/extra.js"></script>
 
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -559,6 +559,7 @@
 <h2 id="google-drive">Google Drive</h2>
 <h3 id="1-modificar-la-configuracion-regional">1. Modificar la configuración regional</h3>
 <p>La API genera archivos CSV usando “.” como separador decimal. Para que Google Spreadsheet lea correctamente el archivo debe elegirse “Estados Unidos” o cualquier otra región compatible.</p>
+<p>Alternativamente, se le puede pedir un separador decimal distinto a la API usando el parámetro <a href="../reference/api_reference/#decimal"><code>decimal</code></a>.</p>
 <p><img alt="" src="../assets/google_drive_letra_1.png" />
 <br><br>
 <img alt="" src="../assets/google_drive_letra_2.png" />

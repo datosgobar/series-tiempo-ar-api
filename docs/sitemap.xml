@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>http://apis.datos.gob.ar/series/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/quick_start/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/additional_parameters/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/spreadsheet_integration/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/python_usage/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/reference/api_reference/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/reference/search_reference/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
@@ -42,22 +42,22 @@
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/applications/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/developers/arquitectura/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/developers/development/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/developers/admin/</loc>
-     <lastmod>2018-09-09</lastmod>
+     <lastmod>2018-09-10</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
