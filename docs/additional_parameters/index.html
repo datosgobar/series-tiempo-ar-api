@@ -393,8 +393,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/api_reference/" title="Datos" class="md-nav__link">
-      Datos
+    <a href="../reference/api_reference/" title="/series" class="md-nav__link">
+      /series
     </a>
   </li>
 
@@ -405,8 +405,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/search_reference/" title="Metadatos" class="md-nav__link">
-      Metadatos
+    <a href="../reference/search_reference/" title="/search" class="md-nav__link">
+      /search
     </a>
   </li>
 
@@ -548,39 +548,60 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 <h2 id="descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</h2>
-<p>El parámetro <code>ids</code> permite la consulta simultánea de hasta 4 series a la vez, separadas por comas.</p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv</code></a></p>
+<p>El parámetro <code>ids</code> permite la consulta simultánea de hasta <strong>40 series a la vez</strong>, separadas por comas.</p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21">IPC por categorías</a></p>
+<p><a href="http://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21&amp;format=csv</code></a></p>
+</div>
 <h2 id="filtrar-por-fechas">Filtrar por fechas</h2>
 <p>Los parámetros <code>start_date</code> y <code>end_date</code> permiten limitar una consulta a todos aquellos valores posteriores o anteriores (respectivamente) a una fecha determinada.</p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01</code></a></p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general hasta Diciembre de 2016</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;end_date=2016-12-01"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;end_date=2016-12-01</code></a></p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, hasta Diciembre de 2016</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01&amp;end_date=2016-12-01"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;start_date=2016-01-01&amp;end_date=2016-12-01</code></a></p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01">Tipo de cambio desde Enero de 2016</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;limit=1000&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;limit=1000&amp;format=csv</code></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12">Tipo de cambio hasta Diciembre de 2016</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12&amp;format=csv</code></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12">Tipo de cambio desde Enero de 2016 hasta Diciembre de 2016</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12&amp;format=csv</code></a></p>
+</div>
 <h2 id="cambiar-la-agregacion-temporal">Cambiar la agregación temporal</h2>
-<p>Por default, las series se muestran en la frecuencia más alta posible (esta es, la frecuencia más baja de todas las series consultadas a la vez). El parámetro <code>collapse</code> permite elegir una frecuencia más baja.</p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter</code></a></p>
+<p>Por default, las series se muestran en la frecuencia más alta posible (esta es, la frecuencia más baja de todas las series consultadas a la vez). El parámetro <code>collapse</code> permite elegir una frecuencia más baja que esta.</p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;collapse=quarter">Índice de Tipo de Cambio Real Multilateral, China y Brasil. Valores mensuales promediados por trimestre.</a></p>
+<p><a href="http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=quarter&amp;ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=quarter&amp;ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;format=csv</code></a></p>
+</div>
 <h2 id="cambiar-la-funcion-de-agregacion-temporal">Cambiar la función de agregación temporal</h2>
-<p>Por default, cuando la API debe hacer agregaciones temporales (ie. convertir una serie mensual en trimestral) hace un promedio de los valores de cada período.</p>
+<p>Por default, cuando la API hace agregaciones temporales (ie. convertir una serie mensual en trimestral) hace un <strong>promedio de los valores de cada período</strong>.</p>
 <p>Esta función de agregación se puede cambiar para toda la consulta con el parámetro <code>collapse_aggregation</code>, o para cada serie en particular (suma, máximo, mínimo, etc.).</p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general, en valores trimestrales a último valor del período</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter&amp;collapse_aggregation=end_of_period"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter&amp;collapse_aggregation=end_of_period</code></a></p>
-<p><em>Tipo de cambio (último valor del período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter</code></a></p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period">Tipo de cambio. Valores diarios a cierre de cada mes.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period&amp;format=csv</code></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month">Tipo de cambio. Valores diarios mínimo, promedio, máximo y cierre de cada mes.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month&amp;format=csv&amp;limit=1000"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month&amp;format=csv&amp;limit=1000</code></a></p>
+</div>
 <h2 id="aplicar-transformaciones">Aplicar transformaciones</h2>
 <p>Las series de pueden transformar en otras unidades (variación porcentual, variación interanual, etc.) en forma individual o conjunta, usando el parámetro <code>representation_mode</code>.</p>
-<p><em>Tipo de cambio, índice de precios núcleo e índice de precios nivel general desde Enero de 2016, en valores mensuales y variación porcentual</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01&amp;representation_mode=percent_change</code></a></p>
-<p><em>Tipo de cambio, índice de precios núcleo (variación porcentual) e índice de precios nivel general (variación porcentual) desde Enero de 2016, en valores mensuales</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_19:percent_change&amp;collapse=month&amp;format=csv&amp;start_date=2016-01-01</code></a></p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change">Tipo de cambio, IPC núcleo e IPC nivel general desde Enero de 2016. Variación porcentual de valores mensuales, respecto del período anterior.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change</code></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01">IPC núcleo, IPC núcleo (variación porcentual período a período) e IPC núcleo (variación porcentual interanual) desde Enero de 2016. Valores mensuales.</a></p>
+<p><em>Nota: series con unidades de diferentes escalas, pueden ser difíciles de visualizar en un mismo gráfico.</em></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01&amp;format=csv&amp;limit=1000"><code>https://apis.datos.gob.ar/series/api/series?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01&amp;format=csv&amp;limit=1000</code></a></p>
+</div>
 <h2 id="aplicar-transformaciones-y-cambiar-la-funcion-de-agregacion-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</h2>
-<p>Es posible aplicar a las series individuales tanto una transformación como una función de agregación particular.</p>
+<p>Es posible aplicar a las series individuales <strong>tanto una transformación como una función de agregación particular a la vez</strong>.</p>
 <p>En todos los casos, siempre se aplica <strong>primero la función de agregación</strong> y <strong>luego la transformación</strong>.</p>
-<p><em>Tipo de cambio (variaciones porcentuales entre los últimos valores de cada período), índice de precios núcleo e índice de precios nivel general, en valores trimestrales</em></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;format=csv&amp;collapse=quarter</code></a></p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;collapse=month">Tipo de cambio. Variación porcentual de valores diarios a cierre de cada mes, respecto del período anterior.</a></p>
+<p><a href="http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=month&amp;ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=month&amp;ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;format=csv</code></a></p>
+</div>
                 
                   
                 

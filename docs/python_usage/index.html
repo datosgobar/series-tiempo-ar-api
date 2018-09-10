@@ -393,8 +393,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/api_reference/" title="Datos" class="md-nav__link">
-      Datos
+    <a href="../reference/api_reference/" title="/series" class="md-nav__link">
+      /series
     </a>
   </li>
 
@@ -405,8 +405,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/search_reference/" title="Metadatos" class="md-nav__link">
-      Metadatos
+    <a href="../reference/search_reference/" title="/search" class="md-nav__link">
+      /search
     </a>
   </li>
 
@@ -559,7 +559,7 @@
 <div class="codehilite"><pre><span></span><span class="n">api_call</span> <span class="o">=</span> <span class="n">get_api_call</span><span class="p">([</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">],</span> <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2018-08&quot;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span>
 
-<span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">apis</span><span class="o">.</span><span class="n">datos</span><span class="o">.</span><span class="n">gob</span><span class="o">.</span><span class="n">ar</span><span class="o">/</span><span class="n">series</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">series</span><span class="err">?</span><span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span><span class="o">-</span><span class="mi">08</span><span class="o">&amp;</span><span class="n">ids</span><span class="o">=</span><span class="mf">168.1</span><span class="n">_T_CAMBIOR_D_0_0_26</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">apis</span><span class="o">.</span><span class="n">datos</span><span class="o">.</span><span class="n">gob</span><span class="o">.</span><span class="n">ar</span><span class="o">/</span><span class="n">series</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">series</span><span class="err">?</span><span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span><span class="o">-</span><span class="mi">08</span><span class="o">&amp;</span><span class="n">ids</span><span class="o">=</span><span class="mf">168.1</span><span class="n">_T_CAMBIOR_D_0_0_26</span>
 </pre></div>
 
 
@@ -609,7 +609,8 @@
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">get_api_call</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">,</span> <span class="s2">&quot;101.1_I2NG_2016_M_22&quot;</span><span class="p">,</span> <span class="s2">&quot;116.3_TCRMA_0_M_36&quot;</span><span class="p">,</span> <span class="s2">&quot;143.3_NO_PR_2004_A_21&quot;</span><span class="p">,</span> <span class="s2">&quot;11.3_VMATC_2004_M_12&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">,</span> <span class="s2">&quot;101.1_I2NG_2016_M_22&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;116.3_TCRMA_0_M_36&quot;</span><span class="p">,</span> <span class="s2">&quot;143.3_NO_PR_2004_A_21&quot;</span><span class="p">,</span> <span class="s2">&quot;11.3_VMATC_2004_M_12&quot;</span><span class="p">],</span>
     <span class="n">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span>
 <span class="p">))</span>
 </pre></div>
@@ -670,13 +671,13 @@
           </a>
         
         
-          <a href="../reference/api_reference/" title="Datos" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../reference/api_reference/" title="/series" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Datos
+                /series
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

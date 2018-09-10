@@ -161,7 +161,7 @@ paths:
             Los valores disponibles para el parámetro son:
 
             * `avg`: Realiza el promedio de todos los valores agrupados. Es la
-            opción por defecto si no se indica valor para 
+            opción por defecto si no se indica valor para
             `collapse_aggregation`.
 
             * `sum`: Suma todos los valores agrupados.
@@ -338,6 +338,61 @@ paths:
             - only
             - simple
             - full
+        - name: decimal
+          in: query
+          description: >-
+            Especifica el caracter utilizado para los números decimales, siendo *.* el valor por defecto. Sólo aplica cuando `format=csv`.
+
+            Las opciones disponibles son:
+
+            * *,*: Coma.
+
+            * *.*: Punto.
+
+          required: false
+          default: "."
+          type: string
+          enum:
+            - ,
+            - .
+        - name: sep
+          in: query
+          description: >-
+            Especifica el caracter separador de valores, siendo *,* el valor por defecto. Sólo aplica cuando `format=csv`.
+
+            Se puede utilizar cualquier caracter UTF-8, si bien se recomienda preservar el uso de la coma en la mayoría de los casos.
+
+          required: false
+          default: ","
+          type: string
+        - name: flatten
+          in: query
+          description: >-
+            Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía _plana_.
+
+            Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
+
+            ```
+                {
+                    "catalog": [<catalog_meta>],
+                    "dataset": [<dataset_meta>],
+                    "distribution": [<distribution_meta>],
+                    "field": [<field_meta>],
+                }
+            ```
+
+            Una consulta con parámetro `flatten` incluido tendrá la siguiente respuesta de metadatos:
+
+            ```
+                {
+                    catalog_meta1: ...,
+                    catalog_meta2: ...,
+                    dataset_meta1: ...,
+                    <nivel>_<meta_key>: <meta_value>
+                    ...
+                }
+            ```
+          required: false
       responses:
         '200':
           description: La consulta se ejecutó exitosamente

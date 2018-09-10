@@ -393,8 +393,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/api_reference/" title="Datos" class="md-nav__link">
-      Datos
+    <a href="../reference/api_reference/" title="/series" class="md-nav__link">
+      /series
     </a>
   </li>
 
@@ -405,8 +405,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/search_reference/" title="Metadatos" class="md-nav__link">
-      Metadatos
+    <a href="../reference/search_reference/" title="/search" class="md-nav__link">
+      /search
     </a>
   </li>
 
@@ -540,25 +540,26 @@
 <ul>
 <li><a href="#1-buscar-series">1. Buscar series</a><ul>
 <li><a href="#en-un-archivo">En un archivo</a></li>
-<li><a href="#en-aplicaciones-web">En aplicaciones web</a></li>
+<li><a href="#en-el-explorador-de-series">En el explorador de series</a></li>
 </ul>
 </li>
 <li><a href="#2-armar-consulta">2. Armar consulta</a><ul>
 <li><a href="#manualmente">Manualmente</a></li>
-<li><a href="#generador-de-consultas">Generador de consultas</a></li>
+<li><a href="#generador-de-consultas">En el generador de consultas</a></li>
 </ul>
 </li>
 <li><a href="#3-realizar-consulta">3. Realizar consulta</a><ul>
 <li><a href="#consultar-o-integrar-json">Consultar o integrar JSON</a></li>
 <li><a href="#descargar-csv">Descargar CSV</a></li>
 <li><a href="#integrar-en-planilla-de-calculo">Integrar en planilla de cálculo</a></li>
+<li><a href="#consultar-en-el-explorador-de-series">Consultar en el explorador de series</a></li>
 </ul>
 </li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 <h2 id="1-buscar-series">1. Buscar series</h2>
-<p>Para usar la API, debes buscar los <em>ids</em> de las series que te interesan.</p>
+<p>Para usar la API, tenés que buscar los <em>ids</em> de las series que te interesan.</p>
 <h3 id="en-un-archivo">En un archivo</h3>
 <p>En <a href="http://datos.gob.ar">datos.gob.ar</a> podés encontrar la <a href="http://datos.gob.ar/dataset/modernizacion-base-series-tiempo-administracion-publica-nacional">base completa de series de tiempo</a>, que contiene la lista de series disponibles en:</p>
 <ul>
@@ -568,18 +569,16 @@
 </ul>
 <p><img alt="" src="../assets/busqueda_excel.png" />
 <br><br></p>
-<h3 id="en-aplicaciones-web">En aplicaciones web</h3>
-<ul>
-<li><a href="https://datosgobar.github.io/series-tiempo-ar-call-generator">Generador de consultas</a></li>
-</ul>
-<p><img alt="" src="../assets/busqueda_generador.png" /></p>
+<h3 id="en-el-explorador-de-series">En el explorador de series</h3>
+<p>En el <a href="http://datos.gob.ar/series">Explorador de Series de Tiempo</a> podés buscar series, visualizarlas y compartir las URLs a la API o al explorador.</p>
+<p><img alt="" src="../assets/explorador_series.png" /></p>
 <h2 id="2-armar-consulta">2. Armar consulta</h2>
 <h3 id="manualmente">Manualmente</h3>
 <p>Los ids de las series deben pasarse al parámetro <code>ids</code>. Se pueden usar parámetros adicionales para <a href="../additional_parameters/">filtrar y transformar las series</a>.</p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv"><img alt="" src="../assets/ejemplo_consulta.png" /></a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv"><img alt="" src="../assets/ejemplo_consulta.png" /></a></p>
 <p>Ver la <a href="../reference/api_reference/">referencia API</a> para consultar la documentación completa de todos los parámetros disponibles.</p>
-<h3 id="generador-de-consultas">Generador de consultas</h3>
-<p><a href="https://datosgobar.github.io/series-tiempo-ar-call-generator">Generador de consultas</a></p>
+<h3 id="en-el-generador-de-consultas">En el generador de consultas</h3>
+<p>En el <a href="https://datosgobar.github.io/series-tiempo-ar-call-generator">generador de consultas</a> podés ver todos los parámetros disponibles en la API para armar tu consulta.</p>
 <p><img alt="" src="../assets/generacion_consulta_generador.png" /></p>
 <h2 id="3-realizar-consulta">3. Realizar consulta</h2>
 <h3 id="consultar-o-integrar-json">Consultar o integrar JSON</h3>
@@ -588,15 +587,21 @@
 <li>Usar <code>format=json</code> (valor default).</li>
 <li>Elegir el nivel de detalle de los metadatos <code>metadata=none</code>, <code>only</code>, <code>simple</code> o <code>full</code>.</li>
 </ul>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full</code></a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full</code></a></p>
 <h3 id="descargar-csv">Descargar CSV</h3>
 <p>Para descargar un archivo CSV:</p>
 <ul>
 <li>Usar <code>format=csv</code>.</li>
 </ul>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15"><code>http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv</code></a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv</code></a></p>
 <h3 id="integrar-en-planilla-de-calculo">Integrar en planilla de cálculo</h3>
 <p>Tanto la consulta en CSV como en JSON se pueden <a href="../spreadsheet_integration/">integrar en planillas de cálculo</a>.</p>
+<h3 id="consultar-en-el-explorador-de-series">Consultar en el explorador de series</h3>
+<p>Cualquier llamada a la API se puede visualizar en el explorador quitando el subdominio <code>apis</code> de la URL (y cambiando a HTTP):</p>
+<p><strong>Llamada a la API</strong></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month</code></a></p>
+<p><strong>Consulta en el explorador</strong></p>
+<p><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month"><code>http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month</code></a></p>
                 
                   
                 

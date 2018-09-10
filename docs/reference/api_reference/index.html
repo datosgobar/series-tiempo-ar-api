@@ -42,7 +42,7 @@
     
     
       
-        <title>Datos - API de Series de Tiempo</title>
+        <title>/series - API de Series de Tiempo</title>
       
     
     
@@ -104,7 +104,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../../#referencia-api" tabindex="1" class="md-skip">
+      <a href="../../#referencia-api-series" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -130,7 +130,7 @@
                 API de Series de Tiempo
               </span>
               <span class="md-header-nav__topic">
-                Datos
+                /series
               </span>
             
           
@@ -389,11 +389,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Datos
+        /series
       </label>
     
-    <a href="./" title="Datos" class="md-nav__link md-nav__link--active">
-      Datos
+    <a href="./" title="/series" class="md-nav__link md-nav__link--active">
+      /series
     </a>
     
       
@@ -407,8 +407,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../search_reference/" title="Metadatos" class="md-nav__link">
-      Metadatos
+    <a href="../search_reference/" title="/search" class="md-nav__link">
+      /search
     </a>
   </li>
 
@@ -534,9 +534,9 @@
                   <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/reference/api_reference.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="referencia-api">Referencia API</h1>
-<p>Endpoint: <code>/series</code></p>
-<p>La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones.</p>
+                <h1 id="referencia-api-series">Referencia API: series</h1>
+<p>Recurso: <code>/series</code></p>
+<p>El recurso <code>/series</code> permite <strong>obtener datos y metadatos</strong> de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de medida de los valores de la serie, entre otras operaciones.</p>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -556,6 +556,7 @@
 <li><a href="#sort"><code>sort</code></a></li>
 <li><a href="#metadata"><code>metadata</code></a></li>
 <li><a href="#decimal"><code>decimal</code></a></li>
+<li><a href="#sep"><code>sep</code></a></li>
 <li><a href="#flatten"><code>flatten</code></a></li>
 </ul>
 </li>
@@ -565,11 +566,11 @@
 <h2 id="tabla-de-parametros">Tabla de parámetros</h2>
 <table>
     <tr>
-        <td>Nombre</td>
-        <td>Requerido</td>
-        <td>Tipo</td>
-        <td>Default</td>
-        <td>Ejemplos</td>
+        <th>Nombre</th>
+        <th>Requerido</th>
+        <th>Tipo</th>
+        <th>Default</th>
+        <th>Ejemplos</th>
     </tr>
     <tr>
         <td>ids</td>
@@ -660,7 +661,14 @@
         <td>No</td>
         <td>Caracter utilizado para los decimales.<br><br>Uno de: <em>"," o "."</em></td>
         <td>.</td>
-        <td>metadata=,</td>
+        <td>decimal=,</td>
+    </tr>
+    <tr>
+        <td>sep</td>
+        <td>No</td>
+        <td>Caracter separador de los valores del CSV.<br><br>Cualquier caracter UTF-8</em></td>
+        <td>.</td>
+        <td>sep=|</td>
     </tr>
     <tr>
         <td>flatten</td>
@@ -673,7 +681,7 @@
 
 <h3 id="ids"><code>ids</code></h3>
 <p>Lista separada por comas de los identificadores de las series a seleccionar para armar la respuesta. Los datos del resultado de la llamada tendrán una columna por cada serie seleccionada, en el mismo orden.</p>
-<p>Este parámetro es requerido para la llamada. En caso de no suministrarse, se devolverá un error.</p>
+<p><strong>Este parámetro es requerido para la llamada</strong>. En caso de no suministrarse, se devolverá un error.</p>
 <p>Cada identificador de serie podrá ser sufijado con:</p>
 <ul>
 <li>Un modo de representación (<a href="#representation_mode"><code>representation_mode</code></a>).</li>
@@ -690,7 +698,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 
 
 <h3 id="representation_mode"><code>representation_mode</code></h3>
-<p>Este parámetro indica el modo de representación de las series, y se aplica a todas aquéllas que no tengan otro modo de representación distinto indicado en el parámetro <a href="#ids"><code>ids</code></a> en forma individual.</p>
+<p>Este parámetro indica el modo de representación de las series, y se aplica a todas aquellas que no tengan otro modo de representación distinto indicado en el parámetro <a href="#ids"><code>ids</code></a> en forma individual.</p>
 <p>El modo de representación por defecto es el valor medido en la serie (<em>value</em>).</p>
 <p>Los modos de representación disponibles son:</p>
 <ul>
@@ -700,8 +708,14 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 <li><em>percent_change_a_year_ago</em>: Devuelve la variación porcentual entre el valor del período t y el del período t equivalente de hace un año atrás.</li>
 </ul>
 <p>Las funciones de transformación disponibles en <a href="#representation_mode"><code>representation_mode</code></a> también pueden especificarse para <strong>series individuales</strong> usando la notación <code>:percent_change</code> junto al id de la serie:</p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&amp;collapse=year&amp;start_date=2010"><code>http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&amp;collapse=year&amp;start_date=2010</code></a></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&amp;collapse=year&amp;start_date=2010"><code>http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&amp;collapse=year&amp;start_date=2010</code></a></p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=11.3_VMATC_2004_M_12:percent_change">EMAE Construcción. Variación porcentual de valores mensuales, respecto del período anterior.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change"><code>https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change</code></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago">EMAE Construcción (variación porcentual período a período), EMAE Construcción (variación porcentual interanual). Valores mensuales.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago"><code>https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago</code></a></p>
+</div>
 <p>El parámetro <a href="#representation_mode"><code>representation_mode</code></a> seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.</p>
 <h3 id="collapse"><code>collapse</code></h3>
 <p>El parámetro <a href="#collapse"><code>collapse</code></a> modifica la frecuencia de muestreo de los datos de la serie o las series solicitadas. Debe usarse en combinación con <a href="#collapse_aggregation"><code>collapse_aggregation</code></a> para indicar una funnción de agregación temporal, cuando corresponda.</p>
@@ -733,9 +747,15 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 <li><em>max</em>: Máximo entre los valores agrupados.</li>
 </ul>
 <p>Las funciones de agregación temporal disponibles en <a href="#collapse_aggregation"><code>collapse_aggregation</code></a> también pueden especificarse para <strong>series individuales</strong> usando la notación <code>:sum</code> junto al id de la serie:</p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&amp;collapse=year&amp;start_date=2010"><code>http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&amp;collapse=year&amp;start_date=2010</code></a></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&amp;collapse=year&amp;start_date=2010"><code>http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&amp;collapse=year&amp;start_date=2010</code></a></p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&amp;collapse=year">Cobro de servicios de turismo y viajes. Valores mensuales promediados y sumados por año.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&amp;collapse=year"><code>https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&amp;collapse=year</code></a></p>
+</div>
 <p>El parámetro <a href="#collapse_aggregation"><code>collapse_aggregation</code></a> seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.</p>
+<div class="admonition note">
+<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&amp;collapse=year&amp;collapse_aggregation=sum">Cobro de servicios de turismo y viajes. Valores mensuales promediados y sumados por año.</a></p>
+<p><a href="https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&amp;collapse=year&amp;collapse_aggregation=sum"><code>https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&amp;collapse=year&amp;collapse_aggregation=sum</code></a></p>
+</div>
 <h3 id="limit"><code>limit</code></h3>
 <p>Este parámetro es utilizado junto a <a href="#start"><code>start</code></a> para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo, no mayor que 1000, ya que esa es la cantidad máxima de resultados devueltos por la API. El valor por defecto si no se especifica valor alguno es 100.</p>
 <h3 id="start"><code>start</code></h3>
@@ -783,6 +803,9 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 <li><em>,</em>: Coma.</li>
 <li><em>.</em>: Punto.</li>
 </ul>
+<h3 id="sep"><code>sep</code></h3>
+<p>Especifica el caracter separador de valores, siendo <em>,</em> el valor por defecto. Sólo aplica cuando <code>format=csv</code>.</p>
+<p>Se puede utilizar cualquier caracter UTF-8, si bien se recomienda preservar el uso de la coma en la mayoría de los casos.</p>
 <h3 id="flatten"><code>flatten</code></h3>
 <p>Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía <em>plana</em>.</p>
 <p>Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:</p>
@@ -795,7 +818,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 </pre></div>
 
 
-<p>Una query con parámetro flatten incluido tendrá la siguiente respuesta de metadatos:</p>
+<p>Una consulta con parámetro <code>flatten</code> incluido tendrá la siguiente respuesta de metadatos:</p>
 <div class="codehilite"><pre><span></span>    {
         catalog_meta1: ...,
         catalog_meta2: ...,
@@ -839,13 +862,13 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
           </a>
         
         
-          <a href="../search_reference/" title="Metadatos" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../search_reference/" title="/search" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Metadatos
+                /search
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
