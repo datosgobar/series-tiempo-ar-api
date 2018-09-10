@@ -1,18 +1,18 @@
-# Referencia búsqueda
+# Referencia API: search
 
-Endpoint: `/search`
+Recurso: `/search`
 
-Se provee un endpoint adicional para funcionar como buscador de series a partir de un texto, proporcionando además algunos filtros como por tema o por unidades de las series.
+El recurso `/search` permite buscar series a partir de un texto, proporcionando además algunos filtros (ej.: por tema o por unidades de las series).
 
 ## Tabla de parámetros
 
 <table>
     <tr>
-        <td>Nombre</td>
-        <td>Requerido</td>
-        <td>Tipo</td>
-        <td>Default</td>
-        <td>Ejemplos</td>
+        <th>Nombre</th>
+        <th>Requerido</th>
+        <th>Tipo</th>
+        <th>Default</th>
+        <th>Ejemplos</th>
     </tr>
     <tr>
         <td>q</td>
@@ -24,35 +24,35 @@ Se provee un endpoint adicional para funcionar como buscador de series a partir 
     <tr>
         <td>dataset_theme</a></td>
         <td>No</td>
-        <td>Uno de los valores listados en /search/dataset_theme</em></td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_theme">/search/dataset_theme</a></em></td>
         <td>N/A</td>
         <td>dataset_theme="Finanzas Públicas"</td>
     </tr>
     <tr>
         <td>units</a></td>
         <td>No</td>
-        <td>Uno de los valores listados en /search/field_units</td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/field_units">/search/field_units</a></td>
         <td>N/A</td>
         <td>units="Millones de pesos"</td>
     </tr>
     <tr>
         <td>dataset_publisher_name</a></td>
         <td>No</td>
-        <td>Uno de los valores listados en /search/dataset_publisher_name</td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_publisher_name">/search/dataset_publisher_name</a></td>
         <td>N/A</td>
         <td>dataset_publisher_name="Subsecretaría de Programación Macroeconómica."</td>
     </tr>
     <tr>
         <td>dataset_source</a></td>
         <td>No</td>
-        <td>Uno de los valores listados en /search/dataset_source</td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_source">/search/dataset_source</a></td>
         <td>N/A</td>
         <td>dataset_source="Ministerio de Hacienda"</td>
     </tr>
     <tr>
         <td>catalog_id</a></td>
         <td>No</td>
-        <td>Uno de los valores listados en /search/catalog_id</td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/catalog_id">/search/catalog_id</a></td>
         <td>N/A</td>
         <td>catalog_id="sspm"</td>
     </tr>
@@ -78,9 +78,13 @@ Texto de entrada a buscar en la base de series de tiempo. Puede ser abritrariame
 
 ### `dataset_theme`, `units`, `dataset_publisher_name`, `dataset_source`, `catalog_id`
 
-Estos parámetros pueden ser usados como filtro en los resultados de la búsqueda. Al ser especificados, se aplica el filtro determinado, haciendo que se muestren únicamente aquellos resultados que sean compatibles con la especificación. Por ejemplo, si hacemos un pedido con `units=Millones de pesos`, el resultado solo contendrá series de tiempo que estén expresados en millones de dólares.
+**Estos parámetros pueden ser usados como filtros en los resultados de la búsqueda**. Al aplicarse, se muestran únicamente aquellos resultados que sean compatibles con la especificación.
 
-Los términos que aceptan estos parámetros son términos especificados en _endpoints auxiliares_, que devuelven la lista entera de filtros aceptados por cada endpoint. Un pedido a `/search/field_units`(http://apis.datos.gob.ar/series/api/search/field_units/), entonces, devuelve una lista de los términos que se le pueden pasar al parámetro `units`. Cualquier otra opción devolverá una lista vacía de resultados (al no haber matches). Consultar la tabla de parámetros para ver los endpoints auxiliares.
+Por ejemplo: un pedido con `units=Millones de pesos` sólo contendrá series de tiempo que estén expresadas en millones de pesos.
+
+**Los términos que aceptan estos parámetros son especificados en _recursos auxiliares_** que devuelven la lista entera de valores aceptados en los filtros.
+
+Por ejemplo: un pedido a [`/search/field_units`](https://apis.datos.gob.ar/series/api/search/field_units/) devuelve una lista de los términos que se le pueden pasar al parámetro `units`. Cualquier otra opción devolverá una lista vacía de resultados (al no haber coincidencias). Consultar la tabla de parámetros para ver los endpoints auxiliares.
 
 ### `limit`
 

@@ -29,7 +29,7 @@ Una llamada válida a la API debe tener por lo menos un id de una serie válida,
 api_call = get_api_call(["168.1_T_CAMBIOR_D_0_0_26"], start_date="2018-08")
 print(api_call)
 
-http://apis.datos.gob.ar/series/api/series?start_date=2018-08&ids=168.1_T_CAMBIOR_D_0_0_26
+https://apis.datos.gob.ar/series/api/series?start_date=2018-08&ids=168.1_T_CAMBIOR_D_0_0_26
 ```
 
 Obtener la respuesta en un diccionario.
@@ -82,7 +82,8 @@ Las llamadas a la API en CSV se pueden leer directamente a un `pandas.DataFrame`
 import pandas as pd
 
 df = pd.read_csv(get_api_call(
-    ["168.1_T_CAMBIOR_D_0_0_26", "101.1_I2NG_2016_M_22", "116.3_TCRMA_0_M_36", "143.3_NO_PR_2004_A_21", "11.3_VMATC_2004_M_12"],
+    ["168.1_T_CAMBIOR_D_0_0_26", "101.1_I2NG_2016_M_22", 
+    "116.3_TCRMA_0_M_36", "143.3_NO_PR_2004_A_21", "11.3_VMATC_2004_M_12"],
     format="csv", start_date=2018
 ))
 ```

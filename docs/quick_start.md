@@ -6,20 +6,21 @@
 
 - [1. Buscar series](#1-buscar-series)
     - [En un archivo](#en-un-archivo)
-    - [En aplicaciones web](#en-aplicaciones-web)
+    - [En el explorador de series](#en-el-explorador-de-series)
 - [2. Armar consulta](#2-armar-consulta)
     - [Manualmente](#manualmente)
-    - [Generador de consultas](#generador-de-consultas)
+    - [En el generador de consultas](#generador-de-consultas)
 - [3. Realizar consulta](#3-realizar-consulta)
     - [Consultar o integrar JSON](#consultar-o-integrar-json)
     - [Descargar CSV](#descargar-csv)
     - [Integrar en planilla de cálculo](#integrar-en-planilla-de-calculo)
+    - [Consultar en el explorador de series](#consultar-en-el-explorador-de-series)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 1. Buscar series
 
-Para usar la API, debes buscar los _ids_ de las series que te interesan.
+Para usar la API, tenés que buscar los _ids_ de las series que te interesan.
 
 ### En un archivo
 
@@ -32,11 +33,11 @@ En [datos.gob.ar](http://datos.gob.ar) podés encontrar la [base completa de ser
 ![](assets/busqueda_excel.png)
 <br><br>
 
-### En aplicaciones web
+### En el explorador de series
 
-* [Generador de consultas](https://datosgobar.github.io/series-tiempo-ar-call-generator)
+En el [Explorador de Series de Tiempo](http://datos.gob.ar/series) podés buscar series, visualizarlas y compartir las URLs a la API o al explorador.
 
-![](assets/busqueda_generador.png)
+![](assets/explorador_series.png)
 
 ## 2. Armar consulta
 
@@ -44,13 +45,13 @@ En [datos.gob.ar](http://datos.gob.ar) podés encontrar la [base completa de ser
 
 Los ids de las series deben pasarse al parámetro `ids`. Se pueden usar parámetros adicionales para [filtrar y transformar las series](additional_parameters.md).
 
-[![](assets/ejemplo_consulta.png)](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv)
+[![](assets/ejemplo_consulta.png)](https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv)
 
 Ver la [referencia API](reference/api_reference.md) para consultar la documentación completa de todos los parámetros disponibles.
 
-### Generador de consultas
+### En el generador de consultas
 
-[Generador de consultas](https://datosgobar.github.io/series-tiempo-ar-call-generator)
+En el [generador de consultas](https://datosgobar.github.io/series-tiempo-ar-call-generator) podés ver todos los parámetros disponibles en la API para armar tu consulta.
 
 ![](assets/generacion_consulta_generador.png)
 
@@ -63,7 +64,7 @@ Para realizar la consulta directamente en el navegador, o integrarla en una apli
 * Usar `format=json` (valor default).
 * Elegir el nivel de detalle de los metadatos `metadata=none`, `only`, `simple` o `full`.
 
-[`http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=json&metadata=full`](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=json&metadata=full)
+[`https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=json&metadata=full`](https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=json&metadata=full)
 
 ### Descargar CSV
 
@@ -71,8 +72,20 @@ Para descargar un archivo CSV:
 
 * Usar `format=csv`.
 
-[`http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv`](http://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15)
+[`https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv`](https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15)
 
 ### Integrar en planilla de cálculo
 
 Tanto la consulta en CSV como en JSON se pueden [integrar en planillas de cálculo](spreadsheet_integration.md).
+
+### Consultar en el explorador de series
+
+Cualquier llamada a la API se puede visualizar en el explorador quitando el subdominio `apis` de la URL (y cambiando a HTTP):
+
+**Llamada a la API**
+
+[`https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&collapse=month`](https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&collapse=month)
+
+**Consulta en el explorador**
+
+[`http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&collapse=month`](http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&collapse=month)

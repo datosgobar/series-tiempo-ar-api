@@ -1,8 +1,8 @@
-# Referencia API
+# Referencia API: series
 
-Endpoint: `/series`
+Recurso: `/series`
 
-La API de Series de Tiempo permite obtener datos de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de los valores de la serie, entre otras operaciones.
+El recurso `/series` permite **obtener datos y metadatos** de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de medida de los valores de la serie, entre otras operaciones.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -22,6 +22,7 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
     - [`sort`](#sort)
     - [`metadata`](#metadata)
     - [`decimal`](#decimal)
+    - [`sep`](#sep)
     - [`flatten`](#flatten)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -30,11 +31,11 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
 
 <table>
     <tr>
-        <td>Nombre</td>
-        <td>Requerido</td>
-        <td>Tipo</td>
-        <td>Default</td>
-        <td>Ejemplos</td>
+        <th>Nombre</th>
+        <th>Requerido</th>
+        <th>Tipo</th>
+        <th>Default</th>
+        <th>Ejemplos</th>
     </tr>
     <tr>
         <td>ids</td>
@@ -125,7 +126,14 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
         <td>No</td>
         <td>Caracter utilizado para los decimales.<br><br>Uno de: <em>"," o "."</em></td>
         <td>.</td>
-        <td>metadata=,</td>
+        <td>decimal=,</td>
+    </tr>
+    <tr>
+        <td>sep</td>
+        <td>No</td>
+        <td>Caracter separador de los valores del CSV.<br><br>Cualquier caracter UTF-8</em></td>
+        <td>.</td>
+        <td>sep=|</td>
     </tr>
     <tr>
         <td>flatten</td>
@@ -140,7 +148,7 @@ La API de Series de Tiempo permite obtener datos de una o más series, permitien
 
 Lista separada por comas de los identificadores de las series a seleccionar para armar la respuesta. Los datos del resultado de la llamada tendrán una columna por cada serie seleccionada, en el mismo orden.
 
-Este parámetro es requerido para la llamada. En caso de no suministrarse, se devolverá un error.
+**Este parámetro es requerido para la llamada**. En caso de no suministrarse, se devolverá un error.
 
 Cada identificador de serie podrá ser sufijado con:
 
@@ -161,7 +169,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 
 ### `representation_mode`
 
-Este parámetro indica el modo de representación de las series, y se aplica a todas aquéllas que no tengan otro modo de representación distinto indicado en el parámetro [`ids`](#ids) en forma individual.
+Este parámetro indica el modo de representación de las series, y se aplica a todas aquellas que no tengan otro modo de representación distinto indicado en el parámetro [`ids`](#ids) en forma individual.
 
 El modo de representación por defecto es el valor medido en la serie (*value*).
 
@@ -174,11 +182,11 @@ Los modos de representación disponibles son:
 
 Las funciones de transformación disponibles en [`representation_mode`](#representation_mode) también pueden especificarse para **series individuales** usando la notación `:percent_change` junto al id de la serie:
 
-[`http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010`](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
-)
+!!! note "[EMAE Construcción. Variación porcentual de valores mensuales, respecto del período anterior.](http://datos.gob.ar/series/api/series/?ids=11.3_VMATC_2004_M_12:percent_change)"
+    [`https://apis.datos.gob.ar/series/api/series/?limit=1000&ids=11.3_VMATC_2004_M_12:percent_change`](https://apis.datos.gob.ar/series/api/series/?limit=1000&ids=11.3_VMATC_2004_M_12:percent_change)
 
-[`http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010`](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:percent_change_a_year_ago,135.1_M_0_0_6:percent_change&collapse=year&start_date=2010
-)
+!!! note "[EMAE Construcción (variación porcentual período a período), EMAE Construcción (variación porcentual interanual). Valores mensuales.](http://datos.gob.ar/series/api/series/?ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago)"
+    [`https://apis.datos.gob.ar/series/api/series/?limit=1000&ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago`](https://apis.datos.gob.ar/series/api/series/?limit=1000&ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago)
 
 El parámetro [`representation_mode`](#representation_mode) seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.
 
@@ -221,13 +229,15 @@ Los valores disponibles para el parámetro son:
 
 Las funciones de agregación temporal disponibles en [`collapse_aggregation`](#collapse_aggregation) también pueden especificarse para **series individuales** usando la notación `:sum` junto al id de la serie:
 
-[`http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010`](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6,135.1_M_0_0_6:sum&collapse=year&start_date=2010
-)
+!!! note "[Cobro de servicios de turismo y viajes. Valores mensuales promediados y sumados por año.](http://datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&collapse=year)"
 
-[`http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010`](http://apis.datos.gob.ar/series/api/series?ids=135.1_M_0_0_6:end_of_period,135.1_M_0_0_6:sum&collapse=year&start_date=2010
-)
+    [`https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&collapse=year`](https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&collapse=year)
 
 El parámetro [`collapse_aggregation`](#collapse_aggregation) seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.
+
+!!! note "[Cobro de servicios de turismo y viajes. Valores mensuales promediados y sumados por año.](http://datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&collapse=year&collapse_aggregation=sum)"
+
+    [`https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&collapse=year&collapse_aggregation=sum`](https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&collapse=year&collapse_aggregation=sum)
 
 ### `limit`
 
@@ -295,11 +305,18 @@ Las opciones disponibles son:
 * *,*: Coma.
 * *.*: Punto.
 
+### `sep`
+
+Especifica el caracter separador de valores, siendo *,* el valor por defecto. Sólo aplica cuando `format=csv`.
+
+Se puede utilizar cualquier caracter UTF-8, si bien se recomienda preservar el uso de la coma en la mayoría de los casos.
+
 ### `flatten`
 
 Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía _plana_.
 
 Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
+
 ```
     {
         "catalog": [<catalog_meta>],
@@ -309,7 +326,7 @@ Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
     }
 ```
 
-Una query con parámetro flatten incluido tendrá la siguiente respuesta de metadatos:
+Una consulta con parámetro `flatten` incluido tendrá la siguiente respuesta de metadatos:
 
 ```
     {
