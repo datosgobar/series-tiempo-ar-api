@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django_datajsonar.models import Node
 from nose.tools import raises
 
-from series_tiempo_ar_api.apps.dump.csv import CSVDumpGenerator
+from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import DumpFile, CSVDumpTask
 from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
@@ -36,7 +36,7 @@ class ViewTests(TestCase):
         index_catalog(cls.catalog_id, path, cls.index)
         cls.task = CSVDumpTask()
         cls.task.save()
-        gen = CSVDumpGenerator(cls.task, index=cls.index, output_directory=cls.directory)
+        gen = DumpGenerator(cls.task)
         gen.generate()
 
     def setUp(self):
@@ -51,7 +51,7 @@ class ViewTests(TestCase):
         call_command('generate_dump', index=self.index)
         resp = self.client.get(reverse('api:dump:global_dump', kwargs={'filename': self.valid_arg}))
 
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)  # Redirect al link de descarga
 
     @raises(exceptions.NoReverseMatch)
     def test_dump_invalid(self):

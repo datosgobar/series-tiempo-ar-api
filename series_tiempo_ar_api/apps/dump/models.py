@@ -1,7 +1,9 @@
 #!coding=utf8
-
+from django.conf import settings
 from django.db import models
 from django_datajsonar.models import AbstractTask
+from minio_storage.storage import MinioMediaStorage
+
 from . import constants
 
 
@@ -11,8 +13,7 @@ class CSVDumpTask(AbstractTask):
 
 class DumpFile(models.Model):
 
-    file = models.FileField(upload_to='dump')
-
+    file = models.FileField(upload_to=lambda x, _: f'dump/{x.file_name}', storage=MinioMediaStorage())
     FILE_CHOICES = (
         (constants.FULL_CSV, 'Valores y metadatos (CSV)'),
         (constants.VALUES_CSV, 'Valores (CSV)'),
