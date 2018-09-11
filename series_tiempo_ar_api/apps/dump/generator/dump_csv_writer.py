@@ -9,6 +9,10 @@ from series_tiempo_ar_api.apps.management import meta_keys
 
 
 class CsvDumpWriter:
+    """Escribe dumps de .csv de *datos*, iterando sobre las distribuciones de los fields pasados,
+    y escribiendo un row por cada valor individual (par índice de tiempo - observación) de cada serie.
+    El formato de cada row es especificado a través del callable rows.
+    """
 
     def __init__(self, fields: dict, rows: Callable):
         self.fields = fields
