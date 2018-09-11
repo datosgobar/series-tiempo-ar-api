@@ -13,7 +13,7 @@ class CSVDumpTask(AbstractTask):
 
 class DumpFile(models.Model):
 
-    file = models.FileField(upload_to=lambda x, y: f'dump/{x.file_name}', storage=MinioMediaStorage())
+    file = models.FileField(upload_to=lambda x, _: f'dump/{x.file_name}', storage=MinioMediaStorage())
     FILE_CHOICES = (
         (constants.FULL_CSV, 'Valores y metadatos (CSV)'),
         (constants.VALUES_CSV, 'Valores (CSV)'),
