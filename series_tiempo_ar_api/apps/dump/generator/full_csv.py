@@ -1,3 +1,6 @@
+import os
+import zipfile
+
 from django.core.files import File
 
 from series_tiempo_ar_api.apps.dump import constants
@@ -8,10 +11,12 @@ from .dump_csv_writer import CsvDumpWriter
 class FullCsvGenerator(AbstractDumpGenerator):
 
     def generate(self, filepath):
-        CsvDumpWriter(self.fields, self.full_csv_row).write(filepath, constants.VALUES_HEADER)
+        CsvDumpWriter(self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
 
         with open(filepath, 'rb') as f:
             self.task.dumpfile_set.create(file_name=constants.FULL_CSV, file=File(f), task=self.task)
+
+        self.zip_full_csv(filepath, os.path.join(os.path.dirname(filepath), constants.FULL_CSV_ZIPPED))
 
     @staticmethod
     def full_csv_row(value, fields, field, periodicity):
@@ -33,3 +38,11 @@ class FullCsvGenerator(AbstractDumpGenerator):
             fields[field]['dataset_fuente'],
             fields[field]['dataset_titulo'],
         )
+
+    def zip_full_csv(self, csv_path, zip_path):
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
+            zip_name.write(csv_path, arcname=constants.FULL_CSV)
+
+        with open(zip_path, 'rb') as f:
+            self.task.dumpfile_set.create(file_name=constants.FULL_CSV_ZIPPED,
+                                          file=File(f))

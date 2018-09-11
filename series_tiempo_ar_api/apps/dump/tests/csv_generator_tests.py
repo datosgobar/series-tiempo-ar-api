@@ -67,8 +67,8 @@ class CSVTest(TestCase):
         self.assertEqual(row[6], field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
     def test_full_csv_zipped(self):
-        path = self.task.dumpfile_set.get(file_name=constants.FULL_CSV_ZIPPED).file.path
-        csv_zipped = zipfile.ZipFile(path)
+        zip_file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV_ZIPPED).file
+        csv_zipped = zipfile.ZipFile(zip_file)
 
         # Necesario para abrir archivos zippeados en modo texto (no bytes)
         src_file = io.TextIOWrapper(csv_zipped.open(constants.FULL_CSV),

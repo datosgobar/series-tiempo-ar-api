@@ -7,7 +7,7 @@ from .models import DumpFile
 from .constants import DUMP_ERROR, DUMPS_NOT_GENERATED
 
 
-def serve_global_dump(request, filename):
+def serve_global_dump(_, filename):
     dump_file = DumpFile.objects.filter(file_name=filename).last()
     if dump_file is None:
         return HttpResponse(DUMPS_NOT_GENERATED, status=501)  # "Not implemented"

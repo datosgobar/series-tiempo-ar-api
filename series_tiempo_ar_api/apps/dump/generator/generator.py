@@ -22,6 +22,9 @@ class DumpGenerator:
         self.task = task
         self.init_data()
 
+        if not os.path.exists(self.dump_dir):
+            os.makedirs(self.dump_dir)
+
     def init_data(self):
         """Inicializa en un diccionario con IDs de series como clave los valores a escribir en cada
         uno de los CSV.

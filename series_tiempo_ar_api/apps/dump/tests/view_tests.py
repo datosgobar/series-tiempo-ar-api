@@ -51,7 +51,7 @@ class ViewTests(TestCase):
         call_command('generate_dump', index=self.index)
         resp = self.client.get(reverse('api:dump:global_dump', kwargs={'filename': self.valid_arg}))
 
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 302)  # Redirect al link de descarga
 
     @raises(exceptions.NoReverseMatch)
     def test_dump_invalid(self):
