@@ -17,6 +17,7 @@ def dump_db_to_csv(task_id):
         msg = "Error generando el dump: {}".format(str(e) or format_exc(e))
         CSVDumpTask.info(task, msg)
 
+    task.refresh_from_db()
     task.status = task.FINISHED
     task.finished = timezone.now()
     task.save()
