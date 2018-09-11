@@ -1,9 +1,8 @@
 #!coding=utf8
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django_datajsonar.models import AbstractTask
-from minio_storage.storage import MinioMediaStorage
-
+from minio_storage.storage import MinioMediaStorage, create_minio_client_from_settings
 from . import constants
 
 
@@ -24,3 +23,9 @@ class DumpFile(models.Model):
 
     file_name = models.CharField(max_length=64, choices=FILE_CHOICES)
     task = models.ForeignKey(CSVDumpTask, on_delete=models.CASCADE)
+
+    def delete(self, using=None, keep_parents=False):
+        if self.file:
+            minio = create_minio_client_from_settings()
+            minio.remove_object(settings.MINIO_STORAGE_MEDIA_BUCKET_NAME, self.file.name)
+        super(DumpFile, self).delete(using, keep_parents)

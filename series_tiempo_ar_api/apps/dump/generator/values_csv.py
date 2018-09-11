@@ -1,3 +1,5 @@
+import os
+
 from django.core.files import File
 
 from series_tiempo_ar_api.apps.dump import constants
@@ -12,6 +14,8 @@ class ValuesCsvGenerator(AbstractDumpGenerator):
 
         with open(filepath, 'rb') as f:
             self.task.dumpfile_set.create(file_name=constants.VALUES_CSV, file=File(f), task=self.task)
+
+        os.remove(filepath)
 
     @staticmethod
     def values_csv_row(value, fields, field, periodicity):

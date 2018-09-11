@@ -22,6 +22,7 @@ FILES = [
     SOURCES_CSV
 ]
 
+GENERATED_FILES = FILES + [FULL_CSV]
 
 VALUES_HEADER = [
     'catalogo_id',

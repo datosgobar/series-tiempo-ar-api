@@ -7,7 +7,7 @@ from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.values_csv import ValuesCsvGenerator
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
+from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
 
 from .full_csv import FullCsvGenerator
 
@@ -61,6 +61,16 @@ class DumpGenerator:
     def generate(self):
         FullCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.FULL_CSV))
         ValuesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.VALUES_CSV))
+
+        for filename in constants.GENERATED_FILES:
+            remove_old_dumps(filename)
+
+
+def remove_old_dumps(dump_file_name):
+    same_file = DumpFile.objects.filter(file_name=dump_file_name)
+    old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
+    for model in old:
+        model.delete()
 
 
 def get_theme_labels(themes: list):
