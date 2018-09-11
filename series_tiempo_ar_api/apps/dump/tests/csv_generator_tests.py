@@ -12,7 +12,7 @@ from django_datajsonar.models import Field, Node
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.dump.generator.csv import DumpGenerator
+from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.utils import index_catalog

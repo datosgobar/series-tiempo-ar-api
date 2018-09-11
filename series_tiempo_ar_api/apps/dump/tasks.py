@@ -4,7 +4,7 @@ from traceback import format_exc
 from django.utils import timezone
 from django_rq import job
 from .models import CSVDumpTask
-from .generator.csv import DumpGenerator
+from .generator.generator import DumpGenerator
 
 
 @job('default', timeout=0)
