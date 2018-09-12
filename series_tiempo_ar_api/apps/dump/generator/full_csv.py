@@ -11,7 +11,7 @@ from .dump_csv_writer import CsvDumpWriter
 class FullCsvGenerator(AbstractDumpGenerator):
 
     def generate(self, filepath):
-        CsvDumpWriter(self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
+        CsvDumpWriter(self.task, self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
 
         with open(filepath, 'rb') as f:
             self.task.dumpfile_set.create(file_name=constants.FULL_CSV, file=File(f), task=self.task)

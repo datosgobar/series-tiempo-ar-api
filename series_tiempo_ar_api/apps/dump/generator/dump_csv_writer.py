@@ -5,6 +5,7 @@ import pandas as pd
 from django.conf import settings
 from django_datajsonar.models import Field, Distribution
 
+from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.management import meta_keys
 
 
@@ -14,7 +15,8 @@ class CsvDumpWriter:
     El formato de cada row es especificado a través del callable rows.
     """
 
-    def __init__(self, fields: dict, rows: Callable):
+    def __init__(self, task: CSVDumpTask, fields: dict, rows: Callable):
+        self.task = task
         self.fields = fields
 
         # Funcion generadora de rows, especifica la estructura de la fila
@@ -34,13 +36,17 @@ class CsvDumpWriter:
                 self.write_distribution(distribution, writer)
 
     def write_distribution(self, distribution: Distribution, writer: csv.writer):
-        df = pd.read_csv(distribution.data_file.file,
-                         index_col=settings.INDEX_COLUMN,
-                         parse_dates=[settings.INDEX_COLUMN])
-        fields = distribution.field_set.all()
-        fields = {field.title: field.identifier for field in fields}
+        # noinspection PyBroadException
+        try:
+            df = pd.read_csv(distribution.data_file.file,
+                             index_col=settings.INDEX_COLUMN,
+                             parse_dates=[settings.INDEX_COLUMN])
+            fields = distribution.field_set.all()
+            fields = {field.title: field.identifier for field in fields}
 
-        df.apply(self.write_serie, args=(distribution, fields, writer))
+            df.apply(self.write_serie, args=(distribution, fields, writer))
+        except Exception as e:
+            CSVDumpTask.info(self.task, f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}')
 
     def write_serie(self, serie: pd.Series, distribution: Distribution, fields: dict, writer: csv.writer):
         field_id = fields[serie.name]
