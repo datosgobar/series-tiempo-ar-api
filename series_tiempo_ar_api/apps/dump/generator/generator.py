@@ -5,6 +5,7 @@ from django.conf import settings
 from django_datajsonar.models import Field
 
 from series_tiempo_ar_api.apps.dump import constants
+from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.values_csv import ValuesCsvGenerator
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
@@ -48,6 +49,7 @@ class DumpGenerator:
             self.fields[field.identifier] = {
                 'dataset': field.distribution.dataset,
                 'distribution': field.distribution,
+                'serie': field,
                 'serie_titulo': field.title,
                 'serie_unidades': meta.get('units'),
                 'serie_descripcion': meta.get('description'),
@@ -61,7 +63,7 @@ class DumpGenerator:
     def generate(self):
         FullCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.FULL_CSV))
         ValuesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.VALUES_CSV))
-
+        SourcesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.SOURCES_CSV))
         for filename in constants.GENERATED_FILES:
             remove_old_dumps(filename)
 
