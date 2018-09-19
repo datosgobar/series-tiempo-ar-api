@@ -5,6 +5,7 @@ from django.conf import settings
 from django_datajsonar.models import Field
 
 from series_tiempo_ar_api.apps.dump import constants
+from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.values_csv import ValuesCsvGenerator
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -53,17 +54,21 @@ class DumpGenerator:
                 'serie_titulo': field.title,
                 'serie_unidades': meta.get('units'),
                 'serie_descripcion': meta.get('description'),
+                'distribucion_titulo': dist_meta.get('title'),
                 'distribucion_descripcion': dist_meta.get('description'),
-                'dataset_tema': theme_labels,
                 'dataset_responsable': dataset_meta.get('publisher', {}).get('name'),
-                'dataset_titulo': field.distribution.dataset.title,
                 'dataset_fuente': dataset_meta.get('source'),
+                'dataset_titulo': field.distribution.dataset.title,
+                'dataset_descripcion': dataset_meta.get('description'),
+                'dataset_tema': theme_labels,
             }
 
     def generate(self):
         FullCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.FULL_CSV))
         ValuesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.VALUES_CSV))
         SourcesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.SOURCES_CSV))
+        MetadataCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.METADATA_CSV))
+
         for filename in constants.GENERATED_FILES:
             remove_old_dumps(filename)
 
