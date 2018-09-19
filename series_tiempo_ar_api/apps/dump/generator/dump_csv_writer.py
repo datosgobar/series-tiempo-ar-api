@@ -15,9 +15,9 @@ class CsvDumpWriter:
     El formato de cada row es especificado a través del callable rows.
     """
 
-    def __init__(self, task: CSVDumpTask, fields: dict, rows: Callable):
+    def __init__(self, task: CSVDumpTask, fields_data: dict, rows: Callable):
         self.task = task
-        self.fields = fields
+        self.fields_data = fields_data
 
         # Funcion generadora de rows, especifica la estructura de la fila
         # a partir de argumentos pasados desde un pandas.apply
@@ -52,7 +52,7 @@ class CsvDumpWriter:
         field_id = fields[serie.name]
         df = serie.reset_index().apply(self.rows,
                                        axis=1,
-                                       args=(self.fields, field_id, meta_keys.get(distribution, meta_keys.PERIODICITY)))
+                                       args=(self.fields_data, field_id, meta_keys.get(distribution, meta_keys.PERIODICITY)))
 
         serie = pd.Series(df.values, index=serie.index)
         for row in serie:

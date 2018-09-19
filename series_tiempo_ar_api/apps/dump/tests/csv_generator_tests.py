@@ -143,6 +143,37 @@ class CSVTest(TestCase):
 
         self.assertEqual(theme_label, row[11])
 
+    def test_metadata_csv(self):
+        file = self.task.dumpfile_set.get(file_name=constants.METADATA_CSV).file
+        reader = self.read_file_as_csv(file)
+        next(reader)  # Header
+
+        self.assertEqual(len(list(reader)), 3)  # Un row por serie
+
+    def test_sources_csv(self):
+        file = self.task.dumpfile_set.get(file_name=constants.SOURCES_CSV).file
+        reader = self.read_file_as_csv(file)
+        next(reader)  # Header
+
+        self.assertEqual(len(list(reader)), 1)  # Un row por fuente
+
+    def test_sources_csv_columns(self):
+        dataset = Field.objects.first().distribution.dataset
+        meta = json.loads(dataset.metadata)
+
+        file = self.task.dumpfile_set.get(file_name=constants.SOURCES_CSV).file
+        reader = self.read_file_as_csv(file)
+        next(reader)  # Header
+
+        row = next(reader)
+        series = Field.objects.exclude(title='indice_tiempo')
+        self.assertEqual(row[0], meta['source'])  # nombre de la fuente
+        self.assertEqual(int(row[1]), 3)  # Cantidad de series
+        self.assertEqual(int(row[2]), sum([int(meta_keys.get(x, meta_keys.INDEX_SIZE))
+                                           for x in series]))
+        self.assertEqual(row[3], min(meta_keys.get(x, meta_keys.INDEX_START) for x in series))
+        self.assertEqual(row[4], max(meta_keys.get(x, meta_keys.INDEX_END) for x in series))
+
     @classmethod
     def tearDownClass(cls):
         ElasticInstance.get().indices.delete(cls.index)
