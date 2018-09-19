@@ -18,7 +18,7 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
     def generate(self, filepath):
         sources = {}
 
-        for field in self.fields:
+        for field in filter(lambda x: self.fields[x]['dataset_fuente'], self.fields):
             source = self.fields[field]['dataset_fuente']
             field_model: Field = self.fields[field]['serie']
 
