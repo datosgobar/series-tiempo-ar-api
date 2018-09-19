@@ -12,6 +12,9 @@ from series_tiempo_ar_api.apps.management import meta_keys
 
 class SourcesCsvGenerator(AbstractDumpGenerator):
 
+    columns = ['dataset_fuente', 'series_cant', 'valores_cant',
+               'fecha_primer_valor', 'fecha_ultimo_valor']
+
     def generate(self, filepath):
         sources = {}
 
@@ -21,11 +24,11 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
             if source not in sources:
                 sources[source] = {
-                    'dataset_fuente': source,
-                    'series_cant': 0,
-                    'valores_cant': 0,
-                    'fecha_primer_valor': None,
-                    'fecha_ultimo_valor': None,
+                    self.columns[0]: source,
+                    self.columns[1]: 0,
+                    self.columns[2]: 0,
+                    self.columns[3]: None,
+                    self.columns[4]: None,
                 }
 
             sources[source]['series_cant'] += 1
@@ -45,10 +48,9 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
     def write(self, filepath: str, sources: dict):
         with open(filepath, 'w') as f:
-            values = list(sources.values())
-            writer = csv.DictWriter(f, values[0].keys())
+            writer = csv.DictWriter(f, self.columns)
             writer.writeheader()
-            writer.writerows(values)
+            writer.writerows(sources.values())
 
         with open(filepath, 'rb') as f:
             self.task.dumpfile_set.create(file_name=constants.SOURCES_CSV, file=File(f))
