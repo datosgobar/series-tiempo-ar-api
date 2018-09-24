@@ -33,22 +33,23 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
             sources[source]['series_cant'] += 1
             index_start = meta_keys.get(field_model, meta_keys.INDEX_START)
+
+            # ☢☢☢
             if index_start:
                 index_start = iso8601.parse_date(index_start).date()
+                if sources[source]['fecha_primer_valor'] is None or sources[source]['fecha_primer_valor'] > index_start:
+                    sources[source]['fecha_primer_valor'] = index_start
 
             index_end = meta_keys.get(field_model, meta_keys.INDEX_END)
             if index_end:
                 index_end = iso8601.parse_date(index_end).date()
-            index_size = meta_keys.get(field_model, meta_keys.INDEX_SIZE)
+                if sources[source]['fecha_ultimo_valor'] is None or sources[source]['fecha_ultimo_valor'] < index_end:
+                    sources[source]['fecha_ultimo_valor'] = index_end
+
+            index_size = meta_keys.get(field_model, meta_keys.INDEX_SIZE) or 0
 
             if index_size:
                 index_size = int(index_size)
-
-            if sources[source]['fecha_primer_valor'] is None or sources[source]['fecha_primer_valor'] > index_start:
-                sources[source]['fecha_primer_valor'] = index_start
-
-            if sources[source]['fecha_ultimo_valor'] is None or sources[source]['fecha_ultimo_valor'] < index_end:
-                sources[source]['fecha_ultimo_valor'] = index_end
 
             sources[source]['valores_cant'] += index_size
 
