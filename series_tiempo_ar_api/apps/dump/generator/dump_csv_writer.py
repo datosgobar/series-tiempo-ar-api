@@ -50,6 +50,9 @@ class CsvDumpWriter:
 
     def write_serie(self, serie: pd.Series, distribution: Distribution, fields: dict, writer: csv.writer):
         field_id = fields[serie.name]
+
+        # Filtrado de NaN
+        serie = serie[serie.first_valid_index():serie.last_valid_index()]
         df = serie.reset_index().apply(self.rows,
                                        axis=1,
                                        args=(self.fields_data, field_id, meta_keys.get(distribution, meta_keys.PERIODICITY)))

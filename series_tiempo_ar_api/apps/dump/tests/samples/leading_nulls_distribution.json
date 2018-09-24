@@ -59,7 +59,7 @@
           "format": "CSV",
           "modified": "2018-01-03T07:00:02.849550-03:00",
           "fileName": "principales-tasas-interes-diarias.csv",
-          "downloadURL": "series_tiempo_ar_api/apps/dump/tests/samples/daily_periodicity.csv",
+          "downloadURL": "series_tiempo_ar_api/apps/dump/tests/samples/leading_nulls.csv",
           "field": [
             {
               "distribution_identifier": "89.2",
@@ -82,28 +82,6 @@
               "type": "number",
               "id": "89.2_TS_INTEALL_0_D_18",
               "scrapingDataStartCell": "E302"
-            },
-            {
-              "distribution_identifier": "89.2",
-              "description": "Tasas de interés publicadas por el BCRA. Badlar. Datos diarios. En porcentaje",
-              "title": "tasas_interes_badlar",
-              "dataset_identifier": "89",
-              "scrapingIdentifierCell": "H301",
-              "units": "Porcentaje",
-              "type": "number",
-              "id": "89.2_TS_INTELAR_0_D_20",
-              "scrapingDataStartCell": "H302"
-            },
-            {
-              "distribution_identifier": "89.2",
-              "description": "Tasas de interés publicadas por el BCRA. Tasa de Política Monetaria. Datos diarios. En porcentaje",
-              "title": "tasas_interes_pm",
-              "dataset_identifier": "89",
-              "scrapingIdentifierCell": "M301",
-              "units": "Porcentaje",
-              "type": "number",
-              "id": "89.2_TS_INTE_PM_0_D_16",
-              "scrapingDataStartCell": "M302"
             }
           ],
           "draft": false,

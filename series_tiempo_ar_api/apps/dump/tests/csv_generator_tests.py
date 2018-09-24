@@ -8,7 +8,7 @@ import zipfile
 from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
-from django_datajsonar.models import Field, Node
+from django_datajsonar.models import Field, Node, Catalog
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -173,6 +173,22 @@ class CSVTest(TestCase):
                                            for x in series]))
         self.assertEqual(row[3], min(meta_keys.get(x, meta_keys.INDEX_START) for x in series))
         self.assertEqual(row[4], max(meta_keys.get(x, meta_keys.INDEX_END) for x in series))
+
+    def test_leading_nulls_distribution(self):
+        Node.objects.all().delete()
+        Catalog.objects.all().delete()
+        path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
+        index_catalog('leading_null', path, self.index)
+        self.task = CSVDumpTask()
+        self.task.save()
+        gen = DumpGenerator(self.task)
+        gen.generate()
+
+        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        reader = self.read_file_as_csv(file)
+
+        next(reader)  # Header!!!!
+        self.assertEqual(len(list(reader)), 1)  # Un único row, para un único valor del CSV
 
     @classmethod
     def tearDownClass(cls):
