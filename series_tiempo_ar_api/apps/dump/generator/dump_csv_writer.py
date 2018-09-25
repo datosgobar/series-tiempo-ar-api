@@ -18,15 +18,17 @@ class CsvDumpWriter:
     def __init__(self, task: CSVDumpTask, fields_data: dict, rows: Callable):
         self.task = task
         self.fields_data = fields_data
-
         # Funcion generadora de rows, especifica la estructura de la fila
         # a partir de argumentos pasados desde un pandas.apply
         self.rows = rows
 
     def write(self, filepath, header):
-        distribution_ids = Field.objects.filter(
+        fields = Field.objects.filter(
             enhanced_meta__key=meta_keys.AVAILABLE,
-        ).values_list('distribution', flat=True)
+            identifier__in=self.fields_data.keys(),
+        )
+
+        distribution_ids = fields.values_list('distribution', flat=True)
 
         with open(filepath, mode='w') as f:
             writer = csv.writer(f)
@@ -44,18 +46,20 @@ class CsvDumpWriter:
             fields = distribution.field_set.all()
             fields = {field.title: field.identifier for field in fields}
 
-            df.apply(self.write_serie, args=(distribution, fields, writer))
+            periodicity = meta_keys.get(distribution, meta_keys.PERIODICITY)
+            df.apply(self.write_serie, args=(periodicity, fields, writer))
         except Exception as e:
             CSVDumpTask.info(self.task, f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}')
 
-    def write_serie(self, serie: pd.Series, distribution: Distribution, fields: dict, writer: csv.writer):
+    def write_serie(self, serie: pd.Series, periodicity: str, fields: dict, writer: csv.writer):
         field_id = fields[serie.name]
 
         # Filtrado de NaN
         serie = serie[serie.first_valid_index():serie.last_valid_index()]
+
         df = serie.reset_index().apply(self.rows,
                                        axis=1,
-                                       args=(self.fields_data, field_id, meta_keys.get(distribution, meta_keys.PERIODICITY)))
+                                       args=(self.fields_data, field_id, periodicity))
 
         serie = pd.Series(df.values, index=serie.index)
         for row in serie:

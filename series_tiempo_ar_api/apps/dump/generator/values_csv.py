@@ -12,8 +12,7 @@ class ValuesCsvGenerator(AbstractDumpGenerator):
     def generate(self, filepath):
         CsvDumpWriter(self.task, self.fields, self.values_csv_row).write(filepath, constants.VALUES_HEADER)
 
-        with open(filepath, 'rb') as f:
-            self.task.dumpfile_set.create(file_name=constants.VALUES_CSV, file=File(f), task=self.task)
+        self.write(filepath, constants.VALUES_CSV)
 
         os.remove(filepath)
 

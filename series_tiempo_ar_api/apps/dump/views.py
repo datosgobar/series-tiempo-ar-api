@@ -10,6 +10,16 @@ from .constants import DUMP_ERROR, DUMPS_NOT_GENERATED
 
 
 def serve_global_dump(_, filename):
+    return serve_dump_file(filename)
+
+
+def serve_catalog_dump(_, catalog_id, filename):
+    full_file_name = f'{catalog_id}/{filename}'
+
+    return serve_dump_file(full_file_name)
+
+
+def serve_dump_file(filename: str) -> HttpResponse:
     dump_file = DumpFile.objects.filter(file_name=filename).last()
     if dump_file is None:
         return HttpResponse(DUMPS_NOT_GENERATED, status=501)  # "Not implemented"

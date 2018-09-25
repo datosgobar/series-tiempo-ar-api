@@ -2,7 +2,7 @@ import os
 import json
 
 from django.conf import settings
-from django_datajsonar.models import Field
+from django_datajsonar.models import Field, Catalog
 
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
@@ -17,11 +17,12 @@ from .full_csv import FullCsvGenerator
 class DumpGenerator:
     dump_dir = os.path.join(settings.MEDIA_ROOT, 'dump')
 
-    def __init__(self, task: CSVDumpTask):
+    def __init__(self, task: CSVDumpTask, catalog: str = None):
         self.fields = {}
         self.themes = {}
 
         self.task = task
+        self.catalog = catalog
         self.init_data()
 
         if not os.path.exists(self.dump_dir):
@@ -31,7 +32,14 @@ class DumpGenerator:
         """Inicializa en un diccionario con IDs de series como clave los valores a escribir en cada
         uno de los CSV.
         """
-        fields = Field.objects.filter(
+        fields = Field.objects.all()
+
+        if self.catalog:
+            fields = Field.objects.filter(
+                distribution__dataset__catalog=Catalog.objects.get(identifier=self.catalog)
+            )
+
+        fields = fields.filter(
             enhanced_meta__key=meta_keys.AVAILABLE,
         ).prefetch_related(
             'distribution',
@@ -64,10 +72,10 @@ class DumpGenerator:
             }
 
     def generate(self):
-        FullCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.FULL_CSV))
-        ValuesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.VALUES_CSV))
-        SourcesCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.SOURCES_CSV))
-        MetadataCsvGenerator(self.task, self.fields).generate(os.path.join(self.dump_dir, constants.METADATA_CSV))
+        FullCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.FULL_CSV))
+        ValuesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.VALUES_CSV))
+        SourcesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.SOURCES_CSV))
+        MetadataCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.METADATA_CSV))
 
         for filename in constants.GENERATED_FILES:
             remove_old_dumps(filename)
