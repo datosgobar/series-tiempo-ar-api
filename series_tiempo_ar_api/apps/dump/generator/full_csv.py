@@ -41,8 +41,11 @@ class FullCsvGenerator(AbstractDumpGenerator):
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
             zip_name.write(csv_path, arcname=constants.FULL_CSV)
 
+        zip_file_name = constants.FULL_CSV_ZIPPED
+        if self.catalog:
+            zip_file_name = f'{self.catalog}/{constants.FULL_CSV_ZIPPED}'
         with open(zip_path, 'rb') as f:
-            self.task.dumpfile_set.create(file_name=constants.FULL_CSV_ZIPPED,
+            self.task.dumpfile_set.create(file_name=zip_file_name,
                                           file=File(f))
 
         os.remove(zip_path)

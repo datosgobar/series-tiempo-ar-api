@@ -9,11 +9,12 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 from django_datajsonar.models import Field, Node, Catalog
+from faker import Faker
 
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
+from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.utils import index_catalog
 
@@ -205,13 +206,22 @@ class CSVTest(TestCase):
 
 
 class CSVDumpCommandTests(TestCase):
+    fake = Faker()
+    index = fake.word()
 
     @classmethod
     def setUpClass(cls):
+        path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
+        index_catalog('catalog_one', path, index=cls.index)
+
+        path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
+        index_catalog('catalog_two', path, index=cls.index)
+
         super(CSVDumpCommandTests, cls).setUpClass()
 
     def setUp(self):
         CSVDumpTask.objects.all().delete()
+        DumpFile.objects.all().delete()
 
     def test_command_creates_model(self):
         call_command('generate_dump')
@@ -219,3 +229,23 @@ class CSVDumpCommandTests(TestCase):
 
         task = CSVDumpTask.objects.first()
         self.assertTrue(task.dumpfile_set.count(), task.logs)
+
+    def test_catalog_dumps(self):
+        call_command('generate_dump')
+        # Tres dumps generados, 1 por cada catálogo y uno global
+        self.assertTrue(DumpFile.objects.get(file_name=f'catalog_one/{constants.VALUES_CSV}'))
+        self.assertTrue(DumpFile.objects.get(file_name=f'catalog_two/{constants.VALUES_CSV}'))
+        self.assertTrue(DumpFile.objects.get(file_name=f'{constants.VALUES_CSV}'))
+
+    def test_zipped_catalogs(self):
+        call_command('generate_dump')
+        # Tres dumps generados, 1 por cada catálogo y uno global
+        self.assertTrue(DumpFile.objects.get(file_name=f'{constants.FULL_CSV_ZIPPED}'))
+        self.assertTrue(DumpFile.objects.get(file_name=f'catalog_one/{constants.FULL_CSV_ZIPPED}'))
+
+    @classmethod
+    def tearDownClass(cls):
+        super(CSVDumpCommandTests, cls).tearDownClass()
+        ElasticInstance.get().indices.delete(cls.index)
+        Catalog.objects.all().delete()
+        Node.objects.all().delete()
