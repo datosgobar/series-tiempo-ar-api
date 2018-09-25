@@ -7,7 +7,7 @@ from .models import CSVDumpTask
 from .generator.generator import DumpGenerator
 
 
-@job('default', timeout='1h')
+@job('default', timeout='2h')
 def dump_db_to_csv(task_id):
     task = CSVDumpTask.objects.get(id=task_id)
     try:
