@@ -15,7 +15,8 @@ def migrate_files(apps, schema_editor):
 
     for distribution in Distribution.objects.using(db_alias).all():
         try:
-            distribution.data_file.read()
+            if distribution.data_file:
+                distribution.data_file.read()
         except MinIOError:
             # El file no está en minio, intentamos leerlo desde el fs
             with open(os.path.join(settings.MEDIA_ROOT, distribution.data_file.name), 'rb') as f:
