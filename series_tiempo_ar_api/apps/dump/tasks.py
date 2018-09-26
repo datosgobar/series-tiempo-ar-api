@@ -9,7 +9,7 @@ from .generator.generator import DumpGenerator
 
 
 @job('default', timeout='2h')
-def dump_db_to_csv(task_id, catalog_id: str=None):
+def dump_db_to_csv(task_id, catalog_id: str = None):
     task = CSVDumpTask.objects.get(id=task_id)
 
     if catalog_id is None:
