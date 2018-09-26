@@ -7,7 +7,7 @@ import zipfile
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django_datajsonar.models import Field, Node, Catalog
 from faker import Faker
 
@@ -205,23 +205,19 @@ class CSVTest(TestCase):
         return reader
 
 
-class CSVDumpCommandTests(TestCase):
+class CSVDumpCommandTests(TransactionTestCase):
     fake = Faker()
     index = fake.word()
-
-    @classmethod
-    def setUpClass(cls):
-        path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
-        index_catalog('catalog_one', path, index=cls.index)
-
-        path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
-        index_catalog('catalog_two', path, index=cls.index)
-
-        super(CSVDumpCommandTests, cls).setUpClass()
 
     def setUp(self):
         CSVDumpTask.objects.all().delete()
         DumpFile.objects.all().delete()
+
+        path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
+        index_catalog('catalog_one', path, index=self.index)
+
+        path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
+        index_catalog('catalog_two', path, index=self.index)
 
     def test_command_creates_model(self):
         call_command('generate_dump')
