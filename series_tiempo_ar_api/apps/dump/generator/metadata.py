@@ -28,8 +28,7 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
             for field, values in self.fields.items():
                 writer.writerow(self.generate_row(field, values))
 
-        with open(filepath, 'rb') as f:
-            self.task.dumpfile_set.create(file_name=constants.METADATA_CSV, file=File(f))
+        self.write(filepath, constants.METADATA_CSV)
 
     def generate_row(self, serie_name, values):
         dataset = values['dataset']

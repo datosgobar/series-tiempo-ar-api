@@ -53,13 +53,12 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
             sources[source]['valores_cant'] += index_size
 
-        self.write(filepath, sources)
+        self.write_tmp_file(filepath, sources)
 
-    def write(self, filepath: str, sources: dict):
+    def write_tmp_file(self, filepath: str, sources: dict):
         with open(filepath, 'w') as f:
             writer = csv.DictWriter(f, self.columns)
             writer.writeheader()
             writer.writerows(sources.values())
 
-        with open(filepath, 'rb') as f:
-            self.task.dumpfile_set.create(file_name=constants.SOURCES_CSV, file=File(f))
+        self.write(filepath, constants.SOURCES_CSV)
