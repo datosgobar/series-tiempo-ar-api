@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
+import os
+
+from django.contrib.admin import ACTION_CHECKBOX_NAME
+from django.contrib.auth.models import User
+from django.core import urlresolvers
 from django.test import TestCase
-from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases
+from django_datajsonar.indexing.catalog_reader import index_catalog
+from mock import mock
+
+from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases, delete_metadata
 from series_tiempo_ar_api.apps.metadata.models import CatalogAlias
 
-from django_datajsonar.models import Node
+from django_datajsonar.models import Node, Field, ReadDataJsonTask, Distribution
+
+SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
 class ResolveAliasTests(TestCase):
@@ -40,3 +50,33 @@ class ResolveAliasTests(TestCase):
 
         expected = ['one_catalog', 'two_catalog', 'third_catalog']
         self.assertEqual(set(expected), set(ids))
+
+
+class DeleteMetadataTests(TestCase):
+    distribution_change = urlresolvers.reverse('admin:django_datajsonar_distribution_changelist')
+    field_change = urlresolvers.reverse('admin:django_datajsonar_field_changelist')
+
+    def setUp(self):
+        node = Node.objects.create(catalog_url=os.path.join(SAMPLES_DIR, 'single_distribution.json'), catalog_id="one", indexable=True)
+        index_catalog(node, ReadDataJsonTask.objects.create(), whitelist=True)
+        user = User.objects.create(username='a', password='b', is_staff=True, is_superuser=True)
+        self.client.force_login(user)
+
+    def test_delete_fields(self):
+        with mock.patch('series_tiempo_ar_api.apps.metadata.admin.delete_metadata') as fake_delete:
+            fields = Field.objects.all()
+            self.client.post(self.field_change, {'action': 'delete_model',
+                                                 ACTION_CHECKBOX_NAME: [str(f.pk) for f in fields]},
+                             follow=True)
+
+            self.assertEqual(set(fake_delete.call_args[0][0]), set(fields))
+
+    def test_delete_distribution(self):
+        with mock.patch('series_tiempo_ar_api.apps.metadata.admin.delete_metadata') as fake_delete:
+            distribution: Distribution = Distribution.objects.first()
+            fields = set(distribution.field_set.all())
+            self.client.post(self.distribution_change,
+                             {'action': 'delete_model',
+                              ACTION_CHECKBOX_NAME: [str(distribution.pk)]},
+                             follow=True)
+            self.assertEqual(set(fake_delete.call_args[0][0]), set(fields))
