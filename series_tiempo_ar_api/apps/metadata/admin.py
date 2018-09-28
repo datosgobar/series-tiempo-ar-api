@@ -78,7 +78,6 @@ class CustomDistributionAdmin(DistributionAdmin):
         return actions
 
     def delete_model(self, _, queryset):
-        # Actualizo los crons del sistema para reflejar el cambio de modelos
         fields = Field.objects.filter(distribution__identifier__in=queryset.values_list('identifier', flat=True))
         delete_metadata(list(fields))
         queryset.delete()
