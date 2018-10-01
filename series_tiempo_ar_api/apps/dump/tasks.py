@@ -2,8 +2,10 @@
 from traceback import format_exc
 
 from django.utils import timezone
+from django.conf import settings
+from django_rq import job, get_queue
 from django_datajsonar.models import Node
-from django_rq import job
+
 from .models import CSVDumpTask
 from .generator.generator import DumpGenerator
 
@@ -21,13 +23,18 @@ def dump_db_to_csv(task_id, catalog_id: str = None):
         csv_gen = DumpGenerator(task, catalog_id)
         csv_gen.generate()
     except Exception as e:
-        msg = "Error generando el dump: {}".format(str(e) or format_exc(e))
+        exc = str(e) or format_exc(e)
+        msg = f"{catalog_id or 'global'}: Error generando el dump: {exc}"
         CSVDumpTask.info(task, msg)
 
-    task.refresh_from_db()
-    task.status = task.FINISHED
-    task.finished = timezone.now()
-    task.save()
+    finish = settings.RQ_QUEUES['default'].get('ASYNC', True) and \
+        not get_queue('default').count
+
+    if finish:
+        task.refresh_from_db()
+        task.status = task.FINISHED
+        task.finished = timezone.now()
+        task.save()
 
 
 def enqueue_csv_dump_task(task=None):
