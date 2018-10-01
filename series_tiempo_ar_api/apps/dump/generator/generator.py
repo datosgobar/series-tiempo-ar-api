@@ -72,10 +72,15 @@ class DumpGenerator:
             }
 
     def generate(self):
-        FullCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.FULL_CSV))
-        ValuesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.VALUES_CSV))
-        SourcesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.SOURCES_CSV))
-        MetadataCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(self.dump_dir, constants.METADATA_CSV))
+        if self.catalog:
+            dump_dir = os.path.join(self.dump_dir, self.catalog)
+            os.makedirs(dump_dir, exist_ok=True)
+        else:
+            dump_dir = self.dump_dir
+        FullCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.FULL_CSV))
+        ValuesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.VALUES_CSV))
+        SourcesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.SOURCES_CSV))
+        MetadataCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.METADATA_CSV))
 
         for filename in constants.GENERATED_FILES:
             remove_old_dumps(filename)
