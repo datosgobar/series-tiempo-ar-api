@@ -28,7 +28,7 @@ class Scraper(object):
         url = distribution.get(DOWNLOAD_URL)
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
-        url = urllib.parse.quote(url, safe='/:')
+        url = urllib.parse.quote(url, safe='/:?=&')
 
         dataset = catalog.get_dataset(distribution[DATASET_IDENTIFIER])
         df = self.init_df(url)
