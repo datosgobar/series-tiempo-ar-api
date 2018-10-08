@@ -12,67 +12,60 @@ from .generator.xlsx import generator
 
 
 @job('default', timeout='2h')
-def dump_db_to_csv(task_id, catalog_id: str = None):
-    task = CSVDumpTask.objects.get(id=task_id)
-
-    if catalog_id is None:
-        nodes = Node.objects.filter(indexable=True).values_list('catalog_id', flat=True)
-        for node in nodes:
-            dump_db_to_csv.delay(task_id, node)
-
-    try:
-        csv_gen = DumpGenerator(task, catalog_id)
-        csv_gen.generate()
-    except NotImplementedError as e:
-        exc = str(e) or format_exc(e)
-        msg = f"{catalog_id or 'global'}: Error generando el dump: {exc}"
-        CSVDumpTask.info(task, msg)
-
-    finish = settings.RQ_QUEUES['default'].get('ASYNC', True) and \
-        not get_queue('default').count
-
-    if finish:
-        task.refresh_from_db()
-        task.status = task.FINISHED
-        task.finished = timezone.now()
-        task.save()
+def write_csv(task_id, catalog=None):
+    Writer('CSV', lambda task, catalog_id: DumpGenerator(task, catalog_id).generate(),
+           write_csv,
+           task_id,
+           catalog).write()
 
 
 def enqueue_csv_dump_task(task=None):
-    if task is None:
-        task = CSVDumpTask.objects.create()
-
-    dump_db_to_csv.delay(task.id)
+    write_csv.delay(task)
 
 
 @job('default', timeout='2h')
-def write_xlsx_dumps(task_id: int, catalog_id: str = None):
-    task = CSVDumpTask.objects.get(id=task_id)
-
-    if catalog_id is None:
-        nodes = Node.objects.filter(indexable=True).values_list('catalog_id', flat=True)
-        for node in nodes:
-            write_xlsx_dumps.delay(task_id, node)
-
-    try:
-        generator.generate(task, catalog_id)
-    except Exception as e:
-        exc = str(e) or format_exc(e)
-        msg = f"{catalog_id or 'global'}: Error generando el dump XLSX: {exc}"
-        CSVDumpTask.info(task, msg)
-
-    finish = settings.RQ_QUEUES['default'].get('ASYNC', True) and \
-        not get_queue('default').count
-
-    if finish:
-        task.refresh_from_db()
-        task.status = task.FINISHED
-        task.finished = timezone.now()
-        task.save()
+def write_xlsx(task_id, catalog=None):
+    Writer('XLSX', generator.generate, write_xlsx, task_id, catalog).write()
 
 
 def enqueue_xlsx_dump_task(task=None):
-    if task is None:
-        task = CSVDumpTask.objects.create()
+    write_xlsx.delay(task)
 
-    write_xlsx_dumps.delay(task.id)
+
+class Writer:
+
+    def __init__(self, tag: str, action: callable, recursive_task: callable, task: int = None, catalog: str = None):
+        self.tag = tag
+        self.action = action
+        self.recursive_task = recursive_task
+        self.catch_exceptions = getattr(settings, 'DUMP_LOG_EXCEPTIONS', True)
+
+        self.task = CSVDumpTask.objects.get(id=task) if task is not None else CSVDumpTask.objects.create()
+        self.catalog_id = catalog
+
+    def write(self):
+        if self.catalog_id is None:
+            nodes = Node.objects.filter(indexable=True).values_list('catalog_id', flat=True)
+            for node in nodes:
+                self.recursive_task.delay(self.task.id, node)
+        if self.catch_exceptions:
+            self.run_catching_exceptions()
+        else:
+            self.action(self.task, self.catalog_id)
+
+        finish = settings.RQ_QUEUES['default'].get('ASYNC', True) and \
+            not get_queue('default').count
+
+        if finish:
+            self.task.refresh_from_db()
+            self.task.status = self.task.FINISHED
+            self.task.finished = timezone.now()
+            self.task.save()
+
+    def run_catching_exceptions(self):
+        try:
+            self.action(self.task, self.catalog_id)
+        except Exception as e:
+            exc = str(e) or format_exc(e)
+            msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.tag}: {exc}"
+            CSVDumpTask.info(self.task, msg)

@@ -5,6 +5,7 @@ from django_datajsonar.models import AbstractTask, Node
 from minio_storage.storage import MinioMediaStorage, create_minio_client_from_settings
 from . import constants
 
+
 class CSVDumpTask(AbstractTask):
     pass
 

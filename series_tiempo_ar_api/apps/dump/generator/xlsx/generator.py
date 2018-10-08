@@ -1,9 +1,11 @@
 import csv
 import io
+import os
 
+from django.core.files import File
 from xlsxwriter.workbook import Workbook
 
-from series_tiempo_ar_api.apps.dump import constants
+from series_tiempo_ar_api.apps.dump.generator.generator import remove_old_dumps
 from series_tiempo_ar_api.apps.dump.models import DumpFile, CSVDumpTask
 
 
@@ -17,7 +19,8 @@ def read_file_as_csv(file):
 
 
 def csv_to_xlsx(dump_file: DumpFile):
-    workbook = Workbook(f'{dump_file.file_name}-{dump_file.id}.xlsx')
+    xlsx = f'{dump_file.file_name}-{dump_file.id}.xlsx'
+    workbook = Workbook(xlsx)
     worksheet = workbook.add_worksheet()
     sheet_count = 0
     with dump_file.file as f:
@@ -33,6 +36,14 @@ def csv_to_xlsx(dump_file: DumpFile):
             sheet_count += 1
     workbook.close()
 
+    with open(xlsx, 'rb') as f:
+        dump_file.task.dumpfile_set.create(file_name=dump_file.file_name,
+                                           file_type=DumpFile.TYPE_XLSX,
+                                           node=dump_file.node,
+                                           file=File(f))
+
+    os.remove(xlsx)
+
 
 def generate(task: CSVDumpTask, node: str = None):
     dumps_qs = DumpFile.objects.all()
@@ -40,13 +51,18 @@ def generate(task: CSVDumpTask, node: str = None):
         dumps_qs = dumps_qs.filter(node__catalog_id=node)
 
     dumps = []
-    for dump_name in DumpFile.FILENAME_CHOICES:
-        dump_file = dumps_qs.filter(file_name=dump_name).last()
+    for dump_name, _ in DumpFile.FILENAME_CHOICES:
+        dump_file = dumps_qs.filter(file_name=dump_name, file_type=DumpFile.TYPE_CSV).last()
         if dump_file is not None:
             dumps.append(dump_file)
 
     for dump in dumps:
         try:
             csv_to_xlsx(dump)
-        except IOError as e:
-            CSVDumpTask.info(task, f"Error escribiendo dump XLSX de dump {dump.file_name}: {e.__class__}: {e}")
+        except Exception as e:
+            catalog = node or 'global'
+            msg = f"Error escribiendo dump XLSX de dump {catalog} {dump.file_name}: {e.__class__}: {e}"
+            CSVDumpTask.info(task, msg)
+
+    for filename, _ in DumpFile.FILENAME_CHOICES:
+        remove_old_dumps(filename, DumpFile.TYPE_CSV, node)

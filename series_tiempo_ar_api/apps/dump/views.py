@@ -1,8 +1,9 @@
 #!coding:utf-8
 from urllib.parse import urlparse
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
+from django_datajsonar.models import Node
 from minio_storage.storage import create_minio_client_from_settings
 
 from .models import DumpFile
@@ -14,15 +15,19 @@ def serve_global_dump(_, filename):
 
 
 def serve_catalog_dump(_, catalog_id, filename):
-    full_file_name = f'{catalog_id}/{filename}'
+    try:
+        catalog = Node.objects.get(catalog_id=catalog_id)
+    except Node.DoesNotExist:
+        raise Http404
 
-    return serve_dump_file(full_file_name)
+    return serve_dump_file(filename, catalog)
 
 
-def serve_dump_file(filename: str) -> HttpResponse:
+def serve_dump_file(filename: str, catalog=None) -> HttpResponse:
     name, ext = filename.split('.')
     dump_file = DumpFile.objects.filter(file_name=name,
-                                        file_type=ext).last()
+                                        file_type=ext,
+                                        node=catalog).last()
     if dump_file is None:
         return HttpResponse(DUMPS_NOT_GENERATED, status=501)  # "Not implemented"
 

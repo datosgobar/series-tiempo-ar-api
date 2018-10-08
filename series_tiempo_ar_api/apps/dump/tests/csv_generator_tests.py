@@ -238,13 +238,14 @@ class CSVDumpCommandTests(TransactionTestCase):
         # Tres dumps generados, 1 por cada catálogo y uno global
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES, node__catalog_id='catalog_one'))
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES, node__catalog_id='catalog_two'))
-        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES, node=None))
 
     def test_zipped_catalogs(self):
         call_command('generate_dump')
         # Tres dumps generados, 1 por cada catálogo y uno global
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
-                                             file_type=DumpFile.TYPE_ZIP))
+                                             file_type=DumpFile.TYPE_ZIP,
+                                             node=None))
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
                                              file_type=DumpFile.TYPE_ZIP,
                                              node__catalog_id='catalog_one'))

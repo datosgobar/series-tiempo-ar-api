@@ -8,6 +8,7 @@ from .abstract_dump_gen import AbstractDumpGenerator
 
 class ValuesCsvGenerator(AbstractDumpGenerator):
     filename = DumpFile.FILENAME_VALUES
+
     def generate(self):
         filepath = self.get_file_path()
         CsvDumpWriter(self.task, self.fields, self.values_csv_row).write(filepath, constants.VALUES_HEADER)
