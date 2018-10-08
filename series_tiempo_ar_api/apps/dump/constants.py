@@ -2,27 +2,7 @@
 import os
 from django.conf import settings
 
-
 DUMP_DIR = os.path.join(settings.MEDIA_ROOT, 'dump')
-
-# Filenames de los archivos a generar y ofrecer
-FULL_CSV_ZIPPED = 'series-tiempo-csv.zip'
-VALUES_CSV = 'series-tiempo-valores.csv'
-METADATA_CSV = 'series-tiempo-metadata.csv'
-SOURCES_CSV = 'series-tiempo-fuentes.csv'
-
-# Archivo sin zippear, no es descargable
-FULL_CSV = 'series-tiempo.csv'
-
-# Archivos a servir por endpoint
-FILES = [
-    FULL_CSV_ZIPPED,
-    VALUES_CSV,
-    METADATA_CSV,
-    SOURCES_CSV
-]
-
-GENERATED_FILES = FILES + [FULL_CSV]
 
 VALUES_HEADER = [
     'catalogo_id',

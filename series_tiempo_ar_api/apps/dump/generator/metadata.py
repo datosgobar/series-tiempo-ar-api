@@ -1,17 +1,11 @@
 import csv
-
-from django.core.files import File
-from iso8601 import iso8601
-
-from django_datajsonar.models import Field
-
-from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.abstract_dump_gen import AbstractDumpGenerator
+from series_tiempo_ar_api.apps.dump.models import DumpFile
 from series_tiempo_ar_api.apps.management import meta_keys
 
 
 class MetadataCsvGenerator(AbstractDumpGenerator):
-
+    filename = DumpFile.FILENAME_METADATA
     rows = ['catalogo_id', 'dataset_id', 'distribucion_id', 'serie_id',
             'indice_tiempo_frecuencia', 'serie_titulo', 'serie_unidades',
             'serie_descripcion', 'distribucion_titulo', 'distribucion_descripcion',
@@ -19,8 +13,8 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
             'dataset_descripcion', 'serie_indice_inicio', 'serie_indice_final',
             'serie_valores_cant', 'serie_dias_no_cubiertos']
 
-    def generate(self, filepath):
-
+    def generate(self):
+        filepath = self.get_file_path()
         with open(filepath, 'w') as f:
             writer = csv.DictWriter(f, fieldnames=self.rows)
 
@@ -28,7 +22,7 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
             for field, values in self.fields.items():
                 writer.writerow(self.generate_row(field, values))
 
-        self.write(filepath, constants.METADATA_CSV)
+        self.write(filepath, self.filename)
 
     def generate_row(self, serie_name, values):
         dataset = values['dataset']

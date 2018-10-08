@@ -2,19 +2,23 @@ import os
 import zipfile
 
 from django.core.files import File
+from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.dump import constants
+from series_tiempo_ar_api.apps.dump.models import DumpFile
 from .abstract_dump_gen import AbstractDumpGenerator
 from .dump_csv_writer import CsvDumpWriter
 
 
 class FullCsvGenerator(AbstractDumpGenerator):
+    filename = DumpFile.FILENAME_FULL
 
-    def generate(self, filepath):
+    def generate(self):
+        filepath = self.get_file_path()
         CsvDumpWriter(self.task, self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
 
-        self.write(filepath, constants.FULL_CSV)
-        self.zip_full_csv(filepath, os.path.join(os.path.dirname(filepath), constants.FULL_CSV_ZIPPED))
+        self.write(filepath, DumpFile.FILENAME_FULL)
+        self.zip_full_csv(filepath)
 
     @staticmethod
     def full_csv_row(value, fields, field, periodicity):
@@ -37,15 +41,17 @@ class FullCsvGenerator(AbstractDumpGenerator):
             fields[field]['dataset_titulo'],
         )
 
-    def zip_full_csv(self, csv_path, zip_path):
+    def zip_full_csv(self, csv_path):
+        zip_file = DumpFile(task=self.task,
+                            file_type=DumpFile.TYPE_ZIP,
+                            file_name=DumpFile.FILENAME_FULL,
+                            node=Node.objects.filter(catalog_id=self.catalog).first())
+        zip_path = os.path.join(os.path.dirname(csv_path), f'{DumpFile.FILENAME_FULL}.{DumpFile.TYPE_ZIP}')
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
-            zip_name.write(csv_path, arcname=constants.FULL_CSV)
+            zip_name.write(csv_path, arcname=f'{DumpFile.FILENAME_FULL}.{DumpFile.TYPE_CSV}')
 
-        zip_file_name = constants.FULL_CSV_ZIPPED
-        if self.catalog:
-            zip_file_name = f'{self.catalog}/{constants.FULL_CSV_ZIPPED}'
         with open(zip_path, 'rb') as f:
-            self.task.dumpfile_set.create(file_name=zip_file_name,
-                                          file=File(f))
+            zip_file.file = File(f)
+            zip_file.save()
 
         os.remove(zip_path)

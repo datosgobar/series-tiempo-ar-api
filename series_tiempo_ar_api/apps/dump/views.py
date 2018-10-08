@@ -20,7 +20,9 @@ def serve_catalog_dump(_, catalog_id, filename):
 
 
 def serve_dump_file(filename: str) -> HttpResponse:
-    dump_file = DumpFile.objects.filter(file_name=filename).last()
+    name, ext = filename.split('.')
+    dump_file = DumpFile.objects.filter(file_name=name,
+                                        file_type=ext).last()
     if dump_file is None:
         return HttpResponse(DUMPS_NOT_GENERATED, status=501)  # "Not implemented"
 

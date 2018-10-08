@@ -1,4 +1,5 @@
 import csv
+import os
 from typing import Callable
 import pandas as pd
 
@@ -29,6 +30,7 @@ class CsvDumpWriter:
         )
 
         distribution_ids = fields.values_list('distribution', flat=True)
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         with open(filepath, mode='w') as f:
             writer = csv.writer(f)

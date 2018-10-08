@@ -19,7 +19,7 @@ samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples
 
 class ViewTests(TestCase):
     directory = os.path.join(settings.MEDIA_ROOT, 'test_dump')
-    valid_arg = 'series-tiempo-csv.zip'
+    valid_arg = 'series-tiempo.zip'
 
     index = 'csv_dump_view_test_index'
 
@@ -52,11 +52,6 @@ class ViewTests(TestCase):
         resp = self.client.get(reverse('api:dump:global_dump', kwargs={'filename': self.valid_arg}))
 
         self.assertEqual(resp.status_code, 302)  # Redirect al link de descarga
-
-    @raises(exceptions.NoReverseMatch)
-    def test_dump_invalid(self):
-        call_command('generate_dump', index=self.index)
-        self.client.get(reverse('api:dump:global_dump', kwargs={'filename': 'invalid'}))
 
     @classmethod
     def tearDownClass(cls):

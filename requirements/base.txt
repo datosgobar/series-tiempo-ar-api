@@ -20,3 +20,4 @@ django-rq-scheduler==1.1.1
 -e git+git://github.com/datosgobar/django-datajsonar@0.1.5#egg=django_datajsonar
 django-solo==1.1.2
 django-minio-storage
+xlsxwriter==1.1.1

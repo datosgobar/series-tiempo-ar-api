@@ -72,22 +72,17 @@ class DumpGenerator:
             }
 
     def generate(self):
-        if self.catalog:
-            dump_dir = os.path.join(self.dump_dir, self.catalog)
-            os.makedirs(dump_dir, exist_ok=True)
-        else:
-            dump_dir = self.dump_dir
-        FullCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.FULL_CSV))
-        ValuesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.VALUES_CSV))
-        SourcesCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.SOURCES_CSV))
-        MetadataCsvGenerator(self.task, self.fields, self.catalog).generate(os.path.join(dump_dir, constants.METADATA_CSV))
+        FullCsvGenerator(self.task, self.fields, self.catalog).generate()
+        ValuesCsvGenerator(self.task, self.fields, self.catalog).generate()
+        SourcesCsvGenerator(self.task, self.fields, self.catalog).generate()
+        MetadataCsvGenerator(self.task, self.fields, self.catalog).generate()
 
-        for filename in constants.GENERATED_FILES:
+        for filename in DumpFile.FILENAME_CHOICES:
             remove_old_dumps(filename)
 
 
 def remove_old_dumps(dump_file_name):
-    same_file = DumpFile.objects.filter(file_name=dump_file_name)
+    same_file = DumpFile.objects.filter(file_name=dump_file_name, file_type=DumpFile.TYPE_CSV)
     old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
     for model in old:
         model.delete()
