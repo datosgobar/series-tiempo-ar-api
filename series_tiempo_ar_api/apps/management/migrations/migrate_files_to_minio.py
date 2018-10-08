@@ -23,9 +23,12 @@ def migrate_files(*_):
                 distribution.data_file.read()
         except MinIOError:
             # El file no está en minio, intentamos leerlo desde el fs
-            with open(os.path.join(settings.MEDIA_ROOT, distribution.data_file.name), 'rb') as f:
-                distribution.data_file = File(f)
-                distribution.save()
+            try:
+                with open(os.path.join(settings.MEDIA_ROOT, distribution.data_file.name), 'rb') as f:
+                    distribution.data_file = File(f)
+                    distribution.save()
+            except FileNotFoundError:
+                continue
 
 
 class Migration(migrations.Migration):
