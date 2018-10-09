@@ -14,8 +14,7 @@ from faker import Faker
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
-from series_tiempo_ar_api.apps.dump import constants
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.utils import index_catalog
 
 
@@ -33,13 +32,13 @@ class CSVTest(TestCase):
         cls.catalog_id = 'csv_dump_test_catalog'
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
         index_catalog(cls.catalog_id, path, cls.index)
-        cls.task = CSVDumpTask()
+        cls.task = GenerateDumpTask()
         cls.task.save()
         gen = DumpGenerator(cls.task)
         gen.generate()
 
     def test_values_dump(self):
-        file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
         reader = self.read_file_as_csv(file)
         next(reader)  # skip header
         row = next(reader)
@@ -47,13 +46,13 @@ class CSVTest(TestCase):
         self.assertEqual(row[6], 'R/P1D')
 
     def test_values_length(self):
-        file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
         reader = self.read_file_as_csv(file)
         header = next(reader)
         self.assertEqual(len(header), 7)
 
     def test_entity_identifiers(self):
-        file = self.task.dumpfile_set.get(file_name=constants.VALUES_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
         reader = self.read_file_as_csv(file)
         next(reader)
 
@@ -68,11 +67,14 @@ class CSVTest(TestCase):
         self.assertEqual(row[6], field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
     def test_full_csv_zipped(self):
-        zip_file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV_ZIPPED).file
+        zip_file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                              file_type=DumpFile.TYPE_ZIP).file
         csv_zipped = zipfile.ZipFile(zip_file)
 
+        full_csv = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                              file_type=DumpFile.TYPE_CSV)
         # Necesario para abrir archivos zippeados en modo texto (no bytes)
-        src_file = io.TextIOWrapper(csv_zipped.open(constants.FULL_CSV),
+        src_file = io.TextIOWrapper(csv_zipped.open(full_csv.get_file_name()),
                                     encoding='utf8',
                                     newline='')
         reader = csv.reader(src_file)
@@ -82,7 +84,8 @@ class CSVTest(TestCase):
         self.assertEqual(len(header), 15)
 
     def test_full_csv_identifier_fields(self):
-        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                          file_type=DumpFile.TYPE_CSV).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
@@ -95,7 +98,8 @@ class CSVTest(TestCase):
         self.assertEqual(row[5], field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
     def test_full_csv_metadata_fields(self):
-        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                          file_type=DumpFile.TYPE_CSV).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
@@ -111,7 +115,8 @@ class CSVTest(TestCase):
         self.assertEqual(row[10], distribution_meta['description'])
 
     def test_full_csv_dataset_metadata_fields(self):
-        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                          file_type=DumpFile.TYPE_CSV).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
@@ -125,7 +130,8 @@ class CSVTest(TestCase):
         self.assertEqual(row[14], field.distribution.dataset.title)
 
     def test_full_csv_dataset_theme_field(self):
-        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                          file_type=DumpFile.TYPE_CSV).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
         row = next(reader)
@@ -145,14 +151,14 @@ class CSVTest(TestCase):
         self.assertEqual(theme_label, row[11])
 
     def test_metadata_csv(self):
-        file = self.task.dumpfile_set.get(file_name=constants.METADATA_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
         self.assertEqual(len(list(reader)), 3)  # Un row por serie
 
     def test_sources_csv(self):
-        file = self.task.dumpfile_set.get(file_name=constants.SOURCES_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_SOURCES).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
@@ -162,7 +168,7 @@ class CSVTest(TestCase):
         dataset = Field.objects.first().distribution.dataset
         meta = json.loads(dataset.metadata)
 
-        file = self.task.dumpfile_set.get(file_name=constants.SOURCES_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_SOURCES).file
         reader = self.read_file_as_csv(file)
         next(reader)  # Header
 
@@ -180,12 +186,13 @@ class CSVTest(TestCase):
         Catalog.objects.all().delete()
         path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
         index_catalog('leading_null', path, self.index)
-        self.task = CSVDumpTask()
+        self.task = GenerateDumpTask()
         self.task.save()
         gen = DumpGenerator(self.task)
         gen.generate()
 
-        file = self.task.dumpfile_set.get(file_name=constants.FULL_CSV).file
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                          file_type=DumpFile.TYPE_CSV).file
         reader = self.read_file_as_csv(file)
 
         next(reader)  # Header!!!!
@@ -210,7 +217,7 @@ class CSVDumpCommandTests(TransactionTestCase):
     index = fake.word()
 
     def setUp(self):
-        CSVDumpTask.objects.all().delete()
+        GenerateDumpTask.objects.all().delete()
         DumpFile.objects.all().delete()
 
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
@@ -221,23 +228,30 @@ class CSVDumpCommandTests(TransactionTestCase):
 
     def test_command_creates_model(self):
         call_command('generate_dump')
-        self.assertEqual(CSVDumpTask.objects.count(), 1)
+        self.assertEqual(GenerateDumpTask.objects.count(), 1)
 
-        task = CSVDumpTask.objects.first()
+        task = GenerateDumpTask.objects.first()
         self.assertTrue(task.dumpfile_set.count(), task.logs)
 
     def test_catalog_dumps(self):
         call_command('generate_dump')
         # Tres dumps generados, 1 por cada catálogo y uno global
-        self.assertTrue(DumpFile.objects.get(file_name=f'catalog_one/{constants.VALUES_CSV}'))
-        self.assertTrue(DumpFile.objects.get(file_name=f'catalog_two/{constants.VALUES_CSV}'))
-        self.assertTrue(DumpFile.objects.get(file_name=f'{constants.VALUES_CSV}'))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES, node__catalog_id='catalog_one'))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES, node__catalog_id='catalog_two'))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_VALUES, node=None))
 
     def test_zipped_catalogs(self):
         call_command('generate_dump')
         # Tres dumps generados, 1 por cada catálogo y uno global
-        self.assertTrue(DumpFile.objects.get(file_name=f'{constants.FULL_CSV_ZIPPED}'))
-        self.assertTrue(DumpFile.objects.get(file_name=f'catalog_one/{constants.FULL_CSV_ZIPPED}'))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
+                                             file_type=DumpFile.TYPE_ZIP,
+                                             node=None))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
+                                             file_type=DumpFile.TYPE_ZIP,
+                                             node__catalog_id='catalog_one'))
+        self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
+                                             file_type=DumpFile.TYPE_ZIP,
+                                             node__catalog_id='catalog_two'))
 
     @classmethod
     def tearDownClass(cls):

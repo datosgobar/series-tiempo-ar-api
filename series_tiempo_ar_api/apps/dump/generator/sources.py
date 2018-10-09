@@ -1,21 +1,19 @@
 import csv
-
-from django.core.files import File
 from iso8601 import iso8601
 
 from django_datajsonar.models import Field
 
-from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.abstract_dump_gen import AbstractDumpGenerator
+from series_tiempo_ar_api.apps.dump.models import DumpFile
 from series_tiempo_ar_api.apps.management import meta_keys
 
 
 class SourcesCsvGenerator(AbstractDumpGenerator):
-
+    filename = DumpFile.FILENAME_SOURCES
     columns = ['dataset_fuente', 'series_cant', 'valores_cant',
                'fecha_primer_valor', 'fecha_ultimo_valor']
 
-    def generate(self, filepath):
+    def generate(self):
         sources = {}
 
         for field in filter(lambda x: self.fields[x]['dataset_fuente'], self.fields):
@@ -53,12 +51,13 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
             sources[source]['valores_cant'] += index_size
 
-        self.write_tmp_file(filepath, sources)
+        self.write_tmp_file(sources)
 
-    def write_tmp_file(self, filepath: str, sources: dict):
+    def write_tmp_file(self, sources: dict):
+        filepath = self.get_file_path()
         with open(filepath, 'w') as f:
             writer = csv.DictWriter(f, self.columns)
             writer.writeheader()
             writer.writerows(sources.values())
 
-        self.write(filepath, constants.SOURCES_CSV)
+        self.write(filepath, self.filename)

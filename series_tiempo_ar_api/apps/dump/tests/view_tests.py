@@ -3,13 +3,12 @@ import os
 
 from django.conf import settings
 from django.test import TestCase
-from django.urls import reverse, exceptions
+from django.urls import reverse
 from django.core.management import call_command
 from django_datajsonar.models import Node
-from nose.tools import raises
 
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
-from series_tiempo_ar_api.apps.dump.models import DumpFile, CSVDumpTask
+from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.utils import index_catalog
@@ -19,7 +18,7 @@ samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples
 
 class ViewTests(TestCase):
     directory = os.path.join(settings.MEDIA_ROOT, 'test_dump')
-    valid_arg = 'series-tiempo-csv.zip'
+    valid_arg = 'series-tiempo.zip'
 
     index = 'csv_dump_view_test_index'
 
@@ -34,18 +33,18 @@ class ViewTests(TestCase):
         cls.catalog_id = 'csv_dump_test_catalog'
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
         index_catalog(cls.catalog_id, path, cls.index)
-        cls.task = CSVDumpTask()
+        cls.task = GenerateDumpTask()
         cls.task.save()
         gen = DumpGenerator(cls.task)
         gen.generate()
 
-    def setUp(self):
-        DumpFile.objects.all().delete()
+        DumpGenerator(cls.task, cls.catalog_id).generate()
 
     def test_dump_endpoint_not_available(self):
+        DumpFile.objects.all().delete()
         resp = self.client.get(reverse('api:dump:global_dump', kwargs={'filename': self.valid_arg}))
 
-        self.assertEqual(resp.status_code, 501)
+        self.assertEqual(resp.status_code, 404)
 
     def test_dump_endpoint_generated(self):
         call_command('generate_dump', index=self.index)
@@ -53,12 +52,28 @@ class ViewTests(TestCase):
 
         self.assertEqual(resp.status_code, 302)  # Redirect al link de descarga
 
-    @raises(exceptions.NoReverseMatch)
-    def test_dump_invalid(self):
-        call_command('generate_dump', index=self.index)
-        self.client.get(reverse('api:dump:global_dump', kwargs={'filename': 'invalid'}))
+    def test_invalid_dump_url(self):
+        resp = self.client.get(reverse('api:dump:global_dump', kwargs={'filename': "file_name_no_extension"}))
+        self.assertEqual(resp.status_code, 404)
+
+    def test_bad_extension(self):
+        resp = self.client.get(reverse('api:dump:global_dump', kwargs={'filename': "series-tiempo.badextension"}))
+        self.assertEqual(resp.status_code, 404)
+
+    def test_catalog_dump(self):
+        resp = self.client.get(reverse('api:dump:catalog_dump', kwargs={'filename': "series-tiempo.zip",
+                                                                        'catalog_id': self.catalog_id}))
+
+        self.assertEqual(resp.status_code, 302)  # Redirect al link de descarga
+
+    def test_invalid_catalog(self):
+        resp = self.client.get(reverse('api:dump:catalog_dump', kwargs={'filename': "series-tiempo.zip",
+                                                                        'catalog_id': "not_the_catalog"}))
+
+        self.assertEqual(resp.status_code, 404)
 
     @classmethod
     def tearDownClass(cls):
         ElasticInstance.get().indices.delete(cls.index)
+        DumpFile.objects.all().delete()
         Node.objects.all().delete()

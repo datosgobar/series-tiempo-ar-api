@@ -1,12 +1,17 @@
+import logging
 import csv
+import os
 from typing import Callable
 import pandas as pd
 
 from django.conf import settings
 from django_datajsonar.models import Field, Distribution
 
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
 from series_tiempo_ar_api.apps.management import meta_keys
+
+
+logger = logging.Logger(__name__)
 
 
 class CsvDumpWriter:
@@ -15,7 +20,7 @@ class CsvDumpWriter:
     El formato de cada row es especificado a través del callable rows.
     """
 
-    def __init__(self, task: CSVDumpTask, fields_data: dict, rows: Callable):
+    def __init__(self, task: GenerateDumpTask, fields_data: dict, rows: Callable):
         self.task = task
         self.fields_data = fields_data
         # Funcion generadora de rows, especifica la estructura de la fila
@@ -29,6 +34,7 @@ class CsvDumpWriter:
         )
 
         distribution_ids = fields.values_list('distribution', flat=True)
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         with open(filepath, mode='w') as f:
             writer = csv.writer(f)
@@ -49,7 +55,9 @@ class CsvDumpWriter:
             periodicity = meta_keys.get(distribution, meta_keys.PERIODICITY)
             df.apply(self.write_serie, args=(periodicity, fields, writer))
         except Exception as e:
-            CSVDumpTask.info(self.task, f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}')
+            msg = f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
+            GenerateDumpTask.info(self.task, msg)
+            logger.error(msg)
 
     def write_serie(self, serie: pd.Series, periodicity: str, fields: dict, writer: csv.writer):
         field_id = fields[serie.name]
