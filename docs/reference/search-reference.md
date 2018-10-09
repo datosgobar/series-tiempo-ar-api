@@ -10,13 +10,13 @@ El recurso `/search` permite buscar series a partir de un texto, proporcionando 
     <tr>
         <th>Nombre</th>
         <th>Requerido</th>
-        <th>Tipo</th>
+        <th>Descripción</th>
         <th>Default</th>
         <th>Ejemplos</th>
     </tr>
     <tr>
         <td>q</td>
-        <td>Si</td>
+        <td>No</td>
         <td>Texto</td>
         <td>N/A</td>
         <td>q=ipc</td>

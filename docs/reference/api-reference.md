@@ -33,7 +33,7 @@ El recurso `/series` permite **obtener datos y metadatos** de una o más series,
     <tr>
         <th>Nombre</th>
         <th>Requerido</th>
-        <th>Tipo</th>
+        <th>Descripción</th>
         <th>Default</th>
         <th>Ejemplos</th>
     </tr>

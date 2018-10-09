@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>http://apis.datos.gob.ar/series/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://apis.datos.gob.ar/series/quick_start/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <loc>http://apis.datos.gob.ar/series/quick-start/</loc>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://apis.datos.gob.ar/series/additional_parameters/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <loc>http://apis.datos.gob.ar/series/additional-parameters/</loc>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://apis.datos.gob.ar/series/spreadsheet_integration/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <loc>http://apis.datos.gob.ar/series/spreadsheet-integration/</loc>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://apis.datos.gob.ar/series/python_usage/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <loc>http://apis.datos.gob.ar/series/python-usage/</loc>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://apis.datos.gob.ar/series/reference/api_reference/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <loc>http://apis.datos.gob.ar/series/reference/api-reference/</loc>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://apis.datos.gob.ar/series/reference/search_reference/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <loc>http://apis.datos.gob.ar/series/reference/search-reference/</loc>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
@@ -41,23 +41,28 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>http://apis.datos.gob.ar/series/terms/</loc>
+     <lastmod>2018-10-09</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>http://apis.datos.gob.ar/series/applications/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/developers/arquitectura/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/developers/development/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>http://apis.datos.gob.ar/series/developers/admin/</loc>
-     <lastmod>2018-09-17</lastmod>
+     <lastmod>2018-10-09</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

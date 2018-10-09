@@ -24,7 +24,7 @@
 
 La API genera archivos CSV usando “.” como separador decimal. Para que Google Spreadsheet lea correctamente el archivo debe elegirse “Estados Unidos” o cualquier otra región compatible.
 
-Alternativamente, se le puede pedir un separador decimal distinto a la API usando el parámetro [`decimal`](reference/api_reference.md#decimal).
+Alternativamente, se le puede pedir un separador decimal distinto a la API usando el parámetro [`decimal`](reference/api-reference.md#decimal).
 
 ![](assets/google_drive_letra_1.png)
 <br><br>

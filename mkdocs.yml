@@ -7,14 +7,15 @@ repo_url: https://github.com/datosgobar/series-tiempo-ar-api/
 nav:
   - Inicio: index.md
   - Usuarios:
-    - Comenzar a usar la API de Series de Tiempo: quick_start.md
-    - Filtrar y transformar las series: additional_parameters.md
-    - Integrar la API en planillas de cálculo: spreadsheet_integration.md
-    - Usar en python: python_usage.md
+    - Comenzar a usar la API de Series de Tiempo: quick-start.md
+    - Filtrar y transformar las series: additional-parameters.md
+    - Integrar la API en planillas de cálculo: spreadsheet-integration.md
+    - Usar en python: python-usage.md
     - Referencia API:
-      - /series: 'reference/api_reference.md'
-      - /search: 'reference/search_reference.md'
-      - OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api/open_api
+      - /series: 'reference/api-reference.md'
+      - /search: 'reference/search-reference.md'
+      - OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api/open-api
+    - Condiciones de uso: terms.md
   - Aplicaciones: applications.md
   - Desarrolladores:
     - Arquitectura: 'developers/arquitectura.md'

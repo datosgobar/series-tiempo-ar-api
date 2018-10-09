@@ -13,7 +13,7 @@
         <meta name="description" content="Documentación de la API de Series de Tiempo de la República Argentina">
       
       
-        <link rel="canonical" href="http://apis.datos.gob.ar/series/additional_parameters/">
+        <link rel="canonical" href="http://apis.datos.gob.ar/series/python-usage/">
       
       
         <meta name="author" content="Datos Argentina">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Filtrar y transformar las series - API de Series de Tiempo</title>
+        <title>Usar en python - API de Series de Tiempo</title>
       
     
     
@@ -104,7 +104,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#filtrar-y-transformar-las-series" tabindex="1" class="md-skip">
+      <a href="../#usar-en-python" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -130,7 +130,7 @@
                 API de Series de Tiempo
               </span>
               <span class="md-header-nav__topic">
-                Filtrar y transformar las series
+                Usar en python
               </span>
             
           
@@ -311,8 +311,32 @@
 
 
   <li class="md-nav__item">
-    <a href="../quick_start/" title="Comenzar a usar la API de Series de Tiempo" class="md-nav__link">
+    <a href="../quick-start/" title="Comenzar a usar la API de Series de Tiempo" class="md-nav__link">
       Comenzar a usar la API de Series de Tiempo
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../additional-parameters/" title="Filtrar y transformar las series" class="md-nav__link">
+      Filtrar y transformar las series
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../spreadsheet-integration/" title="Integrar la API en planillas de cálculo" class="md-nav__link">
+      Integrar la API en planillas de cálculo
     </a>
   </li>
 
@@ -332,39 +356,15 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Filtrar y transformar las series
+        Usar en python
       </label>
     
-    <a href="./" title="Filtrar y transformar las series" class="md-nav__link md-nav__link--active">
-      Filtrar y transformar las series
+    <a href="./" title="Usar en python" class="md-nav__link md-nav__link--active">
+      Usar en python
     </a>
     
       
     
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../spreadsheet_integration/" title="Integrar la API en planillas de cálculo" class="md-nav__link">
-      Integrar la API en planillas de cálculo
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../python_usage/" title="Usar en python" class="md-nav__link">
-      Usar en python
-    </a>
   </li>
 
         
@@ -393,7 +393,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/api_reference/" title="/series" class="md-nav__link">
+    <a href="../reference/api-reference/" title="/series" class="md-nav__link">
       /series
     </a>
   </li>
@@ -405,7 +405,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/search_reference/" title="/search" class="md-nav__link">
+    <a href="../reference/search-reference/" title="/search" class="md-nav__link">
       /search
     </a>
   </li>
@@ -417,7 +417,7 @@
 
 
   <li class="md-nav__item">
-    <a href="https://datosgobar.github.io/series-tiempo-ar-api/open_api" title="OpenAPI" class="md-nav__link">
+    <a href="https://datosgobar.github.io/series-tiempo-ar-api/open-api" title="OpenAPI" class="md-nav__link">
       OpenAPI
     </a>
   </li>
@@ -425,6 +425,18 @@
         
       </ul>
     </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../terms/" title="Condiciones de uso" class="md-nav__link">
+      Condiciones de uso
+    </a>
   </li>
 
         
@@ -529,79 +541,113 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/additional_parameters.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/python-usage.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="filtrar-y-transformar-las-series">Filtrar y transformar las series</h1>
+                <h1 id="usar-en-python">Usar en python</h1>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 <ul>
-<li><a href="#descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</a></li>
-<li><a href="#filtrar-por-fechas">Filtrar por fechas</a></li>
-<li><a href="#cambiar-la-agregacion-temporal">Cambiar la agregación temporal</a></li>
-<li><a href="#cambiar-la-funcion-de-agregaci%C3%B3n-temporal">Cambiar la función de agregación temporal</a></li>
-<li><a href="#aplicar-transformaciones">Aplicar transformaciones</a></li>
-<li><a href="#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</a></li>
+<li><a href="#con-requests">Con <code>requests</code></a></li>
+<li><a href="#con-pandas">Con <code>pandas</code></a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<h2 id="descargar-una-tabla-con-una-o-varias-series">Descargar una tabla con una o varias series</h2>
-<p>El parámetro <code>ids</code> permite la consulta simultánea de hasta <strong>40 series a la vez</strong>, separadas por comas.</p>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21">IPC por categorías</a></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21&amp;format=csv</code></a></p>
-</div>
-<h2 id="filtrar-por-fechas">Filtrar por fechas</h2>
-<p>Los parámetros <code>start_date</code> y <code>end_date</code> permiten limitar una consulta a todos aquellos valores posteriores o anteriores (respectivamente) a una fecha determinada.</p>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01">Tipo de cambio desde Enero de 2016</a></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;limit=1000&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;limit=1000&amp;format=csv</code></a></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12">Tipo de cambio hasta Diciembre de 2016</a></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12&amp;format=csv</code></a></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12">Tipo de cambio desde Enero de 2016 hasta Diciembre de 2016</a></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12&amp;format=csv</code></a></p>
-</div>
-<h2 id="cambiar-la-agregacion-temporal">Cambiar la agregación temporal</h2>
-<p>Por default, las series se muestran en la frecuencia más alta posible (esta es, la frecuencia más baja de todas las series consultadas a la vez). El parámetro <code>collapse</code> permite elegir una frecuencia más baja que esta.</p>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;collapse=quarter">Índice de Tipo de Cambio Real Multilateral, China y Brasil. Valores mensuales promediados por trimestre.</a></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=quarter&amp;ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=quarter&amp;ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;format=csv</code></a></p>
-</div>
-<h2 id="cambiar-la-funcion-de-agregacion-temporal">Cambiar la función de agregación temporal</h2>
-<p>Por default, cuando la API hace agregaciones temporales (ie. convertir una serie mensual en trimestral) hace un <strong>promedio de los valores de cada período</strong>.</p>
-<p>Esta función de agregación se puede cambiar para toda la consulta con el parámetro <code>collapse_aggregation</code>, o para cada serie en particular (suma, máximo, mínimo, etc.).</p>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period">Tipo de cambio. Valores diarios a cierre de cada mes.</a></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period&amp;format=csv"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period&amp;format=csv</code></a></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month">Tipo de cambio. Valores diarios mínimo, promedio, máximo y cierre de cada mes.</a></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month&amp;format=csv&amp;limit=1000"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month&amp;format=csv&amp;limit=1000</code></a></p>
-</div>
-<h2 id="aplicar-transformaciones">Aplicar transformaciones</h2>
-<p>Las series de pueden transformar en otras unidades (variación porcentual, variación interanual, etc.) en forma individual o conjunta, usando el parámetro <code>representation_mode</code>.</p>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change">Tipo de cambio, IPC núcleo e IPC nivel general desde Enero de 2016. Variación porcentual de valores mensuales, respecto del período anterior.</a></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change</code></a></p>
-</div>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01">IPC núcleo, IPC núcleo (variación porcentual período a período) e IPC núcleo (variación porcentual interanual) desde Enero de 2016. Valores mensuales.</a></p>
-<p><em>Nota: series con unidades de diferentes escalas, pueden ser difíciles de visualizar en un mismo gráfico.</em></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01&amp;format=csv&amp;limit=1000"><code>https://apis.datos.gob.ar/series/api/series?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01&amp;format=csv&amp;limit=1000</code></a></p>
-</div>
-<h2 id="aplicar-transformaciones-y-cambiar-la-funcion-de-agregacion-temporal-en-series-individuales-a-la-vez">Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez</h2>
-<p>Es posible aplicar a las series individuales <strong>tanto una transformación como una función de agregación particular a la vez</strong>.</p>
-<p>En todos los casos, siempre se aplica <strong>primero la función de agregación</strong> y <strong>luego la transformación</strong>.</p>
-<div class="admonition note">
-<p class="admonition-title"><a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;collapse=month">Tipo de cambio. Variación porcentual de valores diarios a cierre de cada mes, respecto del período anterior.</a></p>
-<p><a href="http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=month&amp;ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;format=csv"><code>http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=month&amp;ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;format=csv</code></a></p>
-</div>
+<h2 id="con-requests">Con <code>requests</code></h2>
+<p>Armar una función <em>wrapper</em> que facilite construir llamadas a la API.</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+
+<span class="k">def</span> <span class="nf">get_api_call</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">API_BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://apis.datos.gob.ar/series/api/&quot;</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;{}{}?{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">API_BASE_URL</span><span class="p">,</span> <span class="s2">&quot;series&quot;</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Una llamada válida a la API debe tener por lo menos un id de una serie válida, y luego puede tener parámetros opcionales.</p>
+<div class="codehilite"><pre><span></span><span class="n">api_call</span> <span class="o">=</span> <span class="n">get_api_call</span><span class="p">([</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">],</span> <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2018-08&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span>
+
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">apis</span><span class="o">.</span><span class="n">datos</span><span class="o">.</span><span class="n">gob</span><span class="o">.</span><span class="n">ar</span><span class="o">/</span><span class="n">series</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">series</span><span class="err">?</span><span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span><span class="o">-</span><span class="mi">08</span><span class="o">&amp;</span><span class="n">ids</span><span class="o">=</span><span class="mf">168.1</span><span class="n">_T_CAMBIOR_D_0_0_26</span>
+</pre></div>
+
+
+<p>Obtener la respuesta en un diccionario.</p>
+<div class="codehilite"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;2018-08-01&#39;</span><span class="p">,</span> <span class="mf">27.525</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-02&#39;</span><span class="p">,</span> <span class="mf">27.45</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-03&#39;</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-04&#39;</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-05&#39;</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-06&#39;</span><span class="p">,</span> <span class="mf">27.33</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-07&#39;</span><span class="p">,</span> <span class="mf">27.395</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-08&#39;</span><span class="p">,</span> <span class="mf">27.65</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-09&#39;</span><span class="p">,</span> <span class="mf">28.11</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-10&#39;</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-11&#39;</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-12&#39;</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-13&#39;</span><span class="p">,</span> <span class="mf">29.925</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-14&#39;</span><span class="p">,</span> <span class="mf">29.61</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-15&#39;</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">&#39;2018-08-16&#39;</span><span class="p">,</span> <span class="mf">29.84</span><span class="p">]],</span>
+ <span class="s1">&#39;meta&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;end_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-08-16&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-08-01&#39;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s1">&#39;catalog&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Datos Programación Macroeconómica&#39;</span><span class="p">},</span>
+   <span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Datos de tipo de cambio $-USD - futuro dólar . Con respecto al dólar de Estados Unidos. Frecuencia diaria.&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;issued&#39;</span><span class="p">:</span> <span class="s1">&#39;2017-09-28&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;BCRA, MAE, Rofex y Bloomberg&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Tipo de Cambio $-USD - Futuro Dólar&#39;</span><span class="p">},</span>
+   <span class="s1">&#39;distribution&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;downloadURL&#39;</span><span class="p">:</span> <span class="s1">&#39;http://infra.datos.gob.ar/catalog/sspm/dataset/168/distribution/168.1/download/datos-tipo-cambio-usd-futuro-dolar-frecuencia-diaria.csv&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Tipo de cambio $-USD - futuro dólar. Valores diarios&#39;</span><span class="p">},</span>
+   <span class="s1">&#39;field&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Tipo de Cambio BNA (Vendedor)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1_T_CAMBIOR_D_0_0_26&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;Pesos argentinos por dólar&#39;</span><span class="p">}}],</span>
+ <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;identifiers&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="s1">&#39;168&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;distribution&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1_T_CAMBIOR_D_0_0_26&#39;</span><span class="p">}],</span>
+  <span class="s1">&#39;ids&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1_T_CAMBIOR_D_0_0_26&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-08&#39;</span><span class="p">}}</span>
+</pre></div>
+
+
+<h2 id="con-pandas">Con <code>pandas</code></h2>
+<p>Las llamadas a la API en CSV se pueden leer directamente a un <code>pandas.DataFrame</code>.</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">get_api_call</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">,</span> <span class="s2">&quot;101.1_I2NG_2016_M_22&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;116.3_TCRMA_0_M_36&quot;</span><span class="p">,</span> <span class="s2">&quot;143.3_NO_PR_2004_A_21&quot;</span><span class="p">,</span> <span class="s2">&quot;11.3_VMATC_2004_M_12&quot;</span><span class="p">],</span>
+    <span class="n">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span>
+<span class="p">))</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>indice_tiempo  tipo_cambio_bna_vendedor  ipc_2016_nivel_general  \
+   2018-01-01                 19.023065                127.0147
+   2018-02-01                 19.835179                130.2913
+   2018-03-01                 20.229355                133.5028
+   2018-04-01                 20.251100                136.9380
+   2018-05-01                 23.600452                139.5800
+   2018-06-01                 26.674333                145.0582
+   2018-07-01                 27.607645                149.1178
+ tipo_cambio_real_multilateral_actual  indice_serie_original  construccion
+                            96.628715             144.086686    158.920762
+                            96.121512             138.470530    152.630381
+                            93.062453             155.570021    158.931156
+                            90.715862             152.432629    149.860484
+                           104.302984             160.622476    154.011846
+                           114.546258                    NaN           NaN
+                           107.105698                    NaN           NaN
+</pre></div>
+
+
+<!-- ## Con `plotly` -->
                 
                   
                 
@@ -622,7 +668,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../quick_start/" title="Comenzar a usar la API de Series de Tiempo" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../spreadsheet-integration/" title="Integrar la API en planillas de cálculo" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -631,19 +677,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Comenzar a usar la API de Series de Tiempo
+                Integrar la API en planillas de cálculo
               </span>
             </div>
           </a>
         
         
-          <a href="../spreadsheet_integration/" title="Integrar la API en planillas de cálculo" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../reference/api-reference/" title="/series" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Integrar la API en planillas de cálculo
+                /series
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

@@ -13,7 +13,7 @@
         <meta name="description" content="Documentación de la API de Series de Tiempo de la República Argentina">
       
       
-        <link rel="canonical" href="http://apis.datos.gob.ar/series/quick_start/">
+        <link rel="canonical" href="http://apis.datos.gob.ar/series/spreadsheet-integration/">
       
       
         <meta name="author" content="Datos Argentina">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Comenzar a usar la API de Series de Tiempo - API de Series de Tiempo</title>
+        <title>Integrar la API en planillas de cálculo - API de Series de Tiempo</title>
       
     
     
@@ -104,7 +104,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#comenzar-a-usar-la-api-de-series-de-tiempo" tabindex="1" class="md-skip">
+      <a href="../#integracion-con-planillas-de-calculo" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -130,7 +130,7 @@
                 API de Series de Tiempo
               </span>
               <span class="md-header-nav__topic">
-                Comenzar a usar la API de Series de Tiempo
+                Integrar la API en planillas de cálculo
               </span>
             
           
@@ -309,6 +309,30 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../quick-start/" title="Comenzar a usar la API de Series de Tiempo" class="md-nav__link">
+      Comenzar a usar la API de Series de Tiempo
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../additional-parameters/" title="Filtrar y transformar las series" class="md-nav__link">
+      Filtrar y transformar las series
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -320,11 +344,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Comenzar a usar la API de Series de Tiempo
+        Integrar la API en planillas de cálculo
       </label>
     
-    <a href="./" title="Comenzar a usar la API de Series de Tiempo" class="md-nav__link md-nav__link--active">
-      Comenzar a usar la API de Series de Tiempo
+    <a href="./" title="Integrar la API en planillas de cálculo" class="md-nav__link md-nav__link--active">
+      Integrar la API en planillas de cálculo
     </a>
     
       
@@ -338,31 +362,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../additional_parameters/" title="Filtrar y transformar las series" class="md-nav__link">
-      Filtrar y transformar las series
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../spreadsheet_integration/" title="Integrar la API en planillas de cálculo" class="md-nav__link">
-      Integrar la API en planillas de cálculo
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../python_usage/" title="Usar en python" class="md-nav__link">
+    <a href="../python-usage/" title="Usar en python" class="md-nav__link">
       Usar en python
     </a>
   </li>
@@ -393,7 +393,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/api_reference/" title="/series" class="md-nav__link">
+    <a href="../reference/api-reference/" title="/series" class="md-nav__link">
       /series
     </a>
   </li>
@@ -405,7 +405,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../reference/search_reference/" title="/search" class="md-nav__link">
+    <a href="../reference/search-reference/" title="/search" class="md-nav__link">
       /search
     </a>
   </li>
@@ -417,7 +417,7 @@
 
 
   <li class="md-nav__item">
-    <a href="https://datosgobar.github.io/series-tiempo-ar-api/open_api" title="OpenAPI" class="md-nav__link">
+    <a href="https://datosgobar.github.io/series-tiempo-ar-api/open-api" title="OpenAPI" class="md-nav__link">
       OpenAPI
     </a>
   </li>
@@ -425,6 +425,18 @@
         
       </ul>
     </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../terms/" title="Condiciones de uso" class="md-nav__link">
+      Condiciones de uso
+    </a>
   </li>
 
         
@@ -529,79 +541,99 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/quick_start.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/spreadsheet-integration.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="comenzar-a-usar-la-api-de-series-de-tiempo">Comenzar a usar la API de Series de Tiempo</h1>
+                <h1 id="integracion-con-planillas-de-calculo">Integración con planillas de cálculo</h1>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 <ul>
-<li><a href="#1-buscar-series">1. Buscar series</a><ul>
-<li><a href="#en-un-archivo">En un archivo</a></li>
-<li><a href="#en-el-explorador-de-series">En el explorador de series</a></li>
+<li><a href="#google-drive">Google Drive</a><ul>
+<li><a href="#1-modificar-la-configuracion-regional">1. Modificar la configuración regional</a></li>
+<li><a href="#2-importar-los-datos-a-la-planilla">2. Importar los datos a la planilla</a></li>
+<li><a href="#3-elegir-el-formato-de-fecha">3. Elegir el formato de fecha</a></li>
+<li><a href="#4-modificar-la-url-de-consulta-a-la-api">4. Modificar la URL de consulta a la API</a></li>
 </ul>
 </li>
-<li><a href="#2-armar-consulta">2. Armar consulta</a><ul>
-<li><a href="#manualmente">Manualmente</a></li>
-<li><a href="#generador-de-consultas">En el generador de consultas</a></li>
-</ul>
-</li>
-<li><a href="#3-realizar-consulta">3. Realizar consulta</a><ul>
-<li><a href="#consultar-o-integrar-json">Consultar o integrar JSON</a></li>
-<li><a href="#descargar-csv">Descargar CSV</a></li>
-<li><a href="#integrar-en-planilla-de-calculo">Integrar en planilla de cálculo</a></li>
-<li><a href="#consultar-en-el-explorador-de-series">Consultar en el explorador de series</a></li>
+<li><a href="#excel">Excel</a><ul>
+<li><a href="#1-generar-una-nueva-consulta-desde-una-url">1. Generar una nueva consulta desde una URL</a></li>
+<li><a href="#2-editar-codificacion-del-archivo-origen">2. Editar codificación del archivo origen</a></li>
+<li><a href="#3-editar-los-tipos-de-las-columnas">3. Editar los tipos de las columnas</a></li>
+<li><a href="#4-modificar-la-configuracion-regional">4. Modificar la configuración regional</a></li>
+<li><a href="#5-guardar-las-modificaciones-y-cargar-la-consulta">5. Guardar las modificaciones y cargar la consulta</a></li>
 </ul>
 </li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<h2 id="1-buscar-series">1. Buscar series</h2>
-<p>Para usar la API, tenés que buscar los <em>ids</em> de las series que te interesan.</p>
-<h3 id="en-un-archivo">En un archivo</h3>
-<p>En <a href="http://datos.gob.ar">datos.gob.ar</a> podés encontrar la <a href="http://datos.gob.ar/dataset/modernizacion-base-series-tiempo-administracion-publica-nacional">base completa de series de tiempo</a>, que contiene la lista de series disponibles en:</p>
+<h2 id="google-drive">Google Drive</h2>
+<h3 id="1-modificar-la-configuracion-regional">1. Modificar la configuración regional</h3>
+<p>La API genera archivos CSV usando “.” como separador decimal. Para que Google Spreadsheet lea correctamente el archivo debe elegirse “Estados Unidos” o cualquier otra región compatible.</p>
+<p>Alternativamente, se le puede pedir un separador decimal distinto a la API usando el parámetro <a href="../reference/api-reference/#decimal"><code>decimal</code></a>.</p>
+<p><img alt="" src="../assets/google_drive_letra_1.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_2.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_3.png" /></p>
+<h3 id="2-importar-los-datos-a-la-planilla">2. Importar los datos a la planilla</h3>
+<p>La función IMPORTDATA() toma la URL de la consulta a la API y trae los datos a la planilla.</p>
+<p><img alt="" src="../assets/google_drive_letra_4.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_5.png" /></p>
+<h3 id="3-elegir-el-formato-de-fecha">3. Elegir el formato de fecha</h3>
+<p>El índice de tiempo puede verse como un número la primera vez que se importan los datos. Lo más conveniente es seleccionar toda la columna y elegir el formato en el que se desea visualizar la fecha.</p>
+<p><img alt="" src="../assets/google_drive_letra_6.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_7.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_8.png" /></p>
+<h3 id="4-modificar-la-url-de-consulta-a-la-api">4. Modificar la URL de consulta a la API</h3>
+<p>Una vez importada la tabla por primera vez, se pueden modificar los distintos parámetros de la consulta según lo que se necesite. La tabla se actualizará con cada cambio.</p>
+<p><img alt="" src="../assets/google_drive_letra_9.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_10.png" />
+<br><br>
+<img alt="" src="../assets/google_drive_letra_11.png" /></p>
+<h2 id="excel">Excel</h2>
+<h3 id="1-generar-una-nueva-consulta-desde-una-url">1. Generar una nueva consulta desde una URL</h3>
+<p>“Datos” &gt; “Nueva consulta” &gt; “Desde otras fuentes” &gt; “Desde una web”</p>
+<p><img alt="" src="../assets/excel_letra_1.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_2.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_3.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_4.png" /></p>
+<h3 id="2-editar-codificacion-del-archivo-origen">2. Editar codificación del archivo origen</h3>
+<p>La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es el valor por defecto de Excel. Click en la rueda de “Origen” &gt; “Origen de archivo” &gt; Elegir “Unicode UTF-8”</p>
+<p><img alt="" src="../assets/excel_letra_5.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_6.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_7.png" /></p>
+<h3 id="3-editar-los-tipos-de-las-columnas">3. Editar los tipos de las columnas</h3>
+<p>Excel puede no interpretar correctamente los tipos de las columnas de la tabla si tiene un separador decimal que no sea “.”. Se debe utilizar el “Editor avanzado” para corregir los tipos de las columnas.</p>
 <ul>
-<li><a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv">CSV</a></li>
-<li><a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.6/download/series-tiempo-metadatos.xlsx">XLSX</a></li>
-<li><a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.10/download/series-tiempo-metadatos.dta">DTA</a></li>
+<li>El tipo de la columna “indice_tiempo” debe ser “type date”</li>
+<li>El tipo del resto de las columnas (que contienen series) debe ser “type number”</li>
 </ul>
-<p><img alt="" src="../assets/busqueda_excel.png" />
-<br><br></p>
-<h3 id="en-el-explorador-de-series">En el explorador de series</h3>
-<p>En el <a href="http://datos.gob.ar/series">Explorador de Series de Tiempo</a> podés buscar series, visualizarlas y compartir las URLs a la API o al explorador.</p>
-<p><img alt="" src="../assets/explorador_series.png" /></p>
-<h2 id="2-armar-consulta">2. Armar consulta</h2>
-<h3 id="manualmente">Manualmente</h3>
-<p>Los ids de las series deben pasarse al parámetro <code>ids</code>. Se pueden usar parámetros adicionales para <a href="../additional_parameters/">filtrar y transformar las series</a>.</p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv"><img alt="" src="../assets/ejemplo_consulta.png" /></a></p>
-<p>Ver la <a href="../reference/api_reference/">referencia API</a> para consultar la documentación completa de todos los parámetros disponibles.</p>
-<h3 id="en-el-generador-de-consultas">En el generador de consultas</h3>
-<p>En el <a href="https://datosgobar.github.io/series-tiempo-ar-call-generator">generador de consultas</a> podés ver todos los parámetros disponibles en la API para armar tu consulta.</p>
-<p><img alt="" src="../assets/generacion_consulta_generador.png" /></p>
-<h2 id="3-realizar-consulta">3. Realizar consulta</h2>
-<h3 id="consultar-o-integrar-json">Consultar o integrar JSON</h3>
-<p>Para realizar la consulta directamente en el navegador, o integrarla en una aplicación:</p>
-<ul>
-<li>Usar <code>format=json</code> (valor default).</li>
-<li>Elegir el nivel de detalle de los metadatos <code>metadata=none</code>, <code>only</code>, <code>simple</code> o <code>full</code>.</li>
-</ul>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full</code></a></p>
-<h3 id="descargar-csv">Descargar CSV</h3>
-<p>Para descargar un archivo CSV:</p>
-<ul>
-<li>Usar <code>format=csv</code>.</li>
-</ul>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv</code></a></p>
-<h3 id="integrar-en-planilla-de-calculo">Integrar en planilla de cálculo</h3>
-<p>Tanto la consulta en CSV como en JSON se pueden <a href="../spreadsheet_integration/">integrar en planillas de cálculo</a>.</p>
-<h3 id="consultar-en-el-explorador-de-series">Consultar en el explorador de series</h3>
-<p>Cualquier llamada a la API se puede visualizar en el explorador quitando el subdominio <code>apis</code> de la URL (y cambiando a HTTP):</p>
-<p><strong>Llamada a la API</strong></p>
-<p><a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month"><code>https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month</code></a></p>
-<p><strong>Consulta en el explorador</strong></p>
-<p><a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month"><code>http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month</code></a></p>
+<p><img alt="" src="../assets/excel_letra_8.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_9.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_10.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_11.png" /></p>
+<h3 id="4-modificar-la-configuracion-regional">4. Modificar la configuración regional</h3>
+<p>En el mismo editor avanzado, debe corregirse al final la configuración regional para que sea “en-US” y acepte “.” como separador decimal.</p>
+<p><img alt="" src="../assets/excel_letra_12.png" />
+<br><br>
+<img alt="" src="../assets/excel_letra_13.png" /></p>
+<h3 id="5-guardar-las-modificaciones-y-cargar-la-consulta">5. Guardar las modificaciones y cargar la consulta</h3>
+<p>Por último, haciendo click en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.</p>
+<p><img alt="" src="../assets/excel_letra_14.png" /></p>
                 
                   
                 
@@ -622,7 +654,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href=".." title="Inicio" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../additional-parameters/" title="Filtrar y transformar las series" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -631,19 +663,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Inicio
+                Filtrar y transformar las series
               </span>
             </div>
           </a>
         
         
-          <a href="../additional_parameters/" title="Filtrar y transformar las series" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../python-usage/" title="Usar en python" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Filtrar y transformar las series
+                Usar en python
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

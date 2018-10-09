@@ -43,11 +43,11 @@ En el [Explorador de Series de Tiempo](http://datos.gob.ar/series) podés buscar
 
 ### Manualmente
 
-Los ids de las series deben pasarse al parámetro `ids`. Se pueden usar parámetros adicionales para [filtrar y transformar las series](additional_parameters.md).
+Los ids de las series deben pasarse al parámetro `ids`. Se pueden usar parámetros adicionales para [filtrar y transformar las series](additional-parameters.md).
 
 [![](assets/ejemplo_consulta.png)](https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&format=csv)
 
-Ver la [referencia API](reference/api_reference.md) para consultar la documentación completa de todos los parámetros disponibles.
+Ver la [referencia API](reference/api-reference.md) para consultar la documentación completa de todos los parámetros disponibles.
 
 ### En el generador de consultas
 
@@ -76,7 +76,7 @@ Para descargar un archivo CSV:
 
 ### Integrar en planilla de cálculo
 
-Tanto la consulta en CSV como en JSON se pueden [integrar en planillas de cálculo](spreadsheet_integration.md).
+Tanto la consulta en CSV como en JSON se pueden [integrar en planillas de cálculo](spreadsheet-integration.md).
 
 ### Consultar en el explorador de series
 

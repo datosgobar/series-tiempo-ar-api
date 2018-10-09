@@ -13,7 +13,7 @@
         <meta name="description" content="Documentación de la API de Series de Tiempo de la República Argentina">
       
       
-        <link rel="canonical" href="http://apis.datos.gob.ar/series/applications/">
+        <link rel="canonical" href="http://apis.datos.gob.ar/series/terms/">
       
       
         <meta name="author" content="Datos Argentina">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Aplicaciones - API de Series de Tiempo</title>
+        <title>Condiciones de uso - API de Series de Tiempo</title>
       
     
     
@@ -104,7 +104,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#aplicaciones" tabindex="1" class="md-skip">
+      <a href="../#condiciones-de-uso" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -130,7 +130,7 @@
                 API de Series de Tiempo
               </span>
               <span class="md-header-nav__topic">
-                Aplicaciones
+                Condiciones de uso
               </span>
             
           
@@ -288,10 +288,12 @@
             
             
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
     <label class="md-nav__link" for="nav-2">
       Usuarios
@@ -415,11 +417,26 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../terms/" title="Condiciones de uso" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Condiciones de uso
+      </label>
+    
+    <a href="./" title="Condiciones de uso" class="md-nav__link md-nav__link--active">
       Condiciones de uso
     </a>
+    
+      
+    
   </li>
 
         
@@ -433,26 +450,11 @@
             
             
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Aplicaciones
-      </label>
-    
-    <a href="./" title="Aplicaciones" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../applications/" title="Aplicaciones" class="md-nav__link">
       Aplicaciones
     </a>
-    
-      
-    
   </li>
 
             <hr/>
@@ -539,24 +541,119 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/applications.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/terms.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="aplicaciones">Aplicaciones</h1>
-<p>Lista de proyectos y aplicaciones que utilizan, extienden o documentan la API de Series de Tiempo.</p>
-<h2 id="propias">Propias</h2>
+                <h1 id="condiciones-de-uso">Condiciones de uso</h1>
+<h2 id="legales">Legales</h2>
+<p>Los datos de la API de Series de Tiempo bajo las licencias aplicadas por sus publicadores, que pueden ser consultadas en la <a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv">tabla de metadatos de las series</a> o en el objeto <code>meta</code> devuelto en una consulta a la API con parámetro <code>metadata=full</code>.</p>
+<div class="admonition note">
+<p class="admonition-title"><a href="https://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15&amp;metadata=full">https://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15&amp;metadata=full</a></p>
+</div>
+<div class="codehilite"><pre><span></span>    <span class="p">{</span>
+      <span class="nt">&quot;catalog&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;publisher&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;mbox&quot;</span><span class="p">:</span> <span class="s2">&quot;datoseconomicos@mecon.gov.ar&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Subsecretaría de Programación Macroeconómica.&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;Creative Commons Attribution 4.0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Catálogo de datos abiertos de la Subsecretaría de Programación Macroeconómica.&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;language&quot;</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="s2">&quot;SPA&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;superThemeTaxonomy&quot;</span><span class="p">:</span> <span class="s2">&quot;http://datos.gob.ar/superThemeTaxonomy.json&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;issued&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-09-28&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;rights&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-09-28&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;modified&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-09-28&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;spatial&quot;</span><span class="p">:</span> <span class="s2">&quot;ARG&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Datos Programación Macroeconómica&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;sspm&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;dataset&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;publisher&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;mbox&quot;</span><span class="p">:</span> <span class="s2">&quot;datoseconomicos@mecon.gov.ar&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Subsecretaría de Programación Macroeconómica.&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;landingPage&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;keyword&quot;</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span>
+          <span class="s2">&quot;Información Económica al Día&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;Precios&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;superTheme&quot;</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="s2">&quot;ECON&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Índice de Precios al Consumidor. Por categorías. Base diciembre 2016.&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;language&quot;</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="s2">&quot;SPA&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;issued&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-09-28&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;temporal&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-01/2017-06-01&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;Instituto Nacional de Estadística y Censos (INDEC)&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;theme&quot;</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="p">{</span>
+            <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Precios&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;precios&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Series de precios&quot;</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;accrualPeriodicity&quot;</span><span class="p">:</span> <span class="s2">&quot;R/P1M&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;spatial&quot;</span><span class="p">:</span> <span class="s2">&quot;ARG&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;103&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;Creative Commons Attribution 4.0&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;contactPoint&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;fn&quot;</span><span class="p">:</span> <span class="s2">&quot;Subsecretaría de Programación Macroeconómica.&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;accessLevel&quot;</span><span class="p">:</span> <span class="s2">&quot;ABIERTO&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Índice de Precios al Consumidor. Apertura por categorías. Base diciembre 2016.&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;distribution&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;accessURL&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Índice de Precios al Consumidor. Categorías. Valores mensuales. (Base diciembre 2016).&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;CSV&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;dataset_identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;103&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;issued&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-09-28&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Índice de Precios al Consumidor, por categorías. Base diciembre 2016. Valores mensuales&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;fileName&quot;</span><span class="p">:</span> <span class="s2">&quot;indice-precios-al-consumidor-categorias-base-diciembre-2016-mensual.csv&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;downloadURL&quot;</span><span class="p">:</span> <span class="s2">&quot;http://infra.datos.gob.ar/catalog/sspm/dataset/103/distribution/103.1/download/indice-precios-al-consumidor-categorias-base-diciembre-2016-mensual.csv&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;103.1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;scrapingFileURL&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.economia.gob.ar/download/infoeco/apendice4.xlsx&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;R/P1M&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;last_hash&quot;</span><span class="p">:</span> <span class="s2">&quot;355c9dd579208476c6520e8cb05c350dbfcb6b5d5b5743f30db0f8222a0cd6db38048b73ea465102c6c5d2dfa66970eb6857f4ed63cafaaf07fbde193e82979e&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;changed&quot;</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;field&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;distribution_identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;103.1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;IPC Núcleo. Base abr 2016. Mensual&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;ipc_2016_nucleo&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;dataset_identifier&quot;</span><span class="p">:</span> <span class="s2">&quot;103&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;specialTypeDetail&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;Índice Dic-2016=100&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;103.1_I2N_2016_M_15&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;available&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;last_value&quot;</span><span class="p">:</span> <span class="s2">&quot;149.8703&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;second_to_last_value&quot;</span><span class="p">:</span> <span class="s2">&quot;145.2069&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;last_pct_change&quot;</span><span class="p">:</span> <span class="s2">&quot;0.03211555373746&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;time_index_end&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-08-01&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;R/P1M&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;time_index_size&quot;</span><span class="p">:</span> <span class="s2">&quot;29&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;days_without_data&quot;</span><span class="p">:</span> <span class="s2">&quot;14&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;time_index_start&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-01&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="err">]</span>
+</pre></div>
+
+
+<h2 id="tecnicas">Técnicas</h2>
+<p>La API de series de tiempo se encuentra en estado <em>beta</em> de desarrollo y las cuotas de uso pueden cambiar significativamente en el futuro, dependiendo de la evolución del desarrollo y uso del servicio.</p>
+<p>Actualmente se aplican las siguientes cuotas de uso por IP:</p>
 <ul>
-<li><a href="https://github.com/datosgobar/series-tiempo-ar-landing">datosgobar/series-tiempo-ar-landing</a>: Tablero web modular y parametrizado para armar un <a href="https://datosgobar.github.io/series-tiempo-ar-landing/">dashboard de indicadores</a> con datos y gráficos, basado en la API de Series de Tiempo.</li>
-<li><a href="https://github.com/datosgobar/series-tiempo-ar-call-generator">datosgobar/series-tiempo-ar-call-generator</a>: <a href="https://datosgobar.github.io/series-tiempo-ar-call-generator/">Form</a> liviano y sencillo para generar llamadas a la API de Series de Tiempo.</li>
+<li>Por segundo: 30 consultas</li>
+<li>Por minuto: 1000 consultas</li>
+<li>Por hora: 10000 consultas</li>
+<li>Por día: 50000 consultas</li>
 </ul>
-<h2 id="de-terceros">De terceros</h2>
-<ul>
-<li><a href="https://github.com/fmgarciadiaz/PortalHacienda">fmgarciadiaz/PortalHacienda</a>: Interface en R para usar la API por <a href="https://twitter.com/fergd1978">@fergd1978</a>.</li>
-<li><a href="http://series-de-tiempo-ar-graficos.netlify.com/">http://series-de-tiempo-ar-graficos.netlify.com/</a>: Navegador y visualizador web de series por <a href="https://twitter.com/SoyYoConBonete_">@SoyYoConBonete_</a>.</li>
-</ul>
-<h2 id="contacto">Contacto</h2>
-<p>¿Desarrollaste una librería o tenés un proyecto que usa la API? Te <a href="https://twitter.com/datosgobar">invitamos a contarnos</a> así la agregamos a esta lista.</p>
-<p>Para todo lo demás, podés mandarnos tu comentario o consulta a <a href="mailto:datos@modernizacion.gob.ar">datos@modernizacion.gob.ar</a>.</p>
                 
                   
                 
@@ -577,7 +674,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../terms/" title="Condiciones de uso" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../reference/search-reference/" title="/search" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -586,19 +683,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Condiciones de uso
+                /search
               </span>
             </div>
           </a>
         
         
-          <a href="../developers/arquitectura/" title="Arquitectura" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../applications/" title="Aplicaciones" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Arquitectura
+                Aplicaciones
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
