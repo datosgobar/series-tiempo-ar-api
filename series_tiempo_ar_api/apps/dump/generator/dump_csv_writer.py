@@ -1,3 +1,4 @@
+import logging
 import csv
 import os
 from typing import Callable
@@ -8,6 +9,9 @@ from django_datajsonar.models import Field, Distribution
 
 from series_tiempo_ar_api.apps.dump.models import CSVDumpTask
 from series_tiempo_ar_api.apps.management import meta_keys
+
+
+logger = logging.Logger(__name__)
 
 
 class CsvDumpWriter:
@@ -51,7 +55,9 @@ class CsvDumpWriter:
             periodicity = meta_keys.get(distribution, meta_keys.PERIODICITY)
             df.apply(self.write_serie, args=(periodicity, fields, writer))
         except Exception as e:
-            CSVDumpTask.info(self.task, f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}')
+            msg =  f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
+            CSVDumpTask.info(self.task, msg)
+            logger.error(msg)
 
     def write_serie(self, serie: pd.Series, periodicity: str, fields: dict, writer: csv.writer):
         field_id = fields[serie.name]

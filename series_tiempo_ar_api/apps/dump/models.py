@@ -21,7 +21,7 @@ class DumpFile(models.Model):
 
     FILENAME_FULL = 'series-tiempo'
     FILENAME_VALUES = 'series-tiempo-valores'
-    FILENAME_METADATA = 'serie-tiempo-metadatos'
+    FILENAME_METADATA = 'series-tiempo-metadatos'
     FILENAME_SOURCES = 'series-tiempo-fuentes'
     FILENAME_CHOICES = (
         (FILENAME_FULL, 'Series de tiempo (valores + metadatos)'),

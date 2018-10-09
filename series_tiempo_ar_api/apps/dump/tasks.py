@@ -1,4 +1,5 @@
 #!coding=utf8
+import logging
 from traceback import format_exc
 
 from django.utils import timezone
@@ -9,6 +10,9 @@ from django_datajsonar.models import Node
 from .models import CSVDumpTask
 from .generator.generator import DumpGenerator
 from .generator.xlsx import generator
+
+
+logger = logging.Logger(__name__)
 
 
 @job('default', timeout='2h')
@@ -53,8 +57,8 @@ class Writer:
         else:
             self.action(self.task, self.catalog_id)
 
-        finish = settings.RQ_QUEUES['default'].get('ASYNC', True) and \
-            not get_queue('default').count
+        async = settings.RQ_QUEUES['default'].get('ASYNC', True)
+        finish = not async or (async and not get_queue('default').count)
 
         if finish:
             self.task.refresh_from_db()
@@ -68,4 +72,5 @@ class Writer:
         except Exception as e:
             exc = str(e) or format_exc(e)
             msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.tag}: {exc}"
+            logger.error(msg)
             CSVDumpTask.info(self.task, msg)
