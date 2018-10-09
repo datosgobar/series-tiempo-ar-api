@@ -6,7 +6,7 @@ from django.core.files import File
 from xlsxwriter.workbook import Workbook
 
 from series_tiempo_ar_api.apps.dump.generator.generator import remove_old_dumps
-from series_tiempo_ar_api.apps.dump.models import DumpFile, CSVDumpTask
+from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 
 
 def read_file_as_csv(file):
@@ -45,7 +45,7 @@ def csv_to_xlsx(dump_file: DumpFile):
     os.remove(xlsx)
 
 
-def generate(task: CSVDumpTask, node: str = None):
+def generate(task: GenerateDumpTask, node: str = None):
     dumps_qs = DumpFile.objects.all()
     if node:
         dumps_qs = dumps_qs.filter(node__catalog_id=node)
@@ -62,7 +62,7 @@ def generate(task: CSVDumpTask, node: str = None):
         except Exception as e:
             catalog = node or 'global'
             msg = f"Error escribiendo dump XLSX de dump {catalog} {dump.file_name}: {e.__class__}: {e}"
-            CSVDumpTask.info(task, msg)
+            GenerateDumpTask.info(task, msg)
 
     for filename, _ in DumpFile.FILENAME_CHOICES:
         remove_old_dumps(filename, DumpFile.TYPE_CSV, node)

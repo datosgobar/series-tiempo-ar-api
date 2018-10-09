@@ -6,7 +6,7 @@ from django.test import TestCase
 from faker import Faker
 
 from series_tiempo_ar_api.apps.dump.generator.xlsx.generator import generate
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -19,7 +19,7 @@ class XLSXGeneratorTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(XLSXGeneratorTests, cls).setUpClass()
-        CSVDumpTask.objects.all().delete()
+        GenerateDumpTask.objects.all().delete()
         DumpFile.objects.all().delete()
 
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
@@ -31,13 +31,13 @@ class XLSXGeneratorTests(TestCase):
         call_command('generate_dump')
 
     def test_xlsx_dumps_generated(self):
-        task = CSVDumpTask.objects.create()
+        task = GenerateDumpTask.objects.create()
         generate(task)
 
         self.assertTrue(DumpFile.objects.filter(file_type=DumpFile.TYPE_XLSX).count())
 
     def test_xlsx_dumps_by_catalog(self):
-        task = CSVDumpTask.objects.create()
+        task = GenerateDumpTask.objects.create()
         generate(task)
         generate(task, "catalog_one")
         generate(task, "catalog_two")

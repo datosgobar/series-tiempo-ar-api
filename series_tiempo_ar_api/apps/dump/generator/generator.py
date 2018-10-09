@@ -9,7 +9,7 @@ from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerat
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.values_csv import ValuesCsvGenerator
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 
 from .full_csv import FullCsvGenerator
 
@@ -17,7 +17,7 @@ from .full_csv import FullCsvGenerator
 class DumpGenerator:
     dump_dir = os.path.join(settings.MEDIA_ROOT, 'dump')
 
-    def __init__(self, task: CSVDumpTask, catalog: str = None):
+    def __init__(self, task: GenerateDumpTask, catalog: str = None):
         self.fields = {}
         self.themes = {}
 

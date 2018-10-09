@@ -6,8 +6,15 @@ from minio_storage.storage import MinioMediaStorage, create_minio_client_from_se
 from . import constants
 
 
-class CSVDumpTask(AbstractTask):
-    pass
+class GenerateDumpTask(AbstractTask):
+    TYPE_CSV = 'csv'
+    TYPE_XLSX = 'xlsx'
+    TYPE_CHOICES = (
+        (TYPE_CSV, 'CSV'),
+        (TYPE_XLSX, 'XLSX'),
+    )
+
+    file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default='CSV')
 
 
 def dumpfile_upload_to(dump_file, _):
@@ -42,7 +49,7 @@ class DumpFile(models.Model):
 
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default=TYPE_CSV)
 
-    task = models.ForeignKey(CSVDumpTask, on_delete=models.CASCADE)
+    task = models.ForeignKey(GenerateDumpTask, on_delete=models.CASCADE)
     node = models.ForeignKey(Node, on_delete=models.PROTECT, blank=True, null=True)
 
     def delete(self, using=None, keep_parents=False):

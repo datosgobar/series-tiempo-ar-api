@@ -10,8 +10,6 @@ import series_tiempo_ar_api.apps.dump.models
 
 class Migration(migrations.Migration):
 
-    replaces = [('dump', '0002_auto_20181003_1735'), ('dump', '0003_auto_20181003_1736'), ('dump', '0004_auto_20181003_1738'), ('dump', '0005_auto_20181004_1028')]
-
     dependencies = [
         ('django_datajsonar', '0012_auto_20180831_1020'),
         ('dump', '0001_initial'),

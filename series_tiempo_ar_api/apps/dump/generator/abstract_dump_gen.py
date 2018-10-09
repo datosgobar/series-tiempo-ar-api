@@ -5,13 +5,13 @@ from django.conf import settings
 from django.core.files import File
 from django_datajsonar.models import Node
 
-from series_tiempo_ar_api.apps.dump.models import CSVDumpTask, DumpFile
+from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 
 
 class AbstractDumpGenerator:
     filename = ...
 
-    def __init__(self, task: CSVDumpTask, fields: dict, catalog: str):
+    def __init__(self, task: GenerateDumpTask, fields: dict, catalog: str):
         self.task = task
         self.fields = fields
         self.catalog = catalog
