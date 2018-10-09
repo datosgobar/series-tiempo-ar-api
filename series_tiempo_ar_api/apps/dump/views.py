@@ -3,11 +3,10 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
-from django_datajsonar.models import Node
 from minio_storage.storage import create_minio_client_from_settings
 
 from .models import DumpFile
-from .constants import DUMP_ERROR, DUMPS_NOT_GENERATED
+from .constants import DUMP_ERROR
 
 
 def serve_global_dump(_, filename):
@@ -15,21 +14,14 @@ def serve_global_dump(_, filename):
 
 
 def serve_catalog_dump(_, catalog_id, filename):
+    return serve_dump_file(filename, catalog_id)
+
+
+def serve_dump_file(filename: str, catalog: str = None) -> HttpResponse:
     try:
-        catalog = Node.objects.get(catalog_id=catalog_id)
-    except Node.DoesNotExist:
+        dump_file = DumpFile.get_from_path(filename, catalog)
+    except DumpFile.DoesNotExist:
         raise Http404
-
-    return serve_dump_file(filename, catalog)
-
-
-def serve_dump_file(filename: str, catalog=None) -> HttpResponse:
-    name, ext = filename.split('.')
-    dump_file = DumpFile.objects.filter(file_name=name,
-                                        file_type=ext,
-                                        node=catalog).last()
-    if dump_file is None:
-        return HttpResponse(DUMPS_NOT_GENERATED, status=501)  # "Not implemented"
 
     if dump_file.file is None:
         return HttpResponse(DUMP_ERROR, status=500)

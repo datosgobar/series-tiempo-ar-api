@@ -57,3 +57,24 @@ class DumpFile(models.Model):
 
     def get_file_name(self):
         return f'{self.file_name}.{self.file_type}'
+
+    @classmethod
+    def get_from_path(cls, filename: str, node: str = None) -> 'DumpFile':
+        """Devuelve la última instancia de clase que corresponda al archivo con filename de formato tipo
+        <catalog>/<file_name>.<extension>. Lanza DoesNotExist si no se encuentra un dump correspondiente.
+        """
+
+        try:
+            name, extension = filename.split('.')
+        except ValueError:
+            raise cls.DoesNotExist
+
+        try:
+            node = Node.objects.get(catalog_id=node) if node else None
+        except Node.DoesNotExist:
+            raise cls.DoesNotExist
+
+        dump = cls.objects.filter(file_name=name, file_type=extension, node=node).last()
+        if dump is None:
+            raise cls.DoesNotExist
+        return dump
