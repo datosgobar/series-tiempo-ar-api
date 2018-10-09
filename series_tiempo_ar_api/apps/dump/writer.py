@@ -32,8 +32,8 @@ class Writer:
         else:
             self.action(self.task, self.catalog_id)
 
-        async = settings.RQ_QUEUES['default'].get('ASYNC', True)
-        finish = not async or (async and not get_queue('default').count)
+        _async = settings.RQ_QUEUES['default'].get('ASYNC', True)
+        finish = not _async or (_async and not get_queue('default').count)
 
         if finish:
             self.task.refresh_from_db()
