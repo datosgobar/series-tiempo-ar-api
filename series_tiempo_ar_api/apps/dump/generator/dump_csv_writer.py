@@ -28,20 +28,24 @@ class CsvDumpWriter:
         self.rows = rows
 
     def write(self, filepath, header):
-        fields = Field.objects.filter(
-            enhanced_meta__key=meta_keys.AVAILABLE,
-            identifier__in=self.fields_data.keys(),
-        )
-
-        distribution_ids = fields.values_list('distribution', flat=True)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         with open(filepath, mode='w') as f:
             writer = csv.writer(f)
             writer.writerow(header)
 
-            for distribution in Distribution.objects.filter(id__in=distribution_ids).order_by('identifier'):
+            for distribution in self.get_distributions_sorted_by_identifier():
                 self.write_distribution(distribution, writer)
+
+    def get_distributions_sorted_by_identifier(self):
+        fields = Field.objects.filter(
+            identifier__in=self.fields_data.keys(),
+        )
+        distribution_ids = fields.values_list('distribution', flat=True)
+
+        return Distribution.objects\
+            .filter(id__in=distribution_ids)\
+            .order_by('dataset__catalog__identifier', 'dataset__identifier', 'identifier')
 
     def write_distribution(self, distribution: Distribution, writer: csv.writer):
         # noinspection PyBroadException
