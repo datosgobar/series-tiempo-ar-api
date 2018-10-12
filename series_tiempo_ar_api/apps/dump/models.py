@@ -85,3 +85,21 @@ class DumpFile(models.Model):
         if dump is None:
             raise cls.DoesNotExist
         return dump
+
+    @classmethod
+    def get_last_of_type(cls, file_type: str, node: str = None) -> list:
+        """Devuelve el último dump generado del formato file_type especificado.
+        Si se pasa un parámetro node, devuelve los últimos dumps para ese node.
+        """
+
+        dumps_qs = cls.objects.all()
+        if node:
+            dumps_qs = dumps_qs.filter(node__catalog_id=node)
+
+        dumps = []
+        for dump_name, _ in cls.FILENAME_CHOICES:
+            dump_file = dumps_qs.filter(file_name=dump_name, file_type=file_type).last()
+            if dump_file is not None:
+                dumps.append(dump_file)
+
+        return dumps
