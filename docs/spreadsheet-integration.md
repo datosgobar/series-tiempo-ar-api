@@ -5,26 +5,37 @@
  
 
 - [Google Drive](#google-drive)
-    - [1. Modificar la configuración regional](#1-modificar-la-configuracion-regional)
+    - [1. Modificar la configuración regional o usar el parámetro "decimal=,"](#1-modificar-la-configuracion-regional-o-usar-el-parametro-decimal)
+        - [Usar el parámetro `decimal`](#usar-el-parametro-decimal)
+        - [Modificar la configuración regional](#modificar-la-configuracion-regional)
     - [2. Importar los datos a la planilla](#2-importar-los-datos-a-la-planilla)
     - [3. Elegir el formato de fecha](#3-elegir-el-formato-de-fecha)
     - [4. Modificar la URL de consulta a la API](#4-modificar-la-url-de-consulta-a-la-api)
 - [Excel](#excel)
+    - [0. Chequear que tenés instalado lo que necesitás](#0-chequear-que-tenes-instalado-lo-que-necesitas)
     - [1. Generar una nueva consulta desde una URL](#1-generar-una-nueva-consulta-desde-una-url)
     - [2. Editar codificación del archivo origen](#2-editar-codificacion-del-archivo-origen)
     - [3. Editar los tipos de las columnas](#3-editar-los-tipos-de-las-columnas)
-    - [4. Modificar la configuración regional](#4-modificar-la-configuracion-regional)
-    - [5. Guardar las modificaciones y cargar la consulta](#5-guardar-las-modificaciones-y-cargar-la-consulta)
+    - [4. Guardar las modificaciones y cargar la consulta](#4-guardar-las-modificaciones-y-cargar-la-consulta)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Google Drive
 
-### 1. Modificar la configuración regional
+### 1. Modificar la configuración regional o usar el parámetro "decimal=,"
 
-La API genera archivos CSV usando “.” como separador decimal. Para que Google Spreadsheet lea correctamente el archivo debe elegirse “Estados Unidos” o cualquier otra región compatible.
+#### Usar el parámetro `decimal`
 
-Alternativamente, se le puede pedir un separador decimal distinto a la API usando el parámetro [`decimal`](reference/api-reference.md#decimal).
+La API genera archivos CSV usando "." como separador decimal por defecto. Si tu cuenta de Google está configurada para Argentina / latinoamérica, podés agregar a todas tus llamadas a la API el argumento `&decimal=,` para que los CSVs se generen con "," como separador decimal.
+
+!!! note ""
+    [https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,](https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,)
+
+Ver uso del parámetro [`decimal`](reference/api-reference.md#decimal) en la referencia.
+
+#### Modificar la configuración regional
+
+Para que Google Spreadsheet lea correctamente el archivo CSV por defecto, puede elegirse “Estados Unidos” o cualquier otra región compatible como configuración regional.
 
 ![](assets/google_drive_letra_1.png)
 <br><br>
@@ -62,9 +73,20 @@ Una vez importada la tabla por primera vez, se pueden modificar los distintos pa
 
 ## Excel
 
+### 0. Chequear que tenés instalado lo que necesitás
+
+* **Excel 2016**: tiene todo lo necesario para integrar una URL a un CSV.
+* **Excel 2013**: necesita [descargar e instalar Microsoft Power Query](https://www.microsoft.com/es-es/download/details.aspx?id=39379).
+* **Excel 2010**: necesita [descargar e instalar el Service Pack 1](https://www.microsoft.com/es-ar/download/details.aspx?id=26622) y luego [descargar e instalar Microsoft Power Query](https://www.microsoft.com/es-es/download/details.aspx?id=39379).
+
 ### 1. Generar una nueva consulta desde una URL
 
 “Datos” > “Nueva consulta” > “Desde otras fuentes” > “Desde una web”
+
+**Nota:** si Excel está configurado para Argentina / latinoamérica agregar a la URL de la API `&decimal=,` para que los números decimales usen "," en lugar de "." y Excel los lea correctamente. Ver uso del parámetro [`decimal`](reference/api-reference.md#decimal) en la referencia.
+
+!!! note ""
+    [https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,](https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,)
 
 ![](assets/excel_letra_1.png)
 <br><br>
@@ -76,7 +98,11 @@ Una vez importada la tabla por primera vez, se pueden modificar los distintos pa
 
 ### 2. Editar codificación del archivo origen
 
-La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es el valor por defecto de Excel. Click en la rueda de “Origen” > “Origen de archivo” > Elegir “Unicode UTF-8”
+Esto **sólo es necesario si se pide a la API usar las descripciones como nombres de las columnas** (`&header=descriptions`) en lugar del texto corto que viene por defecto, formado con carateres compatibles con cualquier codificación.
+
+La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es el valor por defecto de Excel y puede generar errores en los caracteres con tildes o la "ñ".
+
+Click en la rueda de “Origen” > “Origen de archivo” > Elegir “Unicode UTF-8”
 
 ![](assets/excel_letra_5.png)
 <br><br>
@@ -86,28 +112,15 @@ La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es 
 
 ### 3. Editar los tipos de las columnas
 
-Excel puede no interpretar correctamente los tipos de las columnas de la tabla si tiene un separador decimal que no sea “.”. Se debe utilizar el “Editor avanzado” para corregir los tipos de las columnas.
+Excel puede no interpretar correctamente las fechas cuando Excel está configurado para Argentina / latinoamérica.
 
-* El tipo de la columna “indice_tiempo” debe ser “type date”
-* El tipo del resto de las columnas (que contienen series) debe ser “type number”
+Si este es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.
 
 ![](assets/excel_letra_8.png)
 <br><br>
 ![](assets/excel_letra_9.png)
-<br><br>
-![](assets/excel_letra_10.png)
-<br><br>
-![](assets/excel_letra_11.png)
 
-### 4. Modificar la configuración regional
-
-En el mismo editor avanzado, debe corregirse al final la configuración regional para que sea “en-US” y acepte “.” como separador decimal.
-
-![](assets/excel_letra_12.png)
-<br><br>
-![](assets/excel_letra_13.png)
-
-### 5. Guardar las modificaciones y cargar la consulta
+### 4. Guardar las modificaciones y cargar la consulta
 
 Por último, haciendo click en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.
 
