@@ -24,6 +24,7 @@ class DumpWorksheet:
         self.sheet_count += 1
         sheet_name = f'{self.name}-{self.sheet_count}'
         self.current_sheet = self.workbook.add_worksheet(sheet_name)
+        self.current_row = 0
 
 
 class SingleWorksheet:

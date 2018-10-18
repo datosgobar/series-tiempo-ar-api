@@ -7,7 +7,7 @@ class DumpWorkbook:
     frequency_col_name = 'indice_tiempo_frecuencia'
 
     def __init__(self, filename: str, header_row: list, split_by_frequency=False):
-        self.workbook = Workbook(filename)
+        self.workbook = Workbook(filename, {'constant_memory': True})
         self.split_by_frequency = split_by_frequency
 
         self.header_row = header_row
@@ -25,10 +25,10 @@ class DumpWorkbook:
 
     def write_row(self, row):
         if self.split_by_frequency:
-            sheet = row[self.frequency_column_index]
-            if sheet not in self.sheets:
-                self.init_worksheet(sheet)
-            self.sheets[sheet].write_row(row)
+            frequency = row[self.frequency_column_index]
+            if frequency not in self.sheets:
+                self.init_worksheet(frequency)
+            self.sheets[frequency].write_row(row)
             return
 
         if not self.single_sheet:

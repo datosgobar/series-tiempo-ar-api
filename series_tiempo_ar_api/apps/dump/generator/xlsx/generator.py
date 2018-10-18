@@ -57,7 +57,9 @@ class XLSXWriter:
         os.remove(xlsx)
 
     def xlsx_file_name(self):
-        return f'{self.csv_dump_file.file_name}-{self.csv_dump_file.id}.{DumpFile.TYPE_XLSX}'
+        node = self.csv_dump_file.node or 'global'
+        name = self.csv_dump_file.file_name
+        return f'{node}-{name}-{self.csv_dump_file.id}.{DumpFile.TYPE_XLSX}'
 
 
 def generate(task: GenerateDumpTask, node: str = None, workbook_class=DumpWorkbook):

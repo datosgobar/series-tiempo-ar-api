@@ -1,4 +1,6 @@
 #!coding=utf8
+import csv
+import codecs
 import json
 
 from django_datajsonar.models import Metadata, Node, ReadDataJsonTask, \
@@ -39,7 +41,5 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
 
 
 def read_file_as_csv(file):
-    for line in file:
-        line = line.decode('utf-8')
-        line = line.strip()
-        yield line.split(',')
+    reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
+    return reader
