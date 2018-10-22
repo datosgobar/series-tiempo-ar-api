@@ -4,6 +4,7 @@ from django_rq import job
 
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
 from series_tiempo_ar_api.apps.dump.writer import Writer
+from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from .generator.generator import DumpGenerator
 from .generator.xlsx import generator
 
@@ -16,6 +17,7 @@ def enqueue_dump_task(task: GenerateDumpTask):
     task_choices = {
         GenerateDumpTask.TYPE_CSV: write_csv,
         GenerateDumpTask.TYPE_XLSX: write_xlsx,
+        GenerateDumpTask.TYPE_SQL: write_sql,
     }
 
     task.refresh_from_db()
@@ -44,3 +46,17 @@ def enqueue_write_csv_task():
 def enqueue_write_xlsx_task():
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_XLSX)
     write_xlsx.delay(task.id)
+
+
+@job('default', timeout='2h')
+def write_sql(task_id, catalog=None):
+    Writer('SQL',
+           lambda task, catalog_id: SQLGenerator(task_id, catalog_id).generate(),
+           write_sql,
+           task_id,
+           catalog).write()
+
+
+def enqueue_write_sql_task():
+    task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_SQL)
+    write_sql.delay(task.id)

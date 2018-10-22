@@ -21,3 +21,4 @@ django-rq-scheduler==1.1.1
 django-solo==1.1.2
 django-minio-storage
 xlsxwriter==1.1.1
+peewee==3.7.1

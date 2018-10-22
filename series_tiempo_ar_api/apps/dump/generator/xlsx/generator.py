@@ -33,7 +33,9 @@ class XLSXWriter:
 
     def csv_to_xlsx(self):
         """Escribe el dump en XLSX en un archivo temporal, luego lo guarda en el storage,
-        por último borra el archivo temporal. Se debe hacer así porque """
+        por último borra el archivo temporal. Se debe hacer así para hacer un "upload" al
+        storage distribuido.
+        """
         xlsx = self.xlsx_file_name()
         with self.csv_dump_file.file as f:
             reader = read_file_as_csv(f)

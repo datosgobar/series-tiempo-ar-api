@@ -7,11 +7,13 @@ from . import constants
 
 
 class GenerateDumpTask(AbstractTask):
+    TYPE_SQL = 'sql'
     TYPE_CSV = 'csv'
     TYPE_XLSX = 'xlsx'
     TYPE_CHOICES = (
         (TYPE_CSV, 'CSV'),
         (TYPE_XLSX, 'XLSX'),
+        (TYPE_SQL, 'SQL'),
     )
 
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default='CSV')
@@ -41,10 +43,12 @@ class DumpFile(models.Model):
     TYPE_CSV = 'csv'
     TYPE_XLSX = 'xlsx'
     TYPE_ZIP = 'zip'
+    TYPE_SQL = 'sql'
     TYPE_CHOICES = (
         (TYPE_CSV, 'CSV'),
         (TYPE_XLSX, 'XLSX'),
         (TYPE_ZIP, 'ZIP'),
+        (TYPE_SQL, 'SQL')
     )
 
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default=TYPE_CSV)

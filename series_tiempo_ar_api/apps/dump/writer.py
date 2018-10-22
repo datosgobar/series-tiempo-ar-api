@@ -13,13 +13,13 @@ logger = logging.Logger(__name__)
 
 class Writer:
 
-    def __init__(self, tag: str, action: callable, recursive_task: callable, task: int = None, catalog: str = None):
+    def __init__(self, tag: str, action: callable, recursive_task: callable, task: int, catalog: str = None):
         self.tag = tag
         self.action = action
         self.recursive_task = recursive_task
         self.catch_exceptions = getattr(settings, 'DUMP_LOG_EXCEPTIONS', True)
 
-        self.task = GenerateDumpTask.objects.get(id=task) if task is not None else GenerateDumpTask.objects.create()
+        self.task = GenerateDumpTask.objects.get(id=task)
         self.catalog_id = catalog
 
     def write(self):

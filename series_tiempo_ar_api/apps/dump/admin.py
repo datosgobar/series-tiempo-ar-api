@@ -10,6 +10,8 @@ from .models import GenerateDumpTask
 class GenerateDumpTaskAdmin(AbstractTaskAdmin):
     model = GenerateDumpTask
 
+    list_display = ('__str__', 'file_type')
+
     task = enqueue_dump_task
 
     def save_model(self, request, obj, form, change):
