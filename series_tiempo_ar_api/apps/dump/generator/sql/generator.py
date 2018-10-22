@@ -4,65 +4,16 @@ import peewee
 from django.core.files import File
 from django_datajsonar.models import Node
 
+from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
+from series_tiempo_ar_api.apps.dump.generator.sql.models import Dataset, Distribucion, Serie, Valores, proxy
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.utils import read_file_as_csv
-
-proxy = peewee.Proxy()
-
-
-class Serie(peewee.Model):
-    class Meta:
-        database = proxy
-
-    catalogo_id = peewee.CharField(max_length=64)
-    dataset_id = peewee.CharField(max_length=128)
-    distribucion_id = peewee.CharField(max_length=128)
-    serie_id = peewee.CharField(max_length=128)
-    indice_tiempo_frecuencia = peewee.CharField(max_length=8)
-    titulo = peewee.TextField()
-    unidades = peewee.TextField()
-    descripcion = peewee.TextField()
-    indice_inicio = peewee.DateField()
-    indice_final = peewee.DateField()
-    valores_cant = peewee.IntegerField(null=True)
-    dias_no_cubiertos = peewee.IntegerField(null=True)
-
-
-class Distribucion(peewee.Model):
-    class Meta:
-        database = proxy
-
-    catalogo_id = peewee.CharField(max_length=64)
-    dataset_id = peewee.CharField(max_length=128)
-    identifier = peewee.CharField(max_length=128)
-    titulo = peewee.TextField()
-    descripcion = peewee.TextField()
-
-
-class Dataset(peewee.Model):
-    class Meta:
-        database = proxy
-
-    catalogo_id = peewee.CharField(max_length=64)
-    identifier = peewee.CharField(max_length=128)
-    titulo = peewee.TextField()
-    descripcion = peewee.TextField()
-    fuente = peewee.TextField()
-    responsable = peewee.TextField()
-
-
-class Valores(peewee.Model):
-    class Meta:
-        database = proxy
-
-    serie_id = peewee.CharField(max_length=128)
-    indice_tiempo = peewee.DateField()
-    valor = peewee.DoubleField()
 
 
 class SQLGenerator:
     metadata_rows = MetadataCsvGenerator.rows
+    values_rows = VALUES_HEADER
 
     def __init__(self, task_id: int, catalog_id: str = None):
         self.task = GenerateDumpTask.objects.get(id=task_id)
@@ -76,17 +27,29 @@ class SQLGenerator:
         self.distributions = []
 
     def generate(self):
+        self.init_sql()
 
-        meta = DumpFile.objects.get(node=self.node,
-                                    file_name=DumpFile.FILENAME_METADATA,
-                                    file_type=DumpFile.TYPE_CSV)
+        self.write_metadata_tables()
+        self.write_values_table()
 
-        if meta.file is None:
+        with open(self.db_name(), 'rb') as f:
+            self.task.dumpfile_set.create(node=self.node,
+                                          file=File(f),
+                                          file_type=DumpFile.TYPE_SQL,
+                                          file_name=DumpFile.FILENAME_FULL)
+
+        os.remove(self.db_name())
+
+    def write_metadata_tables(self):
+        meta = DumpFile.objects.filter(node=self.node,
+                                       file_name=DumpFile.FILENAME_METADATA,
+                                       file_type=DumpFile.TYPE_CSV).last()
+
+        if meta is None or meta.file is None:
             return
 
         reader = read_file_as_csv(meta.file)
         next(reader)  # Skip header
-        self.init_sql()
 
         for row in reader:
             self.init_dataset(row)
@@ -96,14 +59,6 @@ class SQLGenerator:
         Dataset.bulk_create(self.datasets)
         Distribucion.bulk_create(self.distributions)
         Serie.bulk_create(self.series)
-
-        with open(self.db_name(), 'rb') as f:
-            self.task.dumpfile_set.create(node=self.node,
-                                          file=File(f),
-                                          file_type=DumpFile.TYPE_SQL,
-                                          file_name=DumpFile.FILENAME_FULL)
-
-        os.remove(self.db_name())
 
     def init_sql(self):
         name = self.db_name()
@@ -183,3 +138,27 @@ class SQLGenerator:
     def db_name(self):
         name = self.node.catalog_id if self.node else 'global'
         return f'{name}.sqlite'
+
+    def write_values_table(self):
+        values = DumpFile.objects.filter(file_name=DumpFile.FILENAME_VALUES,
+                                         file_type=DumpFile.TYPE_CSV,
+                                         node=self.node).last()
+        if values is None or values.file is None:
+            return
+
+        reader = read_file_as_csv(values.file)
+        next(reader)  # Skip header
+
+        Valores.bulk_create(self.generate_values_rows(reader))
+
+    def generate_values_rows(self, reader):
+        for row in reader:
+            index = row[self.values_rows.index('indice_tiempo')]
+            serie_id = row[self.values_rows.index('serie_id')]
+            value = row[self.values_rows.index('valor')]
+
+            yield Valores(
+                serie_id=serie_id,
+                indice_tiempo=index,
+                valor=value,
+            )
