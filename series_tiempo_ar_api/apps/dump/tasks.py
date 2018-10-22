@@ -33,3 +33,14 @@ def write_csv(task_id, catalog=None):
 @job('default', timeout='2h')
 def write_xlsx(task_id, catalog=None):
     Writer('XLSX', generator.generate, write_xlsx, task_id, catalog).write()
+
+
+# Funciones callable sin argumentos para rqscheduler
+def enqueue_write_csv_task():
+    task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_CSV)
+    write_csv.delay(task.id)
+
+
+def enqueue_write_xlsx_task():
+    task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_XLSX)
+    write_xlsx.delay(task.id)
