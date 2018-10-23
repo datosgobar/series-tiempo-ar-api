@@ -2,7 +2,6 @@ import os
 
 from django.core.files import File
 
-from series_tiempo_ar_api.apps.dump.generator.generator import remove_old_dumps
 from series_tiempo_ar_api.apps.dump.generator.xlsx.workbook import DumpWorkbook
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.utils import read_file_as_csv
@@ -67,6 +66,3 @@ class XLSXWriter:
 def generate(task: GenerateDumpTask, node: str = None, workbook_class=DumpWorkbook):
     for dump in DumpFile.get_last_of_type(DumpFile.TYPE_CSV, node):
         XLSXWriter(task, dump, workbook_class).write()
-
-    for filename, _ in DumpFile.FILENAME_CHOICES:
-        remove_old_dumps(filename, DumpFile.TYPE_CSV, node)

@@ -1,12 +1,12 @@
 import os
 
-from django.core.files.temp import NamedTemporaryFile
 from django.core.management import call_command
 from django.test import TestCase
 from faker import Faker
 
 from series_tiempo_ar_api.apps.dump.generator.xlsx.generator import generate
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
+from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_xlsx_task
 from series_tiempo_ar_api.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -37,10 +37,7 @@ class XLSXGeneratorTests(TestCase):
         self.assertTrue(DumpFile.objects.filter(file_type=DumpFile.TYPE_XLSX).count())
 
     def test_xlsx_dumps_by_catalog(self):
-        task = GenerateDumpTask.objects.create()
-        generate(task)
-        generate(task, "catalog_one")
-        generate(task, "catalog_two")
+        enqueue_write_xlsx_task()
         self.assertEqual(DumpFile.objects.filter(file_type=DumpFile.TYPE_XLSX, node=None).count(),
                          len(DumpFile.FILENAME_CHOICES))
         self.assertEqual(DumpFile.objects.filter(file_type=DumpFile.TYPE_XLSX, node__catalog_id='catalog_one').count(),

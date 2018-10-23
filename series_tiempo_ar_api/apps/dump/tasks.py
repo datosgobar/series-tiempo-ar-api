@@ -2,7 +2,7 @@
 import logging
 from django_rq import job
 
-from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.writer import Writer
 from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from .generator.generator import DumpGenerator
@@ -26,7 +26,7 @@ def enqueue_dump_task(task: GenerateDumpTask):
 
 @job('default', timeout='2h')
 def write_csv(task_id, catalog=None):
-    Writer('CSV', lambda task, catalog_id: DumpGenerator(task, catalog_id).generate(),
+    Writer(DumpFile.TYPE_CSV, lambda task, catalog_id: DumpGenerator(task, catalog_id).generate(),
            write_csv,
            task_id,
            catalog).write()
@@ -34,7 +34,7 @@ def write_csv(task_id, catalog=None):
 
 @job('default', timeout='2h')
 def write_xlsx(task_id, catalog=None):
-    Writer('XLSX', generator.generate, write_xlsx, task_id, catalog).write()
+    Writer(DumpFile.TYPE_XLSX, generator.generate, write_xlsx, task_id, catalog).write()
 
 
 # Funciones callable sin argumentos para rqscheduler
@@ -50,7 +50,7 @@ def enqueue_write_xlsx_task():
 
 @job('default', timeout='2h')
 def write_sql(task_id, catalog=None):
-    Writer('SQL',
+    Writer(DumpFile.TYPE_SQL,
            lambda task, catalog_id: SQLGenerator(task_id, catalog_id).generate(),
            write_sql,
            task_id,

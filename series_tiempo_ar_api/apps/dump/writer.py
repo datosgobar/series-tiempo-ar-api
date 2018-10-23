@@ -7,7 +7,9 @@ from django.conf import settings
 from django_rq import get_queue
 from django_datajsonar.models import Node
 
-from .models import GenerateDumpTask
+from series_tiempo_ar_api.apps.dump import constants
+from .models import GenerateDumpTask, DumpFile
+
 logger = logging.Logger(__name__)
 
 
@@ -35,6 +37,8 @@ class Writer:
         self._finish()
 
     def _finish(self):
+        self.remove_old_dumps()
+
         _async = settings.RQ_QUEUES['default'].get('ASYNC', True)
         finish = not _async or (_async and not get_queue('default').count)
         if finish:
@@ -42,6 +46,15 @@ class Writer:
             self.task.status = self.task.FINISHED
             self.task.finished = timezone.now()
             self.task.save()
+
+    def remove_old_dumps(self):
+        for dump_name, _ in DumpFile.FILENAME_CHOICES:
+            same_file = DumpFile.objects.filter(file_type=self.tag,
+                                                node__catalog_id=self.catalog_id,
+                                                file_name=dump_name)
+            old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
+            for model in old:
+                model.delete()
 
     def run_catching_exceptions(self):
         try:
