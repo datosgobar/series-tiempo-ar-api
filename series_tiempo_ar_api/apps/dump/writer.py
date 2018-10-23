@@ -32,9 +32,11 @@ class Writer:
         else:
             self.action(self.task, self.catalog_id)
 
+        self._finish()
+
+    def _finish(self):
         _async = settings.RQ_QUEUES['default'].get('ASYNC', True)
         finish = not _async or (_async and not get_queue('default').count)
-
         if finish:
             self.task.refresh_from_db()
             self.task.status = self.task.FINISHED
@@ -49,3 +51,5 @@ class Writer:
             msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.tag}: {exc}"
             logger.error(msg)
             GenerateDumpTask.info(self.task, msg)
+            self._finish()
+            raise e
