@@ -149,7 +149,7 @@ class SQLGenerator:
         reader = read_file_as_csv(values.file)
         next(reader)  # Skip header
 
-        Valores.bulk_create(self.generate_values_rows(reader))
+        Valores.bulk_create(self.generate_values_rows(reader), batch_size=1000)
 
     def generate_values_rows(self, reader):
         for row in reader:

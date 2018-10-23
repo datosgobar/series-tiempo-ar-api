@@ -50,4 +50,4 @@ class Valores(peewee.Model):
 
     serie_id = peewee.CharField(max_length=128)
     indice_tiempo = peewee.DateField()
-    valor = peewee.DoubleField()
+    valor = peewee.DoubleField(null=True)
