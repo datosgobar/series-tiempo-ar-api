@@ -6,7 +6,8 @@ from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
-from series_tiempo_ar_api.apps.dump.generator.sql.models import Dataset, Distribucion, Serie, Valores, proxy
+from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
+from series_tiempo_ar_api.apps.dump.generator.sql.models import Dataset, Distribucion, Serie, Valores, proxy, Fuente
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.utils import read_file_as_csv
 
@@ -14,6 +15,7 @@ from series_tiempo_ar_api.utils import read_file_as_csv
 class SQLGenerator:
     metadata_rows = MetadataCsvGenerator.rows
     values_rows = VALUES_HEADER
+    sources_rows = SourcesCsvGenerator.columns
 
     def __init__(self, task_id: int, catalog_id: str = None):
         self.task = GenerateDumpTask.objects.get(id=task_id)
@@ -27,9 +29,13 @@ class SQLGenerator:
         self.distributions = []
 
     def generate(self):
+        if os.path.exists(self.db_name()):
+            os.remove(self.db_name())
+
         self.init_sql()
 
         self.write_metadata_tables()
+        self.write_sources_table()
         self.write_values_table()
 
         with open(self.db_name(), 'rb') as f:
@@ -64,7 +70,7 @@ class SQLGenerator:
         name = self.db_name()
         db = peewee.SqliteDatabase(name)
         proxy.initialize(db)
-        db.create_tables([Serie, Distribucion, Dataset, Valores])
+        db.create_tables([Serie, Distribucion, Dataset, Valores, Fuente])
 
     def init_dataset(self, row: list):
         dataset_id = row[self.metadata_rows.index('dataset_id')]
@@ -76,7 +82,7 @@ class SQLGenerator:
         source = row[self.metadata_rows.index('dataset_fuente')]
         publisher = row[self.metadata_rows.index('dataset_responsable')]
 
-        self.datasets.append(Dataset.create(
+        self.datasets.append(Dataset(
             catalogo_id=catalog_id,
             identifier=dataset_id,
             titulo=title,
@@ -162,3 +168,27 @@ class SQLGenerator:
                 indice_tiempo=index,
                 valor=value,
             )
+
+    def write_sources_table(self):
+        sources = DumpFile.objects.filter(file_name=DumpFile.FILENAME_SOURCES,
+                                          file_type=DumpFile.TYPE_CSV,
+                                          node=self.node).last()
+
+        if sources is None or sources.file is None:
+            return
+
+        reader = read_file_as_csv(sources.file)
+        next(reader)  # Skip header
+
+        actions = []
+        for row in reader:
+            Fuente(
+                fuente=row[self.sources_rows.index('dataset_fuente')],
+                series_cant=row[self.sources_rows.index('series_cant')],
+                valores_cant=row[self.sources_rows.index('valores_cant')],
+                fecha_primer_valor=row[self.sources_rows.index('fecha_primer_valor')],
+                fecha_ultimo_valor=row[self.sources_rows.index('fecha_ultimo_valor')],
+            ).save()
+
+        if actions:
+            Fuente.bulk_create(actions)
