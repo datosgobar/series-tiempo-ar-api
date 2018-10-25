@@ -29,22 +29,16 @@ class SQLGenerator:
         self.distributions = []
 
     def generate(self):
-        if os.path.exists(self.db_name()):
-            os.remove(self.db_name())
+        with DbWrapper(self.db_name()):
+            self.write_metadata_tables()
+            self.write_sources_table()
+            self.write_values_table()
 
-        self.init_sql()
-
-        self.write_metadata_tables()
-        self.write_sources_table()
-        self.write_values_table()
-
-        with open(self.db_name(), 'rb') as f:
-            self.task.dumpfile_set.create(node=self.node,
-                                          file=File(f),
-                                          file_type=DumpFile.TYPE_SQL,
-                                          file_name=DumpFile.FILENAME_FULL)
-
-        os.remove(self.db_name())
+            with open(self.db_name(), 'rb') as f:
+                self.task.dumpfile_set.create(node=self.node,
+                                              file=File(f),
+                                              file_type=DumpFile.TYPE_SQL,
+                                              file_name=DumpFile.FILENAME_FULL)
 
     def write_metadata_tables(self):
         meta = DumpFile.objects.filter(node=self.node,
@@ -65,12 +59,6 @@ class SQLGenerator:
         Dataset.bulk_create(self.datasets)
         Distribucion.bulk_create(self.distributions)
         Serie.bulk_create(self.series)
-
-    def init_sql(self):
-        name = self.db_name()
-        db = peewee.SqliteDatabase(name)
-        proxy.initialize(db)
-        db.create_tables([Serie, Distribucion, Dataset, Valores, Fuente])
 
     def init_dataset(self, row: list):
         dataset_id = row[self.metadata_rows.index('dataset_id')]
@@ -192,3 +180,24 @@ class SQLGenerator:
 
         if actions:
             Fuente.bulk_create(actions)
+
+
+class DbWrapper:
+
+    def __init__(self, name):
+        self.name = name
+        self.db = None
+
+    def __enter__(self):
+        if os.path.exists(self.name):
+            os.remove(self.name)
+
+        self.db = peewee.SqliteDatabase(self.name)
+        proxy.initialize(self.db)
+        self.db.create_tables([Serie, Distribucion, Dataset, Valores, Fuente])
+
+        return self.db
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if os.path.exists(self.name):
+            os.remove(self.name)
