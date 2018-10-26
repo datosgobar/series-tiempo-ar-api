@@ -57,7 +57,10 @@ class DeleteMetadataTests(TestCase):
     field_change = urlresolvers.reverse('admin:django_datajsonar_field_changelist')
 
     def setUp(self):
-        node = Node.objects.create(catalog_url=os.path.join(SAMPLES_DIR, 'single_distribution.json'), catalog_id="one", indexable=True)
+        self.catalog_id = "one"
+        node = Node.objects.create(catalog_url=os.path.join(SAMPLES_DIR, 'single_distribution.json'),
+                                   catalog_id=self.catalog_id,
+                                   indexable=True)
         index_catalog(node, ReadDataJsonTask.objects.create(), whitelist=True)
         user = User.objects.create(username='a', password='b', is_staff=True, is_superuser=True)
         self.client.force_login(user)
@@ -73,7 +76,7 @@ class DeleteMetadataTests(TestCase):
 
     def test_delete_distribution(self):
         with mock.patch('series_tiempo_ar_api.apps.metadata.admin.delete_metadata') as fake_delete:
-            distribution: Distribution = Distribution.objects.first()
+            distribution: Distribution = Distribution.objects.filter(dataset__catalog__identifier=self.catalog_id).first()
             fields = set(distribution.field_set.all())
             self.client.post(self.distribution_change,
                              {'action': 'delete_model',

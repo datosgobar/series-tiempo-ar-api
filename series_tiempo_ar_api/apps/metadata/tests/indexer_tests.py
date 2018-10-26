@@ -19,7 +19,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 fake = faker.Faker()
 
-fake_index = Index(fake.word(), using=ElasticInstance.get())
+fake_index = Index(fake.pystr(max_chars=50).lower(), using=ElasticInstance.get())
 add_analyzer(fake_index)
 
 

@@ -3,34 +3,12 @@ import peewee
 proxy = peewee.Proxy()
 
 
-class Dataset(peewee.Model):
-    class Meta:
-        database = proxy
-        primary_key = peewee.CompositeKey('catalogo_id', 'identifier')
-
-    catalogo_id = peewee.CharField(max_length=64)
-    identifier = peewee.CharField(max_length=128)
-    titulo = peewee.TextField()
-    descripcion = peewee.TextField()
-    fuente = peewee.TextField(null=True)
-    responsable = peewee.TextField()
-
-
-class Distribucion(peewee.Model):
-    class Meta:
-        database = proxy
-        primary_key = peewee.CompositeKey('catalogo_id', 'identifier')
-
-    catalogo_id = peewee.CharField(max_length=64)
-    dataset_id = peewee.CharField(max_length=128)
-    identifier = peewee.CharField(max_length=128)
-    titulo = peewee.TextField()
-    descripcion = peewee.TextField()
-
-
 class Serie(peewee.Model):
     class Meta:
         database = proxy
+        indexes = (
+            (('catalogo_id', 'dataset_id', 'distribucion_id', 'serie_id'), True),
+        )
 
     catalogo_id = peewee.CharField(max_length=64)
     dataset_id = peewee.CharField(max_length=128)
@@ -40,6 +18,15 @@ class Serie(peewee.Model):
     titulo = peewee.TextField()
     unidades = peewee.TextField()
     descripcion = peewee.TextField()
+
+    distribucion_titulo = peewee.TextField()
+    distribucion_descripcion = peewee.TextField()
+
+    dataset_responsable = peewee.TextField()
+    dataset_fuente = peewee.TextField()
+    dataset_titulo = peewee.TextField()
+    dataset_descripcion = peewee.TextField()
+
     indice_inicio = peewee.DateField()
     indice_final = peewee.DateField()
     valores_cant = peewee.IntegerField(null=True)
@@ -51,7 +38,7 @@ class Valores(peewee.Model):
         database = proxy
         primary_key = peewee.CompositeKey('serie_id', 'indice_tiempo')
 
-    serie_id = peewee.CharField(max_length=128)
+    serie_id = peewee.ForeignKeyField(Serie)
     indice_tiempo = peewee.DateField()
     valor = peewee.DoubleField(null=True)
 

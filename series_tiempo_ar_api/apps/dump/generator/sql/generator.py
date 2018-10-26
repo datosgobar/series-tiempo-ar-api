@@ -7,7 +7,7 @@ from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
-from series_tiempo_ar_api.apps.dump.generator.sql.models import Dataset, Distribucion, Serie, Valores, proxy, Fuente
+from series_tiempo_ar_api.apps.dump.generator.sql.models import Serie, Valores, proxy, Fuente
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.utils import read_file_as_csv
 
@@ -51,83 +51,52 @@ class SQLGenerator:
         reader = read_file_as_csv(meta.file)
         next(reader)  # Skip header
 
+        Serie.bulk_create(self.generate_series_rows(reader))
+
+    def generate_series_rows(self, reader):
         for row in reader:
-            self.init_dataset(row)
-            self.init_distribution(row)
-            self.init_serie(row)
+            serie_id = row[self.metadata_rows.index('serie_id')]
+            distribution_id = row[self.metadata_rows.index('distribucion_id')]
+            dataset_id = row[self.metadata_rows.index('dataset_id')]
+            catalog_id = row[self.metadata_rows.index('catalogo_id')]
+            frequency = row[self.metadata_rows.index('indice_tiempo_frecuencia')]
+            title = row[self.metadata_rows.index('serie_titulo')]
+            units = row[self.metadata_rows.index('serie_unidades')]
+            description = row[self.metadata_rows.index('serie_descripcion')]
 
-        Dataset.bulk_create(self.datasets)
-        Distribucion.bulk_create(self.distributions)
-        Serie.bulk_create(self.series)
+            distribution_title = row[self.metadata_rows.index('distribucion_titulo')]
+            distribution_description = row[self.metadata_rows.index('distribucion_descripcion')]
 
-    def init_dataset(self, row: list):
-        dataset_id = row[self.metadata_rows.index('dataset_id')]
-        if dataset_id in self.covered_datasets:
-            return
-        catalog_id = row[self.metadata_rows.index('catalogo_id')]
-        title = row[self.metadata_rows.index('dataset_titulo')]
-        description = row[self.metadata_rows.index('dataset_descripcion')]
-        source = row[self.metadata_rows.index('dataset_fuente')]
-        publisher = row[self.metadata_rows.index('dataset_responsable')]
+            dataset_title = row[self.metadata_rows.index('dataset_titulo')]
+            dataset_description = row[self.metadata_rows.index('dataset_descripcion')]
+            dataset_source = row[self.metadata_rows.index('dataset_fuente')]
+            dataset_publisher = row[self.metadata_rows.index('dataset_responsable')]
 
-        self.datasets.append(Dataset(
-            catalogo_id=catalog_id,
-            identifier=dataset_id,
-            titulo=title,
-            descripcion=description,
-            fuente=source,
-            responsable=publisher
-        ))
-        self.covered_datasets.add(dataset_id)
+            index_start = row[self.metadata_rows.index('serie_indice_inicio')]
+            index_end = row[self.metadata_rows.index('serie_indice_final')]
+            value_count = row[self.metadata_rows.index('serie_valores_cant')] or 0
+            days_not_covered = row[self.metadata_rows.index('serie_dias_no_cubiertos')] or 0
 
-    def init_distribution(self, row: list):
-        distribution_id = row[self.metadata_rows.index('distribucion_id')]
-        if distribution_id in self.covered_distributions:
-            return
-
-        dataset_id = row[self.metadata_rows.index('dataset_id')]
-        catalog_id = row[self.metadata_rows.index('catalogo_id')]
-
-        title = row[self.metadata_rows.index('distribucion_titulo')]
-        description = row[self.metadata_rows.index('distribucion_descripcion')]
-
-        self.distributions.append(Distribucion(
-            catalogo_id=catalog_id,
-            dataset_id=dataset_id,
-            identifier=distribution_id,
-            titulo=title,
-            descripcion=description,
-        ))
-        self.covered_distributions.add(distribution_id)
-
-    def init_serie(self, row: list):
-        serie_id = row[self.metadata_rows.index('serie_id')]
-        distribution_id = row[self.metadata_rows.index('distribucion_id')]
-        dataset_id = row[self.metadata_rows.index('dataset_id')]
-        catalog_id = row[self.metadata_rows.index('catalogo_id')]
-        frequency = row[self.metadata_rows.index('indice_tiempo_frecuencia')]
-        title = row[self.metadata_rows.index('serie_titulo')]
-        units = row[self.metadata_rows.index('serie_unidades')]
-        description = row[self.metadata_rows.index('serie_descripcion')]
-        index_start = row[self.metadata_rows.index('serie_indice_inicio')]
-        index_end = row[self.metadata_rows.index('serie_indice_final')]
-        value_count = row[self.metadata_rows.index('serie_valores_cant')] or 0
-        days_not_covered = row[self.metadata_rows.index('serie_dias_no_cubiertos')] or 0
-
-        self.series.append(Serie(
-            catalogo_id=catalog_id,
-            dataset_id=dataset_id,
-            distribucion_id=distribution_id,
-            serie_id=serie_id,
-            indice_tiempo_frecuencia=frequency,
-            titulo=title,
-            unidades=units,
-            descripcion=description,
-            indice_inicio=index_start,
-            indice_final=index_end,
-            valores_cant=value_count,
-            dias_no_cubiertos=days_not_covered,
-        ))
+            yield Serie(
+                catalogo_id=catalog_id,
+                dataset_id=dataset_id,
+                distribucion_id=distribution_id,
+                serie_id=serie_id,
+                indice_tiempo_frecuencia=frequency,
+                titulo=title,
+                unidades=units,
+                descripcion=description,
+                distribucion_titulo=distribution_title,
+                distribucion_descripcion=distribution_description,
+                dataset_responsable=dataset_publisher,
+                dataset_fuente=dataset_source,
+                dataset_titulo=dataset_title,
+                dataset_descripcion=dataset_description,
+                indice_inicio=index_start,
+                indice_final=index_end,
+                valores_cant=value_count,
+                dias_no_cubiertos=days_not_covered,
+            )
 
     def db_name(self):
         name = self.node.catalog_id if self.node else 'global'
@@ -194,7 +163,7 @@ class DbWrapper:
 
         self.db = peewee.SqliteDatabase(self.name)
         proxy.initialize(self.db)
-        self.db.create_tables([Serie, Distribucion, Dataset, Valores, Fuente])
+        self.db.create_tables([Serie, Valores, Fuente])
 
         return self.db
 
