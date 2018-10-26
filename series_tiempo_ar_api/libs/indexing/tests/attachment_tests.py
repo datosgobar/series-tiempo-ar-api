@@ -23,6 +23,8 @@ class AttachmentTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(AttachmentTests, cls).setUpClass()
+        Node.objects.all().delete()
+        Catalog.objects.all().delete()
         cls.node = Node(catalog_id=cls.catalog_id,
                         catalog_url=cls.catalog,
                         indexable=True,
