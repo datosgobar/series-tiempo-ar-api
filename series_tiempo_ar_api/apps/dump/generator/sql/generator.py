@@ -51,7 +51,7 @@ class SQLGenerator:
         reader = read_file_as_csv(meta.file)
         next(reader)  # Skip header
 
-        Serie.bulk_create(self.generate_series_rows(reader))
+        Serie.bulk_create(self.generate_series_rows(reader), batch_size=100)
 
     def generate_series_rows(self, reader):
         for row in reader:
