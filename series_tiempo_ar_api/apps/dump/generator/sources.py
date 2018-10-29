@@ -55,9 +55,10 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
     def write_tmp_file(self, sources: dict):
         filepath = self.get_file_path()
+        rows = sorted(sources.values(), key=lambda source: source['series_cant'], reverse=True)
         with open(filepath, 'w') as f:
             writer = csv.DictWriter(f, self.columns)
             writer.writeheader()
-            writer.writerows(sources.values())
+            writer.writerows(rows)
 
         self.write(filepath, self.filename)
