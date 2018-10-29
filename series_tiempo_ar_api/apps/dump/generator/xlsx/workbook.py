@@ -21,7 +21,8 @@ class DumpWorkbook:
 
     def add_worksheet(self, sheet_name, frequency):
         self.sheets[frequency] = DumpWorksheet(self.workbook, sheet_name)
-        self.sheets[frequency].write_row(self.header_row)
+        self.sheets[frequency].write_row(self.header_row,
+                                         cell_format=self.workbook.add_format({'bold': True}))
 
     def write_row(self, row):
         if self.split_by_frequency:
@@ -33,7 +34,8 @@ class DumpWorkbook:
 
         if not self.single_sheet:
             self.single_sheet = SingleWorksheet(self.workbook)
-            self.single_sheet.write_row(self.header_row)
+            self.single_sheet.write_row(self.header_row,
+                                        cell_format=self.workbook.add_format({'bold': True}))
 
         self.single_sheet.write_row(row)
 

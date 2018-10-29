@@ -13,8 +13,8 @@ class DumpWorksheet:
 
         self.init_worksheet()
 
-    def write_row(self, row: list):
-        self.current_sheet.write_row(self.current_row, 0, row)
+    def write_row(self, row: list, cell_format=None):
+        self.current_sheet.write_row(self.current_row, 0, row, cell_format)
         self.current_row += 1
 
         if self.current_row > self.MAX_ROWS_PER_SHEET:
@@ -32,6 +32,6 @@ class SingleWorksheet:
         self.current_row = 0
         self.current_sheet = workbook.add_worksheet(name)
 
-    def write_row(self, row: list):
-        self.current_sheet.write_row(self.current_row, 0, row)
+    def write_row(self, row: list, cell_format=None):
+        self.current_sheet.write_row(self.current_row, 0, row, cell_format)
         self.current_row += 1
