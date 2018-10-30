@@ -2,6 +2,7 @@
 import os
 import datetime
 
+import mock
 from django.test import TransactionTestCase
 from django_datajsonar.models import Catalog
 from django.core.files import File
@@ -16,11 +17,12 @@ class FieldEnhancedMetaTests(TransactionTestCase):
     catalog_id = 'test_catalog'
 
     def setUp(self):
-        self.catalog = Catalog.objects.create(identifier=self.catalog_id, metadata='{}')
-        dataset = self.catalog.dataset_set.create(identifier="1", metadata='{}')
+        self.catalog = Catalog.objects.create(identifier=self.catalog_id)
+        dataset = self.catalog.dataset_set.create(identifier="1")
         self.distribution_id = "1.1"
-        distribution = dataset.distribution_set.create(identifier=self.distribution_id, metadata='{}')
-        self.field = distribution.field_set.create(identifier='test_series', metadata='{}')
+        distribution = dataset.distribution_set.create(identifier=self.distribution_id)
+        distribution.enhanced_meta.create(key=meta_keys.PERIODICITY, value='R/P1D')
+        self.field = distribution.field_set.create(identifier='test_series')
 
     def test_start_end_dates(self):
         df = self.init_df()
@@ -73,6 +75,29 @@ class FieldEnhancedMetaTests(TransactionTestCase):
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.DAYS_SINCE_LAST_UPDATE),
                          str(days))
+
+    class MockDatetime():
+        def __init__(self, date):
+            self.date = date
+
+        def now(self):
+            return self.date
+
+    def test_is_not_updated(self):
+        df = self.init_df()
+        with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.metadata.datetime',
+                        self.MockDatetime(datetime.datetime(2018, 1, 1))):
+            update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
+                         str(False))
+
+    def test_is_updated(self):
+        df = self.init_df()
+        with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.metadata.datetime', self.MockDatetime(df.index[-1])):
+            update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+        self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
+                         str(True))
 
     def init_df(self):
         self.field.distribution.data_file = File(open(os.path.join(SAMPLES_DIR,
