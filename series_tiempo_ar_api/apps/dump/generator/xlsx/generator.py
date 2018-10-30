@@ -39,13 +39,16 @@ class XLSXWriter:
         with self.csv_dump_file.file as f:
             reader = read_file_as_csv(f)
             header_row = next(reader)
-
+            multiple_sheets = self.multiple_sheets[self.csv_dump_file.file_name]
             workbook = self.workbook_class(xlsx,
                                            header_row=header_row,
-                                           split_by_frequency=self.multiple_sheets[self.csv_dump_file.file_name])
+                                           split_by_frequency=multiple_sheets)
 
             for row in reader:
                 workbook.write_row(row)
+
+        if multiple_sheets:
+            workbook.worksheets_objs.sort(key=sort_key)
 
         workbook.close()
 
@@ -61,6 +64,19 @@ class XLSXWriter:
         node = self.csv_dump_file.node or 'global'
         name = self.csv_dump_file.file_name
         return f'{node}-{name}-{self.csv_dump_file.id}.{DumpFile.TYPE_XLSX}'
+
+
+def sort_key(x):
+    values = {
+        'anual': 0,
+        'semestral': 1,
+        'trimestral': 2,
+        'mensual': 3,
+        'diaria': 4
+    }
+
+    freq, sheet = x.name.split('-')
+    return values[freq], int(sheet)
 
 
 def generate(task: GenerateDumpTask, node: str = None, workbook_class=DumpWorkbook):
