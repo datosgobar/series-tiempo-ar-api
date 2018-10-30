@@ -6,6 +6,10 @@ from series_tiempo_ar_api.apps.dump.generator.xlsx.worksheet import DumpWorkshee
 class DumpWorkbook:
     frequency_col_name = 'indice_tiempo_frecuencia'
 
+    @property
+    def worksheets_objs(self):
+        return self.workbook.worksheets_objs
+
     def __init__(self, filename: str, header_row: list, split_by_frequency=False):
         self.workbook = Workbook(filename, {'constant_memory': True})
         self.split_by_frequency = split_by_frequency
