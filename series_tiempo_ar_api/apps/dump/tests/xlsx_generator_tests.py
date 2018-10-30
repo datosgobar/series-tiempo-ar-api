@@ -64,9 +64,13 @@ class SheetSortTests(TestCase):
 
         sheets.sort(key=sort_key)
 
-        self.assertEqual(sheets[0], self.MockSheet('anual-1'))
-        self.assertEqual(sheets[-1], self.MockSheet('diaria-2'))
-        self.assertEqual(sheets[-2], self.MockSheet('diaria-1'))
+        expected = self.init_sheets(['anual-1',
+                                     'semestral-1',
+                                     'trimestral-1',
+                                     'mensual-1',
+                                     'diaria-1',
+                                     'diaria-2'])
+        self.assertListEqual(sheets, expected)
 
     def test_sort(self):
         sheets = self.init_sheets([
