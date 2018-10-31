@@ -295,12 +295,12 @@ class IdsField(BaseOperation):
         """
         field_model = models.Field.objects.filter(identifier=series_id)
         if not field_model:
-            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id)
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
 
         available = field_model[0].enhanced_meta.filter(key=meta_keys.AVAILABLE)
         if not available or available[0] == 'False':
-            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id)
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
         return field_model[0]
 
