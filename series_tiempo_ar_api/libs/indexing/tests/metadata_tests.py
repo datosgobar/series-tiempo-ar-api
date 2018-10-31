@@ -1,6 +1,7 @@
 #! coding: utf-8
 import os
 import datetime
+from unittest import skip
 
 import mock
 from django.test import TransactionTestCase
@@ -13,6 +14,7 @@ from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import Dist
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
+@skip
 class FieldEnhancedMetaTests(TransactionTestCase):
     catalog_id = 'test_catalog'
 
