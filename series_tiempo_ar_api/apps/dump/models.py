@@ -51,6 +51,12 @@ class DumpFile(models.Model):
         (TYPE_SQL, 'SQL')
     )
 
+    ZIP_FILES = (
+        (FILENAME_FULL, TYPE_CSV),
+        (FILENAME_VALUES, TYPE_CSV),
+        (FILENAME_FULL, TYPE_SQL),
+    )
+
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default=TYPE_CSV)
 
     task = models.ForeignKey(GenerateDumpTask, on_delete=models.CASCADE)
@@ -107,3 +113,10 @@ class DumpFile(models.Model):
                 dumps.append(dump_file)
 
         return dumps
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(DumpFile, self).save(force_insert, force_update, using, update_fields)
+
+        if (self.file_name, self.file_type) in self.ZIP_FILES:
+            self.__class__(file_name=self.file_name, file_type=self.TYPE_ZIP, node=self.node)
