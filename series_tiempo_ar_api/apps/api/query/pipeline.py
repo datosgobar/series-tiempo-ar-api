@@ -32,7 +32,7 @@ class QueryPipeline(object):
             cmd_instance = cmd()
             cmd_instance.run(query, args)
             if cmd_instance.errors:
-                return self.generate_error_response(cmd_instance.errors)
+                return self.generate_error_response_from_cmd(cmd_instance)
 
         _format = args.get(constants.PARAM_FORMAT,
                            constants.API_DEFAULT_VALUES[constants.PARAM_FORMAT])
@@ -73,10 +73,18 @@ class QueryPipeline(object):
             DecimalChar,
         ]
 
+    @staticmethod
+    def generate_error_response_from_cmd(cmd_instance: 'BaseOperation'):
+        response = {'errors': list(cmd_instance.errors)}
+        if cmd_instance.failed_series:
+            response['failed_series'] = cmd_instance.failed_series
+        return JsonResponse(response, status=constants.RESPONSE_ERROR_CODE)
+
 
 class BaseOperation(object):
     def __init__(self):
         self.errors = []
+        self.failed_series = []
 
     @abstractmethod
     def run(self, query, args):
@@ -91,7 +99,8 @@ class BaseOperation(object):
         """
         raise NotImplementedError
 
-    def _append_error(self, msg):
+    #pylint: disable=W0613
+    def _append_error(self, msg, *_, **__):
         self.errors.append({
             'error': msg
         })
@@ -286,12 +295,12 @@ class IdsField(BaseOperation):
         """
         field_model = models.Field.objects.filter(identifier=series_id)
         if not field_model:
-            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id)
             return None
 
         available = field_model[0].enhanced_meta.filter(key=meta_keys.AVAILABLE)
         if not available or available[0] == 'False':
-            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id))
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id)
             return None
         return field_model[0]
 
@@ -335,6 +344,12 @@ class IdsField(BaseOperation):
                 return None, None, None
 
         return name, rep_mode, agg
+
+    def _append_error(self, msg, *args, **kwargs):
+        series_id = kwargs.get('series_id')
+        super(IdsField, self)._append_error(msg, *args, **kwargs)
+        if series_id:
+            self.failed_series.append(series_id)
 
 
 class Collapse(BaseOperation):
