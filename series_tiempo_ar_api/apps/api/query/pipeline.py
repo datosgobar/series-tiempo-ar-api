@@ -99,7 +99,7 @@ class BaseOperation(object):
         """
         raise NotImplementedError
 
-    #pylint: disable=W0613
+    # pylint: disable=W0613
     def _append_error(self, msg, *_, **__):
         self.errors.append({
             'error': msg
