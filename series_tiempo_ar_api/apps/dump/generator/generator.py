@@ -63,6 +63,7 @@ class DumpGenerator:
                 'serie_descripcion': meta.get('description'),
                 'distribucion_titulo': dist_meta.get('title'),
                 'distribucion_descripcion': dist_meta.get('description'),
+                'distribucion_url_descarga': field.distribution.download_url,
                 'dataset_responsable': dataset_meta.get('publisher', {}).get('name'),
                 'dataset_fuente': dataset_meta.get('source'),
                 'dataset_titulo': field.distribution.dataset.title,

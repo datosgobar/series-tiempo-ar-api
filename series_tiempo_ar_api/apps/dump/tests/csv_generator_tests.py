@@ -11,6 +11,7 @@ from django.test import TestCase, TransactionTestCase
 from django_datajsonar.models import Field, Node, Catalog
 from faker import Faker
 
+from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
@@ -197,6 +198,16 @@ class CSVTest(TestCase):
 
         next(reader)  # Header!!!!
         self.assertEqual(len(list(reader)), 1)  # Un único row, para un único valor del CSV
+
+    def test_metadata_csv_columns(self):
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA,
+                                          file_type=DumpFile.TYPE_CSV).file
+
+        reader = self.read_file_as_csv(file)
+
+        header = next(reader)
+
+        self.assertListEqual(header, constants.METADATA_ROWS)
 
     @classmethod
     def tearDownClass(cls):
