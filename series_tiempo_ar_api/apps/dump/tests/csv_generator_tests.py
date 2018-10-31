@@ -183,17 +183,16 @@ class CSVTest(TestCase):
         self.assertEqual(row[4], max(meta_keys.get(x, meta_keys.INDEX_END) for x in series))
 
     def test_leading_nulls_distribution(self):
-        Node.objects.all().delete()
-        Catalog.objects.all().delete()
         path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
         index_catalog('leading_null', path, self.index)
         self.task = GenerateDumpTask()
         self.task.save()
-        gen = DumpGenerator(self.task)
+        gen = DumpGenerator(self.task, 'leading_null')
         gen.generate()
 
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
-                                          file_type=DumpFile.TYPE_CSV).file
+                                          file_type=DumpFile.TYPE_CSV,
+                                          node__catalog_id='leading_null').file
         reader = self.read_file_as_csv(file)
 
         next(reader)  # Header!!!!
