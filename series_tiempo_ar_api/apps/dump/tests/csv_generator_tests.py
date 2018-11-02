@@ -11,6 +11,7 @@ from django.test import TestCase, TransactionTestCase
 from django_datajsonar.models import Field, Node, Catalog
 from faker import Faker
 
+from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
@@ -83,6 +84,22 @@ class CSVTest(TestCase):
         header = next(reader)
 
         self.assertEqual(len(header), 15)
+
+    def test_values_csv_zipped(self):
+        dump_file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES,
+                                               file_type=DumpFile.TYPE_CSV)
+        zip_file = ZipDumpFile.objects.get(dump_file=dump_file).file
+        csv_zipped = zipfile.ZipFile(zip_file)
+
+        # Necesario para abrir archivos zippeados en modo texto (no bytes)
+        src_file = io.TextIOWrapper(csv_zipped.open(dump_file.get_file_name()),
+                                    encoding='utf8',
+                                    newline='')
+        reader = csv.reader(src_file)
+
+        header = next(reader)
+
+        self.assertEqual(len(header), len(VALUES_HEADER))
 
     def test_full_csv_identifier_fields(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,

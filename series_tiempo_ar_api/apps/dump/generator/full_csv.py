@@ -11,8 +11,7 @@ class FullCsvGenerator(AbstractDumpGenerator):
         filepath = self.get_file_path()
         CsvDumpWriter(self.task, self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
 
-        dump_file = self.write(filepath, DumpFile.FILENAME_FULL)
-        ZipDumpFile.create_from_dump_file(dump_file, filepath)
+        self.write(filepath, DumpFile.FILENAME_FULL, zip_file=True)
 
     @staticmethod
     def full_csv_row(value, fields, field, periodicity):

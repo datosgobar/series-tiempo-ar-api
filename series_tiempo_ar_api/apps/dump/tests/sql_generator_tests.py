@@ -88,6 +88,11 @@ class SQLTests(TestCase):
         values = Valores.filter(serie_id=serie)
         self.assertTrue(values)
 
+    def test_zipped(self):
+        files = DumpFile.get_last_of_type(DumpFile.TYPE_SQL, node=None)
+        sql_dump_file = files[0]
+        self.assertTrue(sql_dump_file.zipdumpfile_set.count())
+
     def init_db(self):
         files = DumpFile.get_last_of_type(DumpFile.TYPE_SQL, node=None)
 
