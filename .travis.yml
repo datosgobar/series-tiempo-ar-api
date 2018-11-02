@@ -16,9 +16,7 @@ python:
 - "3.6"
 
 env:
-- DJANGO_SETTINGS_MODULE=conf.settings.testing
-- DATABASE_USER=postgres
-- DATABASE_PASSWORD=""
+- DJANGO_SETTINGS_MODULE=conf.settings.testing DATABASE_USER=postgres DATABASE_PASSWORD=""
 
 before_install:
 - docker-compose pull
