@@ -74,6 +74,7 @@ class ViewTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        super(ViewTests, cls).tearDownClass()
         ElasticInstance.get().indices.delete(cls.index)
         DumpFile.objects.all().delete()
         Node.objects.all().delete()

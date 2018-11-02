@@ -23,6 +23,9 @@ def serve_dump_file(filename: str, catalog: str = None) -> HttpResponse:
     except DumpFile.DoesNotExist:
         raise Http404
 
+    if isinstance(dump_file, DumpFile) and (dump_file.file_name, dump_file.file_type) in DumpFile.ZIP_FILES:
+        raise Http404
+
     if dump_file.file is None:
         return HttpResponse(DUMP_ERROR, status=500)
 

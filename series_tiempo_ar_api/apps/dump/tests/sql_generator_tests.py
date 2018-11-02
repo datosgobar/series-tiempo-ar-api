@@ -54,6 +54,7 @@ class SQLGeneratorTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        super(SQLGeneratorTests, cls).tearDownClass()
         ElasticInstance.get().indices.delete(cls.index)
 
 
@@ -108,4 +109,5 @@ class SQLTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        super(SQLTests, cls).tearDownClass()
         ElasticInstance.get().indices.delete(cls.index)

@@ -218,6 +218,7 @@ class CSVTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        super(CSVTest, cls).tearDownClass()
         ElasticInstance.get().indices.delete(cls.index)
         Node.objects.all().delete()
 

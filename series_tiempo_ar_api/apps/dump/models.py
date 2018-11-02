@@ -55,6 +55,12 @@ class DumpFile(models.Model):
         (TYPE_SQL, 'SQL')
     )
 
+    ZIP_FILES = (
+        (FILENAME_FULL, TYPE_CSV),
+        (FILENAME_VALUES, TYPE_CSV),
+        (FILENAME_FULL, TYPE_SQL),
+    )
+
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default=TYPE_CSV)
 
     task = models.ForeignKey(GenerateDumpTask, on_delete=models.CASCADE)
