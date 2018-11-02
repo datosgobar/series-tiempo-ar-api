@@ -1,11 +1,5 @@
-import os
-import zipfile
-
-from django.core.files import File
-from django_datajsonar.models import Node
-
 from series_tiempo_ar_api.apps.dump import constants
-from series_tiempo_ar_api.apps.dump.models import DumpFile
+from series_tiempo_ar_api.apps.dump.models import DumpFile, ZipDumpFile
 from .abstract_dump_gen import AbstractDumpGenerator
 from .dump_csv_writer import CsvDumpWriter
 
@@ -17,8 +11,8 @@ class FullCsvGenerator(AbstractDumpGenerator):
         filepath = self.get_file_path()
         CsvDumpWriter(self.task, self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
 
-        self.write(filepath, DumpFile.FILENAME_FULL)
-        self.zip_full_csv(filepath)
+        dump_file = self.write(filepath, DumpFile.FILENAME_FULL)
+        ZipDumpFile.create_from_dump_file(dump_file, filepath)
 
     @staticmethod
     def full_csv_row(value, fields, field, periodicity):
@@ -40,18 +34,3 @@ class FullCsvGenerator(AbstractDumpGenerator):
             fields[field]['dataset_fuente'],
             fields[field]['dataset_titulo'],
         )
-
-    def zip_full_csv(self, csv_path):
-        zip_file = DumpFile(task=self.task,
-                            file_type=DumpFile.TYPE_ZIP,
-                            file_name=DumpFile.FILENAME_FULL,
-                            node=Node.objects.filter(catalog_id=self.catalog).first())
-        zip_path = os.path.join(os.path.dirname(csv_path), f'{DumpFile.FILENAME_FULL}.{DumpFile.TYPE_ZIP}')
-        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_name:
-            zip_name.write(csv_path, arcname=f'{DumpFile.FILENAME_FULL}.{DumpFile.TYPE_CSV}')
-
-        with open(zip_path, 'rb') as f:
-            zip_file.file = File(f)
-            zip_file.save()
-
-        os.remove(zip_path)

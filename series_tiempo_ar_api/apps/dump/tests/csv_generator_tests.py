@@ -14,7 +14,7 @@ from faker import Faker
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
-from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile, ZipDumpFile
 from series_tiempo_ar_api.utils import index_catalog
 
 
@@ -67,8 +67,9 @@ class CSVTest(TestCase):
         self.assertEqual(row[6], field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
     def test_full_csv_zipped(self):
-        zip_file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
-                                              file_type=DumpFile.TYPE_ZIP).file
+        dump_file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
+                                               file_type=DumpFile.TYPE_CSV)
+        zip_file = ZipDumpFile.objects.get(dump_file=dump_file).file
         csv_zipped = zipfile.ZipFile(zip_file)
 
         full_csv = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
@@ -244,14 +245,14 @@ class CSVDumpCommandTests(TransactionTestCase):
         call_command('generate_dump')
         # Tres dumps generados, 1 por cada catálogo y uno global
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
-                                             file_type=DumpFile.TYPE_ZIP,
-                                             node=None))
+                                             file_type=DumpFile.TYPE_CSV,
+                                             node=None).zipdumpfile_set.first())
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
-                                             file_type=DumpFile.TYPE_ZIP,
-                                             node__catalog_id='catalog_one'))
+                                             file_type=DumpFile.TYPE_CSV,
+                                             node__catalog_id='catalog_one').zipdumpfile_set.first())
         self.assertTrue(DumpFile.objects.get(file_name=DumpFile.FILENAME_FULL,
-                                             file_type=DumpFile.TYPE_ZIP,
-                                             node__catalog_id='catalog_two'))
+                                             file_type=DumpFile.TYPE_CSV,
+                                             node__catalog_id='catalog_two').zipdumpfile_set.first())
 
     @classmethod
     def tearDownClass(cls):

@@ -22,10 +22,10 @@ class AbstractDumpGenerator:
 
     def write(self, tmp_file_path, target_filename):
         with open(tmp_file_path, 'rb') as f:
-            self.task.dumpfile_set.create(file=File(f),
-                                          file_name=target_filename,
-                                          file_type=DumpFile.TYPE_CSV,
-                                          node=Node.objects.filter(catalog_id=self.catalog).first())
+            return self.task.dumpfile_set.create(file=File(f),
+                                                 file_name=target_filename,
+                                                 file_type=DumpFile.TYPE_CSV,
+                                                 node=Node.objects.filter(catalog_id=self.catalog).first())
 
     def get_file_path(self):
         return os.path.join(settings.MEDIA_ROOT, self.catalog or '.', self.filename)
