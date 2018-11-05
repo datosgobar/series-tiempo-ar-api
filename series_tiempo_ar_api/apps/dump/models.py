@@ -79,6 +79,9 @@ class DumpFile(models.Model):
     def get_file_name(self):
         return f'{self.file_name}.{self.file_type}'
 
+    def __str__(self):
+        return f'{self.get_file_name()} ({self.node or "global"})'
+
     @classmethod
     def get_from_path(cls, filename: str, node: str = None) -> 'DumpFile':
         """Devuelve la última instancia de clase que corresponda al archivo con filename de formato tipo

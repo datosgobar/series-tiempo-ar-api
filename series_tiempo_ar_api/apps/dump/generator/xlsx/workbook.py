@@ -10,8 +10,10 @@ class DumpWorkbook:
     def worksheets_objs(self):
         return self.workbook.worksheets_objs
 
-    def __init__(self, filename: str, header_row: list, split_by_frequency=False):
-        self.workbook = Workbook(filename, {'constant_memory': True})
+    def __init__(self, filename: str, header_row: list, split_by_frequency=False, formats=None):
+        self.workbook = Workbook(filename, {'constant_memory': True,
+                                            'default_date_format': 'yyyy-mm-dd'})
+
         self.split_by_frequency = split_by_frequency
 
         self.header_row = header_row
@@ -21,12 +23,16 @@ class DumpWorkbook:
                 break
 
         self.sheets = {}
+        if formats is None:
+            formats = {}
+
+        self.formats = formats
         self.single_sheet = None
 
     def add_worksheet(self, sheet_name, frequency):
-        self.sheets[frequency] = DumpWorksheet(self.workbook, sheet_name)
-        self.sheets[frequency].write_row(self.header_row,
-                                         cell_format=self.workbook.add_format({'bold': True}))
+        self.sheets[frequency] = DumpWorksheet(self.workbook, sheet_name, formats=self.formats)
+        self.sheets[frequency].write_header_row(self.header_row,
+                                                cell_format=self.workbook.add_format({'bold': True}))
 
     def write_row(self, row):
         if self.split_by_frequency:
@@ -37,9 +43,9 @@ class DumpWorkbook:
             return
 
         if not self.single_sheet:
-            self.single_sheet = SingleWorksheet(self.workbook)
-            self.single_sheet.write_row(self.header_row,
-                                        cell_format=self.workbook.add_format({'bold': True}))
+            self.single_sheet = SingleWorksheet(self.workbook, self.formats)
+            self.single_sheet.write_header_row(self.header_row,
+                                               cell_format=self.workbook.add_format({'bold': True}))
 
         self.single_sheet.write_row(row)
 

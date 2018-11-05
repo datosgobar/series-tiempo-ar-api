@@ -2,6 +2,7 @@ import os
 
 from django.core.files import File
 
+from series_tiempo_ar_api.apps.dump.generator.xlsx.formats import formats
 from series_tiempo_ar_api.apps.dump.generator.xlsx.workbook import DumpWorkbook
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.utils import read_file_as_csv
@@ -42,7 +43,8 @@ class XLSXWriter:
             multiple_sheets = self.multiple_sheets[self.csv_dump_file.file_name]
             workbook = self.workbook_class(xlsx,
                                            header_row=header_row,
-                                           split_by_frequency=multiple_sheets)
+                                           split_by_frequency=multiple_sheets,
+                                           formats=formats[self.csv_dump_file.file_name])
 
             for row in reader:
                 workbook.write_row(row)
