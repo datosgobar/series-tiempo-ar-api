@@ -1,4 +1,8 @@
 #!coding=utf8
+import os
+import zipfile
+
+from django.core.files import File
 from django.db import models
 from django.conf import settings
 from django_datajsonar.models import AbstractTask, Node
@@ -51,6 +55,12 @@ class DumpFile(models.Model):
         (TYPE_SQL, 'SQL')
     )
 
+    ZIP_FILES = (
+        (FILENAME_FULL, TYPE_CSV),
+        (FILENAME_VALUES, TYPE_CSV),
+        (FILENAME_FULL, TYPE_SQL),
+    )
+
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default=TYPE_CSV)
 
     task = models.ForeignKey(GenerateDumpTask, on_delete=models.CASCADE)
@@ -76,16 +86,27 @@ class DumpFile(models.Model):
         """
 
         try:
-            name, extension = filename.split('.')
-        except ValueError:
-            raise cls.DoesNotExist
-
-        try:
             node = Node.objects.get(catalog_id=node) if node else None
         except Node.DoesNotExist:
             raise cls.DoesNotExist
 
+        try:
+            name, extension = filename.split('.')
+        except ValueError:
+            raise cls.DoesNotExist
+
+        if extension == cls.TYPE_ZIP:
+            split = name.rfind('-')
+            orig_extension = name[split + 1:]
+            name = name[:split]
+            dump = cls.objects.filter(file_name=name, file_type=orig_extension, node=node).last()
+            try:
+                return ZipDumpFile.objects.get(dump_file=dump)
+            except ZipDumpFile.DoesNotExist:
+                raise cls.DoesNotExist
+
         dump = cls.objects.filter(file_name=name, file_type=extension, node=node).last()
+
         if dump is None:
             raise cls.DoesNotExist
         return dump
@@ -107,3 +128,48 @@ class DumpFile(models.Model):
                 dumps.append(dump_file)
 
         return dumps
+
+
+def zipfile_upload_to(instance: 'ZipDumpFile', _):
+    dump_file = instance.dump_file
+    directory = f'{dump_file.node}/' or ''
+    return f'dump/{directory}{dump_file.file_name}-{dump_file.file_type}.zip'
+
+
+class ZipDumpFile(models.Model):
+    dump_file = models.ForeignKey(DumpFile, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=zipfile_upload_to, storage=MinioMediaStorage())
+
+    @classmethod
+    def create_from_dump_file(cls, dump_file: DumpFile, dump_file_path: str):
+
+        zip_name = f'{dump_file.file_name}-{dump_file.file_type}.zip'
+        with ZipfileWrapper(zip_name) as zip_file:
+            zip_file.write(dump_file_path, arcname=f'{dump_file.file_name}.{dump_file.file_type}')
+            zip_file.close()
+
+            with open(zip_name, 'rb') as f:
+                return cls.objects.create(file=File(f),
+                                          dump_file=dump_file)
+
+
+class ZipfileWrapper:
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self.zipfile = None
+
+    def __enter__(self):
+        self.remove()
+        self.zipfile = zipfile.ZipFile(self.filepath, 'w', zipfile.ZIP_DEFLATED)
+        return self.zipfile
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if not self.zipfile.fp:
+            self.zipfile.close()
+
+        self.zipfile.close()
+        self.remove()
+
+    def remove(self):
+        if os.path.exists(self.filepath):
+            os.remove(self.filepath)

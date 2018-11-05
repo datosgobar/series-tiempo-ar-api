@@ -8,8 +8,12 @@ INSTALLED_APPS += ("django_nose", )
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': env('DATABASE_HOST'),
+        'PORT': 5432,
+        'NAME': 'test_db',
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
     }
 }
 
