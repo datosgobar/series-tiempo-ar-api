@@ -128,10 +128,6 @@ class IndexerTests(TestCase):
 
         self.assertEqual(len(results), 3)
 
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def tearDown(self):
         if self.elastic.indices.exists(self.test_index):
             self.elastic.indices.delete(self.test_index)

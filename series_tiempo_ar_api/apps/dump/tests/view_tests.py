@@ -18,7 +18,7 @@ samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples
 
 class ViewTests(TestCase):
     directory = os.path.join(settings.MEDIA_ROOT, 'test_dump')
-    valid_arg = 'series-tiempo.zip'
+    valid_arg = 'series-tiempo-csv.zip'
 
     index = 'csv_dump_view_test_index'
 
@@ -61,19 +61,20 @@ class ViewTests(TestCase):
         self.assertEqual(resp.status_code, 404)
 
     def test_catalog_dump(self):
-        resp = self.client.get(reverse('api:dump:catalog_dump', kwargs={'filename': "series-tiempo.zip",
+        resp = self.client.get(reverse('api:dump:catalog_dump', kwargs={'filename': "series-tiempo-csv.zip",
                                                                         'catalog_id': self.catalog_id}))
 
         self.assertEqual(resp.status_code, 302)  # Redirect al link de descarga
 
     def test_invalid_catalog(self):
-        resp = self.client.get(reverse('api:dump:catalog_dump', kwargs={'filename': "series-tiempo.zip",
+        resp = self.client.get(reverse('api:dump:catalog_dump', kwargs={'filename': "series-tiempo-csv.zip",
                                                                         'catalog_id': "not_the_catalog"}))
 
         self.assertEqual(resp.status_code, 404)
 
     @classmethod
     def tearDownClass(cls):
+        super(ViewTests, cls).tearDownClass()
         ElasticInstance.get().indices.delete(cls.index)
         DumpFile.objects.all().delete()
         Node.objects.all().delete()

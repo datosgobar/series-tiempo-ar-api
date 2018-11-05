@@ -8,7 +8,7 @@ from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.sql.models import Serie, Valores, proxy, Fuente
-from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
+from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask, ZipDumpFile
 from series_tiempo_ar_api.utils import read_file_as_csv
 
 
@@ -35,10 +35,12 @@ class SQLGenerator:
             self.write_values_table()
 
             with open(self.db_name(), 'rb') as f:
-                self.task.dumpfile_set.create(node=self.node,
-                                              file=File(f),
-                                              file_type=DumpFile.TYPE_SQL,
-                                              file_name=DumpFile.FILENAME_FULL)
+                dump_file = self.task.dumpfile_set.create(node=self.node,
+                                                          file=File(f),
+                                                          file_type=DumpFile.TYPE_SQL,
+                                                          file_name=DumpFile.FILENAME_FULL)
+
+                ZipDumpFile.create_from_dump_file(dump_file, self.db_name())
 
     def write_metadata_tables(self):
         meta = DumpFile.objects.filter(node=self.node,

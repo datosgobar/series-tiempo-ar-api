@@ -9,13 +9,14 @@ addons:
 
 services:
 - docker
+- postgresql
 
 language: python
 python:
 - "3.6"
 
 env:
-- DJANGO_SETTINGS_MODULE=conf.settings.testing
+- DJANGO_SETTINGS_MODULE=conf.settings.testing DATABASE_USER=postgres DATABASE_PASSWORD="" DATABASE_HOST="127.0.0.1"
 
 before_install:
 - docker-compose pull
