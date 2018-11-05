@@ -1,5 +1,7 @@
 #! coding: utf-8
+from datetime import datetime
 import pandas as pd
+from pydatajson.helpers import parse_repeating_time_interval_to_days
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.management import meta_keys
 
@@ -12,7 +14,7 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
                               distribution__identifier=distribution_id,
                               identifier=serie.name)
     periodicity = meta_keys.get(field.distribution, meta_keys.PERIODICITY)
-    days_since_update = (pd.datetime.now() - _get_last_day_of_period(serie, periodicity)).days
+    days_since_update = (datetime.now() - _get_last_day_of_period(serie, periodicity)).days
 
     last = serie[-1]
     second_to_last = serie[-2] if serie.index.size > 1 else None
@@ -22,12 +24,13 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
     meta = {
         meta_keys.INDEX_START: serie.first_valid_index().date(),
         meta_keys.INDEX_END: serie.last_valid_index().date(),
-        meta_keys.PERIODICITY: meta_keys.get(field.distribution, meta_keys.PERIODICITY),
+        meta_keys.PERIODICITY: periodicity,
         meta_keys.INDEX_SIZE: _get_index_size(serie),
         meta_keys.DAYS_SINCE_LAST_UPDATE: days_since_update,
         meta_keys.LAST_VALUE: last,
         meta_keys.SECOND_TO_LAST_VALUE: second_to_last,
         meta_keys.LAST_PCT_CHANGE: last_pct_change,
+        meta_keys.IS_UPDATED: _is_series_updated(days_since_update, periodicity)
     }
 
     for meta_key, value in meta.items():
@@ -50,3 +53,16 @@ def _get_last_day_of_period(serie: pd.Series, periodicity: str) -> pd.datetime:
 def _get_index_size(serie: pd.Series):
     # Filtro los NaN antes y después de la serie
     return len(serie[serie.first_valid_index():serie.last_valid_index()])
+
+
+def _is_series_updated(days_since_last_update, periodicity):
+    period_days = parse_repeating_time_interval_to_days(periodicity)
+    periods_tolerance = {
+        "R/P1Y": 2,
+        "R/P6M": 2,
+        "R/P3M": 2,
+        "R/P1M": 3,
+        "R/P1D": 14
+    }
+    days_tolerance = periods_tolerance.get(periodicity, 2) * period_days
+    return days_since_last_update < days_tolerance

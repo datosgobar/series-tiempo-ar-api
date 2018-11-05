@@ -16,8 +16,7 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile, ZipDumpFile
-from series_tiempo_ar_api.utils import index_catalog
-
+from series_tiempo_ar_api.utils import index_catalog, read_file_as_csv
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
@@ -40,7 +39,7 @@ class CSVTest(TestCase):
 
     def test_values_dump(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # skip header
         row = next(reader)
         self.assertEqual(row[0], self.catalog_id)
@@ -48,13 +47,13 @@ class CSVTest(TestCase):
 
     def test_values_length(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         header = next(reader)
         self.assertEqual(len(header), 7)
 
     def test_entity_identifiers(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)
 
         row = next(reader)
@@ -104,7 +103,7 @@ class CSVTest(TestCase):
     def test_full_csv_identifier_fields(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
                                           file_type=DumpFile.TYPE_CSV).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -118,7 +117,7 @@ class CSVTest(TestCase):
     def test_full_csv_metadata_fields(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
                                           file_type=DumpFile.TYPE_CSV).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -135,7 +134,7 @@ class CSVTest(TestCase):
     def test_full_csv_dataset_metadata_fields(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
                                           file_type=DumpFile.TYPE_CSV).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -150,7 +149,7 @@ class CSVTest(TestCase):
     def test_full_csv_dataset_theme_field(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
                                           file_type=DumpFile.TYPE_CSV).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # Header
         row = next(reader)
 
@@ -170,14 +169,16 @@ class CSVTest(TestCase):
 
     def test_metadata_csv(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA).file
-        reader = self.read_file_as_csv(file)
-        next(reader)  # Header
+        reader = read_file_as_csv(file)
+        next(reader)
+
+        # self.assertListEqual(header, constants.METADATA_ROWS)
 
         self.assertEqual(len(list(reader)), 3)  # Un row por serie
 
     def test_sources_csv(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_SOURCES).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # Header
 
         self.assertEqual(len(list(reader)), 1)  # Un row por fuente
@@ -187,7 +188,7 @@ class CSVTest(TestCase):
         meta = json.loads(dataset.metadata)
 
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_SOURCES).file
-        reader = self.read_file_as_csv(file)
+        reader = read_file_as_csv(file)
         next(reader)  # Header
 
         row = next(reader)
@@ -200,18 +201,17 @@ class CSVTest(TestCase):
         self.assertEqual(row[4], max(meta_keys.get(x, meta_keys.INDEX_END) for x in series))
 
     def test_leading_nulls_distribution(self):
-        Node.objects.all().delete()
-        Catalog.objects.all().delete()
         path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
         index_catalog('leading_null', path, self.index)
         self.task = GenerateDumpTask()
         self.task.save()
-        gen = DumpGenerator(self.task)
+        gen = DumpGenerator(self.task, 'leading_null')
         gen.generate()
 
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_FULL,
-                                          file_type=DumpFile.TYPE_CSV).file
-        reader = self.read_file_as_csv(file)
+                                          file_type=DumpFile.TYPE_CSV,
+                                          node__catalog_id='leading_null').file
+        reader = read_file_as_csv(file)
 
         next(reader)  # Header!!!!
         self.assertEqual(len(list(reader)), 1)  # Un único row, para un único valor del CSV
@@ -221,14 +221,6 @@ class CSVTest(TestCase):
         super(CSVTest, cls).tearDownClass()
         ElasticInstance.get().indices.delete(cls.index)
         Node.objects.all().delete()
-
-    def read_file_as_csv(self, file):
-        ios = io.StringIO()
-        ios.write(file.read().decode('utf-8'))
-
-        ios.seek(0)
-        reader = csv.reader(ios)
-        return reader
 
 
 class CSVDumpCommandTests(TransactionTestCase):
