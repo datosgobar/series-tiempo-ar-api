@@ -2,14 +2,13 @@ import os
 import json
 
 from django.conf import settings
-from django_datajsonar.models import Field, Catalog, Node
+from django_datajsonar.models import Field, Catalog
 
-from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.values_csv import ValuesCsvGenerator
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
+from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
 
 from .full_csv import FullCsvGenerator
 
@@ -64,6 +63,7 @@ class DumpGenerator:
                 'serie_descripcion': meta.get('description'),
                 'distribucion_titulo': dist_meta.get('title'),
                 'distribucion_descripcion': dist_meta.get('description'),
+                'distribucion_url_descarga': field.distribution.download_url,
                 'dataset_responsable': dataset_meta.get('publisher', {}).get('name'),
                 'dataset_fuente': dataset_meta.get('source'),
                 'dataset_titulo': field.distribution.dataset.title,
@@ -76,20 +76,6 @@ class DumpGenerator:
         ValuesCsvGenerator(self.task, self.fields, self.catalog).generate()
         SourcesCsvGenerator(self.task, self.fields, self.catalog).generate()
         MetadataCsvGenerator(self.task, self.fields, self.catalog).generate()
-
-        for filename, _ in DumpFile.FILENAME_CHOICES:
-            remove_old_dumps(filename, DumpFile.TYPE_CSV, self.catalog)
-
-
-def remove_old_dumps(dump_file_name, file_type, catalog_id=None):
-    node = None
-    if catalog_id:
-        node = Node.objects.get(catalog_id=catalog_id)
-
-    same_file = DumpFile.objects.filter(file_name=dump_file_name, file_type=file_type, node=node)
-    old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
-    for model in old:
-        model.delete()
 
 
 def get_theme_labels(themes: list):

@@ -142,3 +142,15 @@ class IdsTest(TestCase):
         self.cmd.run(self.query, {'ids': ids})
 
         self.assertTrue(self.cmd.errors)
+
+    def test_invalid_series_field(self):
+        invalid_series = 'invalid'
+        self.cmd.run(self.query, {'ids': invalid_series})
+        self.assertIn(invalid_series, self.cmd.failed_series)
+
+    def test_multiple_series_one_invalid(self):
+        invalid = 'invalid'
+        multi_series = f'{self.single_series},{invalid}'
+
+        self.cmd.run(self.query, {'ids': multi_series})
+        self.assertIn(invalid, self.cmd.failed_series)

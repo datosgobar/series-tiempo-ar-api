@@ -2,7 +2,7 @@ import os
 
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.dump_csv_writer import CsvDumpWriter
-from series_tiempo_ar_api.apps.dump.models import DumpFile
+from series_tiempo_ar_api.apps.dump.models import DumpFile, ZipDumpFile
 from .abstract_dump_gen import AbstractDumpGenerator
 
 
@@ -13,9 +13,7 @@ class ValuesCsvGenerator(AbstractDumpGenerator):
         filepath = self.get_file_path()
         CsvDumpWriter(self.task, self.fields, self.values_csv_row).write(filepath, constants.VALUES_HEADER)
 
-        self.write(filepath, self.filename)
-
-        os.remove(filepath)
+        self.write(filepath, self.filename, zip_file=True)
 
     @staticmethod
     def values_csv_row(value, fields, field, periodicity):

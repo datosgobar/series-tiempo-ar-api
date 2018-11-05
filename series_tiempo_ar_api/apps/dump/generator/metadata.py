@@ -2,16 +2,12 @@ import csv
 from series_tiempo_ar_api.apps.dump.generator.abstract_dump_gen import AbstractDumpGenerator
 from series_tiempo_ar_api.apps.dump.models import DumpFile
 from series_tiempo_ar_api.apps.management import meta_keys
+from . import constants
 
 
 class MetadataCsvGenerator(AbstractDumpGenerator):
     filename = DumpFile.FILENAME_METADATA
-    rows = ['catalogo_id', 'dataset_id', 'distribucion_id', 'serie_id',
-            'indice_tiempo_frecuencia', 'serie_titulo', 'serie_unidades',
-            'serie_descripcion', 'distribucion_titulo', 'distribucion_descripcion',
-            'dataset_responsable', 'dataset_fuente', 'dataset_titulo',
-            'dataset_descripcion', 'serie_indice_inicio', 'serie_indice_final',
-            'serie_valores_cant', 'serie_dias_no_cubiertos']
+    rows = constants.METADATA_ROWS
 
     def generate(self):
         filepath = self.get_file_path()
@@ -30,22 +26,28 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
         serie = values['serie']
 
         return {
-            self.rows[0]: dataset.catalog.identifier,
-            self.rows[1]: dataset.identifier,
-            self.rows[2]: distribution.identifier,
-            self.rows[3]: serie_name,
-            self.rows[4]: meta_keys.get(distribution, meta_keys.PERIODICITY),
-            self.rows[5]: values['serie_titulo'],
-            self.rows[6]: values['serie_unidades'],
-            self.rows[7]: values['serie_descripcion'],
-            self.rows[8]: values['distribucion_titulo'],
-            self.rows[9]: values['distribucion_descripcion'],
-            self.rows[10]: values['dataset_responsable'],
-            self.rows[11]: values['dataset_fuente'],
-            self.rows[12]: values['dataset_titulo'],
-            self.rows[13]: values['dataset_descripcion'],
-            self.rows[14]: meta_keys.get(serie, meta_keys.INDEX_START),
-            self.rows[15]: meta_keys.get(serie, meta_keys.INDEX_END),
-            self.rows[16]: meta_keys.get(serie, meta_keys.INDEX_SIZE),
-            self.rows[17]: meta_keys.get(serie, meta_keys.DAYS_SINCE_LAST_UPDATE)
+            constants.CATALOG_ID: dataset.catalog.identifier,
+            constants.DATASET_ID: dataset.identifier,
+            constants.DISTRIBUTION_ID: distribution.identifier,
+            constants.SERIE_ID: serie_name,
+            constants.TIME_INDEX_FREQUENCY: meta_keys.get(distribution, meta_keys.PERIODICITY),
+            constants.SERIES_TITLE: values[constants.SERIES_TITLE],
+            constants.SERIES_UNITS: values[constants.SERIES_UNITS],
+            constants.SERIES_DESCRIPTION: values[constants.SERIES_DESCRIPTION],
+            constants.DISTRIBUTION_TITLE: values[constants.DISTRIBUTION_TITLE],
+            constants.DISTRIBUTION_DESCRIPTION: values[constants.DATASET_PUBLISHER],
+            constants.DISTRIBUTION_DOWNLOAD_URL: values[constants.DISTRIBUTION_DOWNLOAD_URL],
+            constants.DATASET_PUBLISHER: values[constants.DATASET_TITLE],
+            constants.DATASET_SOURCE: values[constants.DATASET_SOURCE],
+            constants.DATASET_TITLE: values[constants.DATASET_TITLE],
+            constants.DATASET_DESCRIPTION: values[constants.DATASET_DESCRIPTION],
+            constants.DATASET_THEME: values[constants.DATASET_THEME],
+            constants.SERIES_INDEX_START: meta_keys.get(serie, meta_keys.INDEX_START),
+            constants.SERIES_INDEX_END: meta_keys.get(serie, meta_keys.INDEX_END),
+            constants.SERIES_VALUES_AMT: meta_keys.get(serie, meta_keys.INDEX_SIZE),
+            constants.SERIES_DAYS_SINCE_LAST_UPDATE: meta_keys.get(serie, meta_keys.DAYS_SINCE_LAST_UPDATE),
+            constants.SERIES_IS_UPDATED: meta_keys.get(serie, meta_keys.IS_UPDATED),
+            constants.SERIES_LAST_VALUE: meta_keys.get(serie, meta_keys.LAST_VALUE),
+            constants.SERIES_SECOND_LAST_VALUE: meta_keys.get(serie, meta_keys.SECOND_TO_LAST_VALUE),
+            constants.SERIES_PCT_CHANGE: meta_keys.get(serie, meta_keys.LAST_PCT_CHANGE),
         }

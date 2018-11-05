@@ -13,6 +13,7 @@ DAYS_SINCE_LAST_UPDATE = 'days_without_data'
 LAST_VALUE = 'last_value'
 SECOND_TO_LAST_VALUE = 'second_to_last_value'
 LAST_PCT_CHANGE = 'last_pct_change'
+IS_UPDATED = 'is_updated'
 
 
 def get(model, key):
