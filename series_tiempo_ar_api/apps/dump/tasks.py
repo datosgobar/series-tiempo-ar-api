@@ -24,7 +24,7 @@ def enqueue_dump_task(task: GenerateDumpTask):
     task_choices[task.file_type](task.id)
 
 
-@job('default', timeout='2h')
+@job('default', timeout='3h')
 def write_csv(task_id, catalog=None):
     Writer(DumpFile.TYPE_CSV, lambda task, catalog_id: DumpGenerator(task, catalog_id).generate(),
            write_csv,
