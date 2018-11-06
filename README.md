@@ -52,7 +52,7 @@ Ver documentación de [instalación de la aplicación](docs/development.md).
 
 [Descargar ejemplo](https://github.com/datosgobar/series-tiempo-ar-api/raw/master/docs/assets/data-example-1.csv)
 
-Ver [documentación completa]() *(TODO: documentación en proceso de construcción)*
+Ver [documentación completa](https://datosgobar.github.io/series-tiempo-ar-api/)
 
 ## ¿Dónde encontrar los ids y otros metadatos de las series?
 
