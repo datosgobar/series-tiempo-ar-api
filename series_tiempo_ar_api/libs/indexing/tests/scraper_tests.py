@@ -7,8 +7,21 @@ from nose.tools import raises
 from series_tiempo_ar.custom_exceptions import FieldFewValuesError
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from series_tiempo_ar_api.libs.indexing.constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
 from series_tiempo_ar_api.libs.indexing.scraping import Scraper
 from series_tiempo_ar_api.libs.indexing.tests.reader_tests import SAMPLES_DIR
+
+
+class MockDistribution:
+
+    class Dataset:
+        def __init__(self, identifier):
+            self.identifier = identifier
+
+    def __init__(self, distribution: dict):
+        self.identifier = distribution[IDENTIFIER]
+        self.download_url = distribution[DOWNLOAD_URL]
+        self.dataset = self.Dataset(distribution[DATASET_IDENTIFIER])
 
 
 class ScrapperTests(TestCase):
@@ -19,7 +32,10 @@ class ScrapperTests(TestCase):
 
     def test_scrapper(self):
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
-        result = self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+        distribution = catalog.get_distributions(only_time_series=True)[0]
+
+        distribution = MockDistribution(distribution)
+        result = self.scrapper.run(distribution, catalog)
 
         self.assertTrue(result)
 
@@ -29,7 +45,10 @@ class ScrapperTests(TestCase):
         """
 
         catalog = DataJson(os.path.join(SAMPLES_DIR, 'missing_field.json'))
-        result = self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+        distribution = catalog.get_distributions(only_time_series=True)[0]
+
+        distribution = MockDistribution(distribution)
+        result = self.scrapper.run(distribution, catalog)
         self.assertTrue(result)
 
     @raises(Exception)
@@ -41,19 +60,27 @@ class ScrapperTests(TestCase):
         catalog = DataJson(os.path.join(
             SAMPLES_DIR, 'distribution_missing_column.json'
         ))
-        self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+        distribution = catalog.get_distributions(only_time_series=True)[0]
+
+        distribution = MockDistribution(distribution)
+        self.scrapper.run(distribution, catalog)
 
     def test_validate_all_zero_series(self):
         catalog = DataJson(os.path.join(
             SAMPLES_DIR, 'ts_all_zero_series.json'
         ))
-        valid = self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+        distribution = catalog.get_distributions(only_time_series=True)[0]
 
-        self.assertTrue(valid)
+        distribution = MockDistribution(distribution)
+        result = self.scrapper.run(distribution, catalog)
+        self.assertTrue(result)
 
     @raises(FieldFewValuesError)
     def test_validate_all_null_series(self):
         catalog = DataJson(os.path.join(
             SAMPLES_DIR, 'ts_all_null_series.json'
         ))
-        self.scrapper.run(catalog.get_distributions(only_time_series=True)[0], catalog)
+        distribution = catalog.get_distributions(only_time_series=True)[0]
+
+        distribution = MockDistribution(distribution)
+        self.scrapper.run(distribution, catalog)

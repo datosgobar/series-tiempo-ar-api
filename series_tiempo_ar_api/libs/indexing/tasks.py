@@ -29,12 +29,11 @@ def index_distribution(distribution_id, node_id, task_id,
     node = Node.objects.get(id=node_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
     catalog = DataJson(json.loads(node.catalog))
-    distribution = catalog.get_distribution(identifier=distribution_id)
     distribution_model = Distribution.objects.get(identifier=distribution_id,
                                                   dataset__catalog__identifier=node.catalog_id)
 
     try:
-        Scraper(read_local).run(distribution, catalog)
+        Scraper(read_local).run(distribution_model, catalog)
 
         changed = True
         _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
