@@ -6,9 +6,10 @@ from io import BytesIO
 import requests
 import pandas as pd
 from django.conf import settings
+from django_datajsonar.models import Distribution
+from pydatajson import DataJson
 from series_tiempo_ar.validations import validate_distribution
-
-from .constants import DOWNLOAD_URL, DATASET_IDENTIFIER
+from .strings import NO_DISTRIBUTION_URL, NO_DATASET_IDENTIFIER
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ class Scraper(object):
     def __init__(self, read_local=False):
         self.read_local = read_local
 
-    def run(self, distribution, catalog):
+    def run(self, distribution_model: Distribution, catalog: DataJson):
         """
         Valida las distribuciones de series de tiempo de un catálogo
         entero a partir de su URL, o archivo fuente
@@ -25,12 +26,22 @@ class Scraper(object):
         Returns:
             bool: True si la distribución pasa las validaciones, False caso contrario
         """
-        url = distribution.get(DOWNLOAD_URL)
+
+        url = distribution_model.download_url
+        if url is None:
+            raise ValueError(NO_DISTRIBUTION_URL.format(distribution_model.identifier))
+
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
         url = urllib.parse.quote(url, safe='/:?=&')
 
-        dataset = catalog.get_dataset(distribution[DATASET_IDENTIFIER])
+        dataset_id = distribution_model.dataset.identifier
+        if dataset_id is None:
+            raise ValueError(NO_DATASET_IDENTIFIER.format(distribution_model.identifier))
+
+        dataset = catalog.get_dataset(dataset_id)
+        distribution = catalog.get_distribution(distribution_model.identifier)
+
         df = self.init_df(url)
 
         validate_distribution(df, catalog, dataset, distribution)
