@@ -9,7 +9,7 @@ from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.sql.models import Serie, Valores, proxy, Fuente
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask, ZipDumpFile
-from series_tiempo_ar_api.utils import read_file_as_csv
+from series_tiempo_ar_api.utils.utils import read_file_as_csv
 
 
 class SQLGenerator:

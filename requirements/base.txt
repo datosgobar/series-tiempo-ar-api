@@ -22,3 +22,4 @@ django-solo==1.1.2
 django-minio-storage
 xlsxwriter==1.1.1
 peewee==3.7.1
+chardet==3.0.4

@@ -3,7 +3,7 @@ from pydatajson import DataJson
 
 from django_datajsonar.models import Catalog, Field, Distribution, Dataset
 from series_tiempo_ar_api.apps.management.models import Indicator
-from series_tiempo_ar_api.utils import get_available_fields
+from series_tiempo_ar_api.utils.utils import get_available_fields
 
 
 # pylint: disable=R0914

@@ -16,7 +16,7 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile, ZipDumpFile
-from series_tiempo_ar_api.utils import index_catalog, read_file_as_csv
+from series_tiempo_ar_api.utils.utils import index_catalog, read_file_as_csv
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 

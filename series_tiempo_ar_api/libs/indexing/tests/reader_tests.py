@@ -1,6 +1,5 @@
 #! coding: utf-8
 import os
-from unittest import skip
 
 from django.db import transaction
 from django.test import TestCase
@@ -9,7 +8,7 @@ from elasticsearch_dsl import Search
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field
 from django_datajsonar.models import ReadDataJsonTask, Node
-from series_tiempo_ar_api import utils
+from series_tiempo_ar_api.utils import utils
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
