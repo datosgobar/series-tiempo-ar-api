@@ -15,10 +15,25 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
             writer = csv.DictWriter(f, fieldnames=self.rows)
 
             writer.writeheader()
-            for field, values in self.fields.items():
+            for field in self.ordered_fields():
+                values = self.fields[field]
                 writer.writerow(self.generate_row(field, values))
 
         self.write(filepath, self.filename)
+
+    def ordered_fields(self):
+        return sorted(self.fields,
+                      key=self.row_order)
+
+    def row_order(self, field: str):
+        field_data = self.fields[field]
+        return (
+            field_data['dataset'].catalog.identifier,
+            field_data['dataset'].identifier,
+            field_data['distribution'].identifier,
+            field,
+            meta_keys.get(field_data['distribution'], meta_keys.PERIODICITY)
+        )
 
     def generate_row(self, serie_name, values):
         dataset = values['dataset']
