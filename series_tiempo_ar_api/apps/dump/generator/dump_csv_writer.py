@@ -9,7 +9,7 @@ from django_datajsonar.models import Field, Distribution
 
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
 from series_tiempo_ar_api.apps.management import meta_keys
-
+from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
 
 logger = logging.Logger(__name__)
 
@@ -50,9 +50,7 @@ class CsvDumpWriter:
     def write_distribution(self, distribution: Distribution, writer: csv.writer):
         # noinspection PyBroadException
         try:
-            df = pd.read_csv(distribution.data_file.file,
-                             index_col=settings.INDEX_COLUMN,
-                             parse_dates=[settings.INDEX_COLUMN])
+            df = read_distribution_csv(distribution)
             fields = distribution.field_set.all()
             fields = {field.title: field.identifier for field in fields}
 

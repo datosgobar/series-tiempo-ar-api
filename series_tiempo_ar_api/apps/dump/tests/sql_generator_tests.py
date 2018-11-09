@@ -12,7 +12,7 @@ from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_sql_task
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from series_tiempo_ar_api.utils import index_catalog
+from series_tiempo_ar_api.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 

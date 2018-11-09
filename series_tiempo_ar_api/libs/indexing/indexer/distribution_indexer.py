@@ -14,6 +14,7 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
+from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
 from .operations import process_column
 from .metadata import update_enhanced_meta
 from .index import tseries_index
@@ -63,9 +64,7 @@ class DistributionIndexer:
             fields (dict): diccionario con estructura titulo: serie_id
         """
 
-        df = pd.read_csv(distribution.data_file.file,
-                         parse_dates=[settings.INDEX_COLUMN])
-        df = df.set_index(settings.INDEX_COLUMN)
+        df = read_distribution_csv(distribution)
 
         # Borro las columnas que no figuren en los metadatos
         for column in df.columns:
