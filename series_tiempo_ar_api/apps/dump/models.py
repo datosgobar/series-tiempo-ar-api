@@ -146,23 +146,22 @@ class ZipDumpFile(models.Model):
     @classmethod
     def create_from_dump_file(cls, dump_file: DumpFile, dump_file_path: str):
 
-        zip_name = f'{dump_file.file_name}-{dump_file.file_type}.zip'
-        with ZipfileWrapper(zip_name) as zip_file:
+        with TempZipDumpFile(dump_file) as zip_file:
             zip_file.write(dump_file_path, arcname=f'{dump_file.file_name}.{dump_file.file_type}')
             zip_file.close()
 
-            with open(zip_name, 'rb') as f:
+            with open(zip_file.filename, 'rb') as f:
                 return cls.objects.create(file=File(f),
                                           dump_file=dump_file)
 
 
-class ZipfileWrapper:
-    def __init__(self, filepath):
-        self.filepath = filepath
+class TempZipDumpFile:
+    def __init__(self, dump_file):
+        self.filepath = f'{dump_file.file_name}-{dump_file.file_type}-{dump_file.id}.zip'
         self.zipfile = None
 
     def __enter__(self):
-        self.remove()
+        self.remove_if_exists()
         self.zipfile = zipfile.ZipFile(self.filepath, 'w', zipfile.ZIP_DEFLATED)
         return self.zipfile
 
@@ -170,9 +169,8 @@ class ZipfileWrapper:
         if not self.zipfile.fp:
             self.zipfile.close()
 
-        self.zipfile.close()
-        self.remove()
+        self.remove_if_exists()
 
-    def remove(self):
+    def remove_if_exists(self):
         if os.path.exists(self.filepath):
             os.remove(self.filepath)
