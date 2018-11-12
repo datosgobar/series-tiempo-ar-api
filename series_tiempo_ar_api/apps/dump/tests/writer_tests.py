@@ -63,4 +63,4 @@ class WriterTests(TestCase):
             task = GenerateDumpTask.objects.create()
             init_writer(task.id)
 
-        self.assertEqual(ZipDumpFile    .objects.count(), constants.OLD_DUMP_FILES_AMOUNT)
+        self.assertEqual(ZipDumpFile.objects.count(), constants.OLD_DUMP_FILES_AMOUNT)
