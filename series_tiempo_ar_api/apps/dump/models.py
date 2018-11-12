@@ -48,11 +48,14 @@ class DumpFile(models.Model):
     TYPE_XLSX = 'xlsx'
     TYPE_ZIP = 'zip'
     TYPE_SQL = 'sql'
+    TYPE_DTA = 'dta'
+
     TYPE_CHOICES = (
         (TYPE_CSV, 'CSV'),
         (TYPE_XLSX, 'XLSX'),
         (TYPE_ZIP, 'ZIP'),
-        (TYPE_SQL, 'SQL')
+        (TYPE_SQL, 'SQL'),
+        (TYPE_DTA, 'DTA'),
     )
 
     ZIP_FILES = (

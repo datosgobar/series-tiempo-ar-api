@@ -15,8 +15,8 @@ logger = logging.Logger(__name__)
 
 class Writer:
 
-    def __init__(self, tag: str, action: callable, recursive_task: callable, task: int, catalog: str = None):
-        self.tag = tag
+    def __init__(self, dump_type: str, action: callable, recursive_task: callable, task: int, catalog: str = None):
+        self.dump_type = dump_type
         self.action = action
         self.recursive_task = recursive_task
         self.catch_exceptions = getattr(settings, 'DUMP_LOG_EXCEPTIONS', True)
@@ -49,7 +49,7 @@ class Writer:
 
     def remove_old_dumps(self):
         for dump_name, _ in DumpFile.FILENAME_CHOICES:
-            same_file = DumpFile.objects.filter(file_type=self.tag,
+            same_file = DumpFile.objects.filter(file_type=self.dump_type,
                                                 node__catalog_id=self.catalog_id,
                                                 file_name=dump_name)
             old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
@@ -63,7 +63,7 @@ class Writer:
             self.action(self.task, self.catalog_id)
         except Exception as e:
             exc = str(e) or format_exc(e)
-            msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.tag}: {exc}"
+            msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.dump_type}: {exc}"
             logger.error(msg)
             GenerateDumpTask.info(self.task, msg)
             self._finish()
