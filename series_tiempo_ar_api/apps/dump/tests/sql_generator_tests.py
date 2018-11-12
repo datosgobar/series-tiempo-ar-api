@@ -24,10 +24,10 @@ class SQLGeneratorTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(SQLGeneratorTests, cls).setUpClass()
+        DumpFile.objects.all().delete()
         Node.objects.all().delete()
         Catalog.objects.all().delete()
         GenerateDumpTask.objects.all().delete()
-        DumpFile.objects.all().delete()
 
         path = os.path.join(samples_dir, 'distribution_daily_periodicity.json')
         index_catalog('catalog_one', path, index=cls.index)

@@ -5,6 +5,7 @@ import numpy as np
 from django.core.files import File
 from django_datajsonar.models import Node
 
+from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 
 
@@ -25,7 +26,7 @@ class DtaGenerator:
                                             node=self.node).last()
         df = pd.read_csv(dump_file.file)
         if dump_file.file_name == DumpFile.FILENAME_VALUES:
-            df = df[['serie_id', 'indice_tiempo', 'valor']]
+            df = df[constants.STATA_VALUES_COLS]
 
         with FileWrapper(self.file_name(dump_file)) as f:
             save_to_dta(df, f.filepath)
