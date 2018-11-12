@@ -154,6 +154,12 @@ class ZipDumpFile(models.Model):
                 return cls.objects.create(file=File(f),
                                           dump_file=dump_file)
 
+    def delete(self, using=None, keep_parents=False):
+        if self.file:
+            minio = create_minio_client_from_settings()
+            minio.remove_object(settings.MINIO_STORAGE_MEDIA_BUCKET_NAME, self.file.name)
+        super(ZipDumpFile, self).delete(using, keep_parents)
+
 
 class TempZipDumpFile:
     def __init__(self, dump_file):
