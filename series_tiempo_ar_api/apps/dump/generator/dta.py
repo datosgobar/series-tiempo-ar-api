@@ -8,7 +8,7 @@ from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 
 
-class DtaDumpGenerator:
+class DtaGenerator:
 
     def __init__(self, task_id: int, catalog_id: str = None):
         self.task = GenerateDumpTask.objects.get(id=task_id)
