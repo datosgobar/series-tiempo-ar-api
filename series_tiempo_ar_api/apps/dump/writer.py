@@ -60,6 +60,8 @@ class Writer:
 
     def run_catching_exceptions(self):
         try:
+            GenerateDumpTask.info(f'Comenzando generación de dump {self.dump_type} para catálogo {self.catalog_id}',
+                                  self.task)
             self.action(self.task, self.catalog_id)
         except Exception as e:
             exc = str(e) or format_exc(e)
