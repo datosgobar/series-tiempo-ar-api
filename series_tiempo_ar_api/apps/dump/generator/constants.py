@@ -63,3 +63,6 @@ SOURCES_ROWS = [
     SOURCE_FIRST_INDEX,
     SOURCE_LAST_INDEX
 ]
+
+
+STATA_VALUES_COLS = [SERIE_ID, 'indice_tiempo', 'valor']

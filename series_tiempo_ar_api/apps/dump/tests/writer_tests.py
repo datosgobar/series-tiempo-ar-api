@@ -28,7 +28,11 @@ def mock_dump_write(task: GenerateDumpTask, node: str):
 
 @job
 def init_writer(task_id: int, catalog_id: str = None):
-    Writer(tag='csv', action=mock_dump_write, recursive_task=init_writer, task=task_id, catalog=catalog_id).write()
+    Writer(dump_type=DumpFile.TYPE_CSV,
+           action=mock_dump_write,
+           recursive_task=init_writer,
+           task=task_id,
+           catalog=catalog_id).write()
 
 
 class WriterTests(TestCase):

@@ -11,6 +11,7 @@ from . import constants
 
 
 class GenerateDumpTask(AbstractTask):
+    TYPE_DTA = 'dta'
     TYPE_SQL = 'sql'
     TYPE_CSV = 'csv'
     TYPE_XLSX = 'xlsx'
@@ -18,6 +19,7 @@ class GenerateDumpTask(AbstractTask):
         (TYPE_CSV, 'CSV'),
         (TYPE_XLSX, 'XLSX'),
         (TYPE_SQL, 'SQL'),
+        (TYPE_DTA, 'DTA'),
     )
 
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default='CSV')
@@ -48,11 +50,14 @@ class DumpFile(models.Model):
     TYPE_XLSX = 'xlsx'
     TYPE_ZIP = 'zip'
     TYPE_SQL = 'sql'
+    TYPE_DTA = 'dta'
+
     TYPE_CHOICES = (
         (TYPE_CSV, 'CSV'),
         (TYPE_XLSX, 'XLSX'),
         (TYPE_ZIP, 'ZIP'),
-        (TYPE_SQL, 'SQL')
+        (TYPE_SQL, 'SQL'),
+        (TYPE_DTA, 'DTA'),
     )
 
     ZIP_FILES = (
