@@ -1,9 +1,7 @@
 #!coding=utf8
 from django.contrib import admin, messages
-from django.db.models import Q
 
 from django_datajsonar.admin import AbstractTaskAdmin
-from django.db import transaction
 
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_dump_task
 from .models import GenerateDumpTask
@@ -21,7 +19,6 @@ class GenerateDumpTaskAdmin(AbstractTaskAdmin):
             messages.error(request, "Ya está corriendo una tarea")
             return
 
-        transaction.on_commit(lambda: enqueue_dump_task.delay(obj))
         super(GenerateDumpTaskAdmin, self).save_model(request, obj, form, change)
 
     def get_readonly_fields(self, request, obj=None):
