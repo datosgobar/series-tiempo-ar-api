@@ -13,7 +13,7 @@ from .generator.xlsx import generator
 logger = logging.Logger(__name__)
 
 
-@job('default', timeout='2h')
+@job('default', timeout='3h')
 def enqueue_dump_task(task: GenerateDumpTask):
     task_choices = {
         GenerateDumpTask.TYPE_CSV: write_csv,
