@@ -22,7 +22,6 @@ def enqueue_dump_task(task: GenerateDumpTask):
         GenerateDumpTask.TYPE_DTA: write_dta,
     }
 
-    task.refresh_from_db()
     task_choices[task.file_type](task.id)
 
 
