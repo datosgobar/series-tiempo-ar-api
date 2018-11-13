@@ -9,7 +9,8 @@ class FullCsvGenerator(AbstractDumpGenerator):
 
     def generate(self):
         filepath = self.get_file_path()
-        CsvDumpWriter(self.task, self.fields, self.full_csv_row).write(filepath, constants.FULL_CSV_HEADER)
+        CsvDumpWriter(self.task, self.fields, self.full_csv_row, f'{self.catalog} full csv')\
+            .write(filepath, constants.FULL_CSV_HEADER)
 
         self.write(filepath, DumpFile.FILENAME_FULL, zip_file=True)
 

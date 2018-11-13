@@ -1,8 +1,6 @@
-import os
-
 from series_tiempo_ar_api.apps.dump import constants
 from series_tiempo_ar_api.apps.dump.generator.dump_csv_writer import CsvDumpWriter
-from series_tiempo_ar_api.apps.dump.models import DumpFile, ZipDumpFile
+from series_tiempo_ar_api.apps.dump.models import DumpFile
 from .abstract_dump_gen import AbstractDumpGenerator
 
 
@@ -11,7 +9,8 @@ class ValuesCsvGenerator(AbstractDumpGenerator):
 
     def generate(self):
         filepath = self.get_file_path()
-        CsvDumpWriter(self.task, self.fields, self.values_csv_row).write(filepath, constants.VALUES_HEADER)
+        CsvDumpWriter(self.task, self.fields, self.values_csv_row, f'{self.catalog} values csv')\
+            .write(filepath, constants.VALUES_HEADER)
 
         self.write(filepath, self.filename, zip_file=True)
 

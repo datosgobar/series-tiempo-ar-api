@@ -20,9 +20,10 @@ class CsvDumpWriter:
     El formato de cada row es especificado a través del callable rows.
     """
 
-    def __init__(self, task: GenerateDumpTask, fields_data: dict, rows: Callable):
+    def __init__(self, task: GenerateDumpTask, fields_data: dict, rows: Callable, tag: str):
         self.task = task
         self.fields_data = fields_data
+        self.tag = tag
         # Funcion generadora de rows, especifica la estructura de la fila
         # a partir de argumentos pasados desde un pandas.apply
         self.rows = rows
@@ -57,7 +58,7 @@ class CsvDumpWriter:
             periodicity = meta_keys.get(distribution, meta_keys.PERIODICITY)
             df.apply(self.write_serie, args=(periodicity, fields, writer))
         except Exception as e:
-            msg = f'Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
+            msg = f'[{self.tag} Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
             GenerateDumpTask.info(self.task, msg)
             logger.error(msg)
 
