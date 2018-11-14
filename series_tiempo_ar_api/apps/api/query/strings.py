@@ -26,3 +26,5 @@ END_OF_PERIOD_ERROR = u"Agregación End of Period no soportada para series con �
 INVALID_PARAM_LENGTH = u"El parámetro {} debe ser un solo caracter"
 
 DATA_NOT_INITIALIZED = "Data aún no inicializada. Correr .run()"
+
+EXCLUSIVE_PARAMETERS = "El parámetro {} no puede ser utilizado junto a {}"

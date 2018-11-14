@@ -32,7 +32,8 @@ MAX_LIMIT = 1000
 MAX_ALLOWED_VALUES = {
     'start': MAX_SERIES_VALUES - MAX_LIMIT,  # Offset máximo
     'limit': MAX_LIMIT,  # Tamaño de página
-    'ids': 40  # Cantidad máxima de series que se pueden pedir
+    'ids': 40,  # Cantidad máxima de series que se pueden pedir
+    'last': MAX_LIMIT,
 }
 
 

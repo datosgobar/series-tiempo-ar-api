@@ -200,3 +200,6 @@ class Query(object):
 
     def flatten_metadata_response(self):
         self.metadata_flatten = True
+
+    def reverse(self):
+        self.es_query.reverse()

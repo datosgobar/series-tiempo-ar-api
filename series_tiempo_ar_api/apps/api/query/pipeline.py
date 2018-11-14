@@ -65,6 +65,7 @@ class QueryPipeline(object):
             DateFilter,
             Pagination,
             Sort,
+            Last,
             Collapse,
             Metadata,
             Format,
@@ -446,4 +447,45 @@ class DecimalChar(BaseOperation):
         dec_char = args.get(constants.PARAM_DEC_CHAR)
         if dec_char and len(dec_char) != 1:
             msg = strings.INVALID_PARAM_LENGTH.format(constants.PARAM_DEC_CHAR)
+            self._append_error(msg)
+
+
+class Last(BaseOperation):
+
+    def run(self, query: Query, args):
+        last = args.get(constants.PARAM_LAST)
+        if last is None:
+            return
+
+        sort = args.get(constants.PARAM_SORT)
+        start = args.get(constants.PARAM_START)
+        limit = args.get(constants.PARAM_LIMIT)
+
+        if sort or start or limit:
+            params = ', '.join([constants.PARAM_SORT, constants.PARAM_START, constants.PARAM_LIMIT])
+            self._append_error(strings.EXCLUSIVE_PARAMETERS.format(constants.PARAM_LAST, params))
+            return
+
+        self.validate(last)
+        if self.errors:
+            return
+
+        query.add_pagination(start=0, limit=int(last))
+        query.sort(constants.SORT_DESCENDING)
+        query.reverse()
+
+    def validate(self, last):
+        try:
+            last = int(last)
+        except ValueError:
+            self._append_error(strings.INVALID_PARAMETER.format(constants.PARAM_LAST, last))
+            return
+
+        if last < 0:
+            self._append_error(strings.INVALID_PARAMETER.format(constants.PARAM_LAST, last))
+            return
+
+        max_value = settings.MAX_ALLOWED_VALUES[constants.PARAM_LIMIT]
+        if last > max_value:
+            msg = strings.PARAMETER_OVER_LIMIT.format(constants.PARAM_LIMIT, max_value, last)
             self._append_error(msg)
