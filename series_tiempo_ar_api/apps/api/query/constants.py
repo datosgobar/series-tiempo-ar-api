@@ -138,3 +138,5 @@ IN_MEMORY_AGGS = [
     AGG_MAX,
     AGG_MIN
 ]
+
+PARAM_LAST = 'last'

@@ -24,6 +24,7 @@ class ESQuery(object):
         self.elastic = ElasticInstance()
         self.data = None
         self.count = None
+        self.reverse_results = False
 
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
@@ -126,7 +127,11 @@ class ESQuery(object):
             raise RuntimeError(strings.DATA_NOT_INITIALIZED)
 
         # Devuelvo hasta LIMIT values
-        return self.data[:self.args[constants.PARAM_LIMIT]]
+        data = self.data[:self.args[constants.PARAM_LIMIT]]
+
+        if self.reverse_results:
+            data.reverse()
+        return data
 
     def get_results_count(self) -> int:
         if self.count is None:
@@ -138,3 +143,6 @@ class ESQuery(object):
         """Equivalente a execute_searches + get_results_data"""
         self.execute_searches()
         return self.get_results_data()
+
+    def reverse(self):
+        self.reverse_results = True

@@ -115,3 +115,10 @@ def extra_offset(periodicity):
         'day': 365,
     }
     return offsets.get(periodicity, 0)
+
+
+def validate_positive_int(last: str) -> int:
+    last = int(last)
+    if last < 0:
+        raise ValueError
+    return last
