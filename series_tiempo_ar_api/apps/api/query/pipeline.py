@@ -10,6 +10,7 @@ from elasticsearch import TransportError
 from django_datajsonar import models
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError, EndOfPeriodError
+from series_tiempo_ar_api.apps.api.helpers import validate_positive_int
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.response import \
     ResponseFormatterGenerator
@@ -457,6 +458,15 @@ class Last(BaseOperation):
         if last is None:
             return
 
+        self.validate(last, args)
+        if self.errors:
+            return
+
+        query.add_pagination(start=0, limit=int(last))
+        query.sort(constants.SORT_DESCENDING)
+        query.reverse()
+
+    def validate(self, last: str, args: dict):
         sort = args.get(constants.PARAM_SORT)
         start = args.get(constants.PARAM_START)
         limit = args.get(constants.PARAM_LIMIT)
@@ -466,22 +476,9 @@ class Last(BaseOperation):
             self._append_error(strings.EXCLUSIVE_PARAMETERS.format(constants.PARAM_LAST, params))
             return
 
-        self.validate(last)
-        if self.errors:
-            return
-
-        query.add_pagination(start=0, limit=int(last))
-        query.sort(constants.SORT_DESCENDING)
-        query.reverse()
-
-    def validate(self, last):
         try:
-            last = int(last)
+            last = validate_positive_int(last)
         except ValueError:
-            self._append_error(strings.INVALID_PARAMETER.format(constants.PARAM_LAST, last))
-            return
-
-        if last < 0:
             self._append_error(strings.INVALID_PARAMETER.format(constants.PARAM_LAST, last))
             return
 
