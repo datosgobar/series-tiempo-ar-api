@@ -15,6 +15,7 @@ logger = logging.Logger(__name__)
 
 @job('default', timeout='3h')
 def enqueue_dump_task(task: GenerateDumpTask):
+    task.save()  # Evito problemas de DoesNotExist cuando se llama async
     task_choices = {
         GenerateDumpTask.TYPE_CSV: write_csv,
         GenerateDumpTask.TYPE_XLSX: write_xlsx,
