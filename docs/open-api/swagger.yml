@@ -363,6 +363,15 @@ paths:
           required: false
           default: ","
           type: string
+        - name: last
+          in: query
+          description: >-
+            Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente.
+            Mutuamente exclusivo con `sort`, `start`, y `limit`.
+          required: false
+          type: integer
+          minimum: 0
+          maximum: 1000
       responses:
         '200':
           description: La consulta se ejecutó exitosamente

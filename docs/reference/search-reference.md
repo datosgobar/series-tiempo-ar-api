@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+ 
+
+- [Referencia API: search](#referencia-api-search)
+  - [Tabla de parámetros](#tabla-de-parametros)
+    - [`q`](#q)
+    - [`dataset_theme`, `units`, `dataset_publisher_name`, `dataset_source`, `catalog_id`](#dataset_theme-units-dataset_publisher_name-dataset_source-catalog_id)
+    - [`limit`](#limit)
+    - [`start`](#start)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Referencia API: search
 
 Recurso: `/search`

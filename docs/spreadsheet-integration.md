@@ -5,18 +5,18 @@
  
 
 - [Google Drive](#google-drive)
-    - [1. Modificar la configuración regional o usar el parámetro "decimal=,"](#1-modificar-la-configuracion-regional-o-usar-el-parametro-decimal)
-        - [Usar el parámetro `decimal`](#usar-el-parametro-decimal)
-        - [Modificar la configuración regional](#modificar-la-configuracion-regional)
-    - [2. Importar los datos a la planilla](#2-importar-los-datos-a-la-planilla)
-    - [3. Elegir el formato de fecha](#3-elegir-el-formato-de-fecha)
-    - [4. Modificar la URL de consulta a la API](#4-modificar-la-url-de-consulta-a-la-api)
+  - [1. Modificar la configuración regional o usar el parámetro "decimal=,"](#1-modificar-la-configuracion-regional-o-usar-el-parametro-decimal)
+    - [Usar el parámetro `decimal`](#usar-el-parametro-decimal)
+    - [Modificar la configuración regional](#modificar-la-configuracion-regional)
+  - [2. Importar los datos a la planilla](#2-importar-los-datos-a-la-planilla)
+  - [3. Elegir el formato de fecha](#3-elegir-el-formato-de-fecha)
+  - [4. Modificar la URL de consulta a la API](#4-modificar-la-url-de-consulta-a-la-api)
 - [Excel](#excel)
-    - [0. Chequear que tenés instalado lo que necesitás](#0-chequear-que-tenes-instalado-lo-que-necesitas)
-    - [1. Generar una nueva consulta desde una URL](#1-generar-una-nueva-consulta-desde-una-url)
-    - [2. Editar codificación del archivo origen](#2-editar-codificacion-del-archivo-origen)
-    - [3. Editar los tipos de las columnas](#3-editar-los-tipos-de-las-columnas)
-    - [4. Guardar las modificaciones y cargar la consulta](#4-guardar-las-modificaciones-y-cargar-la-consulta)
+  - [0. Chequear que tenés instalado lo que necesitás](#0-chequear-que-tenes-instalado-lo-que-necesitas)
+  - [1. Generar una nueva consulta desde una URL](#1-generar-una-nueva-consulta-desde-una-url)
+  - [2. Editar codificación del archivo origen](#2-editar-codificacion-del-archivo-origen)
+  - [3. Editar los tipos de las columnas](#3-editar-los-tipos-de-las-columnas)
+  - [4. Guardar las modificaciones y cargar la consulta](#4-guardar-las-modificaciones-y-cargar-la-consulta)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

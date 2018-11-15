@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.5">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.6">
     
     
       
@@ -519,6 +519,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#last" title="last" class="md-nav__link">
+    last
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -790,6 +797,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#last" title="last" class="md-nav__link">
+    last
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -822,7 +836,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 <ul>
-<li><a href="#tabla-de-parametros">Tabla de parámetros</a><ul>
+<li><a href="#tabla-de-parametros">Tabla de parámetros</a></li>
 <li><a href="#ids"><code>ids</code></a></li>
 <li><a href="#representation_mode"><code>representation_mode</code></a></li>
 <li><a href="#collapse"><code>collapse</code></a></li>
@@ -838,8 +852,7 @@
 <li><a href="#decimal"><code>decimal</code></a></li>
 <li><a href="#sep"><code>sep</code></a></li>
 <li><a href="#flatten"><code>flatten</code></a></li>
-</ul>
-</li>
+<li><a href="#last"><code>last</code></a></li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -947,7 +960,7 @@
         <td>sep</td>
         <td>No</td>
         <td>Caracter separador de los valores del CSV.<br><br>Cualquier caracter UTF-8</em></td>
-        <td>.</td>
+        <td>,</td>
         <td>sep=|</td>
     </tr>
     <tr>
@@ -956,6 +969,13 @@
         <td>Aplana la respuesta de metadatos en un objeto con un único nivel (sin objetos anidados). No es necesario darle valor</td>
         <td></td>
         <td>flatten</td>
+    </tr>
+     <tr>
+        <td>last</td>
+        <td>No</td>
+        <td>Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente. Mutuamente exclusivo con `sort`, `start`, y `limit`.</td>
+        <td>N/A</td>
+        <td>last=12</td>
     </tr>
 </table>
 
@@ -1107,6 +1127,11 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
         ...
     }
 </pre></div>
+
+
+<h3 id="last"><code>last</code></h3>
+<p>Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente. Mutuamente exclusivo con <code>sort</code>, <code>start</code>, y <code>limit</code>.</p>
+<p>Un pedido con <code>last=N</code> es equivalente a invertir el orden de un pedido con <code>sort=desc</code>, <code>limit=N</code>.</p>
                 
                   
                 
@@ -1178,7 +1203,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
       
     </div>
     
-      <script src="../../assets/javascripts/application.583bbe55.js"></script>
+      <script src="../../assets/javascripts/application.5e60981f.js"></script>
       
         
         
@@ -1195,7 +1220,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
           
         
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0",url:{base:"../.."}})</script>
       
     
     

@@ -11,11 +11,11 @@ mkdocsdocs:
 	rm -rf site
 
 serveswaggerdocs:
-	echo "Browse to http://localhost:8000/docs/swagger/"
+	echo "Browse to http://localhost:8000/docs/open-api/"
 	python -m SimpleHTTPServer 8000
 
 swaggerdocs:
-	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/open_api/; rm temp.zip
+	wget https://github.com/swagger-api/swagger-ui/archive/master.zip -O temp.zip; unzip -jo temp.zip 'swagger-ui-master/dist/*' -d docs/open-api/; rm temp.zip
 	sed -i.bak "s/url: \".*\"/url: \"\.\/swagger\.yml\", validatorUrl: null/g" docs/open_api/index.html
 	echo ".download-url-wrapper { display: none!important; }" >> docs/open_api/swagger-ui.css
 	rm -f docs/open_api/index.html.bak

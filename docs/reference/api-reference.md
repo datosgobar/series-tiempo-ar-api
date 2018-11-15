@@ -9,21 +9,22 @@ El recurso `/series` permite **obtener datos y metadatos** de una o más series,
  
 
 - [Tabla de parámetros](#tabla-de-parametros)
-    - [`ids`](#ids)
-    - [`representation_mode`](#representation_mode)
-    - [`collapse`](#collapse)
-    - [`collapse_aggregation`](#collapse_aggregation)
-    - [`limit`](#limit)
-    - [`start`](#start)
-    - [`start_date`](#start_date)
-    - [`end_date`](#end_date)
-    - [`format`](#format)
-    - [`header`](#header)
-    - [`sort`](#sort)
-    - [`metadata`](#metadata)
-    - [`decimal`](#decimal)
-    - [`sep`](#sep)
-    - [`flatten`](#flatten)
+  - [`ids`](#ids)
+  - [`representation_mode`](#representation_mode)
+  - [`collapse`](#collapse)
+  - [`collapse_aggregation`](#collapse_aggregation)
+  - [`limit`](#limit)
+  - [`start`](#start)
+  - [`start_date`](#start_date)
+  - [`end_date`](#end_date)
+  - [`format`](#format)
+  - [`header`](#header)
+  - [`sort`](#sort)
+  - [`metadata`](#metadata)
+  - [`decimal`](#decimal)
+  - [`sep`](#sep)
+  - [`flatten`](#flatten)
+  - [`last`](#last)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -132,7 +133,7 @@ El recurso `/series` permite **obtener datos y metadatos** de una o más series,
         <td>sep</td>
         <td>No</td>
         <td>Caracter separador de los valores del CSV.<br><br>Cualquier caracter UTF-8</em></td>
-        <td>.</td>
+        <td>,</td>
         <td>sep=|</td>
     </tr>
     <tr>
@@ -141,6 +142,13 @@ El recurso `/series` permite **obtener datos y metadatos** de una o más series,
         <td>Aplana la respuesta de metadatos en un objeto con un único nivel (sin objetos anidados). No es necesario darle valor</td>
         <td></td>
         <td>flatten</td>
+    </tr>
+     <tr>
+        <td>last</td>
+        <td>No</td>
+        <td>Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente. Mutuamente exclusivo con `sort`, `start`, y `limit`.</td>
+        <td>N/A</td>
+        <td>last=12</td>
     </tr>
 </table>
 
@@ -337,3 +345,10 @@ Una consulta con parámetro `flatten` incluido tendrá la siguiente respuesta de
         ...
     }
 ```
+
+### `last`
+
+Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente. Mutuamente exclusivo con `sort`, `start`, y `limit`.
+
+Un pedido con `last=N` es equivalente a invertir el orden de un pedido con `sort=desc`, `limit=N`.
+
