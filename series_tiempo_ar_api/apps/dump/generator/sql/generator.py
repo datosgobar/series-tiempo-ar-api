@@ -82,7 +82,7 @@ class SQLGenerator:
             value_count = row[self.metadata_rows.index(constants.SERIES_VALUES_AMT)] or 0
             days_not_covered = row[self.metadata_rows.index(constants.SERIES_DAYS_SINCE_LAST_UPDATE)] or 0
             is_updated = bool_format(row[self.metadata_rows.index(constants.SERIES_IS_UPDATED)])
-            last_value = row[self.metadata_rows.index(constants.SERIES_LAST_VALUE)]
+            last_value = row[self.metadata_rows.index(constants.SERIES_LAST_VALUE)] or 0
             second_last_value = row[self.metadata_rows.index(constants.SERIES_SECOND_LAST_VALUE)] or 0
             last_pct_change = row[self.metadata_rows.index(constants.SERIES_PCT_CHANGE)] or 0
 
