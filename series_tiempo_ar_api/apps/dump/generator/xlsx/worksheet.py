@@ -4,8 +4,9 @@ from xlsxwriter import Workbook
 class DumpWorksheet:
     MAX_ROWS_PER_SHEET = 1000000
 
-    def __init__(self, workbook: Workbook, name: str, formats: dict):
+    def __init__(self, workbook: Workbook, header_row: list, name: str, formats: dict):
         self.name = name
+        self.header_row = header_row
         self.workbook = workbook
         self.sheet_count = 0
         self.current_row = 0
@@ -23,8 +24,8 @@ class DumpWorksheet:
         if self.current_row > self.MAX_ROWS_PER_SHEET:
             self.init_worksheet()
 
-    def write_header_row(self, row: list, cell_format=None):
-        self.current_sheet.write_row(self.current_row, 0, row, cell_format)
+    def write_header_row(self, cell_format=None):
+        self.current_sheet.write_row(self.current_row, 0, self.header_row, cell_format)
         self.current_row += 1
 
     def init_worksheet(self):
@@ -32,6 +33,7 @@ class DumpWorksheet:
         sheet_name = f'{self.name}-{self.sheet_count}'
         self.current_sheet = self.workbook.add_worksheet(sheet_name)
         self.current_row = 0
+        self.write_header_row(self.workbook.add_format({'bold': True}))
 
 
 class SingleWorksheet:

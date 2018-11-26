@@ -29,11 +29,6 @@ class DumpWorkbook:
         self.formats = formats
         self.single_sheet = None
 
-    def add_worksheet(self, sheet_name, frequency):
-        self.sheets[frequency] = DumpWorksheet(self.workbook, sheet_name, formats=self.formats)
-        self.sheets[frequency].write_header_row(self.header_row,
-                                                cell_format=self.workbook.add_format({'bold': True}))
-
     def write_row(self, row):
         if self.split_by_frequency:
             frequency = row[self.frequency_column_index]
@@ -61,4 +56,4 @@ class DumpWorkbook:
             'R/P1D': 'diaria',
         }
         sheet_name = names[frequency]
-        self.add_worksheet(sheet_name, frequency)
+        self.sheets[frequency] = DumpWorksheet(self.workbook, self.header_row, sheet_name, formats=self.formats)
