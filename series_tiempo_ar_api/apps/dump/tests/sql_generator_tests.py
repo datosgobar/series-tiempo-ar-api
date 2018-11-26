@@ -7,7 +7,7 @@ from django.test import TestCase
 from django_datajsonar.models import Node, Catalog, Field
 from faker import Faker
 
-from series_tiempo_ar_api.apps.dump.generator.sql.models import Serie, proxy, Valores
+from series_tiempo_ar_api.apps.dump.generator.sql.models import Metadatos, proxy, Valores
 from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_sql_task
@@ -81,11 +81,11 @@ class SQLTests(TestCase):
         self.init_db()
 
     def test_table_rows(self):
-        self.assertEqual(Serie.select().count(),
+        self.assertEqual(Metadatos.select().count(),
                          Field.objects.exclude(title='indice_tiempo').count())
 
     def test_foreign_key(self):
-        serie = Serie.select().first()
+        serie = Metadatos.select().first()
         values = Valores.filter(serie_id=serie)
         self.assertTrue(values)
 
@@ -105,7 +105,7 @@ class SQLTests(TestCase):
         f.seek(0)
         f.close()
         proxy.initialize(peewee.SqliteDatabase(f.name))
-        proxy.create_tables([Serie], safe=True)
+        proxy.create_tables([Metadatos], safe=True)
 
     @classmethod
     def tearDownClass(cls):

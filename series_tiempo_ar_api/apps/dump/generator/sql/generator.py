@@ -7,7 +7,8 @@ from django_datajsonar.models import Node
 from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
-from series_tiempo_ar_api.apps.dump.generator.sql.models import Serie, Valores, proxy, Fuente
+from series_tiempo_ar_api.apps.dump.generator.sql.models import Metadatos, Valores, proxy, Fuentes
+from series_tiempo_ar_api.apps.dump.generator.xlsx.formats import bool_format
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask, ZipDumpFile
 from series_tiempo_ar_api.utils.utils import read_file_as_csv
 
@@ -53,51 +54,63 @@ class SQLGenerator:
         reader = read_file_as_csv(meta.file)
         next(reader)  # Skip header
 
-        Serie.bulk_create(self.generate_series_rows(reader), batch_size=100)
+        Metadatos.bulk_create(self.generate_series_rows(reader), batch_size=100)
 
     def generate_series_rows(self, reader):
         for row in reader:
-            serie_id = row[self.metadata_rows.index('serie_id')]
-            distribution_id = row[self.metadata_rows.index('distribucion_id')]
-            dataset_id = row[self.metadata_rows.index('dataset_id')]
-            catalog_id = row[self.metadata_rows.index('catalogo_id')]
-            frequency = row[self.metadata_rows.index('indice_tiempo_frecuencia')]
-            title = row[self.metadata_rows.index('serie_titulo')]
-            units = row[self.metadata_rows.index('serie_unidades')]
-            description = row[self.metadata_rows.index('serie_descripcion')]
+            catalog_id = row[self.metadata_rows.index(constants.CATALOG_ID)]
+            dataset_id = row[self.metadata_rows.index(constants.DATASET_ID)]
+            distribution_id = row[self.metadata_rows.index(constants.DISTRIBUTION_ID)]
+            serie_id = row[self.metadata_rows.index(constants.SERIE_ID)]
+            frequency = row[self.metadata_rows.index(constants.TIME_INDEX_FREQUENCY)]
+            title = row[self.metadata_rows.index(constants.SERIES_TITLE)]
+            units = row[self.metadata_rows.index(constants.SERIES_UNITS)]
+            description = row[self.metadata_rows.index(constants.SERIES_DESCRIPTION)]
 
-            distribution_title = row[self.metadata_rows.index('distribucion_titulo')]
-            distribution_description = row[self.metadata_rows.index('distribucion_descripcion')]
+            distribution_title = row[self.metadata_rows.index(constants.DISTRIBUTION_TITLE)]
+            distribution_description = row[self.metadata_rows.index(constants.SERIES_DESCRIPTION)]
+            distribution_download_url = row[self.metadata_rows.index(constants.DISTRIBUTION_DOWNLOAD_URL)]
 
-            dataset_title = row[self.metadata_rows.index('dataset_titulo')]
-            dataset_description = row[self.metadata_rows.index('dataset_descripcion')]
-            dataset_source = row[self.metadata_rows.index('dataset_fuente')]
-            dataset_publisher = row[self.metadata_rows.index('dataset_responsable')]
+            dataset_title = row[self.metadata_rows.index(constants.DATASET_THEME)]
+            dataset_description = row[self.metadata_rows.index(constants.DATASET_DESCRIPTION)]
+            dataset_source = row[self.metadata_rows.index(constants.DATASET_SOURCE)]
+            dataset_publisher = row[self.metadata_rows.index(constants.DATASET_PUBLISHER)]
+            dataset_theme = row[self.metadata_rows.index(constants.DATASET_THEME)]
 
-            index_start = row[self.metadata_rows.index('serie_indice_inicio')]
-            index_end = row[self.metadata_rows.index('serie_indice_final')]
-            value_count = row[self.metadata_rows.index('serie_valores_cant')] or 0
-            days_not_covered = row[self.metadata_rows.index('serie_dias_no_cubiertos')] or 0
+            index_start = row[self.metadata_rows.index(constants.SERIES_INDEX_START)]
+            index_end = row[self.metadata_rows.index(constants.SERIES_INDEX_END)]
+            value_count = row[self.metadata_rows.index(constants.SERIES_VALUES_AMT)] or 0
+            days_not_covered = row[self.metadata_rows.index(constants.SERIES_DAYS_SINCE_LAST_UPDATE)] or 0
+            is_updated = bool_format(row[self.metadata_rows.index(constants.SERIES_IS_UPDATED)])
+            last_value = row[self.metadata_rows.index(constants.SERIES_LAST_VALUE)]
+            second_last_value = row[self.metadata_rows.index(constants.SERIES_SECOND_LAST_VALUE)] or 0
+            last_pct_change = row[self.metadata_rows.index(constants.SERIES_PCT_CHANGE)] or 0
 
-            yield Serie(
+            yield Metadatos(
                 catalogo_id=catalog_id,
                 dataset_id=dataset_id,
                 distribucion_id=distribution_id,
                 serie_id=serie_id,
                 indice_tiempo_frecuencia=frequency,
-                titulo=title,
-                unidades=units,
-                descripcion=description,
+                serie_titulo=title,
+                serie_unidades=units,
+                serie_descripcion=description,
                 distribucion_titulo=distribution_title,
                 distribucion_descripcion=distribution_description,
+                distribucion_url_descarga=distribution_download_url,
                 dataset_responsable=dataset_publisher,
                 dataset_fuente=dataset_source,
                 dataset_titulo=dataset_title,
                 dataset_descripcion=dataset_description,
-                indice_inicio=index_start,
-                indice_final=index_end,
-                valores_cant=value_count,
-                dias_no_cubiertos=days_not_covered,
+                dataset_tema=dataset_theme,
+                serie_indice_inicio=index_start,
+                serie_indice_final=index_end,
+                serie_valores_cant=value_count,
+                serie_dias_no_cubiertos=days_not_covered,
+                serie_actualizada=is_updated,
+                serie_valor_ultimo=last_value,
+                serie_valor_anterior=second_last_value,
+                serie_var_pct_anterior=last_pct_change,
             )
 
     def db_name(self):
@@ -141,7 +154,7 @@ class SQLGenerator:
 
         actions = []
         for row in reader:
-            Fuente(
+            Fuentes(
                 fuente=row[self.sources_rows.index('dataset_fuente')],
                 series_cant=row[self.sources_rows.index('series_cant')],
                 valores_cant=row[self.sources_rows.index('valores_cant')],
@@ -150,7 +163,7 @@ class SQLGenerator:
             ).save()
 
         if actions:
-            Fuente.bulk_create(actions)
+            Fuentes.bulk_create(actions)
 
 
 class DbWrapper:
@@ -165,7 +178,7 @@ class DbWrapper:
 
         self.db = peewee.SqliteDatabase(self.name)
         proxy.initialize(self.db)
-        self.db.create_tables([Serie, Valores, Fuente])
+        self.db.create_tables([Metadatos, Valores, Fuentes])
 
         return self.db
 

@@ -3,7 +3,7 @@ import peewee
 proxy = peewee.Proxy()
 
 
-class Serie(peewee.Model):
+class Metadatos(peewee.Model):
     class Meta:
         database = proxy
         indexes = (
@@ -14,23 +14,30 @@ class Serie(peewee.Model):
     dataset_id = peewee.CharField(max_length=128)
     distribucion_id = peewee.CharField(max_length=128)
     serie_id = peewee.CharField(max_length=128, primary_key=True)
+
     indice_tiempo_frecuencia = peewee.CharField(max_length=8)
-    titulo = peewee.TextField()
-    unidades = peewee.TextField()
-    descripcion = peewee.TextField()
+    serie_titulo = peewee.TextField()
+    serie_unidades = peewee.TextField()
+    serie_descripcion = peewee.TextField()
 
     distribucion_titulo = peewee.TextField()
     distribucion_descripcion = peewee.TextField()
+    distribucion_url_descarga = peewee.TextField()
 
     dataset_responsable = peewee.TextField()
     dataset_fuente = peewee.TextField()
     dataset_titulo = peewee.TextField()
     dataset_descripcion = peewee.TextField()
+    dataset_tema = peewee.TextField()
 
-    indice_inicio = peewee.DateField()
-    indice_final = peewee.DateField()
-    valores_cant = peewee.IntegerField(null=True)
-    dias_no_cubiertos = peewee.IntegerField(null=True)
+    serie_indice_inicio = peewee.DateField()
+    serie_indice_final = peewee.DateField()
+    serie_valores_cant = peewee.IntegerField(null=True)
+    serie_dias_no_cubiertos = peewee.IntegerField(null=True)
+    serie_actualizada = peewee.BooleanField()
+    serie_valor_ultimo = peewee.FloatField(null=True)
+    serie_valor_anterior = peewee.FloatField(null=True)
+    serie_var_pct_anterior = peewee.FloatField(null=True)
 
 
 class Valores(peewee.Model):
@@ -38,12 +45,12 @@ class Valores(peewee.Model):
         database = proxy
         primary_key = peewee.CompositeKey('serie_id', 'indice_tiempo')
 
-    serie_id = peewee.ForeignKeyField(Serie)
+    serie_id = peewee.ForeignKeyField(Metadatos)
     indice_tiempo = peewee.DateField()
     valor = peewee.DoubleField(null=True)
 
 
-class Fuente(peewee.Model):
+class Fuentes(peewee.Model):
     class Meta:
         database = proxy
 
