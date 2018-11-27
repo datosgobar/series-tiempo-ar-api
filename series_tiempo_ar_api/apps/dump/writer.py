@@ -54,9 +54,10 @@ class Writer:
                                                 file_name=dump_name)
             old = same_file.order_by('-id')[constants.OLD_DUMP_FILES_AMOUNT:]
             for model in old:
-                model.delete()
                 for zip_dump_file in model.zipdumpfile_set.all():
                     zip_dump_file.delete()
+
+                model.delete()
 
     def run_catching_exceptions(self):
         try:

@@ -24,6 +24,12 @@ class GenerateDumpTask(AbstractTask):
 
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default='CSV')
 
+    def delete(self, using=None, keep_parents=False):
+        for dump in self.dumpfile_set.all():
+            dump.delete()
+
+        return super(GenerateDumpTask, self).delete(using, keep_parents)
+
 
 def dumpfile_upload_to(dump_file, _):
     directory = f'{dump_file.node}/' or ''
