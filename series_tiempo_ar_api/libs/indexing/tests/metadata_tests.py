@@ -4,7 +4,7 @@ import datetime
 from unittest import skip
 
 import mock
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django_datajsonar.models import Catalog
 from django.core.files import File
 
@@ -15,7 +15,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
 @skip
-class FieldEnhancedMetaTests(TransactionTestCase):
+class FieldEnhancedMetaTests(TestCase):
     catalog_id = 'test_catalog'
 
     def setUp(self):
