@@ -21,6 +21,7 @@ nav:
     - Arquitectura: 'developers/arquitectura.md'
     - Instalación: 'developers/development.md'
     - Administración: 'developers/admin.md'
+  - Historial de versiones: 'history.md'
 
 theme: datosgobar_docs
 
