@@ -129,7 +129,7 @@ class DumpFile(models.Model):
     def get_last_of_type(cls, file_type: str, node: str = None) -> list:
         """Devuelve el último dump generado del formato file_type especificado.
         Si se pasa un parámetro node, devuelve los últimos dumps para ese node.
-        Si no, se devuelvel los últimos dumps globales.
+        Si no, se devuelve los últimos dumps globales.
         """
 
         dumps_qs = cls.objects.filter(node__catalog_id=node)
