@@ -55,7 +55,7 @@ class DumpFile(models.Model):
     TYPE_CSV = 'csv'
     TYPE_XLSX = 'xlsx'
     TYPE_ZIP = 'zip'
-    TYPE_SQL = 'sql'
+    TYPE_SQL = 'sqlite'
     TYPE_DTA = 'dta'
 
     TYPE_CHOICES = (
