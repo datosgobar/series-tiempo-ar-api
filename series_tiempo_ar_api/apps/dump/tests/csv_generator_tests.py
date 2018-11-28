@@ -7,7 +7,7 @@ import zipfile
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django_datajsonar.models import Field, Node, Catalog
 from faker import Faker
 
@@ -223,7 +223,7 @@ class CSVTest(TestCase):
         Node.objects.all().delete()
 
 
-class CSVDumpCommandTests(TransactionTestCase):
+class CSVDumpCommandTests(TestCase):
     fake = Faker()
     index = fake.word()
 

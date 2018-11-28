@@ -9,20 +9,24 @@ from django.test import TestCase
 from django.core.management import call_command
 from pydatajson import DataJson
 
-from django_datajsonar.models import Catalog, Dataset, Distribution, Field
+from django_datajsonar.models import Catalog, Dataset, Distribution, Field, ReadDataJsonTask
 from django_datajsonar.models import Node
 from series_tiempo_ar_api.libs.indexing.report import attachments
+from faker import Faker
+
+fake = Faker()
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
 class AttachmentTests(TestCase):
-    catalog_id = 'test_catalog'
+    catalog_id = fake.pystr()
     catalog = os.path.join(SAMPLES_DIR, 'sample_data.json')
 
     @classmethod
     def setUpClass(cls):
         super(AttachmentTests, cls).setUpClass()
+        ReadDataJsonTask.objects.all().delete()
         Node.objects.all().delete()
         Catalog.objects.all().delete()
         cls.node = Node(catalog_id=cls.catalog_id,
