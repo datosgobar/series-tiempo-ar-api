@@ -13,20 +13,21 @@ from . import strings
 from .indicator_names import IndicatorNamesMixin
 
 
-class IndexingTaskCron(models.Model):
+class TaskCron(models.Model):
     cron_client = CronTab(user=getpass.getuser())
 
     time = models.TimeField(help_text='Los segundos serán ignorados')
     enabled = models.BooleanField(default=True)
     weekdays_only = models.BooleanField(default=False)
+    task_script_path = models.CharField(max_length=255, default=None)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        super(IndexingTaskCron, self).save(force_insert, force_update, using, update_fields)
+        super(TaskCron, self).save(force_insert, force_update, using, update_fields)
         self.update_crontab()
 
     def delete(self, using=None, keep_parents=False):
-        super(IndexingTaskCron, self).delete(using, keep_parents)
+        super(TaskCron, self).delete(using, keep_parents)
         self.update_crontab()
 
     def __unicode__(self):
@@ -35,16 +36,15 @@ class IndexingTaskCron(models.Model):
     @classmethod
     def update_crontab(cls):
         """Limpia la crontab y la regenera a partir de los modelos de IndexingTaskCron guardados"""
-        command = settings.READ_DATAJSON_SHELL_CMD or 'true'
         cron = cls.cron_client
 
         job_id = strings.CRONTAB_COMMENT
         for job in cron.find_comment(job_id):
             job.delete()
 
-        tasks = IndexingTaskCron.objects.filter(enabled=True)
+        tasks = TaskCron.objects.filter(enabled=True)
         for task in tasks:
-            job = cron.new(command=command, comment=job_id)
+            job = cron.new(command=task.task_script_path, comment=job_id)
 
             job.minute.on(task.time.minute)
             job.hour.on(task.time.hour)

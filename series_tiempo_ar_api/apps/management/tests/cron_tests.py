@@ -4,14 +4,15 @@ from datetime import time
 import mock
 from django.test import TestCase
 
-from series_tiempo_ar_api.apps.management.models import IndexingTaskCron
+from series_tiempo_ar_api.apps.management.models import TaskCron
 
 
 class CronTests(TestCase):
+    script = '/bin/true'
 
     def test_cron_added(self):
         mock_write = mock.Mock(return_value=None)
-        cron = IndexingTaskCron(time='00:00:00')
+        cron = TaskCron(time='00:00:00', task_script_path=self.script)
         cron.cron_client.write = mock_write
 
         cron.save()
@@ -20,7 +21,7 @@ class CronTests(TestCase):
 
     def test_cron_removed(self):
         mock_write = mock.Mock(return_value=None)
-        cron = IndexingTaskCron(time='00:00:00')
+        cron = TaskCron(time='00:00:00', task_script_path=self.script)
         cron.cron_client.write = mock_write
 
         cron.save()
@@ -34,7 +35,7 @@ class CronTests(TestCase):
         minute = 0
         second = 0
         mock_write = mock.Mock(return_value=None)
-        cron = IndexingTaskCron(time=time(hour=hour, minute=minute, second=second))
+        cron = TaskCron(time=time(hour=hour, minute=minute, second=second), task_script_path=self.script)
         cron.cron_client.write = mock_write
 
         cron.save()
@@ -47,7 +48,7 @@ class CronTests(TestCase):
     def test_cron_weekdays(self):
 
         mock_write = mock.Mock(return_value=None)
-        cron = IndexingTaskCron(time='00:00:00', weekdays_only=True)
+        cron = TaskCron(time='00:00:00', weekdays_only=True, task_script_path=self.script)
         cron.cron_client.write = mock_write
 
         cron.save()

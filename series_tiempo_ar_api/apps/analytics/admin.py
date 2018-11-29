@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.db import connection
 from solo.admin import SingletonModelAdmin
 
+from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .models import Query, ImportConfig, AnalyticsImportTask
 from .tasks import import_analytics_from_api_mgmt
 
@@ -51,9 +52,8 @@ class QueryAdmin(admin.ModelAdmin):
         return [field.name for field in self.opts.local_fields]
 
 
-class ImportConfigAdmin(SingletonModelAdmin):
-    # django-des overridea el change_form_template de la clase padre(!), volvemos al default de django
-    change_form_template = 'admin/change_form.html'
+class ImportConfigAdmin(SingletonAdmin):
+    pass
 
 
 class ImportTaskAdmin(admin.ModelAdmin):
