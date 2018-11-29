@@ -6,7 +6,8 @@ from django.contrib import messages
 from django_datajsonar.admin import FieldAdmin, DistributionAdmin
 from django_datajsonar.models import Field, Distribution
 
-from .models import IndexMetadataTask, CatalogAlias, Synonym
+from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
+from .models import IndexMetadataTask, CatalogAlias, Synonym, MetadataConfig
 from .indexer.metadata_indexer import run_metadata_indexer
 from .utils import delete_metadata
 
@@ -81,3 +82,8 @@ class CustomDistributionAdmin(DistributionAdmin):
         fields = Field.objects.filter(distribution__identifier__in=queryset.values_list('identifier', flat=True))
         delete_metadata(list(fields))
         queryset.delete()
+
+
+@admin.register(MetadataConfig)
+class MetadataConfigAdmin(SingletonAdmin):
+    pass
