@@ -193,3 +193,12 @@ field.units. Además se cambia la respuesta de field.periodicity de formato legi
 
 - Nuevo parámetro `last`. Ver [documentación](https://series-tiempo-ar-api.readthedocs.io/es/latest/)
 - Permito trailing slashes en URLs de descarga de dumps
+
+## 1.5.1
+Correcciones a dumps:
+
+- Header faltante en hojas adicionales en dump XLSX
+- Columnas y nombres de una tabla de dumps SQL
+- Bugfix de generación de dump global XLSX
+Mejoras de organización en el admin de django
+
