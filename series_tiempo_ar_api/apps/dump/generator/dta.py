@@ -6,7 +6,7 @@ from django.core.files import File
 from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.dump.generator import constants
-from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
+from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask, ZipDumpFile
 
 
 class DtaGenerator:
@@ -25,15 +25,17 @@ class DtaGenerator:
                                             file_name=dump_name,
                                             node=self.node).last()
         df = pd.read_csv(dump_file.file)
-        if dump_file.file_name == DumpFile.FILENAME_VALUES:
+        if dump_name == DumpFile.FILENAME_VALUES:
             df = df[constants.STATA_VALUES_COLS]
 
         with FileWrapper(self.file_name(dump_file)) as f:
             save_to_dta(df, f.filepath)
-            self.task.dumpfile_set.create(file_type=DumpFile.TYPE_DTA,
-                                          file_name=dump_name,
-                                          node=dump_file.node,
-                                          file=File(open(f.filepath, 'rb')))
+            dump = self.task.dumpfile_set.create(file_type=DumpFile.TYPE_DTA,
+                                                 file_name=dump_name,
+                                                 node=dump_file.node,
+                                                 file=File(open(f.filepath, 'rb')))
+            if (dump_name, DumpFile.TYPE_DTA) in DumpFile.ZIP_FILES:
+                ZipDumpFile.create_from_dump_file(dump, f.filepath)
 
     def file_name(self, dump_file: DumpFile):
         return f'{dump_file.node}-{dump_file.file_name}-{dump_file.id}.dta'

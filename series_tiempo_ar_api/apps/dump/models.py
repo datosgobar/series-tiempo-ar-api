@@ -70,6 +70,7 @@ class DumpFile(models.Model):
         (FILENAME_FULL, TYPE_CSV),
         (FILENAME_VALUES, TYPE_CSV),
         (FILENAME_FULL, TYPE_SQL),
+        (FILENAME_VALUES, TYPE_DTA),
     )
 
     file_type = models.CharField(max_length=12, choices=TYPE_CHOICES, default=TYPE_CSV)
