@@ -43,4 +43,3 @@ def init_index(index_name):
         index.create()
     Metadata.init(using=elastic_instance, index=index_name)
     return index
-
