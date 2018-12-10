@@ -1,6 +1,7 @@
 #! coding: utf-8
 
-FIELDS_INDEX = 'fields_meta'
+METADATA_ALIAS = 'metadata'
+METADATA_DOC_TYPE = 'doc'
 
 PARAM_LIMIT = 'limit'
 PARAM_OFFSET = 'start'

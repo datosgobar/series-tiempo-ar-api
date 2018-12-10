@@ -29,7 +29,7 @@ def add_analyzer(index: Index):
 
 
 def get_fields_meta_index():
-    fields_meta = Index(constants.FIELDS_INDEX, using=ElasticInstance.get())
+    fields_meta = Index(constants.METADATA_ALIAS, using=ElasticInstance.get())
 
     add_analyzer(fields_meta)
     return fields_meta

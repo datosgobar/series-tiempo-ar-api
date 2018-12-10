@@ -30,5 +30,6 @@ class Field(DocType):
 
     class Meta:
         dynamic = MetaField('strict')
-        index = constants.FIELDS_INDEX
+        doc_type = constants.METADATA_DOC_TYPE
+        index = constants.METADATA_ALIAS
         using = ElasticInstance.get()

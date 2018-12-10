@@ -28,5 +28,5 @@ def resolve_catalog_id_aliases(aliases: Sequence[str]) -> List[str]:
 def delete_metadata(fields: list):
     es_instance = ElasticInstance.get()
 
-    search = Search(using=es_instance, index=constants.FIELDS_INDEX)
+    search = Search(using=es_instance, index=constants.METADATA_ALIAS)
     return search.filter('terms', id=[field.identifier for field in fields]).delete()
