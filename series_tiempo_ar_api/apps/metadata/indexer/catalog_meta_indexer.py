@@ -1,22 +1,29 @@
 #! coding: utf-8
 import json
+
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import streaming_bulk
 from pydatajson import DataJson
 from django_datajsonar.models import Field, Node, Metadata, ContentType
-from elasticsearch.helpers import streaming_bulk
 
-from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format_es
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.apps.metadata import constants
+from series_tiempo_ar_api.apps.metadata.indexer.index import init_index
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class CatalogMetadataIndexer:
 
-    def __init__(self, node: Node, task: IndexMetadataTask, doc_type):
+    def __init__(self, node: Node, task: IndexMetadataTask, index: str):
         self.node = node
         self.task = task
-        self.doc_type = doc_type
-        self.elastic = ElasticInstance.get()
+        self.index_name = index
+        self.elastic: Elasticsearch = ElasticInstance.get()
+
+        if not self.elastic.indices.exists(self.index_name):
+            init_index(self.index_name)
+
         self.fields_meta = {}
         self.init_fields_meta_cache()
         try:
@@ -26,14 +33,19 @@ class CatalogMetadataIndexer:
         except Exception:
             raise ValueError("Error de lectura de los themes del catálogo")
 
-    def index(self):
+    def index(self) -> bool:
         if not self.get_available_fields().count():
             self.task.info(self.task, "No hay series para indexar en este catálogo")
-            return
+            return False
 
+        index_ok = False
         for success, info in streaming_bulk(self.elastic, self.generate_actions()):
             if not success:
                 self.task.info(self.task, 'Error indexando: {}'.format(info))
+            else:
+                index_ok = True
+
+        return index_ok
 
     def generate_actions(self):
         fields = self.get_available_fields()
@@ -50,7 +62,8 @@ class CatalogMetadataIndexer:
 
             field_meta = json.loads(field.metadata)
             dataset = json.loads(field.distribution.dataset.metadata)
-            doc = self.doc_type(
+            doc = self.generate_es_doc(
+                field.identifier,
                 periodicity=periodicity,
                 start_date=start_date,
                 end_date=end_date,
@@ -67,9 +80,7 @@ class CatalogMetadataIndexer:
                 catalog_id=self.node.catalog_id
             )
 
-            doc.meta.id = field.identifier
-            action = doc.to_dict(include_meta=True)
-            yield action
+            yield doc
 
     def get_available_fields(self):
         field_content_type = ContentType.objects.get_for_model(Field)
@@ -100,3 +111,11 @@ class CatalogMetadataIndexer:
             themes[theme['id']] = theme['label']
 
         return themes
+
+    def generate_es_doc(self, doc_id, **kwargs):
+        return {
+            '_id': doc_id,
+            '_index': self.index_name,
+            '_type': constants.METADATA_DOC_TYPE,
+            '_source': kwargs
+        }

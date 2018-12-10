@@ -1,7 +1,9 @@
 #! coding: utf-8
+import random
 from typing import Sequence, List
 
 from django.db.models import QuerySet
+from django.utils import timezone
 from elasticsearch_dsl import Search, Q
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.metadata import constants
@@ -28,5 +30,9 @@ def resolve_catalog_id_aliases(aliases: Sequence[str]) -> List[str]:
 def delete_metadata(fields: list):
     es_instance = ElasticInstance.get()
 
-    search = Search(using=es_instance, index=constants.FIELDS_INDEX)
+    search = Search(using=es_instance, index=constants.METADATA_ALIAS)
     return search.filter('terms', id=[field.identifier for field in fields]).delete()
+
+
+def get_random_index_name():
+    return f"metadata-{random.randrange(1000000)}-{int(timezone.now().timestamp())}"

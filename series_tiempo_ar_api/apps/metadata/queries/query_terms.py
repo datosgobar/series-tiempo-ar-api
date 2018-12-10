@@ -2,7 +2,8 @@
 from django.conf import settings
 from elasticsearch_dsl import A
 
-from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
+from series_tiempo_ar_api.apps.metadata import constants
+from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Metadata
 
 
 def query_field_terms(field=None):
@@ -13,7 +14,7 @@ def query_field_terms(field=None):
     if not field:
         raise ValueError(u'Field a buscar inválido')
 
-    search = Field.search()
+    search = Metadata.search(index=constants.METADATA_ALIAS)
 
     agg = A('terms', field=field, size=settings.MAX_DATASET_SOURCES)
     search.aggs.bucket('results', agg)

@@ -2,49 +2,63 @@
 import logging
 
 from django_rq import job
+from elasticsearch import Elasticsearch
 
-from elasticsearch_dsl import Index
 from django_datajsonar.models import Node
+
+from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
-from .doc_types import Field
+from series_tiempo_ar_api.apps.metadata.utils import get_random_index_name
+from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .catalog_meta_indexer import CatalogMetadataIndexer
-from .index import get_fields_meta_index
 
 logger = logging.getLogger(__name__)
 
 
 class MetadataIndexer:
 
-    def __init__(self, task, doc_type=Field, index: Index = None):
+    def __init__(self, task):
+        self.elastic: Elasticsearch = ElasticInstance.get()
         self.task = task
-        self.index = index if index is not None else get_fields_meta_index()
-        self.doc_type = doc_type
 
-    def setup_index(self):
-        """Borra y regenera el índice entero. Esto es 'safe' porque
-        todos los datos a indexar en este índice están guardados en
-        la base de datos relacional
-        """
-        if not self.index.exists():
-            self.index.doc_type(self.doc_type)
-            self.index.create()
+    def update_alias(self, index_name):
+        if not self.elastic.indices.exists_alias(name=constants.METADATA_ALIAS):
+            self.elastic.indices.put_alias(index_name, constants.METADATA_ALIAS)
+            return
+        indices = self.elastic.indices.get_alias(name=constants.METADATA_ALIAS).keys()
+
+        actions = [
+            {"add": {"index": index_name, "alias": constants.METADATA_ALIAS}},
+        ]
+
+        for old_index in indices:
+            actions.append({"remove_index": {"index": old_index}})
+
+        self.elastic.indices.update_aliases({
+            "actions": actions
+        })
 
     def run(self):
-        self.setup_index()
+        index = get_random_index_name()
+        index_created = False
         for node in Node.objects.filter(indexable=True):
             try:
                 IndexMetadataTask.info(self.task,
                                        u'Inicio de la indexación de metadatos de {}'
                                        .format(node.catalog_id))
-                CatalogMetadataIndexer(node, self.task, self.doc_type).index()
+                index_created = index_created or CatalogMetadataIndexer(node, self.task, index).index()
                 IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'
                                        .format(node.catalog_id))
-
             except Exception as e:
                 IndexMetadataTask.info(self.task,
                                        u'Error en la lectura del catálogo {}: {}'.format(node.catalog_id, e))
 
-        self.index.forcemerge()
+        if index_created:
+            self.elastic.indices.forcemerge(index=index)
+            self.update_alias(index)
+        else:
+            if self.elastic.indices.exists(index):
+                self.elastic.indices.delete(index)
 
 
 @job('indexing', timeout=10000)
