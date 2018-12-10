@@ -3,7 +3,7 @@ from elasticsearch_dsl import Search
 
 from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
+from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Metadata
 from series_tiempo_ar_api.apps.metadata import strings, constants
 
 
@@ -52,7 +52,7 @@ class FieldSearchQuery(object):
             return self.response
 
         es_client = ElasticInstance.get()
-        search = Field.search(using=es_client)
+        search = Metadata.search(using=es_client, index=constants.METADATA_ALIAS)
 
         querystring = self.args.get(constants.PARAM_QUERYSTRING)
         if querystring is not None:

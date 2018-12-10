@@ -10,7 +10,6 @@ from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import ReadDataJsonTask, Node, Field as datajsonar_Field
 
 from series_tiempo_ar_api.apps.metadata.indexer.catalog_meta_indexer import CatalogMetadataIndexer
-from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Field
 from series_tiempo_ar_api.apps.metadata.indexer.index import add_analyzer
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
@@ -24,10 +23,6 @@ add_analyzer(fake_index)
 
 
 class IndexerTests(TestCase):
-
-    class FakeField(Field):
-        class Meta:
-            index = fake_index._name
 
     def setUp(self):
         self.elastic = ElasticInstance.get()

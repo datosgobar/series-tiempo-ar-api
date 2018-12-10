@@ -8,6 +8,7 @@ from django_datajsonar.models import Field, Node, Metadata, ContentType
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.metadata import constants
+from series_tiempo_ar_api.apps.metadata.indexer.index import init_index
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
@@ -19,6 +20,10 @@ class CatalogMetadataIndexer:
         self.task = task
         self.index_name = index
         self.elastic: Elasticsearch = ElasticInstance.get()
+
+        if not self.elastic.indices.exists(self.index_name):
+            init_index(self.index_name)
+
         self.fields_meta = {}
         self.init_fields_meta_cache()
         try:
@@ -28,7 +33,7 @@ class CatalogMetadataIndexer:
         except Exception:
             raise ValueError("Error de lectura de los themes del catálogo")
 
-    def index(self):
+    def index(self) -> bool:
         if not self.get_available_fields().count():
             self.task.info(self.task, "No hay series para indexar en este catálogo")
             return False
@@ -39,6 +44,7 @@ class CatalogMetadataIndexer:
                 self.task.info(self.task, 'Error indexando: {}'.format(info))
             else:
                 index_ok = True
+
         return index_ok
 
     def generate_actions(self):

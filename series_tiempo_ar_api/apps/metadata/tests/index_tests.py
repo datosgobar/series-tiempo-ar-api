@@ -1,15 +1,18 @@
 #! coding: utf8
 
 from django.test import TestCase
+from faker import Faker
+
 from series_tiempo_ar_api.apps.metadata.indexer.index import get_fields_meta_index
 from series_tiempo_ar_api.apps.metadata.models import Synonym
 from series_tiempo_ar_api.apps.metadata import constants
 
 
 class IndexTests(TestCase):
+    index_name = Faker().pystr().lower()
 
     def test_no_synonyms_has_no_filter(self):
-        index = get_fields_meta_index().to_dict()
+        index = get_fields_meta_index(self.index_name).to_dict()
 
         analyzer = index['settings']['analysis']['analyzer'][constants.ANALYZER]
         self.assertNotIn(constants.SYNONYM_FILTER, analyzer['filter'])
@@ -17,7 +20,7 @@ class IndexTests(TestCase):
     def test_add_synonym(self):
         terms = 'test,terms'
         Synonym.objects.create(terms=terms)
-        index = get_fields_meta_index().to_dict()
+        index = get_fields_meta_index(self.index_name).to_dict()
         filters = index['settings']['analysis']['filter'][constants.SYNONYM_FILTER]
         self.assertIn(terms, filters['synonyms'])
 
@@ -26,7 +29,7 @@ class IndexTests(TestCase):
         for term in terms:
             Synonym.objects.create(terms=term)
 
-        index = get_fields_meta_index().to_dict()
+        index = get_fields_meta_index(self.index_name).to_dict()
         filters = index['settings']['analysis']['filter'][constants.SYNONYM_FILTER]
 
         self.assertEqual(len(filters['synonyms']), 3)

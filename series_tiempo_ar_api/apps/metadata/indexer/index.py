@@ -4,6 +4,7 @@ from elasticsearch_dsl import Index, analyzer, token_filter
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.models import Synonym
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
+from .doc_types import Metadata
 
 
 def add_analyzer(index: Index):
@@ -28,8 +29,18 @@ def add_analyzer(index: Index):
     )
 
 
-def get_fields_meta_index():
-    fields_meta = Index(constants.METADATA_ALIAS, using=ElasticInstance.get())
+def get_fields_meta_index(index_name):
+    index = init_index(index_name)
 
-    add_analyzer(fields_meta)
-    return fields_meta
+    return index
+
+
+def init_index(index_name):
+    elastic_instance = ElasticInstance.get()
+    index = Index(index_name, using=elastic_instance)
+    add_analyzer(index)
+    if not index.exists():
+        index.create()
+    Metadata.init(using=elastic_instance, index=index_name)
+    return index
+

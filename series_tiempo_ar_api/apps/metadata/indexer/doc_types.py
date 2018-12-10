@@ -3,10 +3,9 @@ from elasticsearch_dsl import DocType, Keyword, Text, Date, MetaField
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
-from .index import get_fields_meta_index
 
 
-class Field(DocType):
+class Metadata(DocType):
     """ Formato de los docs de metadatos a indexar en ES."""
     title = Keyword()
     description = Text(analyzer=constants.ANALYZER, copy_to='all')
@@ -31,5 +30,4 @@ class Field(DocType):
     class Meta:
         dynamic = MetaField('strict')
         doc_type = constants.METADATA_DOC_TYPE
-        index = constants.METADATA_ALIAS
         using = ElasticInstance.get()
