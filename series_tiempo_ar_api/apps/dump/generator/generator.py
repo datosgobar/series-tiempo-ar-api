@@ -34,8 +34,13 @@ class DumpGenerator:
         fields = Field.objects.all()
 
         if self.catalog:
+            try:
+                catalog = Catalog.objects.get(identifier=self.catalog)
+            except Catalog.DoesNotExist:
+                return
+
             fields = Field.objects.filter(
-                distribution__dataset__catalog=Catalog.objects.get(identifier=self.catalog)
+                distribution__dataset__catalog=catalog
             )
 
         fields = fields.filter(
@@ -72,6 +77,10 @@ class DumpGenerator:
             }
 
     def generate(self):
+        if not self.fields:
+            GenerateDumpTask.info(self.task, f"No hay series cargadas para el catálogo {self.catalog}")
+            return
+
         FullCsvGenerator(self.task, self.fields, self.catalog).generate()
         ValuesCsvGenerator(self.task, self.fields, self.catalog).generate()
         SourcesCsvGenerator(self.task, self.fields, self.catalog).generate()

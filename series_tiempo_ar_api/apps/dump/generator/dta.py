@@ -24,6 +24,11 @@ class DtaGenerator:
         dump_file = DumpFile.objects.filter(file_type=DumpFile.TYPE_CSV,
                                             file_name=dump_name,
                                             node=self.node).last()
+
+        if dump_file is None:
+            GenerateDumpTask.info(self.task, f"No hay dumps CSV generados para el nodo {self.node.catalog_id}")
+            return
+
         df = pd.read_csv(dump_file.file)
         if dump_name == DumpFile.FILENAME_VALUES:
             df = df[constants.STATA_VALUES_COLS]

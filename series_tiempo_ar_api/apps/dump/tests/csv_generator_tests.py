@@ -37,6 +37,16 @@ class CSVTest(TestCase):
         gen = DumpGenerator(cls.task)
         gen.generate()
 
+    def test_invalid_catalog(self):
+        task = GenerateDumpTask()
+        task.save()
+
+        gen = DumpGenerator(task, "no_catalog")
+        gen.generate()
+        task.refresh_from_db()
+
+        self.assertFalse(DumpFile.objects.filter(file_type=DumpFile.TYPE_CSV, task=task))
+
     def test_values_dump(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_VALUES).file
         reader = read_file_as_csv(file)

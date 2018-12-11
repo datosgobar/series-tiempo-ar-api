@@ -3,6 +3,7 @@ import os
 import faker
 import pandas as pd
 from django.test import TestCase
+from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.generator.dta import DtaGenerator
@@ -24,6 +25,12 @@ class DtaGeneratorTests(TestCase):
         index_catalog('test_catalog', os.path.join(samples_dir, 'distribution_daily_periodicity.json'), cls.index)
         enqueue_write_csv_task()
         super(DtaGeneratorTests, cls).setUpClass()
+
+    def test_generate_dta_no_csv_loaded(self):
+        node = Node.objects.create(catalog_id="empty_catalog", catalog_url="test.com", indexable=True)
+        task = GenerateDumpTask.objects.create()
+        DtaGenerator(task.id).generate()
+        self.assertFalse(DumpFile.objects.filter(node=node, file_type=DumpFile.TYPE_DTA))
 
     def test_generate_dta(self):
         task = GenerateDumpTask.objects.create()
