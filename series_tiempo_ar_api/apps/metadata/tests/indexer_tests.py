@@ -46,6 +46,27 @@ class IndexerTests(TestCase):
 
         self.assertFalse(index_ok)
 
+    def test_multiple_catalogs(self):
+        self._index(catalog_id='test_catalog',
+                               catalog_url='single_distribution.json')
+
+        self._index(catalog_id='other_catalog',
+                    catalog_url='second_single_distribution.json')
+
+        search = Search(
+            index=fake_index._name,
+            using=self.elastic
+        ).filter('term',
+                 catalog_id='test_catalog')
+        self.assertTrue(search.execute())
+
+        other_search = Search(
+            index=fake_index._name,
+            using=self.elastic
+        ).filter('term',
+                 catalog_id='other_catalog')
+        self.assertTrue(other_search.execute())
+
     def _index(self, catalog_id, catalog_url, set_availables=True):
         node = Node.objects.create(
             catalog_id=catalog_id,

@@ -46,7 +46,7 @@ class MetadataIndexer:
                 IndexMetadataTask.info(self.task,
                                        u'Inicio de la indexación de metadatos de {}'
                                        .format(node.catalog_id))
-                index_created = index_created or CatalogMetadataIndexer(node, self.task, index).index()
+                index_created = CatalogMetadataIndexer(node, self.task, index).index() or index_created
                 IndexMetadataTask.info(self.task, u'Fin de la indexación de metadatos de {}'
                                        .format(node.catalog_id))
             except Exception as e:
