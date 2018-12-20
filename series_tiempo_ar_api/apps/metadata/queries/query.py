@@ -1,6 +1,7 @@
 #! coding: utf-8
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, Q
 
+from series_tiempo_ar_api.apps.metadata.models import MetadataConfig
 from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases
 from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Metadata
@@ -56,7 +57,7 @@ class FieldSearchQuery(object):
 
         querystring = self.args.get(constants.PARAM_QUERYSTRING)
         if querystring is not None:
-            search = search.query('match', all=querystring)
+            search = self.setup_query(search)
 
         offset = self.args[constants.PARAM_OFFSET]
         limit = self.args[constants.PARAM_LIMIT]
@@ -123,3 +124,10 @@ class FieldSearchQuery(object):
         search = search.filter('terms', **{field_name: terms})
 
         return search
+
+    def setup_query(self, search: Search):
+        queries = []
+        for field, values in MetadataConfig.get_solo().query_config.items():
+            queries.append(Q('bool', should=Q('match', **{field: self.args.get(constants.PARAM_QUERYSTRING)}), **values))
+        return search.query('dis_max',
+                            queries=queries)

@@ -1,10 +1,11 @@
 #! coding: utf-8
 import datetime
-from typing import Sequence, List
+from typing import Sequence
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django_datajsonar.models import AbstractTask, Node
 from solo.models import SingletonModel
 
@@ -43,6 +44,10 @@ class MetadataConfig(SingletonModel):
     SCRIPT_PATH = settings.INDEX_METADATA_SCRIPT_PATH
 
     time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=0, minute=0))
+    query_config = JSONField(default={'dataset_description': {'boost': 1},
+                                      'dataset_source': {'boost': 1},
+                                      'dataset_title': {'boost': 1},
+                                      'description': {'boost': 1.5}})
 
     def save(self, *args, **kwargs):
         super(MetadataConfig, self).save(*args, **kwargs)

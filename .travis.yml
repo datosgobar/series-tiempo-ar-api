@@ -6,6 +6,7 @@ addons:
     packages:
     - net-tools
     - openvpn
+  postgresql: "9.4"
 
 services:
 - docker
