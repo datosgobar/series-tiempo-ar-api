@@ -3,7 +3,7 @@ from django.contrib import admin
 from django_datajsonar.admin import FieldAdmin, DistributionAdmin
 from django_datajsonar.models import Field, Distribution
 
-from series_tiempo_ar_api.apps.metadata.utils import delete_metadata
+from .utils import delete_metadata
 from .tasks import reindex_distribution
 
 admin.site.unregister(Field)
