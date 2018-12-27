@@ -2,11 +2,14 @@
 import json
 import logging
 from functools import reduce
+from io import BytesIO
 
 import pandas as pd
 from django.conf import settings
 from django_datajsonar.models import Distribution
+from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
+from elasticsearch_dsl import Search
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 from series_tiempo_ar_api.apps.management import meta_keys
 
@@ -24,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class DistributionIndexer:
     def __init__(self, index: str):
-        self.elastic = ElasticInstance.get()
+        self.elastic: Elasticsearch = ElasticInstance.get()
         self.index_name = index
         self.index = tseries_index(index)
 
@@ -64,7 +67,7 @@ class DistributionIndexer:
             fields (dict): diccionario con estructura titulo: serie_id
         """
 
-        df = read_distribution_csv(distribution)
+        df = read_distribution_csv_as_df(distribution)
 
         # Borro las columnas que no figuren en los metadatos
         for column in df.columns:
@@ -87,6 +90,25 @@ class DistributionIndexer:
     def add_catalog_keyword(self, actions, distribution):
         for action in actions:
             action['_source']['catalog'] = distribution.dataset.catalog.identifier
+
+    def reindex(self, distribution: Distribution):
+        self._delete_distribution_data(distribution)
+        self.run(distribution)
+
+    def _delete_distribution_data(self, distribution):
+        fields_to_delete = list(
+            distribution.field_set
+            .filter(present=True)
+            .values_list('identifier', flat=True)
+        )
+        series_data = Search(using=self.elastic, index=self.index._name).filter('terms', series_id=fields_to_delete)
+        series_data.delete()
+
+
+def read_distribution_csv_as_df(distribution: Distribution) -> pd.DataFrame:
+    return pd.read_csv(BytesIO(distribution.data_file.read()),
+                       parse_dates=[settings.INDEX_COLUMN],
+                       index_col=settings.INDEX_COLUMN)
 
 
 def get_time_index_periodicity(distribution, fields):
