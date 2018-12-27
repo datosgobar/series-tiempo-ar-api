@@ -106,7 +106,7 @@ class DistributionIndexer:
 
 
 def read_distribution_csv_as_df(distribution: Distribution) -> pd.DataFrame:
-    return pd.read_csv(BytesIO(distribution.data_file.read()),
+    return pd.read_csv(distribution.data_file,
                        parse_dates=[settings.INDEX_COLUMN],
                        index_col=settings.INDEX_COLUMN)
 
