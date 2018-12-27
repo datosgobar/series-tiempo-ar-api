@@ -1,12 +1,13 @@
 #! coding: utf-8
 import os
 
+from django.core.files import File
 from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
 
 from django_datajsonar.tasks import read_datajson
-from django_datajsonar.models import Distribution, Field
+from django_datajsonar.models import Distribution, Field, Catalog
 from django_datajsonar.models import ReadDataJsonTask, Node
 from series_tiempo_ar_api.utils import utils
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -24,6 +25,7 @@ class IndexerTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        Catalog.objects.all().delete()
         cls.elastic = ElasticInstance()
         super(IndexerTests, cls).setUpClass()
 
@@ -126,6 +128,86 @@ class IndexerTests(TestCase):
             .filter('match', series_id=series_id).execute()
 
         self.assertEqual(len(results), 3)
+
+    def test_reindex_same_distribution(self):
+        self._index_catalog('single_data.json')
+        self.assertEqual(Field.objects.count(), 2)
+        series_id = '102.1_I2NG_ABRI_M_22'
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        DistributionIndexer(index=self.test_index).reindex(Distribution.objects.first())
+        updated_results = Search(using=self.elastic,
+                                 index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        # No cambia nada
+        self.assertEqual(list(results), list(updated_results))
+
+    def test_reindex_additional_value(self):
+        self._index_catalog('single_data.json')
+        self.assertEqual(Field.objects.count(), 2)
+        series_id = '102.1_I2NG_ABRI_M_22'
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertEqual(len(list(results)), 2)
+        distribution = Distribution.objects.get(identifier="102.1")
+        distribution.data_file = File(open(os.path.join(SAMPLES_DIR, 'single_data_updated.csv'), 'rb'))
+        distribution.save()
+        DistributionIndexer(index=self.test_index).reindex(distribution)
+        self.elastic.indices.forcemerge(index=self.test_index)
+        updated_results = Search(using=self.elastic,
+                                 index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+        self.assertEqual(len(list(updated_results)), 3)
+
+        self.assertEqual(list(results), list(updated_results[:2]))
+
+    def test_reindex_remove_value(self):
+        self._index_catalog('single_data_updated.json')
+        self.assertEqual(Field.objects.count(), 2)
+        series_id = '102.1_I2NG_ABRI_M_22'
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertEqual(len(list(results)), 3)
+        distribution = Distribution.objects.get(identifier="102.1")
+        distribution.data_file = File(open(os.path.join(SAMPLES_DIR, 'single_data.csv'), 'rb'))
+        distribution.save()
+        DistributionIndexer(index=self.test_index).reindex(distribution)
+        self.elastic.indices.forcemerge(index=self.test_index)
+        updated_results = Search(using=self.elastic,
+                                 index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+        self.assertEqual(len(list(updated_results)), 2)
+
+        self.assertEqual(list(results[:2]), list(updated_results))
+
+    def test_reindex_update_value(self):
+        self._index_catalog('single_data.json')
+        self.assertEqual(Field.objects.count(), 2)
+        series_id = '102.1_I2NG_ABRI_M_22'
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertEqual(len(list(results)), 2)
+        distribution = Distribution.objects.get(identifier="102.1")
+        distribution.data_file = File(open(os.path.join(SAMPLES_DIR, 'single_data_value_changed.csv'), 'rb'))
+        distribution.save()
+        DistributionIndexer(index=self.test_index).reindex(distribution)
+        self.elastic.indices.forcemerge(index=self.test_index)
+        updated_results = Search(using=self.elastic,
+                                 index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+        self.assertEqual(len(list(updated_results)), 2)
+
+        self.assertEqual(list(results)[0], list(updated_results)[0])
+        self.assertNotEqual(list(results)[1], list(updated_results)[1])
 
     def tearDown(self):
         if self.elastic.indices.exists(self.test_index):

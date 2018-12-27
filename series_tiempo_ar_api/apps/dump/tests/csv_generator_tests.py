@@ -234,10 +234,10 @@ class CSVTest(TestCase):
 
 
 class CSVDumpCommandTests(TestCase):
-    fake = Faker()
-    index = fake.word()
 
     def setUp(self):
+        fake = Faker()
+        self.index = fake.word()
         GenerateDumpTask.objects.all().delete()
         DumpFile.objects.all().delete()
 
@@ -274,9 +274,8 @@ class CSVDumpCommandTests(TestCase):
                                              file_type=DumpFile.TYPE_CSV,
                                              node__catalog_id='catalog_two').zipdumpfile_set.first())
 
-    @classmethod
-    def tearDownClass(cls):
-        super(CSVDumpCommandTests, cls).tearDownClass()
-        ElasticInstance.get().indices.delete(cls.index)
+    def tearDown(self):
+        ElasticInstance.get().indices.delete(self.index)
         Catalog.objects.all().delete()
+        DumpFile.objects.all().delete()
         Node.objects.all().delete()
