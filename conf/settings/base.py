@@ -175,6 +175,7 @@ APPS = (
     'series_tiempo_ar_api.apps.metadata.apps.MetadataConfig',
     'series_tiempo_ar_api.apps.dump',
     'series_tiempo_ar_api.libs.indexing',
+    'series_tiempo_ar_api.libs.custom_admins',
 )
 
 INSTALLED_APPS = DJANGO_BASE_APPS + VENDOR_APPS + APPS
