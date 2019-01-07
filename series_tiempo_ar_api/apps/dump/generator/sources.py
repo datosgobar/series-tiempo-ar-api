@@ -18,7 +18,6 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
 
         for field in filter(lambda x: self.fields[x]['dataset_fuente'], self.fields):
             source = self.fields[field]['dataset_fuente']
-            field_model: Field = self.fields[field]['serie']
 
             if source not in sources:
                 sources[source] = {
@@ -30,7 +29,7 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
                 }
 
             sources[source][constants.SOURCE_SERIES_AMT] += 1
-            index_start = meta_keys.get(field_model, meta_keys.INDEX_START)
+            index_start = self.fields[field]['metadata'].get(meta_keys.INDEX_START)
 
             # ☢☢☢
             if index_start:
@@ -39,14 +38,14 @@ class SourcesCsvGenerator(AbstractDumpGenerator):
                 if first_index is None or first_index > index_start:
                     sources[source][constants.SOURCE_FIRST_INDEX] = index_start
 
-            index_end = meta_keys.get(field_model, meta_keys.INDEX_END)
+            index_end = self.fields[field]['metadata'].get(meta_keys.INDEX_END)
             if index_end:
                 index_end = iso8601.parse_date(index_end).date()
                 last_index = sources[source][constants.SOURCE_LAST_INDEX]
                 if last_index is None or last_index < index_end:
                     sources[source][constants.SOURCE_LAST_INDEX] = index_end
 
-            index_size = meta_keys.get(field_model, meta_keys.INDEX_SIZE) or 0
+            index_size = self.fields[field]['metadata'].get(meta_keys.INDEX_SIZE) or 0
 
             if index_size:
                 index_size = int(index_size)

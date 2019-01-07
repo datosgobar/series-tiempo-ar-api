@@ -2,7 +2,8 @@ import os
 import json
 
 from django.conf import settings
-from django_datajsonar.models import Field, Catalog
+from django.contrib.contenttypes.models import ContentType
+from django_datajsonar.models import Field, Catalog, Metadata, Distribution
 
 from series_tiempo_ar_api.apps.dump.generator.metadata import MetadataCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
@@ -51,7 +52,9 @@ class DumpGenerator:
             'distribution__dataset__catalog',
             'enhanced_meta',
         )
-
+        all_meta = Metadata.objects.all()
+        field_ct = ContentType.objects.get_for_model(Field)
+        distribution_ct = ContentType.objects.get_for_model(Distribution)
         for field in fields:
             meta = json.loads(field.metadata)
             dist_meta = json.loads(field.distribution.metadata)
@@ -74,6 +77,8 @@ class DumpGenerator:
                 'dataset_titulo': field.distribution.dataset.title,
                 'dataset_descripcion': dataset_meta.get('description'),
                 'dataset_tema': theme_labels,
+                'metadata': {o.key: o.value for o in list(all_meta.filter(content_type=field_ct, object_id=field.id))},
+                'frequency': all_meta.get(content_type=distribution_ct, object_id=field.distribution.id, key=meta_keys.PERIODICITY).value,
             }
 
     def generate(self):
