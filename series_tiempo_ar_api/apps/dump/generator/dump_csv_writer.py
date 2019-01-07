@@ -51,11 +51,11 @@ class CsvDumpWriter:
     def write_distribution(self, distribution: Distribution, writer: csv.writer):
         # noinspection PyBroadException
         try:
-            df = read_distribution_csv(distribution)
             fields = distribution.field_set.all()
             fields = {field.title: field.identifier for field in fields}
-
             periodicity = meta_keys.get(distribution, meta_keys.PERIODICITY)
+
+            df = read_distribution_csv(distribution)
             df.apply(self.write_serie, args=(periodicity, fields, writer))
         except Exception as e:
             msg = f'[{self.tag} Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
