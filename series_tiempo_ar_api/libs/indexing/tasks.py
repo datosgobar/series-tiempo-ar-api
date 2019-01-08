@@ -41,7 +41,7 @@ def index_distribution(distribution_id, node_id, task_id,
             changed = _hash[0].value != distribution_model.data_hash
 
         if changed or force:
-            DistributionIndexer(index=index).run(distribution_model)
+            DistributionIndexer(index=index).reindex(distribution_model)
 
         distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
                                                           defaults={'value': distribution_model.data_hash})
