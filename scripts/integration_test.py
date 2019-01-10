@@ -39,16 +39,13 @@ def get_series_metadata(api_url: str):
 
 class IntegrationTest:
 
-    def __init__(self, series_metadata: pd.DataFrame, api_url: str):
+    def __init__(self, series_metadata: pd.DataFrame, fetcher):
         """Test de integración de la API de series. A partir de los metadatos de las series
         (obtenibles a partir de un dump de metadatos), se consultan los datos de todas las
         series una vez, y se comparan con los datos originales.
         """
         self.series_metadata = series_metadata
-        if api_url[-1] != '/':
-            api_url = api_url + '/'
-        self.series_endpoint = f'{api_url}series/api/series/'
-        self.metadata_endpoint = f'{api_url}series/api/dump/series-tiempo-metadatos.csv'
+        self.fetcher = fetcher
         self.errors = []
 
     def test(self):
@@ -62,7 +59,7 @@ class IntegrationTest:
         return self.errors
 
     def test_serie(self, serie_id):
-        api_df, status_code = self.read_api_csv(serie_id)
+        api_df = self.read_api_csv(serie_id)
         original_df = read_source_csv(serie_id, self.series_metadata)
         if api_df is None or original_df is None:
             print("Error", serie_id, ": api_df", api_df is not None, ", original_df", original_df is not None)
@@ -70,29 +67,42 @@ class IntegrationTest:
 
         equality = get_equality_array(api_df, original_df)
         if not all(equality):
-            print("Error in ", serie_id)
-            print(pd.Series(equality).value_counts()[False] / len(equality) * 100, "% de error")
+            error_pct = pd.Series(equality).value_counts()[False] / len(equality) * 100
+            print(f"Error in {serie_id}. {error_pct}% errored values")
             self.errors.append({'serie_id': serie_id, 'array': equality})
         else:
             print("Serie", serie_id, "OK")
 
     def read_api_csv(self, serie, **kwargs):
-        call_params = {'ids': serie, 'format': 'csv', 'cache': random.random()}
+        return self.fetcher.fetch(serie, **kwargs)
+
+
+class HttpSeriesFetcher:
+    def __init__(self, api_url: str):
+        if api_url[-1] != '/':
+            api_url = api_url + '/'
+        self.series_endpoint = f'{api_url}series/api/series/'
+        self.metadata_endpoint = f'{api_url}series/api/dump/series-tiempo-metadatos.csv'
+
+    def fetch(self, serie_id: str, **kwargs):
+        call_params = {'ids': serie_id, 'format': 'csv', 'cache': random.random()}
         call_params.update(kwargs)
         res = requests.get(self.series_endpoint, params=call_params)
 
-        api_csv = None
-        if res.ok:
-            csv = StringIO(res.content.decode('utf8'))
-            api_csv = pd.read_csv(csv, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
+        if not res.ok:
+            return None
 
-        return api_csv, res.status_code
+        csv = StringIO(res.content.decode('utf8'))
+        api_csv = pd.read_csv(csv, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
+
+        return api_csv
 
 
 def run():
     args = get_argparser()
     metadata = get_series_metadata(args.api_url)
-    results = IntegrationTest(series_metadata=metadata, api_url=args.api_url).test()
+    results = IntegrationTest(series_metadata=metadata,
+                              fetcher=HttpSeriesFetcher(api_url=args.api_url)).test()
 
     if results:
         pd.DataFrame(results).set_index('serie_id').to_csv(args.output)
