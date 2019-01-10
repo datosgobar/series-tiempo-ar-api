@@ -5,6 +5,8 @@ import pandas as pd
 from django.core.management import BaseCommand
 from django.urls import reverse
 from django.test.client import Client
+from django.conf import settings
+
 
 from scripts.integration_test import IntegrationTest
 from series_tiempo_ar_api.apps.dump.models import DumpFile
@@ -21,6 +23,7 @@ class Command(BaseCommand):
             return
 
         series_metadata = pd.read_csv(BytesIO(metadata.file.read()), index_col='serie_id')
+        setattr(settings, "ALLOWED_HOSTS", ["*"])
         IntegrationTest(series_metadata=series_metadata, fetcher=DjangoSeriesFetcher()).test()
 
 
