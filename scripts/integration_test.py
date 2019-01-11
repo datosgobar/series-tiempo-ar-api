@@ -21,10 +21,9 @@ def read_source_csv(serie_id: str, metadata: pd.DataFrame):
     title = serie_metadata.serie_titulo
     try:
         csv = pd.read_csv(download_url, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
-    except HTTPError:
+        return csv[[title]]
+    except (HTTPError, KeyError):
         return None
-
-    return csv[[title]]
 
 
 def get_equality_array(api_df: pd.DataFrame, original_df: pd.DataFrame):
@@ -65,16 +64,12 @@ class IntegrationTest:
             concurrent.futures.wait(futures)
 
     def test_serie(self, serie_id):
-        api_df = self.read_api_csv(serie_id, last=1000)
-        try:
-            original_df = read_source_csv(serie_id, self.series_metadata)
-        except:
-            original_df = None
-
-        if api_df is None:
+        original_df = read_source_csv(serie_id, self.series_metadata)
+        if original_df is None:
             return
 
-        if original_df is None:
+        api_df = self.read_api_csv(serie_id, last=1000)
+        if api_df is None:
             return
 
         equality = get_equality_array(api_df, original_df)
