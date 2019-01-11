@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django_datajsonar.admin import AbstractTaskAdmin
 from .tasks.indexation import read_datajson
-from .tasks.integration_test import run_integration_test
+from .tasks.integration_test import run_integration
 from .models import TaskCron, ReadDataJsonTask, IntegrationTestTask
 
 
@@ -71,7 +71,7 @@ class DataJsonAdmin(admin.ModelAdmin):
 class IntegrationTestTaskAdmin(AbstractTaskAdmin):
     model = IntegrationTestTask
 
-    task = run_integration_test
+    task = run_integration
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration_test'
 
 
