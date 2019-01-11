@@ -8,6 +8,8 @@ import pandas as pd
 import requests
 from urllib.error import HTTPError
 
+X_SOURCE = 'API de Series de Tiempo: Test de Integración'
+
 
 def read_source_csv(serie_id: str, metadata: pd.DataFrame):
     serie_metadata = metadata.loc[serie_id, :]
@@ -99,7 +101,9 @@ class HttpSeriesFetcher:
     def fetch(self, serie_id: str, **kwargs):
         call_params = {'ids': serie_id, 'format': 'csv', 'cache': random.random()}
         call_params.update(kwargs)
-        res = requests.get(self.series_endpoint, params=call_params)
+        res = requests.get(self.series_endpoint,
+                           params=call_params,
+                           headers={'X-Source': X_SOURCE})
 
         if not res.ok:
             return None
