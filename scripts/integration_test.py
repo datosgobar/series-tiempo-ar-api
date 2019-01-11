@@ -62,7 +62,7 @@ class IntegrationTest:
             concurrent.futures.wait(futures)
 
     def test_serie(self, serie_id):
-        api_df = self.read_api_csv(serie_id)
+        api_df = self.read_api_csv(serie_id, last=1000)
         try:
             original_df = read_source_csv(serie_id, self.series_metadata)
         except:
