@@ -3,7 +3,7 @@ from io import StringIO, BytesIO
 
 import pandas as pd
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.mail import EmailMultiAlternatives
 from django.test import Client
 from django.urls import reverse
@@ -62,7 +62,11 @@ def run_integration(task: IntegrationTestTask):
 
 def send_email(result: list, task: IntegrationTestTask):
     subject = u'[{}] API Series de Tiempo: Test de integración'.format(settings.ENV_TYPE)
-    emails = User.objects.filter(is_staff=True).values_list('email', flat=True)
+    emails = Group.objects.get(name=settings.INTEGRATION_TEST_REPORT_GROUP).user_set.values_list('email', flat=True)
+    if not emails:
+        task.log("No hay usuarios registrados para recibir los reportes del test. Mail no enviado.")
+        return
+
     msg = "Errores en los datos de las series detectados. Ver el archivo adjunto"
     mail = EmailMultiAlternatives(subject, msg, settings.EMAIL_HOST_USER, emails)
     mail.attach('errors.csv', generate_errors_csv(result), 'text/csv')
