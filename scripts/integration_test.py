@@ -2,6 +2,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 from io import StringIO
+from urllib.parse import urljoin
 
 import numpy as np
 import pandas as pd
@@ -34,7 +35,7 @@ def get_equality_array(api_df: pd.DataFrame, original_df: pd.DataFrame):
 
 
 def get_series_metadata(api_url: str):
-    metadata_endpoint = f'{api_url}series/api/dump/series-tiempo-metadatos.csv'
+    metadata_endpoint = urljoin(api_url, 'series/api/dump/series-tiempo-metadatos.csv')
     metadata = pd.read_csv(metadata_endpoint).set_index('serie_id')
     return metadata
 
@@ -93,10 +94,8 @@ class IntegrationTest:
 
 class HttpSeriesFetcher:
     def __init__(self, api_url: str):
-        if api_url[-1] != '/':
-            api_url = api_url + '/'
-        self.series_endpoint = f'{api_url}series/api/series/'
-        self.metadata_endpoint = f'{api_url}series/api/dump/series-tiempo-metadatos.csv'
+        self.series_endpoint = urljoin(api_url, 'series/api/series/')
+        self.metadata_endpoint = urljoin(api_url, 'series/api/dump/series-tiempo-metadatos.csv')
 
     def fetch(self, serie_id: str, **kwargs):
         call_params = {'ids': serie_id, 'format': 'csv', 'cache': random.random()}
