@@ -3,9 +3,11 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django_datajsonar.admin import AbstractTaskAdmin
+
+from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .tasks.indexation import read_datajson
 from .tasks.integration_test import run_integration
-from .models import TaskCron, ReadDataJsonTask, IntegrationTestTask
+from .models import TaskCron, ReadDataJsonTask, IntegrationTestTask, IntegrationTestConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -77,3 +79,4 @@ class IntegrationTestTaskAdmin(AbstractTaskAdmin):
 
 admin.site.register(TaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
+admin.site.register(IntegrationTestConfig, SingletonAdmin)

@@ -307,6 +307,7 @@ ENV_TYPE = env('ENV_TYPE', default='')
 # Tarea a ser croneada para indexación. Defaults para uso local, en producción se deben setear estas variables!
 IMPORT_ANALYTICS_SCRIPT_PATH = env('IMPORT_ANALYTICS_CMD_PATH', default='/bin/true import_analytics')
 INDEX_METADATA_SCRIPT_PATH = env('INDEX_METADATA_CMD_PATH', default='/bin/true index_metadata')
+INTEGRATION_TEST_SCRIPT_PATH = env('INTEGRATION_TEST_CMD_PATH', default='/bin/true integration_test')
 
 PROTECTED_MEDIA_DIR = env('PROTECTED_MEDIA_DIR', default=ROOT_DIR('protected'))
 ANALYTICS_CSV_FILENAME = 'analytics.csv'
