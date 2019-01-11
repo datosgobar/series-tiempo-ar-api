@@ -77,7 +77,7 @@ def send_email(result: list, task: IntegrationTestTask):
 
 def generate_errors_csv(result: list):
     out = StringIO()
-    writer = csv.DictWriter(out, fieldnames=["serie_id", "error_pct"])
+    writer = csv.DictWriter(out, fieldnames=["serie_id", "error_pct", "api_url", "distribution_url"])
     writer.writeheader()
     writer.writerows(result)
     out.seek(0)

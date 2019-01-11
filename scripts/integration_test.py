@@ -77,10 +77,16 @@ class IntegrationTest:
         equality = get_equality_array(api_df, original_df)
         if not all(equality):
             error_pct = pd.Series(equality).value_counts()[False] / len(equality) * 100
-            self.errors.append({'serie_id': serie_id, 'error_pct': error_pct})
+            self.errors.append({'serie_id': serie_id,
+                                'error_pct': error_pct,
+                                'api_url': self.generate_url(serie_id),
+                                'distribution_url': self.series_metadata.distribucion_url_descarga[serie_id]})
 
     def read_api_csv(self, serie, **kwargs):
         return self.fetcher.fetch(serie, **kwargs)
+
+    def generate_url(self, serie_id):
+        return f'https://apis.datos.gob.ar/series/api/series?ids={serie_id}&last=1000&format=csv'
 
 
 class HttpSeriesFetcher:
