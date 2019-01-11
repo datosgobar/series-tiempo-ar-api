@@ -11,7 +11,7 @@ from django_rq import job
 
 from scripts.integration_test import IntegrationTest
 from series_tiempo_ar_api.apps.dump.models import DumpFile
-from series_tiempo_ar_api.apps.management.models import IntegrationTestTask
+from series_tiempo_ar_api.apps.management.models import IntegrationTestTask, IntegrationTestConfig
 
 
 class DjangoSeriesFetcher:
@@ -62,7 +62,7 @@ def run_integration(task: IntegrationTestTask):
 
 def send_email(result: list, task: IntegrationTestTask):
     subject = u'[{}] API Series de Tiempo: Test de integración'.format(settings.ENV_TYPE)
-    emails = Group.objects.get(name=settings.INTEGRATION_TEST_REPORT_GROUP).user_set.values_list('email', flat=True)
+    emails = IntegrationTestConfig.get_solo().recipients.values_list('email', flat=True)
     if not emails:
         task.log("No hay usuarios registrados para recibir los reportes del test. Mail no enviado.")
         return
