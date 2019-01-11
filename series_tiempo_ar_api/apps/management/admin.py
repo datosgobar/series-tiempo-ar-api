@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .tasks import read_datajson
+from series_tiempo_ar_api.apps.management.tasks.indexation import read_datajson
 from .models import TaskCron, ReadDataJsonTask
 
 

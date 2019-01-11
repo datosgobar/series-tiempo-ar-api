@@ -2,7 +2,7 @@
 import logging
 
 from django.core.management import BaseCommand
-from series_tiempo_ar_api.apps.management.tasks import schedule_api_indexing
+from series_tiempo_ar_api.apps.management.tasks.indexation import schedule_api_indexing
 
 logger = logging.getLogger(__name__)
 
