@@ -1,5 +1,6 @@
 #! coding: utf-8
 import os
+import mock
 
 from django.core.files import File
 from django.db import transaction
@@ -220,6 +221,7 @@ class IndexerTests(TestCase):
         utils.index_catalog(CATALOG_ID, path, self.test_index, node=node)
 
 
+@mock.patch("series_tiempo_ar_api.libs.indexing.tasks.DistributionIndexer.reindex")
 class ReaderTests(TestCase):
     catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
     catalog_id = 'catalog_id'
@@ -232,7 +234,7 @@ class ReaderTests(TestCase):
         self.node = Node(catalog_id=self.catalog_id, catalog_url=self.catalog, indexable=True)
         self.node.save()
 
-    def test_index_same_series_different_catalogs(self):
+    def test_index_same_series_different_catalogs(self, *_):
         read_datajson(self.task, whitelist=True, read_local=True)
         index_catalog(self.node, self.mgmt_task, read_local=True)
         read_datajson(self.task, whitelist=True, read_local=True)
@@ -242,7 +244,7 @@ class ReaderTests(TestCase):
 
         self.assertEqual(count, 1)
 
-    def test_dont_index_same_distribution_twice(self):
+    def test_dont_index_same_distribution_twice(self, *_):
         read_datajson(self.task, whitelist=True, read_local=True)
         index_catalog(self.node, self.mgmt_task, read_local=True)
         read_datajson(self.task, whitelist=True, read_local=True)
@@ -253,7 +255,7 @@ class ReaderTests(TestCase):
         # La distribucion es marcada como no indexable hasta que cambien sus datos
         self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'False')
 
-    def test_first_time_distribution_indexable(self):
+    def test_first_time_distribution_indexable(self, *_):
         read_datajson(self.task, whitelist=True, read_local=True)
         index_catalog(self.node, self.mgmt_task, read_local=True, )
 
@@ -261,7 +263,7 @@ class ReaderTests(TestCase):
 
         self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
-    def test_index_same_distribution_if_data_changed(self):
+    def test_index_same_distribution_if_data_changed(self, *_):
         read_datajson(self.task, whitelist=True, read_local=True)
         index_catalog(self.node, self.mgmt_task, read_local=True, )
         new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
@@ -275,7 +277,7 @@ class ReaderTests(TestCase):
         # La distribución fue indexada nuevamente, está marcada como indexable
         self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
-    def test_error_distribution_logs(self):
+    def test_error_distribution_logs(self, *_):
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog
         self.node.save()

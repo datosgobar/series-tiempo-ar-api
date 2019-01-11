@@ -2,7 +2,6 @@
 import json
 import logging
 from functools import reduce
-from io import BytesIO
 
 import pandas as pd
 from django.conf import settings
@@ -17,7 +16,6 @@ from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
-from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
 from .operations import process_column
 from .metadata import update_enhanced_meta
 from .index import tseries_index
