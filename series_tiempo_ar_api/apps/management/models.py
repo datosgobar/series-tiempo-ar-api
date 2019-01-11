@@ -115,3 +115,12 @@ class Indicator(models.Model, IndicatorNamesMixin):
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
+
+
+class IntegrationTestTask(djar_models.AbstractTask):
+    class Meta:
+        verbose_name = "Corrida de test de integración"
+        verbose_name_plural = "Corridas de test de integración"
+
+    def log(self, string: str):
+        self.__class__.info(self, string)

@@ -39,7 +39,7 @@ def get_series_metadata(api_url: str):
 
 class IntegrationTest:
 
-    def __init__(self, series_metadata: pd.DataFrame, fetcher):
+    def __init__(self, series_metadata: pd.DataFrame, fetcher, threads=10):
         """Test de integración de la API de series. A partir de los metadatos de las series
         (obtenibles a partir de un dump de metadatos), se consultan los datos de todas las
         series una vez, y se comparan con los datos originales.
@@ -47,31 +47,37 @@ class IntegrationTest:
         self.series_metadata = series_metadata
         self.fetcher = fetcher
         self.errors = []
+        self.threads = threads
 
     def test(self):
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        self.run_concurrent()
+        return self.errors
+
+    def run_concurrent(self):
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = []
             for serie_id in self.series_metadata.index:
                 fs = executor.submit(self.test_serie, serie_id)
                 futures.append(fs)
             concurrent.futures.wait(futures)
 
-        return self.errors
-
     def test_serie(self, serie_id):
         api_df = self.read_api_csv(serie_id)
-        original_df = read_source_csv(serie_id, self.series_metadata)
-        if api_df is None or original_df is None:
-            print("Error", serie_id, ": api_df", api_df is not None, ", original_df", original_df is not None)
+        try:
+            original_df = read_source_csv(serie_id, self.series_metadata)
+        except:
+            original_df = None
+
+        if api_df is None:
+            return
+
+        if original_df is None:
             return
 
         equality = get_equality_array(api_df, original_df)
         if not all(equality):
             error_pct = pd.Series(equality).value_counts()[False] / len(equality) * 100
-            print(f"Error in {serie_id}. {error_pct}% errored values")
-            self.errors.append({'serie_id': serie_id, 'array': equality})
-        else:
-            print("Serie", serie_id, "OK")
+            self.errors.append({'serie_id': serie_id, 'error_pct': error_pct})
 
     def read_api_csv(self, serie, **kwargs):
         return self.fetcher.fetch(serie, **kwargs)
@@ -106,7 +112,7 @@ def run():
 
     if results:
         pd.DataFrame(results).set_index('serie_id').to_csv(args.output)
-        print(f"Results written to {args.output}")
+        print(f"Resultados escritos a {args.output}")
         return
 
     print("Todas las series OK!")
