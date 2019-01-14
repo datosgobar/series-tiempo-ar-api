@@ -135,7 +135,7 @@ class IntegrationTestConfig(SingletonModel):
     time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=5, minute=0))
 
     recipients = models.ManyToManyField(User, blank=True, verbose_name="Destinatarios")
-    api_endpoint = models.URLField(help_text="URL completa de la API de series a usar como referencia"
+    api_endpoint = models.URLField(help_text="URL completa de la API de series a usar como referencia "
                                              "en los mail de error")
 
     def save(self, *args, **kwargs):
