@@ -2,8 +2,12 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .tasks import read_datajson
-from .models import TaskCron, ReadDataJsonTask
+from django_datajsonar.admin import AbstractTaskAdmin
+
+from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
+from .tasks.indexation import read_datajson
+from .tasks.integration_test import run_integration
+from .models import TaskCron, ReadDataJsonTask, IntegrationTestTask, IntegrationTestConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -65,5 +69,14 @@ class DataJsonAdmin(admin.ModelAdmin):
         read_datajson.delay(obj, force=force)  # Ejecuta indexación
 
 
+@admin.register(IntegrationTestTask)
+class IntegrationTestTaskAdmin(AbstractTaskAdmin):
+    model = IntegrationTestTask
+
+    task = run_integration
+    callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration_test'
+
+
 admin.site.register(TaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
+admin.site.register(IntegrationTestConfig, SingletonAdmin)

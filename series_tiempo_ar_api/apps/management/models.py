@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
 import getpass
 
 from django_datajsonar import models as djar_models
@@ -9,6 +10,8 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
+from solo.models import SingletonModel
+
 from . import strings
 from .indicator_names import IndicatorNamesMixin
 
@@ -115,3 +118,27 @@ class Indicator(models.Model, IndicatorNamesMixin):
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
     task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
+
+
+class IntegrationTestTask(djar_models.AbstractTask):
+    class Meta:
+        verbose_name = "Corrida de test de integración"
+        verbose_name_plural = "Corridas de test de integración"
+
+    def log(self, string: str):
+        self.__class__.info(self, string)
+
+
+class IntegrationTestConfig(SingletonModel):
+    SCRIPT_PATH = settings.INTEGRATION_TEST_SCRIPT_PATH
+
+    time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=5, minute=0))
+
+    recipients = models.ManyToManyField(User, blank=True, verbose_name="Destinatarios")
+    api_endpoint = models.URLField(help_text="URL completa de la API de series a usar como referencia "
+                                             "en los mail de error")
+
+    def save(self, *args, **kwargs):
+        super(IntegrationTestConfig, self).save(*args, **kwargs)
+        TaskCron.objects.update_or_create(task_script_path=self.SCRIPT_PATH,
+                                          defaults={'time': self.time})

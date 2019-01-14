@@ -42,6 +42,8 @@ DISTRIBUTION_INDEX_JOB_TIMEOUT = 1000  # Segundos
 # Nombre del grupo de usuarios que reciben reportes de indexación
 READ_DATAJSON_RECIPIENT_GROUP = 'read_datajson_recipients'
 
+# Nombre del grupo de usuarios que reciben reportes de errores en tests de integración
+INTEGRATION_TEST_REPORT_GROUP = 'integration_test_recipients'
 
 # Metadata blacklists
 CATALOG_BLACKLIST = [
