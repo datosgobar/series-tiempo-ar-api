@@ -74,12 +74,15 @@ class ESQuery(object):
                                   args=self.args,
                                   collapse_agg=collapse_agg))
 
-    def add_pagination(self, start, limit):
+    def add_pagination(self, start, limit, start_dates=None):
+        if start_dates is None:
+            start_dates = {}
+
         if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         for serie in self.series:
-            serie.add_pagination(start, limit)
+            serie.add_pagination(start, limit, request_start_dates=start_dates)
 
         # Guardo estos parámetros, necesarios en el evento de hacer un collapse
         self.args[constants.PARAM_START] = start

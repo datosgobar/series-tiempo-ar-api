@@ -1,4 +1,7 @@
 #! coding: utf-8
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from elasticsearch_dsl import Search, Q, A
 
@@ -57,10 +60,41 @@ class Series(object):
 
         self.args[constants.PARAM_PERIODICITY] = periodicity
 
-    def add_pagination(self, start, limit):
+    def add_pagination(self, start, limit, request_start_dates=None):
         # ☢️☢️☢️
+        es_start = self.get_es_start(request_start_dates, start)
+
         es_offset = start + limit
         if self.rep_mode != constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]:
             es_offset += extra_offset(self.args[constants.PARAM_PERIODICITY])
 
-        self.search = self.search[start:es_offset]
+        self.search = self.search[es_start:es_offset]
+
+    def get_es_start(self, request_start_dates, start):
+        """Calcula el comienzo de la query para esta serie particular. El parámetro
+        'start' pasado es el primer valor a devolver del resultado global, conformado por
+        todas las series pedidas. Si una serie individual comienza en una fecha posterior al
+        resultado global, el slicing de la búsqueda de ES con el parámetro start directo quitaría
+        valores adicionales a los esperados. Debemos ajustar ese valor por la cantidad de períodos
+        de diferencia entre el primer valor de la serie, y el comienzo del resultado (la menor
+        fecha de todas las series pedidas)
+        """
+        min_date = min(request_start_dates.values()) if request_start_dates else None
+        es_start = start - self.serie_first_date_offset(request_start_dates.get(self.series_id),
+                                                        min_date)
+        es_start = max(es_start, 0)
+        return es_start
+
+    def serie_first_date_offset(self, series_start_date: datetime, min_start_date: datetime):
+        if series_start_date is None or min_start_date is None:
+            return 0
+
+        periodicity = {
+            'day': lambda x, y: (x - y).days,
+            'week': lambda x, y: round((x - y).days / 7),
+            'month': lambda x, y: relativedelta(x, y).months + relativedelta(x, y).years * 12,
+            'quarter': lambda x, y: relativedelta(x, y).months / 3 + relativedelta(x, y).years * 4,
+            'semester': lambda x, y: relativedelta(x, y).months / 6 + relativedelta(x, y).years * 2,
+            'year': lambda x, y: relativedelta(x, y).years,
+        }
+        return periodicity[self.args[constants.PARAM_PERIODICITY]](series_start_date, min_start_date)

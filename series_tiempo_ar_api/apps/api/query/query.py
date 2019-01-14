@@ -5,6 +5,7 @@ from typing import Union
 
 from django.conf import settings
 from django_datajsonar.models import Catalog, Dataset, Distribution, Field
+from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
@@ -47,7 +48,9 @@ class Query(object):
         return self.es_query.get_series_ids()
 
     def add_pagination(self, start, limit):
-        return self.es_query.add_pagination(start, limit)
+        start_dates = {serie.identifier: meta_keys.get(serie, meta_keys.INDEX_START) for serie in self.series_models}
+        start_dates = {k: iso8601.parse_date(v) if v is not None else None for k, v in start_dates.items()}
+        return self.es_query.add_pagination(start, limit, start_dates=start_dates)
 
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
