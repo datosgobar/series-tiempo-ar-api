@@ -2,7 +2,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 from io import StringIO
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlunparse
 
 import numpy as np
 import pandas as pd
@@ -84,7 +84,8 @@ class IntegrationTest:
         return self.fetcher.fetch(serie, **kwargs)
 
     def generate_url(self, serie_id):
-        return f'https://apis.datos.gob.ar/series/api/series?ids={serie_id}&last=1000&format=csv'
+        return self.fetcher.get_url(serie_id)
+
 
 
 class HttpSeriesFetcher:
@@ -106,6 +107,9 @@ class HttpSeriesFetcher:
         api_csv = pd.read_csv(csv, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
 
         return api_csv
+
+    def get_url(self, serie_id: str):
+        return f'{self.series_endpoint}?ids={serie_id}&last=1000&format=csv'
 
 
 def run():

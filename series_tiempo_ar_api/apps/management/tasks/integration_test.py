@@ -31,6 +31,10 @@ class DjangoSeriesFetcher:
 
         return pd.read_csv(out_stream, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
 
+    def get_url(self, serie_id: str):
+        endpoint = IntegrationTestConfig.get_solo().api_endpoint
+        return f'{endpoint}?ids={serie_id}&last=1000&format=csv'
+
 
 @job("default", timeout=-1)
 def run_integration(task: IntegrationTestTask):
@@ -54,7 +58,7 @@ def run_integration(task: IntegrationTestTask):
 
     if len(result):
         send_email(result, task)
-
+    send_email(result, task)
     task.refresh_from_db()
     task.status = IntegrationTestTask.FINISHED
     task.save()
