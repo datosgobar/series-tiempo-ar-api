@@ -59,5 +59,8 @@ class Series(object):
 
     def add_pagination(self, start, limit):
         # ☢️☢️☢️
-        es_offset = start + limit + extra_offset(self.args[constants.PARAM_PERIODICITY])
+        es_offset = start + limit
+        if self.rep_mode != constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]:
+            es_offset += extra_offset(self.args[constants.PARAM_PERIODICITY])
+
         self.search = self.search[start:es_offset]
