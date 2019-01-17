@@ -2,7 +2,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 from io import StringIO
-from urllib.parse import urljoin, urlunparse
+from urllib.parse import urljoin
 
 import numpy as np
 import pandas as pd
@@ -56,6 +56,7 @@ class IntegrationTest:
         return self.errors
 
     def run_concurrent(self):
+        self.series_metadata = self.series_metadata[self.series_metadata['serie_discontinuada'] == False]
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = []
             for serie_id in self.series_metadata.index:
