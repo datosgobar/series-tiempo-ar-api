@@ -7,7 +7,7 @@
 
 Aplicación distribuible de la API de Series de Tiempo del [Paquete de Apertura de Datos de la República Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/).
 
-* Versión python: 2
+* Versión python: 3.6
 * Licencia: MIT license
 * Release status: `beta`
 * Documentación: [https://series-tiempo-ar-api.readthedocs.io](https://series-tiempo-ar-api.readthedocs.io)
