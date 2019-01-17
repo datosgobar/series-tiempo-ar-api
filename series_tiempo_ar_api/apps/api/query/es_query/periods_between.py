@@ -1,12 +1,12 @@
 from dateutil.relativedelta import relativedelta
 
 
-def days_betwen(first_date, second_date):
+def days_between(first_date, second_date):
     return (first_date - second_date).days
 
 
 def weeks_between(first_date, second_date):
-    return round((first_date - second_date).days / 7)
+    return round(days_between(first_date, second_date) / 7)
 
 
 def months_between(first_date, second_date):
@@ -18,34 +18,27 @@ def months_between(first_date, second_date):
 
 
 def quarters_between(first_date, second_date):
-    quarter_months = (1, 4, 7, 10)
-    result = False
-    if first_date.month not in quarter_months or (first_date.month in quarter_months and first_date.day != 1):
-        result = True
+    period_start_extra = 0 if is_period_start(first_date, (1, 4, 7, 10)) else 1
     delta = relativedelta(first_date, second_date)
-    return delta.months / 3 + 4 * delta.years + result
+    return delta.months / 3 + 4 * delta.years + period_start_extra
 
 
 def semesters_between(first_date, second_date):
-    semester_months = (1, 7)
-    result = False
-    if first_date.month not in semester_months or (first_date.month in semester_months and first_date.day != 1):
-        result = True
+    period_start_extra = 0 if is_period_start(first_date, (1, 7)) else 1
     delta = relativedelta(first_date, second_date)
-    return delta.months / 6 + 2 * delta.years + result
+    return delta.months / 6 + 2 * delta.years + period_start_extra
 
 
 def years_between(first_date, second_date):
-    if first_date.month != 1 or (first_date.month == 1 and first_date.day != 1):
-        first_date += relativedelta(years=1)
+    period_start_extra = 0 if is_period_start(first_date, (1, )) else 1
     delta = relativedelta(first_date, second_date)
 
-    return delta.years
+    return delta.years + period_start_extra
 
 
 def periods_between(first_date, second_date, periodicity):
     dispatcher = {
-        'day': days_betwen,
+        'day': days_between,
         'week': weeks_between,
         'month': months_between,
         'quarter': quarters_between,
@@ -54,3 +47,17 @@ def periods_between(first_date, second_date, periodicity):
     }
 
     return dispatcher[periodicity](first_date, second_date)
+
+
+def is_period_start(date, period_start_months):
+    """Se considera una fecha como comienzo de un período si su día es 1, y su mes es
+    igual al de un período. Para mensual son todos los meses válidos, para trimestral,
+    Enero, Abril, Julio, Octubre, para semestral Enero y Julio, para anual, sólo Enero
+    """
+    if date.month not in period_start_months:
+        return False
+
+    if date.day != 1:
+        return False
+
+    return True
