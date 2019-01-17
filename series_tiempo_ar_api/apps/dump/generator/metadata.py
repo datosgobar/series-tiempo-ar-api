@@ -1,4 +1,7 @@
 import csv
+
+from django_datajsonar.models import Field
+
 from series_tiempo_ar_api.apps.dump.generator.abstract_dump_gen import AbstractDumpGenerator
 from series_tiempo_ar_api.apps.dump.models import DumpFile
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -38,6 +41,7 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
     def generate_row(self, serie_name, values):
         dataset = values['dataset']
         distribution = values['distribution']
+        field: Field = values['serie']
 
         return {
             constants.CATALOG_ID: dataset.catalog.identifier,
@@ -64,4 +68,5 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
             constants.SERIES_LAST_VALUE: values['metadata'].get(meta_keys.LAST_VALUE),
             constants.SERIES_SECOND_LAST_VALUE: values['metadata'].get(meta_keys.SECOND_TO_LAST_VALUE),
             constants.SERIES_PCT_CHANGE: values['metadata'].get(meta_keys.LAST_PCT_CHANGE),
+            constants.SERIES_DISCONTINUED: not field.present
         }
