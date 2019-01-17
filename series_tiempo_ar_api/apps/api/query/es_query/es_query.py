@@ -24,6 +24,7 @@ class ESQuery(object):
         self.elastic = ElasticInstance()
         self.data = None
         self.count = None
+        self.start_dates = None
         self.reverse_results = False
 
         # Parámetros que deben ser guardados y accedidos varias veces
@@ -66,24 +67,30 @@ class ESQuery(object):
 
     def add_collapse(self, interval):
         self.args[constants.PARAM_PERIODICITY] = interval
+        for serie in self.series:
+            serie.periodicity = interval
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
         self.series.append(Series(series_id=series_id,
                                   index=self.index,
                                   rep_mode=rep_mode,
-                                  args=self.args,
+                                  periodicity=self.args[constants.PARAM_PERIODICITY],
                                   collapse_agg=collapse_agg))
 
-    def add_pagination(self, start, limit):
+    def add_pagination(self, start, limit, start_dates=None):
         if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
-        for serie in self.series:
-            serie.add_pagination(start, limit)
-
-        # Guardo estos parámetros, necesarios en el evento de hacer un collapse
+        # Aplicamos paginación luego, por ahora guardamos los parámetros
         self.args[constants.PARAM_START] = start
         self.args[constants.PARAM_LIMIT] = limit
+        self.start_dates = start_dates or {}
+
+    def setup_series_pagination(self):
+        for serie in self.series:
+            serie.add_pagination(self.args[constants.PARAM_START],
+                                 self.args[constants.PARAM_LIMIT],
+                                 request_start_dates=self.start_dates)
 
     def add_filter(self, start=None, end=None):
         if not self.series:
@@ -114,6 +121,7 @@ class ESQuery(object):
 
         for serie in self.series:
             serie.add_collapse(self.args[constants.PARAM_PERIODICITY])
+            self.setup_series_pagination()
             multi_search = multi_search.add(serie.search)
 
         responses = multi_search.execute()

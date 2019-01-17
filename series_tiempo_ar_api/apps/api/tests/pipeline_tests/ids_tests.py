@@ -51,13 +51,16 @@ class IdsTest(TestCase):
         self.query.sort('asc')
         data = self.query.run()['data']
 
-        other_query = Query(index=settings.TEST_INDEX)
-        self.cmd.run(other_query, {'ids': self.single_series,
-                                   'representation_mode': 'change'})
-        other_query.sort('asc')
-        other_data = other_query.run()['data']
+        change_query = Query(index=settings.TEST_INDEX)
+        self.cmd.run(change_query, {'ids': self.single_series,
+                                    'representation_mode': 'change'})
 
-        for index, row in enumerate(other_data):
+        change_query.sort('asc')
+        # Un valor menos que la query original, 99 variaciones para 100 valores
+        change_query.add_pagination(start=0, limit=99)
+        change_data = change_query.run()['data']
+
+        for index, row in enumerate(change_data):
             change = data[index + 1][1] - data[index][1]
             # La resta anterior trae pérdida de precisión si los números de 'data' son grandes
             self.assertAlmostEqual(row[1], change, places=5)
