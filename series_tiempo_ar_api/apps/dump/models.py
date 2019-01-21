@@ -11,6 +11,10 @@ from . import constants
 
 
 class GenerateDumpTask(AbstractTask):
+    class Meta:
+        verbose_name_plural = "Corridas de generación de dumps"
+        verbose_name = "Corrida de generación de dumps"
+
     TYPE_DTA = 'dta'
     TYPE_SQL = 'sql'
     TYPE_CSV = 'csv'

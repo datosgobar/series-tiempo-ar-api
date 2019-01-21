@@ -58,6 +58,10 @@ class TaskCron(models.Model):
 
 
 class ReadDataJsonTask(models.Model):
+    class Meta:
+        verbose_name = "Corrida de indexación de datos"
+        verbose_name_plural = "Corridas de indexación de datos"
+
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
     RUNNING = "RUNNING"
     INDEXING = "INDEXING"
@@ -130,6 +134,9 @@ class IntegrationTestTask(djar_models.AbstractTask):
 
 
 class IntegrationTestConfig(SingletonModel):
+    class Meta:
+        verbose_name = "Configuración del test de integración"
+
     SCRIPT_PATH = settings.INTEGRATION_TEST_SCRIPT_PATH
 
     time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=5, minute=0))

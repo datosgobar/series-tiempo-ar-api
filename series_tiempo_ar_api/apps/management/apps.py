@@ -6,3 +6,4 @@ from django.apps import AppConfig
 
 class ManagementConfig(AppConfig):
     name = 'series_tiempo_ar_api.apps.management'
+    verbose_name = "Data"

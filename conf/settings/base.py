@@ -42,13 +42,13 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-ar'
 
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = False
+USE_I18N = True
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
@@ -171,7 +171,7 @@ VENDOR_APPS = (
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
     'series_tiempo_ar_api.apps.analytics',
-    'series_tiempo_ar_api.apps.management',
+    'series_tiempo_ar_api.apps.management.apps.ManagementConfig',
     'series_tiempo_ar_api.apps.metadata.apps.MetadataConfig',
     'series_tiempo_ar_api.apps.dump',
     'series_tiempo_ar_api.libs.indexing',
