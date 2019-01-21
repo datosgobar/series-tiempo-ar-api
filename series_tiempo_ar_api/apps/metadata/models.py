@@ -13,7 +13,9 @@ from series_tiempo_ar_api.apps.management.models import TaskCron
 
 
 class IndexMetadataTask(AbstractTask):
-    pass
+    class Meta:
+        verbose_name_plural = "Corridas de indexación de metadatos"
+        verbose_name = "Corrida de indexación de metadatos"
 
 
 def validate_not_catalog_id(alias: str):
@@ -25,7 +27,8 @@ def validate_not_catalog_id(alias: str):
 
 class CatalogAlias(models.Model):
     class Meta:
-        verbose_name_plural = "Catalog Aliases"
+        verbose_name_plural = "Catalogs Aliases"
+        verbose_name = "Catalogs alias"
 
     nodes = models.ManyToManyField(Node, blank=True)
     alias = models.CharField(max_length=100, validators=[validate_not_catalog_id])
@@ -35,12 +38,19 @@ class CatalogAlias(models.Model):
 
 
 class Synonym(models.Model):
+    class Meta:
+        verbose_name_plural = "Sinónimos de búsqueda"
+        verbose_name = "Sinónimo de búsqueda"
+
     terms = models.TextField(
         help_text='Lista de términos similares, separados por coma, sin espacios ni mayúsculas.'
         ' Ejemplo "ipc,inflacion"', unique=True)
 
 
 class MetadataConfig(SingletonModel):
+    class Meta:
+        verbose_name = "Configuración de búsqueda de series por metadatos"
+
     SCRIPT_PATH = settings.INDEX_METADATA_SCRIPT_PATH
 
     time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=0, minute=0))

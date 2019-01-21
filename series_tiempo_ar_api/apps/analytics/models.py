@@ -15,6 +15,10 @@ from series_tiempo_ar_api.apps.management.models import TaskCron
 
 class Query(models.Model):
     """Registro de queries exitosas, guardadas con el propósito de analytics"""
+
+    class Meta:
+        verbose_name_plural = "Tabla consultas"
+
     ids = models.TextField()
     args = models.TextField()
     timestamp = models.DateTimeField()
@@ -33,6 +37,9 @@ class Query(models.Model):
 
 
 class ImportConfig(SingletonModel):
+    class Meta:
+        verbose_name = "Configuración de importación de analytics"
+
     SCRIPT_PATH = settings.IMPORT_ANALYTICS_SCRIPT_PATH
 
     endpoint = models.URLField()
@@ -74,6 +81,10 @@ class ImportConfig(SingletonModel):
 
 
 class AnalyticsImportTask(models.Model):
+    class Meta:
+        verbose_name_plural = "Corridas de importación de analytics"
+        verbose_name = "Corrida de importación de analytics"
+
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     RUNNING = 'running'
