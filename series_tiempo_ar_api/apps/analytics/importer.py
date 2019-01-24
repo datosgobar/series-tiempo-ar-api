@@ -1,8 +1,8 @@
 #! coding: utf-8
 from urllib import parse
 
+import requests
 from django.core.exceptions import FieldError
-from django.utils import timezone
 from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.analytics.models import AnalyticsImportTask, ImportConfig, Query
@@ -10,7 +10,8 @@ from series_tiempo_ar_api.apps.analytics.models import AnalyticsImportTask, Impo
 
 class AnalyticsImporter:
 
-    def __init__(self, limit, requests_lib):
+    def __init__(self, task=None, limit=1000, requests_lib=requests):
+        self.task = task or AnalyticsImportTask.objects.create()
         self.requests = requests_lib
         self.limit = limit
 
@@ -18,21 +19,21 @@ class AnalyticsImporter:
         self.loaded_api_mgmt_ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
 
     def run(self, import_all=False):
-        task = AnalyticsImportTask(status=AnalyticsImportTask.RUNNING,
-                                   timestamp=timezone.now())
         import_config_model = ImportConfig.get_solo()
-        task.write_logs("Usando config: endpoint {}, api_id {}, token {}".format(
+        AnalyticsImportTask.info(self.task, "Usando config: endpoint {}, api_id {}, token {}".format(
             import_config_model.endpoint,
             import_config_model.kong_api_id,
             import_config_model.token
         ))
         try:
             self._run_import(import_all)
-            task.write_logs("Todo OK")
+            AnalyticsImportTask.info(self.task, "Todo OK")
         except Exception as e:
-            task.write_logs("Error importando analytics: {}".format(e))
-        task.status = task.FINISHED
-        task.save()
+            AnalyticsImportTask.info(self.task, "Error importando analytics: {}".format(e))
+
+        self.task.refresh_from_db()
+        self.task.status = AnalyticsImportTask.FINISHED
+        self.task.save()
 
     def _run_import(self, import_all=False):
         import_config_model = ImportConfig.get_solo()

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django_datajsonar.models import AbstractTask
 from solo.models import SingletonModel
 
 from series_tiempo_ar_api.apps.management.models import TaskCron
@@ -80,34 +81,7 @@ class ImportConfig(SingletonModel):
                                           defaults={'time': self.time})
 
 
-class AnalyticsImportTask(models.Model):
+class AnalyticsImportTask(AbstractTask):
     class Meta:
         verbose_name_plural = "Corridas de importación de analytics"
         verbose_name = "Corrida de importación de analytics"
-
-    DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-
-    RUNNING = 'running'
-    FINISHED = 'finished'
-
-    STATUS_CHOICES = (
-        (RUNNING, "Corriendo"),
-        (FINISHED, "Finalizada"),
-    )
-
-    status = models.CharField(max_length=64, choices=STATUS_CHOICES)
-    logs = models.TextField(blank=True)
-    timestamp = models.DateTimeField()
-
-    def __str__(self):
-        return "Analytics import task at {}".format(self._format_date(self.timestamp))
-
-    def write_logs(self, text):
-        if not self.logs:
-            self.logs = ''
-
-        self.logs += text + '\n'
-        self.save()
-
-    def _format_date(self, date):
-        return timezone.localtime(date).strftime(self.DATE_FORMAT)

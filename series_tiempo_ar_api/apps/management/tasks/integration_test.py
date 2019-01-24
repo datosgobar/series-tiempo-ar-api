@@ -37,7 +37,9 @@ class DjangoSeriesFetcher:
 
 
 @job("default", timeout=-1)
-def run_integration(task: IntegrationTestTask):
+def run_integration(task: IntegrationTestTask = None):
+    task = task or IntegrationTestTask.objects.create()
+
     metadata = DumpFile.objects.filter(node=None,
                                        file_type=DumpFile.TYPE_CSV,
                                        file_name=DumpFile.FILENAME_METADATA).last()
