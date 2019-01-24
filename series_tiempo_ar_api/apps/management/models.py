@@ -57,30 +57,10 @@ class TaskCron(models.Model):
         cron.write()
 
 
-class ReadDataJsonTask(models.Model):
+class ReadDataJsonTask(djar_models.AbstractTask):
     class Meta:
         verbose_name = "Corrida de indexación de datos"
         verbose_name_plural = "Corridas de indexación de datos"
-
-    DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-    RUNNING = "RUNNING"
-    INDEXING = "INDEXING"
-    FINISHED = "FINISHED"
-    ERROR = "ERROR"
-
-    STATUS_CHOICES = (
-        (RUNNING, "Procesando catálogos"),
-        (INDEXING, "Indexando series"),
-        (FINISHED, "Finalizada"),
-        (ERROR, "Error"),
-    )
-
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    created = models.DateTimeField()
-    finished = models.DateTimeField(null=True)
-    logs = models.TextField(default='-')
-
-    stats = models.TextField(default='{}')
 
     UPDATED_ONLY = 'updated'
     ALL = 'all'
@@ -90,27 +70,6 @@ class ReadDataJsonTask(models.Model):
     )
 
     indexing_mode = models.CharField(choices=INDEXING_CHOICES, default=UPDATED_ONLY, max_length=200)
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if not self.pk:  # first time only
-            self.created = timezone.now()
-            self.status = self.RUNNING
-
-        super(ReadDataJsonTask, self).save(force_insert, force_update, using, update_fields)
-
-    def __unicode__(self):
-        return "Task at %s" % self._format_date(self.created)
-
-    def _format_date(self, date):
-        return timezone.localtime(date).strftime(self.DATE_FORMAT)
-
-    @classmethod
-    def info(cls, task, msg):
-        with transaction.atomic():
-            task = cls.objects.select_for_update().get(id=task.id)
-            task.logs += msg + '\n'
-            task.save()
 
 
 class Indicator(models.Model, IndicatorNamesMixin):

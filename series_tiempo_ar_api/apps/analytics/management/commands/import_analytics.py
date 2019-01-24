@@ -1,7 +1,7 @@
 #! coding: utf-8
 from django.core.management import BaseCommand
 
-from series_tiempo_ar_api.apps.analytics.tasks import import_analytics_from_api_mgmt
+from series_tiempo_ar_api.apps.analytics.tasks import enqueue_new_import_analytics_task
 
 
 class Command(BaseCommand):
@@ -11,4 +11,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         import_all = options['all']
-        import_analytics_from_api_mgmt(import_all=import_all)
+        enqueue_new_import_analytics_task(import_all=import_all)

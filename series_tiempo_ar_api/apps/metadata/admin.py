@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib import messages
+from django_datajsonar.admin import AbstractTaskAdmin
 from django_datajsonar.models import Field
 
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
@@ -11,22 +12,10 @@ from .indexer.metadata_indexer import run_metadata_indexer
 
 
 @admin.register(IndexMetadataTask)
-class IndexMetadataTaskAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs',)
-    list_display = ('__unicode__', 'status')
-
+class IndexMetadataTaskAdmin(AbstractTaskAdmin):
+    model = IndexMetadataTask
     task = run_metadata_indexer
-
-    def save_model(self, request, obj, form, change):
-        super(IndexMetadataTaskAdmin, self).save_model(request, obj, form, change)
-        self.task.delay(obj)  # Ejecuta indexación
-
-    def add_view(self, request, form_url='', extra_context=None):
-        if not IndexMetadataTask.objects.filter(status=IndexMetadataTask.RUNNING):
-            return super(IndexMetadataTaskAdmin, self).add_view(request, form_url, extra_context)
-        else:
-            messages.error(request, "Ya está corriendo una indexación")
-            return super(IndexMetadataTaskAdmin, self).changelist_view(request, None)
+    callable_str = 'series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer.enqueue_new_index_metadata_task'
 
 
 @admin.register(CatalogAlias)

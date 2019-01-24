@@ -67,3 +67,7 @@ def run_metadata_indexer(task):
     task.refresh_from_db()
     task.status = task.FINISHED
     task.save()
+
+
+def enqueue_new_index_metadata_task():
+    run_metadata_indexer(IndexMetadataTask.objects.create())

@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def schedule_api_indexing(force=False):
-    status = [ReadDataJsonTask.INDEXING, ReadDataJsonTask.RUNNING]
-    if ReadDataJsonTask.objects.filter(status__in=status):
+    if ReadDataJsonTask.objects.filter(status=ReadDataJsonTask.RUNNING):
         logger.info(u'Ya está corriendo una indexación')
         return
 

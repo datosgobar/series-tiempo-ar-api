@@ -50,23 +50,12 @@ class IndexingTaskAdmin(admin.ModelAdmin):
         TaskCron.update_crontab()
 
 
-class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs', 'stats')
-    list_display = ('__unicode__', 'status')
+class DataJsonAdmin(AbstractTaskAdmin):
+    task = read_datajson
 
-    def save_model(self, request, obj, form, change):
-        running_status = [ReadDataJsonTask.RUNNING, ReadDataJsonTask.INDEXING]
-        if ReadDataJsonTask.objects.filter(status__in=running_status):
-            return  # Ya hay tarea corriendo, no ejecuto una nueva
-        super(DataJsonAdmin, self).save_model(request, obj, form, change)
-        if obj.indexing_mode == ReadDataJsonTask.UPDATED_ONLY:
-            force = False
-        elif obj.indexing_mode == ReadDataJsonTask.ALL:
-            force = True
-        else:
-            raise RuntimeError
+    model = ReadDataJsonTask
 
-        read_datajson.delay(obj, force=force)  # Ejecuta indexación
+    callable_str = 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing'
 
 
 @admin.register(IntegrationTestTask)

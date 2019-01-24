@@ -19,6 +19,8 @@ class GenerateDumpTaskAdmin(AbstractTaskAdmin):
 
     task = enqueue_dump_task
 
+    callable_str = 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task'
+
     def get_actions(self, request):
         actions = super(GenerateDumpTaskAdmin, self).get_actions(request)
         if 'delete_selected' in actions:
