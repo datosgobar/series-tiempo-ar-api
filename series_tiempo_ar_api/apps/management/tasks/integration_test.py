@@ -36,7 +36,7 @@ class DjangoSeriesFetcher:
         return f'{endpoint}?ids={serie_id}&last=1000&format=csv'
 
 
-@job("default", timeout=-1)
+@job("integration_test", timeout=-1)
 def run_integration(task: IntegrationTestTask = None):
     task = task or IntegrationTestTask.objects.create()
 

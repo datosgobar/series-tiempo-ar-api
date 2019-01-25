@@ -28,6 +28,10 @@ def schedule_api_indexing(force=False):
         ReportGenerator(task).generate()
 
 
+def schedule_force_api_indexing():
+    schedule_api_indexing(force=True)
+
+
 @job('indexing')
 def read_datajson(task, read_local=False, force=False):
     """Tarea raíz de indexación. Itera sobre todos los nodos indexables (federados) e

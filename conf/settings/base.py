@@ -273,34 +273,26 @@ DEFAULT_REDIS_HOST = env("DEFAULT_REDIS_HOST", default="localhost")
 DEFAULT_REDIS_PORT = env("DEFAULT_REDIS_PORT", default="6379")
 DEFAULT_REDIS_DB = env("DEFAULT_REDIS_DB", default="0")
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
-    'high': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
-    'low': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
-    'scrapping': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-        'DEFAULT_TIMEOUT': 3600,
-    },
-    'indexing': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
+REDIS_SETTINGS = {
+    'HOST': DEFAULT_REDIS_HOST,
+    'PORT': DEFAULT_REDIS_PORT,
+    'DB': DEFAULT_REDIS_DB,
 }
+
+RQ_QUEUE_NAMES = [
+    'upkeep',
+    'dj_indexing',
+    'indexing',
+    'meta_indexing',
+    'csv_dump',
+    'xlsx_dump',
+    'sql_dump',
+    'dta_dump',
+    'analytics',
+    'integration_test'
+]
+
+RQ_QUEUES = {name: REDIS_SETTINGS for name in RQ_QUEUE_NAMES}
 
 ENV_TYPE = env('ENV_TYPE', default='')
 
@@ -319,3 +311,56 @@ MINIO_STORAGE_ENDPOINT = env('MINIO_STORAGE_ENDPOINT', default="localhost:9000")
 MINIO_STORAGE_USE_HTTPS = False
 MINIO_STORAGE_MEDIA_BUCKET_NAME = env('MINIO_STORAGE_BUCKET_NAME', default='tsapi.dev.media.bucket')
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
+
+DATAJSONAR_STAGES = {
+    'Read Datajson (complete)': {
+        'callable_str': 'django_datajsonar.tasks.schedule_full_read_task',
+        'queue': 'indexing',
+        'task': 'django_datajsonar.models.ReadDataJsonTask',
+    },
+    'Read Datajson (metadata only)': {
+        'callable_str': 'django_datajsonar.tasks.schedule_metadata_read_task',
+        'queue': 'indexing',
+        'task': 'django_datajsonar.models.ReadDataJsonTask',
+    },
+    'Indexación de datos (sólo actualizados)': {
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing',
+        'queue': 'indexing',
+        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+    },
+    'Indexación de datos (forzar indexación)': {
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_force_api_indexing',
+        'queue': 'indexing',
+        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+    },
+    'Generación de dumps CSV': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task',
+        'queue': 'default',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Generación de dumps XLSX': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_xlsx_task',
+        'queue': 'default',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Generación de dumps SQL': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_sql_task',
+        'queue': 'default',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Generación de dumps DTA': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_dta_task',
+        'queue': 'default',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Indexación de metadatos': {
+        'callable_str': 'series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer.enqueue_new_index_metadata_task',
+        'queue': 'indexing',
+        'task': 'series_tiempo_ar_api.apps.metadata.models.IndexMetadataTask',
+    },
+    'Test de integración': {
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration',
+        'queue': 'integration_test',
+        'task': 'series_tiempo_ar_api.apps.management.models.IntegrationTestTask',
+    },
+}

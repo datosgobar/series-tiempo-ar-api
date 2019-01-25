@@ -13,7 +13,7 @@ from .generator.xlsx import generator
 logger = logging.Logger(__name__)
 
 
-@job('default', timeout='3h')
+@job('csv_dump', timeout='3h')
 def enqueue_dump_task(task: GenerateDumpTask):
     task.save()  # Evito problemas de DoesNotExist cuando se llama async
     task_choices = {
@@ -26,7 +26,7 @@ def enqueue_dump_task(task: GenerateDumpTask):
     task_choices[task.file_type](task.id)
 
 
-@job('default', timeout='3h')
+@job('csv_dump', timeout='3h')
 def write_csv(task_id, catalog=None):
     Writer(DumpFile.TYPE_CSV, lambda task, catalog_id: DumpGenerator(task, catalog_id).generate(),
            write_csv,
@@ -34,7 +34,7 @@ def write_csv(task_id, catalog=None):
            catalog).write()
 
 
-@job('default', timeout='2h')
+@job('xlsx_dump', timeout='2h')
 def write_xlsx(task_id, catalog=None):
     Writer(DumpFile.TYPE_XLSX, generator.generate, write_xlsx, task_id, catalog).write()
 
@@ -50,7 +50,7 @@ def enqueue_write_xlsx_task():
     write_xlsx.delay(task.id)
 
 
-@job('default', timeout='2h')
+@job('sql_dump', timeout='2h')
 def write_sql(task_id, catalog=None):
     Writer(DumpFile.TYPE_SQL,
            lambda task, catalog_id: SQLGenerator(task_id, catalog_id).generate(),
@@ -64,7 +64,7 @@ def enqueue_write_sql_task():
     write_sql.delay(task.id)
 
 
-@job('default', timeout='1h')
+@job('dta_dump', timeout='1h')
 def write_dta(task_id, catalog=None):
     Writer(DumpFile.TYPE_DTA,
            lambda task, catalog_id: DtaGenerator(task_id, catalog_id).generate(),
