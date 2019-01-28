@@ -3,7 +3,6 @@ from io import StringIO, BytesIO
 
 import pandas as pd
 from django.conf import settings
-from django.contrib.auth.models import User, Group
 from django.core.mail import EmailMultiAlternatives
 from django.test import Client
 from django.urls import reverse
@@ -36,7 +35,7 @@ class DjangoSeriesFetcher:
         return f'{endpoint}?ids={serie_id}&last=1000&format=csv'
 
 
-@job("default", timeout=-1)
+@job("integration_test", timeout=-1)
 def run_integration(task: IntegrationTestTask = None):
     task = task or IntegrationTestTask.objects.create()
 
@@ -88,3 +87,8 @@ def generate_errors_csv(result: list):
     writer.writerows(result)
     out.seek(0)
     return out.read()
+
+
+@job("integration_test")
+def enqueue_new_integration_test():
+    run_integration()

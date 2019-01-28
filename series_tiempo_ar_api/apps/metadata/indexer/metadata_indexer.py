@@ -61,7 +61,7 @@ class MetadataIndexer:
                 self.elastic.indices.delete(index)
 
 
-@job('indexing', timeout=10000)
+@job('meta_indexing', timeout=10000)
 def run_metadata_indexer(task):
     MetadataIndexer(task).run()
     task.refresh_from_db()
@@ -69,5 +69,6 @@ def run_metadata_indexer(task):
     task.save()
 
 
+@job('meta_indexing', timeout=-1)
 def enqueue_new_index_metadata_task():
     run_metadata_indexer(IndexMetadataTask.objects.create())

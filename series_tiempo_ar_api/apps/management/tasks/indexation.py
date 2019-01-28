@@ -12,6 +12,7 @@ from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGen
 logger = logging.getLogger(__name__)
 
 
+@job('api_index')
 def schedule_api_indexing(force=False):
     if ReadDataJsonTask.objects.filter(status=ReadDataJsonTask.RUNNING):
         logger.info(u'Ya está corriendo una indexación')
@@ -28,7 +29,12 @@ def schedule_api_indexing(force=False):
         ReportGenerator(task).generate()
 
 
-@job('indexing')
+@job('api_index')
+def schedule_force_api_indexing():
+    schedule_api_indexing(force=True)
+
+
+@job('api_index')
 def read_datajson(task, read_local=False, force=False):
     """Tarea raíz de indexación. Itera sobre todos los nodos indexables (federados) e
     inicia la tarea de indexación sobre cada uno de ellos
