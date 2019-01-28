@@ -279,6 +279,7 @@ REDIS_SETTINGS = {
     'DB': DEFAULT_REDIS_DB,
 }
 
+# Colas de Redis. Existe una por tarea asincrónica a ejecutar.
 RQ_QUEUE_NAMES = [
     'default',
     'upkeep',
@@ -294,7 +295,6 @@ RQ_QUEUE_NAMES = [
     'api_index',
     'api_report',
 ]
-
 RQ_QUEUES = {name: REDIS_SETTINGS for name in RQ_QUEUE_NAMES}
 
 ENV_TYPE = env('ENV_TYPE', default='')
@@ -304,17 +304,18 @@ IMPORT_ANALYTICS_SCRIPT_PATH = env('IMPORT_ANALYTICS_CMD_PATH', default='/bin/tr
 INDEX_METADATA_SCRIPT_PATH = env('INDEX_METADATA_CMD_PATH', default='/bin/true index_metadata')
 INTEGRATION_TEST_SCRIPT_PATH = env('INTEGRATION_TEST_CMD_PATH', default='/bin/true integration_test')
 
-PROTECTED_MEDIA_DIR = env('PROTECTED_MEDIA_DIR', default=ROOT_DIR('protected'))
-ANALYTICS_CSV_FILENAME = 'analytics.csv'
-
+# Config de Django-datajsonar
 DATAJSON_AR_TIME_SERIES_ONLY = True
 DATAJSON_AR_DISTRIBUTION_STORAGE = 'minio_storage.storage.MinioMediaStorage'
 
+# Minio: File system distribuido, usado para correr tareas que generan archivos en un ambiente, y leerlos
+# desde el web server
 MINIO_STORAGE_ENDPOINT = env('MINIO_STORAGE_ENDPOINT', default="localhost:9000")
 MINIO_STORAGE_USE_HTTPS = False
 MINIO_STORAGE_MEDIA_BUCKET_NAME = env('MINIO_STORAGE_BUCKET_NAME', default='tsapi.dev.media.bucket')
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 
+# Stages asincrónicos a ejecutar con el Synchronizer de Django-datajsonar
 DATAJSONAR_STAGES = {
     'Read Datajson (corrida completa)': {
         'callable_str': 'django_datajsonar.tasks.schedule_full_read_task',
