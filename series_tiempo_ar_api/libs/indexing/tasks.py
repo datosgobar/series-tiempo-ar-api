@@ -22,7 +22,7 @@ from .scraping import Scraper
 logger = logging.getLogger(__name__)
 
 
-@job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
+@job('api_index', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
                        read_local=False, index=settings.TS_INDEX, force=False):
 
@@ -85,15 +85,7 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
         raise exc  # Django-rq / sentry logging
 
 
-# Para correr con el scheduler
-def scheduler():
+@job("api_report", timeout=-1)
+def send_indexation_report_email():
     task = ReadDataJsonTask.objects.last()
-    if task.status == task.FINISHED:
-        return
-
-    if not get_queue('indexing').jobs:
-        ReportGenerator(task).generate()
-
-    elastic = ElasticInstance.get()
-    if elastic.indices.exists(index=settings.TS_INDEX):
-        elastic.indices.forcemerge(index=settings.TS_INDEX)
+    ReportGenerator(task).generate()

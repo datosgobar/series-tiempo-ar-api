@@ -280,6 +280,7 @@ REDIS_SETTINGS = {
 }
 
 RQ_QUEUE_NAMES = [
+    'default',
     'upkeep',
     'dj_indexing',
     'indexing',
@@ -289,7 +290,9 @@ RQ_QUEUE_NAMES = [
     'sql_dump',
     'dta_dump',
     'analytics',
-    'integration_test'
+    'integration_test',
+    'api_index',
+    'api_report',
 ]
 
 RQ_QUEUES = {name: REDIS_SETTINGS for name in RQ_QUEUE_NAMES}
@@ -313,24 +316,24 @@ MINIO_STORAGE_MEDIA_BUCKET_NAME = env('MINIO_STORAGE_BUCKET_NAME', default='tsap
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 
 DATAJSONAR_STAGES = {
-    'Read Datajson (complete)': {
+    'Read Datajson (corrida completa)': {
         'callable_str': 'django_datajsonar.tasks.schedule_full_read_task',
         'queue': 'indexing',
         'task': 'django_datajsonar.models.ReadDataJsonTask',
     },
-    'Read Datajson (metadata only)': {
+    'Read Datajson (sólo metadatos)': {
         'callable_str': 'django_datajsonar.tasks.schedule_metadata_read_task',
         'queue': 'indexing',
         'task': 'django_datajsonar.models.ReadDataJsonTask',
     },
     'Indexación de datos (sólo actualizados)': {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing',
-        'queue': 'indexing',
+        'queue': 'api_index',
         'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
     },
     'Indexación de datos (forzar indexación)': {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_force_api_indexing',
-        'queue': 'indexing',
+        'queue': 'api_index',
         'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
     },
     'Generación de dumps CSV': {
@@ -363,4 +366,9 @@ DATAJSONAR_STAGES = {
         'queue': 'integration_test',
         'task': 'series_tiempo_ar_api.apps.management.models.IntegrationTestTask',
     },
+    'Reporte de indexación': {
+        'callable_str': 'series_tiempo_ar_api.libs.indexing.tasks.send_indexation_report_email',
+        'queue': 'api_report',
+        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+    }
 }

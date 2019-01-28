@@ -40,11 +40,13 @@ def write_xlsx(task_id, catalog=None):
 
 
 # Funciones callable sin argumentos para rqscheduler
+@job('csv_dump')
 def enqueue_write_csv_task():
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_CSV)
     write_csv.delay(task.id)
 
 
+@job('xlsx_dump')
 def enqueue_write_xlsx_task():
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_XLSX)
     write_xlsx.delay(task.id)
@@ -59,6 +61,7 @@ def write_sql(task_id, catalog=None):
            catalog).write()
 
 
+@job('sql_dump')
 def enqueue_write_sql_task():
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_SQL)
     write_sql.delay(task.id)
@@ -73,6 +76,7 @@ def write_dta(task_id, catalog=None):
            catalog).write()
 
 
+@job('dta_dump')
 def enqueue_write_dta_task():
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_DTA)
     write_dta.delay(task.id)

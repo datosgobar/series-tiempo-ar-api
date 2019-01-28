@@ -3,7 +3,6 @@ from io import StringIO, BytesIO
 
 import pandas as pd
 from django.conf import settings
-from django.contrib.auth.models import User, Group
 from django.core.mail import EmailMultiAlternatives
 from django.test import Client
 from django.urls import reverse
@@ -88,3 +87,8 @@ def generate_errors_csv(result: list):
     writer.writerows(result)
     out.seek(0)
     return out.read()
+
+
+@job("integration_test")
+def enqueue_new_integration_test():
+    run_integration()
