@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.8.0
+
+- Integración con django_datajsonar: Uso de Synchronizers y Stages para correr
+tareas asincrónicas de manera ordenada
+
 ## 1.7.0
 
 - Optimizaciones de performance en dumps CSV 
