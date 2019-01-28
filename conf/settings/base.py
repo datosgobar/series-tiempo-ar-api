@@ -339,27 +339,27 @@ DATAJSONAR_STAGES = {
     },
     'Generación de dumps CSV': {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task',
-        'queue': 'default',
+        'queue': 'csv_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
     'Generación de dumps XLSX': {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_xlsx_task',
-        'queue': 'default',
+        'queue': 'xlsx_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
     'Generación de dumps SQL': {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_sql_task',
-        'queue': 'default',
+        'queue': 'sql_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
     'Generación de dumps DTA': {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_dta_task',
-        'queue': 'default',
+        'queue': 'dta_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
     'Indexación de metadatos': {
         'callable_str': 'series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer.enqueue_new_index_metadata_task',
-        'queue': 'indexing',
+        'queue': 'meta_indexing',
         'task': 'series_tiempo_ar_api.apps.metadata.models.IndexMetadataTask',
     },
     'Test de integración': {
