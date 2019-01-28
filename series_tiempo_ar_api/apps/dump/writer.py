@@ -58,5 +58,4 @@ class Writer:
             msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.dump_type}: {exc}"
             logger.error(msg)
             GenerateDumpTask.info(self.task, msg)
-            self._finish()
             raise e
