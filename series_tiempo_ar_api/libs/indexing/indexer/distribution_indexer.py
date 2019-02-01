@@ -97,6 +97,7 @@ class DistributionIndexer:
         fields_to_delete = list(
             distribution.field_set
             .filter(present=True)
+            .exclude(identifier=None)
             .values_list('identifier', flat=True)
         )
         series_data = Search(using=self.elastic, index=self.index._name).filter('terms', series_id=fields_to_delete)

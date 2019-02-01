@@ -1,0 +1,115 @@
+{
+  "title": "Datos Argentina",
+  "description": "Portal de Datos Abiertos del Gobierno de la República Argentina",
+  "publisher": {
+    "name": "Ministerio de Modernización",
+    "mbox": "datos@modernizacion.gob.ar"
+  },
+  "issued": "2016-04-14T19:48:05.433640-03:00",
+  "modified": "2016-04-19T19:48:05.433640-03:00",
+  "language": [
+    "spa"
+  ],
+  "superThemeTaxonomy": "http://datos.gob.ar/superThemeTaxonomy.json",
+  "license": "Open Data Commons Open Database License 1.0",
+  "homepage": "http://datos.gob.ar",
+  "rights": "Derechos especificados en la licencia.",
+  "spatial": "ARG",
+  "dataset": [
+    {
+      "publisher": {
+        "mbox": "datoseconomicos@mecon.gov.ar",
+        "name": "Subsecretaría de Programación Macroeconómica."
+      },
+      "landingPage": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+      "description": "Principales tasas de interés a plazo publicadas por el BCRA. Promedios mensuales. En % n.a.",
+      "superTheme": [
+        "ECON"
+      ],
+      "title": "Principales tasas de interés",
+      "language": [
+        "SPA"
+      ],
+      "issued": "2017-09-28",
+      "temporal": "1996-01-01/2017-05-01",
+      "modified": "2018-01-03T07:00:02.849550-03:00",
+      "source": "Banco Central de la República Argentina (BCRA)",
+      "theme": [
+        "moneda"
+      ],
+      "keyword": [
+        "Información económica al día",
+        "Dinero y Bancos"
+      ],
+      "accrualPeriodicity": "R/P1D",
+      "spatial": "ARG",
+      "identifier": "89",
+      "contactPoint": {
+        "fn": "Subsecretaría de Programación Macroeconómica."
+      },
+      "accessLevel": "ABIERTO",
+      "distribution": [
+        {
+          "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+          "scrapingFileSheet": "8.1 Tasas de interes",
+          "description": "Tasa de interés caja de ahorro, tasa de interés plazo fijo, call, prime, adelantos en cuenta corriente y Badlar, valores diarios",
+          "title": "Principales tasas de interés. Valores diarios",
+          "dataset_identifier": "89",
+          "issued": "2017-09-28",
+          "format": "CSV",
+          "modified": "2018-01-03T07:00:02.849550-03:00",
+          "fileName": "principales-tasas-interes-diarias.csv",
+          "downloadURL": "series_tiempo_ar_api/libs/indexing/tests/samples/daily_periodicity.csv",
+          "field": [
+            {
+              "distribution_identifier": "89.2",
+              "title": "indice_tiempo",
+              "dataset_identifier": "89",
+              "scrapingIdentifierCell": "A301",
+              "specialTypeDetail": "R/P1D",
+              "specialType": "time_index",
+              "type": "date",
+              "scrapingDataStartCell": "A302"
+            },
+            {
+              "distribution_identifier": "89.2",
+              "description": "Tasas de interés publicadas por el BCRA. Call. Datos diarios. En porcentaje",
+              "title": "tasas_interes_call",
+              "dataset_identifier": "89",
+              "scrapingIdentifierCell": "E301",
+              "units": "Porcentaje",
+              "type": "number",
+              "id": "89.2_TS_INTEALL_0_D_18",
+              "scrapingDataStartCell": "E302"
+            },
+            {
+              "distribution_identifier": "89.2",
+              "description": "Tasas de interés publicadas por el BCRA. Badlar. Datos diarios. En porcentaje",
+              "title": "tasas_interes_badlar",
+              "dataset_identifier": "89",
+              "scrapingIdentifierCell": "H301",
+              "units": "Porcentaje",
+              "type": "number",
+              "id": "89.2_TS_INTELAR_0_D_20",
+              "scrapingDataStartCell": "H302"
+            },
+            {
+              "distribution_identifier": "89.2",
+              "description": "Tasas de interés publicadas por el BCRA. Tasa de Política Monetaria. Datos diarios. En porcentaje",
+              "title": "tasas_interes_pm",
+              "dataset_identifier": "89",
+              "scrapingIdentifierCell": "M301",
+              "units": "Porcentaje",
+              "type": "number",
+              "id": "89.2_TS_INTE_PM_0_D_16",
+              "scrapingDataStartCell": "M302"
+            }
+          ],
+          "draft": false,
+          "identifier": "89.2",
+          "scrapingFileURL": "https://www.economia.gob.ar/download/infoeco/apendice8.xlsx"
+        }
+      ]
+    }
+  ]
+}

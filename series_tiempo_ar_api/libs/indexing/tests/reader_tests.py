@@ -210,6 +210,17 @@ class IndexerTests(TestCase):
         self.assertEqual(list(results)[0], list(updated_results)[0])
         self.assertNotEqual(list(results)[1], list(updated_results)[1])
 
+    def test_reindex_distribution_no_time_index_identifier(self):
+        self._index_catalog('distribution_time_index_no_identifier.json')
+
+        DistributionIndexer(index=self.test_index).reindex(Distribution.objects.first())
+        series_id = '89.2_TS_INTEALL_0_D_18'
+        results = Search(using=self.elastic,
+                         index=self.test_index) \
+            .filter('match', series_id=series_id).execute()
+
+        self.assertTrue(list(results))
+
     def tearDown(self):
         if self.elastic.indices.exists(self.test_index):
             self.elastic.indices.delete(self.test_index)
