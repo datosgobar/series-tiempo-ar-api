@@ -214,6 +214,7 @@ class IndexerTests(TestCase):
         self._index_catalog('distribution_time_index_no_identifier.json')
 
         DistributionIndexer(index=self.test_index).reindex(Distribution.objects.first())
+        self.elastic.indices.forcemerge(index=self.test_index)
         series_id = '89.2_TS_INTEALL_0_D_18'
         results = Search(using=self.elastic,
                          index=self.test_index) \
