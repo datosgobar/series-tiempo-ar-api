@@ -69,7 +69,8 @@ class DistributionIndexer:
 
         # Borro las columnas que no figuren en los metadatos
         for column in df.columns:
-            if column not in fields:
+            all_null = len(df[column][df[column].notnull()]) == 0
+            if column not in fields or all_null:
                 df.drop(column, axis='columns', inplace=True)
         columns = [fields[name] for name in df.columns]
 
