@@ -15,6 +15,10 @@ SECOND_TO_LAST_VALUE = 'second_to_last_value'
 LAST_PCT_CHANGE = 'last_pct_change'
 IS_UPDATED = 'is_updated'
 
+AVERAGE = 'average'
+MAX = 'max_value'
+MIN = 'min_value'
+
 
 def get(model, key):
     values = model.enhanced_meta.filter(key=key).values_list('value', flat=True)

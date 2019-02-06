@@ -1,7 +1,6 @@
 #! coding: utf-8
 import os
 import datetime
-from unittest import skip
 
 import mock
 from django.test import TestCase
@@ -14,11 +13,11 @@ from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import Dist
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
-@skip
 class FieldEnhancedMetaTests(TestCase):
     catalog_id = 'test_catalog'
 
     def setUp(self):
+        Catalog.objects.all().delete()
         self.catalog = Catalog.objects.create(identifier=self.catalog_id)
         dataset = self.catalog.dataset_set.create(identifier="1")
         self.distribution_id = "1.1"
@@ -100,6 +99,24 @@ class FieldEnhancedMetaTests(TestCase):
             update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
         self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
                          str(True))
+
+    def test_max(self):
+        df = self.init_df()
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertAlmostEqual(float(meta_keys.get(self.field, meta_keys.MAX)), df[df.columns[0]].max())
+
+    def test_min(self):
+        df = self.init_df()
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertAlmostEqual(float(meta_keys.get(self.field, meta_keys.MIN)), df[df.columns[0]].min())
+
+    def test_average(self):
+        df = self.init_df()
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertAlmostEqual(float(meta_keys.get(self.field, meta_keys.AVERAGE)), df[df.columns[0]].mean())
 
     def init_df(self):
         self.field.distribution.data_file = File(open(os.path.join(SAMPLES_DIR,
