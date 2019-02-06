@@ -4,7 +4,7 @@ import os
 from pydatajson import DataJson
 from django.test import TestCase
 from nose.tools import raises
-from series_tiempo_ar.custom_exceptions import FieldFewValuesError
+from series_tiempo_ar.custom_exceptions import DistributionTooManyNullSeriesError
 
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.constants import IDENTIFIER, DOWNLOAD_URL, DATASET_IDENTIFIER
@@ -75,7 +75,7 @@ class ScrapperTests(TestCase):
         result = self.scrapper.run(distribution, catalog)
         self.assertTrue(result)
 
-    @raises(FieldFewValuesError)
+    @raises(DistributionTooManyNullSeriesError)
     def test_validate_all_null_series(self):
         catalog = DataJson(os.path.join(
             SAMPLES_DIR, 'ts_all_null_series.json'
