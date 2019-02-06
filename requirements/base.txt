@@ -7,7 +7,7 @@ requests==2.21.0
 python-dateutil==2.6.1
 iso8601==0.1.12
 pydatajson==0.4.33
-series-tiempo-ar==0.2.0
+series-tiempo-ar==0.2.1
 pandas
 numpy
 pyyaml
