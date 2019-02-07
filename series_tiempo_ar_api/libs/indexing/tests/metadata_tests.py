@@ -2,10 +2,11 @@
 import os
 import datetime
 
-import mock
+from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django_datajsonar.models import Catalog
 from django.core.files import File
+from freezegun import freeze_time
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.indexing.indexer.metadata import update_enhanced_meta
@@ -66,36 +67,29 @@ class FieldEnhancedMetaTests(TestCase):
 
     def test_days_since_last_update(self):
         df = self.init_df()
-        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
 
-        last_date = df.index[-1]
+        last_date = df.index[-1]  # 2003-02-03
+        with freeze_time(last_date + relativedelta(days=1)):
+            update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
 
-        # Sólo válido porque la serie es diaria! Con otra periodicity hay que considerar
-        # el fin del período
-        days = (datetime.datetime.today() - last_date).days
+            # Sólo válido porque la serie es diaria! Con otra periodicity hay que considerar
+            # el fin del período
+            days = (datetime.datetime.today() - last_date).days
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.DAYS_SINCE_LAST_UPDATE),
                          str(days))
 
-    class MockDatetime():
-        def __init__(self, date):
-            self.date = date
-
-        def now(self):
-            return self.date
-
+    @freeze_time("2018-01-01")
     def test_is_not_updated(self):
         df = self.init_df()
-        with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.metadata.datetime',
-                        self.MockDatetime(datetime.datetime(2018, 1, 1))):
-            update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
                          str(False))
 
     def test_is_updated(self):
         df = self.init_df()
-        with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.metadata.datetime', self.MockDatetime(df.index[-1])):
+        with freeze_time(df.index[-1]):
             update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
         self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
                          str(True))
