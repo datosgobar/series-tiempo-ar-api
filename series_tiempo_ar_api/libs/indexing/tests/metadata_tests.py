@@ -74,7 +74,7 @@ class FieldEnhancedMetaTests(TestCase):
 
             # Sólo válido porque la serie es diaria! Con otra periodicity hay que considerar
             # el fin del período
-            days = (datetime.datetime.today() - last_date).days
+            days = (datetime.datetime.now() - last_date).days
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.DAYS_SINCE_LAST_UPDATE),
                          str(days))
