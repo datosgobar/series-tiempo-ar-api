@@ -69,7 +69,7 @@ class FieldEnhancedMetaTests(TestCase):
         df = self.init_df()
 
         last_date = df.index[-1]  # 2003-02-03
-        with freeze_time(last_date + relativedelta(days=1)):
+        with freeze_time("2003-02-04 06:00:00"):
             update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
 
             # Sólo válido porque la serie es diaria! Con otra periodicity hay que considerar
