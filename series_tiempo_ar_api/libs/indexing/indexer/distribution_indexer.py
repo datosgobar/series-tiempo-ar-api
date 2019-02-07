@@ -67,11 +67,8 @@ class DistributionIndexer:
 
         df = read_distribution_csv_as_df(distribution)
 
-        # Borro las columnas que no figuren en los metadatos
-        for column in df.columns:
-            if column not in fields:
-                df.drop(column, axis='columns', inplace=True)
-        columns = [fields[name] for name in df.columns]
+        self.drop_null_or_missing_fields_from_df(df, fields)
+        identifiers = [fields[name] for name in df.columns]
 
         data = df.values
         freq = freq_iso_to_pandas(get_time_index_periodicity(distribution, fields))
@@ -83,7 +80,13 @@ class DistributionIndexer:
                                       df.index[-1],
                                       freq=constants.BUSINESS_DAILY_FREQ)
 
-        return pd.DataFrame(index=new_index, data=data, columns=columns)
+        return pd.DataFrame(index=new_index, data=data, columns=identifiers)
+
+    def drop_null_or_missing_fields_from_df(self, df, fields):
+        for column in df.columns:
+            all_null = df[column].isnull().all()
+            if all_null or column not in fields:
+                df.drop(column, axis='columns', inplace=True)
 
     def add_catalog_keyword(self, actions, distribution):
         for action in actions:
