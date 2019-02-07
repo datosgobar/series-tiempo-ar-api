@@ -9,7 +9,7 @@ from django.core.files import File
 from freezegun import freeze_time
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.libs.indexing.indexer.metadata import update_enhanced_meta
+from series_tiempo_ar_api.libs.indexing.indexer.metadata import update_enhanced_meta, _is_series_updated
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
@@ -65,19 +65,16 @@ class FieldEnhancedMetaTests(TestCase):
         self.assertEqual(meta_keys.get(self.field, meta_keys.INDEX_SIZE),
                          str(len(df)))
 
-    def test_days_since_last_update(self):
-        df = self.init_df()
+    def test_is_daily_series_updated(self):
+        is_updated = _is_series_updated(days_since_last_update=1, periodicity="R/P1D")
 
-        last_date = df.index[-1]  # 2003-02-03
-        with freeze_time("2003-02-04 06:00:00"):
-            update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+        self.assertTrue(is_updated)
 
-            # Sólo válido porque la serie es diaria! Con otra periodicity hay que considerar
-            # el fin del período
-            days = (datetime.datetime.now() - last_date).days
+    def test_is_daily_series_not_updated(self):
+        # Hasta dos semanas se considera como actualizada
+        is_updated = _is_series_updated(days_since_last_update=15, periodicity="R/P1D")
 
-        self.assertEqual(meta_keys.get(self.field, meta_keys.DAYS_SINCE_LAST_UPDATE),
-                         str(days))
+        self.assertFalse(is_updated)
 
     @freeze_time("2018-01-01")
     def test_is_not_updated(self):
