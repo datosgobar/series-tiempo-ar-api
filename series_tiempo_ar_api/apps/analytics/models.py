@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
 
 import requests
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django_datajsonar.models import AbstractTask
 from solo.models import SingletonModel
-
-from series_tiempo_ar_api.apps.management.models import TaskCron
 
 
 class Query(models.Model):
@@ -46,7 +42,6 @@ class ImportConfig(SingletonModel):
     endpoint = models.URLField()
     token = models.CharField(max_length=64)
     kong_api_id = models.CharField(max_length=64)
-    time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=0, minute=0))
 
     last_cursor = models.CharField(max_length=64, blank=True)
 
@@ -74,11 +69,6 @@ class ImportConfig(SingletonModel):
     def get_authorization_header(self):
         """Devuelve el header de auth formateado para usar en la libreria de requests"""
         return {'Authorization': 'Token {}'.format(self.token)}
-
-    def save(self, *args, **kwargs):
-        super(ImportConfig, self).save(*args, **kwargs)
-        TaskCron.objects.update_or_create(task_script_path=self.SCRIPT_PATH,
-                                          defaults={'time': self.time})
 
 
 class AnalyticsImportTask(AbstractTask):

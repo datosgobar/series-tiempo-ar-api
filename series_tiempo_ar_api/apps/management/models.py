@@ -1,60 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
-import getpass
 
 from django_datajsonar import models as djar_models
-from crontab import CronTab
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from django.db import models, transaction
-from django.utils import timezone
+from django.db import models
 from solo.models import SingletonModel
 
-from . import strings
 from .indicator_names import IndicatorNamesMixin
-
-
-class TaskCron(models.Model):
-    cron_client = CronTab(user=getpass.getuser())
-
-    time = models.TimeField(help_text='Los segundos serán ignorados')
-    enabled = models.BooleanField(default=True)
-    weekdays_only = models.BooleanField(default=False)
-    task_script_path = models.CharField(max_length=255, default=None)
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        super(TaskCron, self).save(force_insert, force_update, using, update_fields)
-        self.update_crontab()
-
-    def delete(self, using=None, keep_parents=False):
-        super(TaskCron, self).delete(using, keep_parents)
-        self.update_crontab()
-
-    def __unicode__(self):
-        return u'Indexing task at %s' % self.time
-
-    @classmethod
-    def update_crontab(cls):
-        """Limpia la crontab y la regenera a partir de los modelos de IndexingTaskCron guardados"""
-        cron = cls.cron_client
-
-        job_id = strings.CRONTAB_COMMENT
-        for job in cron.find_comment(job_id):
-            job.delete()
-
-        tasks = TaskCron.objects.filter(enabled=True)
-        for task in tasks:
-            job = cron.new(command=task.task_script_path, comment=job_id)
-
-            job.minute.on(task.time.minute)
-            job.hour.on(task.time.hour)
-            if task.weekdays_only:
-                job.dow.during('MON', 'FRI')
-
-        cron.write()
 
 
 class ReadDataJsonTask(djar_models.AbstractTask):
@@ -98,13 +52,6 @@ class IntegrationTestConfig(SingletonModel):
 
     SCRIPT_PATH = settings.INTEGRATION_TEST_SCRIPT_PATH
 
-    time = models.TimeField(help_text='Los segundos serán ignorados', default=datetime.time(hour=5, minute=0))
-
     recipients = models.ManyToManyField(User, blank=True, verbose_name="Destinatarios")
     api_endpoint = models.URLField(help_text="URL completa de la API de series a usar como referencia "
                                              "en los mail de error")
-
-    def save(self, *args, **kwargs):
-        super(IntegrationTestConfig, self).save(*args, **kwargs)
-        TaskCron.objects.update_or_create(task_script_path=self.SCRIPT_PATH,
-                                          defaults={'time': self.time})

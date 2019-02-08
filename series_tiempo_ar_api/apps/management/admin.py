@@ -7,7 +7,7 @@ from django_datajsonar.admin import AbstractTaskAdmin
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .tasks.indexation import read_datajson
 from .tasks.integration_test import run_integration
-from .models import TaskCron, ReadDataJsonTask, IntegrationTestTask, IntegrationTestConfig
+from .models import ReadDataJsonTask, IntegrationTestTask, IntegrationTestConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -32,24 +32,6 @@ class NodeAdmin(admin.ModelAdmin):
     make_indexable.short_description = 'Marcar como indexable'
 
 
-class IndexingTaskAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'enabled', 'weekdays_only')
-
-    actions = ('delete_model',)
-
-    def get_actions(self, request):
-        # Borro la acción de borrado default
-        actions = super(IndexingTaskAdmin, self).get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
-
-    def delete_model(self, _, queryset):
-        # Actualizo los crons del sistema para reflejar el cambio de modelos
-        queryset.delete()
-        TaskCron.update_crontab()
-
-
 class DataJsonAdmin(AbstractTaskAdmin):
     task = read_datajson
 
@@ -66,6 +48,5 @@ class IntegrationTestTaskAdmin(AbstractTaskAdmin):
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration_test'
 
 
-admin.site.register(TaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
 admin.site.register(IntegrationTestConfig, SingletonAdmin)
