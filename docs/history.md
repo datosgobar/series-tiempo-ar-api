@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.9.0
+
+- Bump de la versión de `django_datajsonar` a 0.1.17, con mejoras de UX de Synchronizers
+- Bump de la versión de `series-tiempo-ar` a 0.2.1, con una validación adicional para permitir distribuciones con series vacías, hasta cierta proporción.
+- Agregados nuevos metadatos de series (`metadata=full` o `metadata=only`): `max_value`, `min_value`, `average`
+
 ## 1.8.0
 
 - Integración con django_datajsonar: Uso de Synchronizers y Stages para correr
