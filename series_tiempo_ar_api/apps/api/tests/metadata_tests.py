@@ -20,7 +20,7 @@ class MetadataResponseTests(TestCase):
         self.field.distribution.dataset.themes = json.dumps([{'id': 'theme_id', 'label': 'test_label'}])
         self.field.distribution.dataset.save()
 
-        full_meta = MetadataResponse(self.field).get_full_metadata()
+        full_meta = MetadataResponse(self.field, simple=False, flat=False).get_response()
 
         self.assertTrue(isinstance(full_meta['dataset']['theme'], list))
         self.assertEqual(full_meta['dataset']['theme'][0]['label'], 'test_label')

@@ -160,23 +160,10 @@ class Query(object):
             ...
         }
         """
+        simple_meta = self.metadata_config == constants.METADATA_SIMPLE
+        meta_response = MetadataResponse(serie_model, simple=simple_meta, flat=self.metadata_flatten)
 
-        metadata = None
-        full_meta_values = (constants.METADATA_ONLY, constants.METADATA_FULL)
-        meta_response = MetadataResponse(serie_model)
-        if self.metadata_config in full_meta_values:
-            metadata = meta_response.get_full_metadata()
-        elif self.metadata_config == constants.METADATA_SIMPLE:
-            metadata = meta_response.get_simple_metadata()
-
-        if self.metadata_flatten:
-            for level in list(metadata):
-                for meta_field in list(metadata[level]):
-                    metadata['{}_{}'.format(level, meta_field)] = metadata[level][meta_field]
-
-                metadata.pop(level)
-
-        return metadata
+        return meta_response.get_response()
 
     def _calculate_data_frequency(self):
         """Devuelve la periodicidad de la o las series pedidas. Si son
