@@ -1,11 +1,11 @@
 #! coding: utf-8
 from django.conf import settings
+from elasticsearch_dsl.connections import connections
 
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .helpers import setup_database
 from .support.generate_data import get_generator
 
-elastic = ElasticInstance.get()
+elastic = connections.get_connection()
 
 
 def setup():

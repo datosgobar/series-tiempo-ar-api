@@ -3,6 +3,7 @@ import json
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
+from elasticsearch_dsl.connections import connections
 from pydatajson import DataJson
 from django_datajsonar.models import Field, Node, Metadata, ContentType
 
@@ -10,7 +11,6 @@ from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.indexer.index import init_index
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class CatalogMetadataIndexer:
@@ -19,7 +19,7 @@ class CatalogMetadataIndexer:
         self.node = node
         self.task = task
         self.index_name = index
-        self.elastic: Elasticsearch = ElasticInstance.get()
+        self.elastic: Elasticsearch = connections.get_connection()
 
         if not self.elastic.indices.exists(self.index_name):
             init_index(self.index_name)

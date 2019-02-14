@@ -2,12 +2,11 @@
 
 from elasticsearch_dsl import Index
 from django.conf import settings
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .. import constants
 
 
 def tseries_index(name: str) -> Index:
-    index = Index(name, using=ElasticInstance.get())
+    index = Index(name)
 
     # Fija el límite superior de valores en una respuesta. Si filtramos por serie, sería
     # la cantidad de valores máximas que puede tener una única serie temporal.

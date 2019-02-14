@@ -7,6 +7,8 @@ import environ
 
 from .api.api import *
 from .api.metadata import *
+from elasticsearch_dsl.connections import connections
+
 
 SETTINGS_DIR = environ.Path(__file__) - 1
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
@@ -15,14 +17,8 @@ APPS_DIR = ROOT_DIR.path(dirname(dirname(dirname(__file__))))
 env = environ.Env()
 environ.Env.read_env(SETTINGS_DIR('.env'))
 
-ES_CONFIGURATION = {
-    "ES_URLS": env("ES_URLS", default=DEFAULT_ES_URL).split(","),
-    "CONNECTIONS": {
-        "default": {
-            "timeout": 30,
-        },
-    },
-}
+connections.create_connection(hosts=env("ES_URLS", default=DEFAULT_ES_URL).split(","),
+                              timeout=30)
 
 DEBUG = True
 

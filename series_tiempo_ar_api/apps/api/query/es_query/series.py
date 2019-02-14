@@ -1,20 +1,17 @@
 #! coding: utf-8
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from elasticsearch_dsl import Search, Q, A
 
 from series_tiempo_ar_api.apps.api.helpers import extra_offset
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.es_query.periods_between import periods_between
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class Series(object):
     def __init__(self, index, series_id, rep_mode, periodicity, collapse_agg=None):
         self.index = index
-        self.elastic = ElasticInstance.get()
         self.series_id = series_id
         self.rep_mode = rep_mode
         self.original_periodicity = periodicity
@@ -23,7 +20,7 @@ class Series(object):
         self.search = self.init_search()
 
     def init_search(self):
-        search = Search(using=self.elastic, index=self.index)
+        search = Search(index=self.index)
 
         search = search.sort(settings.TS_TIME_INDEX_FIELD)  # Default: ascending sort
         # Filtra los resultados por la serie pedida. Si se hace en memoria filtramos

@@ -3,7 +3,6 @@ from elasticsearch_dsl import Index, analyzer, token_filter
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.models import Synonym
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .doc_types import Metadata
 
 
@@ -36,10 +35,9 @@ def get_fields_meta_index(index_name):
 
 
 def init_index(index_name):
-    elastic_instance = ElasticInstance.get()
-    index = Index(index_name, using=elastic_instance)
+    index = Index(index_name)
     add_analyzer(index)
     if not index.exists():
         index.create()
-    Metadata.init(using=elastic_instance, index=index_name)
+    Metadata.init(index=index_name)
     return index

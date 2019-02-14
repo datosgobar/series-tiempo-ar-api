@@ -7,7 +7,6 @@ from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query.es_query.response_formatter import ResponseFormatter
 from series_tiempo_ar_api.apps.api.query.es_query.series import Series
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class ESQuery(object):
@@ -21,7 +20,6 @@ class ESQuery(object):
         """
         self.index = index
         self.series = []
-        self.elastic = ElasticInstance()
         self.data = None
         self.count = None
         self.start_dates = None
@@ -116,8 +114,7 @@ class ESQuery(object):
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         multi_search = MultiSearch(index=self.index,
-                                   doc_type=settings.TS_DOC_TYPE,
-                                   using=self.elastic)
+                                   doc_type=settings.TS_DOC_TYPE)
 
         for serie in self.series:
             serie.add_collapse(self.args[constants.PARAM_PERIODICITY])

@@ -8,24 +8,23 @@ from elasticsearch_dsl import Index, Search
 from django.test import TestCase
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import ReadDataJsonTask, Node, Field as datajsonar_Field
+from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.metadata.indexer.catalog_meta_indexer import CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.indexer.index import add_analyzer
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 fake = faker.Faker()
 
-fake_index = Index(fake.pystr(max_chars=50).lower(), using=ElasticInstance.get())
+fake_index = Index(fake.pystr(max_chars=50).lower())
 add_analyzer(fake_index)
 
 
 class IndexerTests(TestCase):
 
     def setUp(self):
-        self.elastic = ElasticInstance.get()
         self.task = ReadDataJsonTask.objects.create()
         self.meta_task = IndexMetadataTask.objects.create()
 
@@ -33,7 +32,6 @@ class IndexerTests(TestCase):
         index_ok = self._index(catalog_id='test_catalog', catalog_url='single_distribution.json')
         search = Search(
             index=fake_index._name,
-            using=self.elastic
         ).filter('term',
                  catalog_id='test_catalog')
         self.assertTrue(index_ok)
@@ -55,14 +53,12 @@ class IndexerTests(TestCase):
 
         search = Search(
             index=fake_index._name,
-            using=self.elastic
         ).filter('term',
                  catalog_id='test_catalog')
         self.assertTrue(search.execute())
 
         other_search = Search(
             index=fake_index._name,
-            using=self.elastic
         ).filter('term',
                  catalog_id='other_catalog')
         self.assertTrue(other_search.execute())
@@ -81,7 +77,7 @@ class IndexerTests(TestCase):
 
         index_ok = CatalogMetadataIndexer(node, self.meta_task, fake_index._name).index()
         if index_ok:
-            self.elastic.indices.forcemerge()
+            connections.get_connection().indices.forcemerge()
         return index_ok
 
     def tearDown(self):

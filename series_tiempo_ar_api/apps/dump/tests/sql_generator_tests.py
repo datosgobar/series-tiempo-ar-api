@@ -5,13 +5,13 @@ from django.core.files.temp import NamedTemporaryFile
 from django.core.management import call_command
 from django.test import TestCase
 from django_datajsonar.models import Node, Catalog, Field
+from elasticsearch_dsl.connections import connections
 from faker import Faker
 
 from series_tiempo_ar_api.apps.dump.generator.sql.models import Metadatos, proxy, Valores
 from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_sql_task
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -55,7 +55,7 @@ class SQLGeneratorTests(TestCase):
     @classmethod
     def tearDownClass(cls):
         super(SQLGeneratorTests, cls).tearDownClass()
-        ElasticInstance.get().indices.delete(cls.index)
+        connections.get_connection().indices.delete(cls.index)
 
 
 class SQLTests(TestCase):
@@ -110,4 +110,4 @@ class SQLTests(TestCase):
     @classmethod
     def tearDownClass(cls):
         super(SQLTests, cls).tearDownClass()
-        ElasticInstance.get().indices.delete(cls.index)
+        connections.get_connection().indices.delete(cls.index)

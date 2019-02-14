@@ -9,10 +9,10 @@ from django_datajsonar.models import Distribution
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
+from elasticsearch_dsl.connections import connections
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 from series_tiempo_ar_api.apps.management import meta_keys
 
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class DistributionIndexer:
     def __init__(self, index: str):
-        self.elastic: Elasticsearch = ElasticInstance.get()
+        self.elastic: Elasticsearch = connections.get_connection()
         self.index_name = index
         self.index = tseries_index(index)
 

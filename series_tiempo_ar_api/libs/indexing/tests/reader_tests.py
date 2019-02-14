@@ -6,6 +6,7 @@ from django.core.files import File
 from django.db import transaction
 from django.test import TestCase
 from elasticsearch_dsl import Search
+from elasticsearch_dsl.connections import connections
 
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field, Catalog
@@ -14,7 +15,6 @@ from series_tiempo_ar_api.utils import utils
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
@@ -27,7 +27,7 @@ class IndexerTests(TestCase):
     @classmethod
     def setUpClass(cls):
         Catalog.objects.all().delete()
-        cls.elastic = ElasticInstance()
+        cls.elastic = connections.get_connection()
         super(IndexerTests, cls).setUpClass()
 
     def test_init_dataframe_columns(self):
@@ -44,8 +44,7 @@ class IndexerTests(TestCase):
     def test_indexing(self):
         self._index_catalog('full_ts_data.json')
 
-        results = Search(using=self.elastic,
-                         index=self.test_index).execute()
+        results = Search(index=self.test_index).execute()
         self.assertTrue(len(results))
 
     def test_missing_field_update(self):
@@ -63,8 +62,7 @@ class IndexerTests(TestCase):
             # Segunda corrida, 'actualización' del catálogo
             self._index_catalog('missing_field.json', node)
 
-            results = Search(using=self.elastic,
-                             index=self.test_index) \
+            results = Search(index=self.test_index) \
                 .filter('match', series_id=missing_field).execute()
 
         self.assertTrue(len(results))
@@ -73,8 +71,7 @@ class IndexerTests(TestCase):
         missing_series_id = '212.1_PSCIOS_IOS_0_0_25'
         self._index_catalog('distribution_missing_column.json')
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=missing_series_id).execute()
 
         self.assertFalse(len(results))
@@ -83,8 +80,7 @@ class IndexerTests(TestCase):
         series_id = '89.2_TS_INTELAR_0_D_20'
         self._index_catalog('distribution_daily_periodicity.json')
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertTrue(len(results))
@@ -93,8 +89,7 @@ class IndexerTests(TestCase):
         series_id = '212.1_todos_cero'
         self._index_catalog('ts_all_zero_series.json')
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertTrue(len(results))
@@ -102,8 +97,7 @@ class IndexerTests(TestCase):
     def test_catalog_value_indexed(self):
         self._index_catalog('distribution_daily_periodicity.json')
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', catalog=CATALOG_ID).execute()
 
         self.assertTrue(len(results))
@@ -112,8 +106,7 @@ class IndexerTests(TestCase):
         series_id = '102.1_I2NG_ABRI_M_22'
         self._index_catalog('single_data.json')
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertEqual(len(results), 2)
@@ -124,8 +117,7 @@ class IndexerTests(TestCase):
 
         self._index_catalog('single_data_updated.json', node)
 
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertEqual(len(results), 3)
@@ -134,13 +126,11 @@ class IndexerTests(TestCase):
         self._index_catalog('single_data.json')
         self.assertEqual(Field.objects.count(), 2)
         series_id = '102.1_I2NG_ABRI_M_22'
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         DistributionIndexer(index=self.test_index).reindex(Distribution.objects.first())
-        updated_results = Search(using=self.elastic,
-                                 index=self.test_index) \
+        updated_results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         # No cambia nada
@@ -150,8 +140,7 @@ class IndexerTests(TestCase):
         self._index_catalog('single_data.json')
         self.assertEqual(Field.objects.count(), 2)
         series_id = '102.1_I2NG_ABRI_M_22'
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertEqual(len(list(results)), 2)
@@ -160,8 +149,7 @@ class IndexerTests(TestCase):
         distribution.save()
         DistributionIndexer(index=self.test_index).reindex(distribution)
         self.elastic.indices.forcemerge(index=self.test_index)
-        updated_results = Search(using=self.elastic,
-                                 index=self.test_index) \
+        updated_results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
         self.assertEqual(len(list(updated_results)), 3)
 
@@ -171,8 +159,7 @@ class IndexerTests(TestCase):
         self._index_catalog('single_data_updated.json')
         self.assertEqual(Field.objects.count(), 2)
         series_id = '102.1_I2NG_ABRI_M_22'
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertEqual(len(list(results)), 3)
@@ -181,8 +168,7 @@ class IndexerTests(TestCase):
         distribution.save()
         DistributionIndexer(index=self.test_index).reindex(distribution)
         self.elastic.indices.forcemerge(index=self.test_index)
-        updated_results = Search(using=self.elastic,
-                                 index=self.test_index) \
+        updated_results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
         self.assertEqual(len(list(updated_results)), 2)
 
@@ -192,8 +178,7 @@ class IndexerTests(TestCase):
         self._index_catalog('single_data.json')
         self.assertEqual(Field.objects.count(), 2)
         series_id = '102.1_I2NG_ABRI_M_22'
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertEqual(len(list(results)), 2)
@@ -202,8 +187,7 @@ class IndexerTests(TestCase):
         distribution.save()
         DistributionIndexer(index=self.test_index).reindex(distribution)
         self.elastic.indices.forcemerge(index=self.test_index)
-        updated_results = Search(using=self.elastic,
-                                 index=self.test_index) \
+        updated_results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
         self.assertEqual(len(list(updated_results)), 2)
 
@@ -216,8 +200,7 @@ class IndexerTests(TestCase):
         DistributionIndexer(index=self.test_index).reindex(Distribution.objects.first())
         self.elastic.indices.forcemerge(index=self.test_index)
         series_id = '89.2_TS_INTEALL_0_D_18'
-        results = Search(using=self.elastic,
-                         index=self.test_index) \
+        results = Search(index=self.test_index) \
             .filter('match', series_id=series_id).execute()
 
         self.assertTrue(list(results))

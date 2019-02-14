@@ -2,7 +2,6 @@
 from elasticsearch_dsl import DocType, Keyword, Text, Date, MetaField
 
 from series_tiempo_ar_api.apps.metadata import constants
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class Metadata(DocType):
@@ -30,4 +29,3 @@ class Metadata(DocType):
     class Meta:
         dynamic = MetaField('strict')
         doc_type = constants.METADATA_DOC_TYPE
-        using = ElasticInstance.get()

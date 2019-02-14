@@ -13,7 +13,6 @@ from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from .report.report_generator import ReportGenerator
 from .scraping import Scraper
