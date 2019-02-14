@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.10.0
+
+- Nuevos metadatos de series: `representation_mode` y `representation_mode_units`
+- Borrado del croneado de tareas usado para metadatos, analytics y test de integración. Su funcionalidad quedó deprecada
+por `Synchronizer` de `django_datajsonar`.
+
 ## 1.9.0
 
 - Bump de la versión de `django_datajsonar` a 0.1.17, con mejoras de UX de Synchronizers
