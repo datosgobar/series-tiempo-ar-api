@@ -5,7 +5,7 @@ from django.contrib import admin, messages
 from django.db.models.query import QuerySet
 from django.utils import timezone
 
-from django_datajsonar.admin import AbstractTaskAdmin
+from django_datajsonar.admin.tasks import AbstractTaskAdmin
 
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_dump_task
 from .models import GenerateDumpTask, DumpFile

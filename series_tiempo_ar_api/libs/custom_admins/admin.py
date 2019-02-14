@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from django_datajsonar.admin import FieldAdmin, DistributionAdmin
+from django_datajsonar.admin.data_json import FieldAdmin, DistributionAdmin
 from django_datajsonar.models import Field, Distribution
 
 from .utils import delete_metadata

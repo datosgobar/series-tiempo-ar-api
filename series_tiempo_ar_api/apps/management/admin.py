@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from django_datajsonar.admin import AbstractTaskAdmin
+from django_datajsonar.admin.tasks import AbstractTaskAdmin
 
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .tasks.indexation import read_datajson

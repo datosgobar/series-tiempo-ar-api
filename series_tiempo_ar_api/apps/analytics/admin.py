@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.core.paginator import Paginator
 from django.db import connection
-from django_datajsonar.admin import AbstractTaskAdmin
+from django_datajsonar.admin.tasks import AbstractTaskAdmin
 
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .models import Query, ImportConfig, AnalyticsImportTask
