@@ -17,6 +17,10 @@ from .es_query.es_query import ESQuery
 datajson_entity = Union[Catalog, Dataset, Distribution, Field]
 
 
+def rep_mode_units(rep_mode: str) -> str:
+    return constants.VERBOSE_REP_MODES[rep_mode]
+
+
 class Query(object):
     """Encapsula la query pedida por un usuario. Tiene dos componentes
     principales: la parte de datos obtenida haciendo llamadas a
@@ -27,6 +31,7 @@ class Query(object):
         self.es_index = index
         self.es_query = ESQuery(index)
         self.series_models = []
+        self.series_rep_modes = []
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
         self.metadata_flatten = False
 
@@ -65,7 +70,7 @@ class Query(object):
         ]
 
         self.series_models.append(field_model)
-
+        self.series_rep_modes.append(rep_mode)
         series_periodicity = get_periodicity_human_format(
             field_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
@@ -161,13 +166,14 @@ class Query(object):
         }
         """
         simple_meta = self.metadata_config == constants.METADATA_SIMPLE
-        meta_response = MetadataResponse(serie_model, simple=simple_meta, flat=self.metadata_flatten)
+        meta_response = MetadataResponse(serie_model, simple=simple_meta, flat=self.metadata_flatten).get_response()
 
-        return meta_response.get_response()
+        self.append_rep_mode_metadata(serie_model, meta_response)
+        return meta_response
 
     def _calculate_data_frequency(self):
         """Devuelve la periodicidad de la o las series pedidas. Si son
-        muchas devuelve el intervalo de tiempo colapsado
+        muchas devuelve el intervalo de tiempo colapsadoaa
         """
         return self.es_query.args[constants.PARAM_PERIODICITY]
 
@@ -193,3 +199,16 @@ class Query(object):
 
     def reverse(self):
         self.es_query.reverse()
+
+    def append_rep_mode_metadata(self, serie_model: Field, meta_response: dict):
+        rep_mode = self.series_rep_modes[self.series_models.index(serie_model)]
+
+        if self.metadata_flatten:
+            units = rep_mode_units(rep_mode) or meta_response.get('field_units')
+            meta_response['field_representation_mode'] = rep_mode
+            meta_response['field_representation_mode_units'] = units
+
+        else:
+            units = rep_mode_units(rep_mode) or meta_response['field'].get('units')
+            meta_response['field']['representation_mode'] = rep_mode
+            meta_response['field']['representation_mode_units'] = units

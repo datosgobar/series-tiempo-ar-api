@@ -4,6 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
+from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from django_datajsonar.models import Field
@@ -238,3 +239,21 @@ class QueryTests(TestCase):
         result = self.query.run()
 
         self.assertEqual(len(result['data']), 2)
+
+    def test_response_rep_mode_units(self):
+        self.query.add_series(self.single_series, self.field)
+
+        meta = self.query.get_metadata()
+        field_meta = meta[1]['field']
+        self.assertEqual(field_meta['representation_mode'], 'value')
+        self.assertEqual(field_meta['representation_mode_units'], meta[1]['field'].get('units'))
+
+    def test_response_rep_mode_units_pct_change(self):
+        rep_mode = constants.PCT_CHANGE
+        self.query.add_series(self.single_series, self.field, rep_mode=rep_mode)
+
+        meta = self.query.get_metadata()
+        field_meta = meta[1]['field']
+
+        self.assertEqual(field_meta['representation_mode'], rep_mode)
+        self.assertEqual(field_meta['representation_mode_units'], constants.VERBOSE_REP_MODES[rep_mode])
