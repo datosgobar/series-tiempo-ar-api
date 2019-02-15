@@ -1,5 +1,7 @@
 # API de Series de Tiempo de la República Argentina
 
+**Versión**: 1.10.0
+
 La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
 
 Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secuencia de observaciones o valores, medidos en determinados momentos del tiempo y ordenados cronológicamente.

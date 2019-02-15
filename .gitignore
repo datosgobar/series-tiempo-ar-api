@@ -41,3 +41,4 @@ scripts/deploy/files/
 scripts/deploy/files.tar.gz
 site/*
 errores-series-valores.csv
+Metadatos de las series con falla.ipynb

@@ -1,0 +1,4265 @@
+
+        <link rel="stylesheet" href="pdf.css" type="text/css"/>
+        <h1 id="api-de-series-de-tiempo-de-la-republica-argentina">
+ API de Series de Tiempo de la República Argentina
+</h1>
+<p>
+ <strong>
+  Versión
+ </strong>
+ : 1.10.0
+</p>
+<p>
+ La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
+</p>
+<p>
+ Una
+ <a href="https://es.wikipedia.org/wiki/Serie_temporal">
+  serie de tiempo
+ </a>
+ es una secuencia de observaciones o valores, medidos en determinados momentos del tiempo y ordenados cronológicamente.
+</p>
+<table>
+ <tr>
+  <th>
+   indice_tiempo
+  </th>
+  <th>
+   ipc_2016_nivel_general
+  </th>
+ </tr>
+ <tr>
+  <td>
+   2017-04
+  </td>
+  <td>
+   0.28
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-05
+  </td>
+  <td>
+   0.24
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-06
+  </td>
+  <td>
+   0.22
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-07
+  </td>
+  <td>
+   0.22
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-08
+  </td>
+  <td>
+   0.23
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-09
+  </td>
+  <td>
+   0.24
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-10
+  </td>
+  <td>
+   0.23
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-11
+  </td>
+  <td>
+   0.22
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2017-12
+  </td>
+  <td>
+   0.25
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2018-01
+  </td>
+  <td>
+   0.25
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2018-02
+  </td>
+  <td>
+   0.26
+  </td>
+ </tr>
+ <tr>
+  <td>
+   2018-03
+  </td>
+  <td>
+   0.26
+  </td>
+ </tr>
+</table>
+<p>
+ Un
+ <a href="https://es.wikipedia.org/wiki/Servicio_web">
+  servicio web
+ </a>
+ , es una tecnología que permite intercambiar datos entre aplicaciones.
+</p>
+<p>
+ <a href="https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=csv">
+  <code>
+   apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=csv
+  </code>
+ </a>
+</p>
+<p>
+ Estos indicadores son ejemplos de series de tiempo:
+</p>
+<ul>
+ <li>
+  <a href="http://datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=csv">
+   Inflación
+  </a>
+  (
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=csv">
+   csv
+  </a>
+  |
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=json">
+   json
+  </a>
+  )
+ </li>
+ <li>
+  <a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=1000">
+   Tipo de cambio
+  </a>
+  (
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=1000&amp;format=csv">
+   csv
+  </a>
+  |
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=1000">
+   json
+  </a>
+  )
+ </li>
+ <li>
+  <a href="http://datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&amp;limit=1000">
+   Nivel de actividad
+  </a>
+  (
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&amp;limit=1000&amp;format=csv">
+   csv
+  </a>
+  |
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&amp;limit=1000">
+   json
+  </a>
+  )
+ </li>
+</ul>
+<hr/>
+<p>
+ <em>
+  Si sos usuario de la API de Series de Tiempo y querés estar al tanto de los  cambios y novedades,
+  <a href="bit.ly/contacto-datos-argentina">
+   inscribite en la base de contactos de Datos Argentina
+  </a>
+  y elegí sobre qué temas querés que te escribamos.
+ </em>
+</p>
+<p>
+ <em>
+  ¿Tenés algo que contarnos? Nos encantaría que nos cuentes por
+  <a href="https://twitter.com/datosgobar">
+   Twitter
+  </a>
+  o por
+  <a href="mailto:datos@modernizacion.gob.ar">
+   mail
+  </a>
+  qué mejoró usar la API en tu trabajo y qué le falta para mejorar aún más.
+ </em>
+</p>
+<h1 id="comenzar-a-usar-la-api-de-series-de-tiempo">
+ Comenzar a usar la API de Series de Tiempo
+</h1>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#1-buscar-series">
+   1. Buscar series
+  </a>
+ </li>
+ <li>
+  <a href="#en-un-archivo">
+   En un archivo
+  </a>
+ </li>
+ <li>
+  <a href="#en-el-explorador-de-series">
+   En el explorador de series
+  </a>
+ </li>
+ <li>
+  <a href="#2-armar-consulta">
+   2. Armar consulta
+  </a>
+ </li>
+ <li>
+  <a href="#manualmente">
+   Manualmente
+  </a>
+ </li>
+ <li>
+  <a href="#en-el-generador-de-consultas">
+   En el generador de consultas
+  </a>
+ </li>
+ <li>
+  <a href="#3-realizar-consulta">
+   3. Realizar consulta
+  </a>
+ </li>
+ <li>
+  <a href="#consultar-o-integrar-json">
+   Consultar o integrar JSON
+  </a>
+ </li>
+ <li>
+  <a href="#descargar-csv">
+   Descargar CSV
+  </a>
+ </li>
+ <li>
+  <a href="#integrar-en-planilla-de-calculo">
+   Integrar en planilla de cálculo
+  </a>
+ </li>
+ <li>
+  <a href="#consultar-en-el-explorador-de-series">
+   Consultar en el explorador de series
+  </a>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="1-buscar-series">
+ 1. Buscar series
+</h2>
+<p>
+ Para usar la API, tenés que buscar los
+ <em>
+  ids
+ </em>
+ de las series que te interesan.
+</p>
+<h3 id="en-un-archivo">
+ En un archivo
+</h3>
+<p>
+ En
+ <a href="http://datos.gob.ar">
+  datos.gob.ar
+ </a>
+ podés encontrar la
+ <a href="http://datos.gob.ar/dataset/modernizacion-base-series-tiempo-administracion-publica-nacional">
+  base completa de series de tiempo
+ </a>
+ , que contiene la lista de series disponibles en:
+</p>
+<ul>
+ <li>
+  <a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv">
+   CSV
+  </a>
+ </li>
+ <li>
+  <a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.6/download/series-tiempo-metadatos.xlsx">
+   XLSX
+  </a>
+ </li>
+ <li>
+  <a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.10/download/series-tiempo-metadatos.dta">
+   DTA
+  </a>
+ </li>
+</ul>
+<p>
+ <img alt="" src="assets/busqueda_excel.png"/>
+ <br/>
+ <br/>
+</p>
+<h3 id="en-el-explorador-de-series">
+ En el explorador de series
+</h3>
+<p>
+ En el
+ <a href="http://datos.gob.ar/series">
+  Explorador de Series de Tiempo
+ </a>
+ podés buscar series, visualizarlas y compartir las URLs a la API o al explorador.
+</p>
+<p>
+ <img alt="" src="assets/explorador_series.png"/>
+</p>
+<h2 id="2-armar-consulta">
+ 2. Armar consulta
+</h2>
+<h3 id="manualmente">
+ Manualmente
+</h3>
+<p>
+ Los ids de las series deben pasarse al parámetro
+ <code>
+  ids
+ </code>
+ . Se pueden usar parámetros adicionales para
+ <a href="#filtrar-y-transformar-las-series">
+  filtrar y transformar las series
+ </a>
+ .
+</p>
+<p>
+ <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv">
+  <img alt="" src="assets/ejemplo_consulta.png"/>
+ </a>
+</p>
+<p>
+ Ver la
+ <a href="#referencia-api">
+  referencia API
+ </a>
+ para consultar la documentación completa de todos los parámetros disponibles.
+</p>
+<h3 id="en-el-generador-de-consultas">
+ En el generador de consultas
+</h3>
+<p>
+ En el
+ <a href="https://datosgobar.github.io/series-tiempo-ar-call-generator">
+  generador de consultas
+ </a>
+ podés ver todos los parámetros disponibles en la API para armar tu consulta.
+</p>
+<p>
+ <img alt="" src="assets/generacion_consulta_generador.png"/>
+</p>
+<h2 id="3-realizar-consulta">
+ 3. Realizar consulta
+</h2>
+<h3 id="consultar-o-integrar-json">
+ Consultar o integrar JSON
+</h3>
+<p>
+ Para realizar la consulta directamente en el navegador, o integrarla en una aplicación:
+</p>
+<ul>
+ <li>
+  Usar
+  <code>
+   format=json
+  </code>
+  (valor default).
+ </li>
+ <li>
+  Elegir el nivel de detalle de los metadatos
+  <code>
+   metadata=none
+  </code>
+  ,
+  <code>
+   only
+  </code>
+  ,
+  <code>
+   simple
+  </code>
+  o
+  <code>
+   full
+  </code>
+  .
+ </li>
+</ul>
+<p>
+ <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full">
+  <code>
+   https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=json&amp;metadata=full
+  </code>
+ </a>
+</p>
+<h3 id="descargar-csv">
+ Descargar CSV
+</h3>
+<p>
+ Para descargar un archivo CSV:
+</p>
+<ul>
+ <li>
+  Usar
+  <code>
+   format=csv
+  </code>
+  .
+ </li>
+</ul>
+<p>
+ <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15">
+  <code>
+   https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15&amp;format=csv
+  </code>
+ </a>
+</p>
+<h3 id="integrar-en-planilla-de-calculo">
+ Integrar en planilla de cálculo
+</h3>
+<p>
+ Tanto la consulta en CSV como en JSON se pueden
+ <a href="#integrar-en-planillas-de-calculo">
+  integrar en planillas de cálculo
+ </a>
+ .
+</p>
+<h3 id="consultar-en-el-explorador-de-series">
+ Consultar en el explorador de series
+</h3>
+<p>
+ Cualquier llamada a la API se puede visualizar en el explorador quitando el subdominio
+ <code>
+  apis
+ </code>
+ de la URL (y cambiando a HTTP):
+</p>
+<p>
+ <strong>
+  Llamada a la API
+ </strong>
+</p>
+<p>
+ <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month">
+  <code>
+   https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month
+  </code>
+ </a>
+</p>
+<p>
+ <strong>
+  Consulta en el explorador
+ </strong>
+</p>
+<p>
+ <a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month">
+  <code>
+   http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:percent_change_a_year_ago&amp;collapse=month
+  </code>
+ </a>
+</p>
+<h1 id="filtrar-y-transformar-las-series">
+ Filtrar y transformar las series
+</h1>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#descargar-una-tabla-con-una-o-varias-series">
+   Descargar una tabla con una o varias series
+  </a>
+ </li>
+ <li>
+  <a href="#filtrar-por-fechas">
+   Filtrar por fechas
+  </a>
+ </li>
+ <li>
+  <a href="#cambiar-la-agregacion-temporal">
+   Cambiar la agregación temporal
+  </a>
+ </li>
+ <li>
+  <a href="#cambiar-la-funcion-de-agregaci%C3%B3n-temporal">
+   Cambiar la función de agregación temporal
+  </a>
+ </li>
+ <li>
+  <a href="#aplicar-transformaciones">
+   Aplicar transformaciones
+  </a>
+ </li>
+ <li>
+  <a href="#aplicar-transformaciones-y-cambiar-la-funcion-de-agregaci%C3%B3n-temporal-en-series-individuales-a-la-vez">
+   Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez
+  </a>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="descargar-una-tabla-con-una-o-varias-series">
+ Descargar una tabla con una o varias series
+</h2>
+<p>
+ El parámetro
+ <code>
+  ids
+ </code>
+ permite la consulta simultánea de hasta
+ <strong>
+  40 series a la vez
+ </strong>
+ , separadas por comas.
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21">
+   IPC por categorías
+  </a>
+ </p>
+ <p>
+  <a href="http://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21&amp;format=csv">
+   <code>
+    http://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,101.1_I2NG_2016_M_22,102.1_I2S_ABRI_M_18,102.1_I2B_ABRI_M_15,103.1_I2R_2016_M_18,103.1_I2E_2016_M_21&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<h2 id="filtrar-por-fechas">
+ Filtrar por fechas
+</h2>
+<p>
+ Los parámetros
+ <code>
+  start_date
+ </code>
+ y
+ <code>
+  end_date
+ </code>
+ permiten limitar una consulta a todos aquellos valores posteriores o anteriores (respectivamente) a una fecha determinada.
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01">
+   Tipo de cambio desde Enero de 2016
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;limit=1000&amp;format=csv">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;limit=1000&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12">
+   Tipo de cambio hasta Diciembre de 2016
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12&amp;format=csv">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;end_date=2016-12&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12">
+   Tipo de cambio desde Enero de 2016 hasta Diciembre de 2016
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12&amp;format=csv">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2016-01&amp;end_date=2016-12&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<h2 id="cambiar-la-agregacion-temporal">
+ Cambiar la agregación temporal
+</h2>
+<p>
+ Por default, las series se muestran en la frecuencia más alta posible (esta es, la frecuencia más baja de todas las series consultadas a la vez). El parámetro
+ <code>
+  collapse
+ </code>
+ permite elegir una frecuencia más baja que esta.
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;collapse=quarter">
+   Índice de Tipo de Cambio Real Multilateral, China y Brasil. Valores mensuales promediados por trimestre.
+  </a>
+ </p>
+ <p>
+  <a href="http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=quarter&amp;ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;format=csv">
+   <code>
+    http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=quarter&amp;ids=116.3_TCRMA_0_M_36,116.3_TCRC_0_M_22,116.3_TCRB_0_M_23&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<h2 id="cambiar-la-funcion-de-agregacion-temporal">
+ Cambiar la función de agregación temporal
+</h2>
+<p>
+ Por default, cuando la API hace agregaciones temporales (ie. convertir una serie mensual en trimestral) hace un
+ <strong>
+  promedio de los valores de cada período
+ </strong>
+ .
+</p>
+<p>
+ Esta función de agregación se puede cambiar para toda la consulta con el parámetro
+ <code>
+  collapse_aggregation
+ </code>
+ , o para cada serie en particular (suma, máximo, mínimo, etc.).
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period">
+   Tipo de cambio. Valores diarios a cierre de cada mes.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period&amp;format=csv">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26&amp;collapse=month&amp;collapse_aggregation=end_of_period&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month">
+   Tipo de cambio. Valores diarios mínimo, promedio, máximo y cierre de cada mes.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month&amp;format=csv&amp;limit=1000">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26:min,168.1_T_CAMBIOR_D_0_0_26:avg,168.1_T_CAMBIOR_D_0_0_26:max,168.1_T_CAMBIOR_D_0_0_26:end_of_period&amp;collapse=month&amp;format=csv&amp;limit=1000
+   </code>
+  </a>
+ </p>
+</div>
+<h2 id="aplicar-transformaciones">
+ Aplicar transformaciones
+</h2>
+<p>
+ Las series de pueden transformar en otras unidades (variación porcentual, variación interanual, etc.) en forma individual o conjunta, usando el parámetro
+ <code>
+  representation_mode
+ </code>
+ .
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change">
+   Tipo de cambio, IPC núcleo e IPC nivel general desde Enero de 2016. Variación porcentual de valores mensuales, respecto del período anterior.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=168.1_T_CAMBIOR_D_0_0_26,103.1_I2N_2016_M_15,103.1_I2N_2016_M_19&amp;collapse=month&amp;format=csv&amp;start_date=2016-01&amp;representation_mode=percent_change
+   </code>
+  </a>
+ </p>
+</div>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01">
+   IPC núcleo, IPC núcleo (variación porcentual período a período) e IPC núcleo (variación porcentual interanual) desde Enero de 2016. Valores mensuales.
+  </a>
+ </p>
+ <p>
+  <em>
+   Nota: series con unidades de diferentes escalas, pueden ser difíciles de visualizar en un mismo gráfico.
+  </em>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01&amp;format=csv&amp;limit=1000">
+   <code>
+    https://apis.datos.gob.ar/series/api/series?ids=103.1_I2N_2016_M_15,103.1_I2N_2016_M_15:percent_change,103.1_I2N_2016_M_15:percent_change_a_year_ago&amp;start_date=2016-01&amp;format=csv&amp;limit=1000
+   </code>
+  </a>
+ </p>
+</div>
+<h2 id="aplicar-transformaciones-y-cambiar-la-funcion-de-agregacion-temporal-en-series-individuales-a-la-vez">
+ Aplicar transformaciones y cambiar la función de agregación temporal en series individuales, a la vez
+</h2>
+<p>
+ Es posible aplicar a las series individuales
+ <strong>
+  tanto una transformación como una función de agregación particular a la vez
+ </strong>
+ .
+</p>
+<p>
+ En todos los casos, siempre se aplica
+ <strong>
+  primero la función de agregación
+ </strong>
+ y
+ <strong>
+  luego la transformación
+ </strong>
+ .
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;collapse=month">
+   Tipo de cambio. Variación porcentual de valores diarios a cierre de cada mes, respecto del período anterior.
+  </a>
+ </p>
+ <p>
+  <a href="http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=month&amp;ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;format=csv">
+   <code>
+    http://apis.datos.gob.ar/series/api/series/?limit=1000&amp;collapse=month&amp;ids=168.1_T_CAMBIOR_D_0_0_26:end_of_period:percent_change&amp;format=csv
+   </code>
+  </a>
+ </p>
+</div>
+<h1 id="integracion-con-planillas-de-calculo">
+ Integración con planillas de cálculo
+</h1>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#google-drive">
+   Google Drive
+  </a>
+ </li>
+ <li>
+  <a href="#1-modificar-la-configuracion-regional-o-usar-el-parametro-decimal">
+   1. Modificar la configuración regional o usar el parámetro "decimal=,"
+  </a>
+  <ul>
+   <li>
+    <a href="#usar-el-parametro-decimal">
+     Usar el parámetro
+     <code>
+      decimal
+     </code>
+    </a>
+   </li>
+   <li>
+    <a href="#modificar-la-configuracion-regional">
+     Modificar la configuración regional
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li>
+  <a href="#2-importar-los-datos-a-la-planilla">
+   2. Importar los datos a la planilla
+  </a>
+ </li>
+ <li>
+  <a href="#3-elegir-el-formato-de-fecha">
+   3. Elegir el formato de fecha
+  </a>
+ </li>
+ <li>
+  <a href="#4-modificar-la-url-de-consulta-a-la-api">
+   4. Modificar la URL de consulta a la API
+  </a>
+ </li>
+ <li>
+  <a href="#excel">
+   Excel
+  </a>
+ </li>
+ <li>
+  <a href="#0-chequear-que-tenes-instalado-lo-que-necesitas">
+   0. Chequear que tenés instalado lo que necesitás
+  </a>
+ </li>
+ <li>
+  <a href="#1-generar-una-nueva-consulta-desde-una-url">
+   1. Generar una nueva consulta desde una URL
+  </a>
+ </li>
+ <li>
+  <a href="#2-editar-codificacion-del-archivo-origen">
+   2. Editar codificación del archivo origen
+  </a>
+ </li>
+ <li>
+  <a href="#3-editar-los-tipos-de-las-columnas">
+   3. Editar los tipos de las columnas
+  </a>
+ </li>
+ <li>
+  <a href="#4-guardar-las-modificaciones-y-cargar-la-consulta">
+   4. Guardar las modificaciones y cargar la consulta
+  </a>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="google-drive">
+ Google Drive
+</h2>
+<h3 id="1-modificar-la-configuracion-regional-o-usar-el-parametro-decimal">
+ 1. Modificar la configuración regional o usar el parámetro "decimal=,"
+</h3>
+<h4 id="usar-el-parametro-decimal">
+ Usar el parámetro
+ <code>
+  decimal
+ </code>
+</h4>
+<p>
+ La API genera archivos CSV usando "." como separador decimal por defecto. Si tu cuenta de Google está configurada para Argentina / latinoamérica, podés agregar a todas tus llamadas a la API el argumento
+ <code>
+  &amp;decimal=,
+ </code>
+ para que los CSVs se generen con "," como separador decimal.
+</p>
+<div class="admonition note">
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;metadata=full&amp;start=0&amp;ids=143.3_NO_PR_2004_A_21&amp;format=csv&amp;decimal=,">
+   https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;metadata=full&amp;start=0&amp;ids=143.3_NO_PR_2004_A_21&amp;format=csv&amp;decimal=,
+  </a>
+ </p>
+</div>
+<p>
+ Ver uso del parámetro
+ <a href="reference/api-reference.md#decimal">
+  <code>
+   decimal
+  </code>
+ </a>
+ en la referencia.
+</p>
+<h4 id="modificar-la-configuracion-regional">
+ Modificar la configuración regional
+</h4>
+<p>
+ Para que Google Spreadsheet lea correctamente el archivo CSV por defecto, puede elegirse “Estados Unidos” o cualquier otra región compatible como configuración regional.
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_1.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_2.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_3.png" title="google_drive"/>
+ </center>
+</p>
+<h3 id="2-importar-los-datos-a-la-planilla">
+ 2. Importar los datos a la planilla
+</h3>
+<p>
+ La función IMPORTDATA() toma la URL de la consulta a la API y trae los datos a la planilla.
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_4.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_5.png" title="google_drive"/>
+ </center>
+</p>
+<h3 id="3-elegir-el-formato-de-fecha">
+ 3. Elegir el formato de fecha
+</h3>
+<p>
+ El índice de tiempo puede verse como un número la primera vez que se importan los datos. Lo más conveniente es seleccionar toda la columna y elegir el formato en el que se desea visualizar la fecha.
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_6.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_7.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_8.png" title="google_drive"/>
+ </center>
+</p>
+<h3 id="4-modificar-la-url-de-consulta-a-la-api">
+ 4. Modificar la URL de consulta a la API
+</h3>
+<p>
+ Una vez importada la tabla por primera vez, se pueden modificar los distintos parámetros de la consulta según lo que se necesite. La tabla se actualizará con cada cambio.
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_9.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_10.png" title="google_drive"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/google_drive_letra_11.png" title="google_drive"/>
+ </center>
+</p>
+<h2 id="excel">
+ Excel
+</h2>
+<h3 id="0-chequear-que-tenes-instalado-lo-que-necesitas">
+ 0. Chequear que tenés instalado lo que necesitás
+</h3>
+<ul>
+ <li>
+  <strong>
+   Excel 2016
+  </strong>
+  : tiene todo lo necesario para integrar una URL a un CSV.
+ </li>
+ <li>
+  <strong>
+   Excel 2013
+  </strong>
+  : necesita
+  <a href="https://www.microsoft.com/es-es/download/details.aspx?id=39379">
+   descargar e instalar Microsoft Power Query
+  </a>
+  .
+ </li>
+ <li>
+  <strong>
+   Excel 2010
+  </strong>
+  : necesita
+  <a href="https://www.microsoft.com/es-ar/download/details.aspx?id=26622">
+   descargar e instalar el Service Pack 1
+  </a>
+  y luego
+  <a href="https://www.microsoft.com/es-es/download/details.aspx?id=39379">
+   descargar e instalar Microsoft Power Query
+  </a>
+  .
+ </li>
+</ul>
+<h3 id="1-generar-una-nueva-consulta-desde-una-url">
+ 1. Generar una nueva consulta desde una URL
+</h3>
+<p>
+ “Datos” &gt; “Nueva consulta” &gt; “Desde otras fuentes” &gt; “Desde una web”
+</p>
+<p>
+ <strong>
+  Nota:
+ </strong>
+ si Excel está configurado para Argentina / latinoamérica agregar a la URL de la API
+ <code>
+  &amp;decimal=,
+ </code>
+ para que los números decimales usen "," en lugar de "." y Excel los lea correctamente. Ver uso del parámetro
+ <a href="reference/api-reference.md#decimal">
+  <code>
+   decimal
+  </code>
+ </a>
+ en la referencia.
+</p>
+<div class="admonition note">
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;metadata=full&amp;start=0&amp;ids=143.3_NO_PR_2004_A_21&amp;format=csv&amp;decimal=,">
+   https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;metadata=full&amp;start=0&amp;ids=143.3_NO_PR_2004_A_21&amp;format=csv&amp;decimal=,
+  </a>
+ </p>
+</div>
+<p>
+ <center>
+  <img alt="excel" src="assets/excel_letra_1.png" title="excel"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/excel_letra_2.png" title="excel"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/excel_letra_3.png" title="excel"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/excel_letra_4.png" title="excel"/>
+ </center>
+</p>
+<h3 id="2-editar-codificacion-del-archivo-origen">
+ 2. Editar codificación del archivo origen
+</h3>
+<p>
+ Esto
+ <strong>
+  sólo es necesario si se pide a la API usar las descripciones como nombres de las columnas
+ </strong>
+ (
+ <code>
+  &amp;header=descriptions
+ </code>
+ ) en lugar del texto corto que viene por defecto, formado con carateres compatibles con cualquier codificación.
+</p>
+<p>
+ La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es el valor por defecto de Excel y puede generar errores en los caracteres con tildes o la "ñ".
+</p>
+<p>
+ Click en la rueda de “Origen” &gt; “Origen de archivo” &gt; Elegir “Unicode UTF-8”
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/excel_letra_5.png" title="excel"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/excel_letra_6.png" title="excel"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/excel_letra_7.png" title="excel"/>
+ </center>
+</p>
+<h3 id="3-editar-los-tipos-de-las-columnas">
+ 3. Editar los tipos de las columnas
+</h3>
+<p>
+ Excel puede no interpretar correctamente las fechas cuando Excel está configurado para Argentina / latinoamérica.
+</p>
+<p>
+ Si este es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/excel_letra_8.png" title="excel"/>
+ </center>
+ <br/>
+ <br/>
+ <center>
+  <img alt="excel" src="assets/excel_letra_9.png" title="excel"/>
+ </center>
+</p>
+<h3 id="4-guardar-las-modificaciones-y-cargar-la-consulta">
+ 4. Guardar las modificaciones y cargar la consulta
+</h3>
+<p>
+ Por último, haciendo click en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.
+</p>
+<p>
+ <center>
+  <img alt="excel" src="assets/excel_letra_14.png" title="excel"/>
+ </center>
+</p>
+<h1 id="usar-en-python">
+ Usar en python
+</h1>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#con-requests">
+   Con
+   <code>
+    requests
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#con-pandas">
+   Con
+   <code>
+    pandas
+   </code>
+  </a>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="con-requests">
+ Con
+ <code>
+  requests
+ </code>
+</h2>
+<p>
+ Armar una función
+ <em>
+  wrapper
+ </em>
+ que facilite construir llamadas a la API.
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+
+<span class="k">def</span> <span class="nf">get_api_call</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">API_BASE_URL</span> <span class="o">=</span> <span class="s2">"https://apis.datos.gob.ar/series/api/"</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">"ids"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"{}{}?{}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">API_BASE_URL</span><span class="p">,</span> <span class="s2">"series"</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+</pre>
+</div>
+<p>
+ Una llamada válida a la API debe tener por lo menos un id de una serie válida, y luego puede tener parámetros opcionales.
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="n">api_call</span> <span class="o">=</span> <span class="n">get_api_call</span><span class="p">([</span><span class="s2">"168.1_T_CAMBIOR_D_0_0_26"</span><span class="p">],</span> <span class="n">start_date</span><span class="o">=</span><span class="s2">"2018-08"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span>
+
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">apis</span><span class="o">.</span><span class="n">datos</span><span class="o">.</span><span class="n">gob</span><span class="o">.</span><span class="n">ar</span><span class="o">/</span><span class="n">series</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">series</span><span class="err">?</span><span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span><span class="o">-</span><span class="mi">08</span><span class="o">&amp;</span><span class="n">ids</span><span class="o">=</span><span class="mf">168.1</span><span class="n">_T_CAMBIOR_D_0_0_26</span>
+</pre>
+</div>
+<p>
+ Obtener la respuesta en un diccionario.
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="p">[[</span><span class="s1">'2018-08-01'</span><span class="p">,</span> <span class="mf">27.525</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-02'</span><span class="p">,</span> <span class="mf">27.45</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-03'</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-04'</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-05'</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-06'</span><span class="p">,</span> <span class="mf">27.33</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-07'</span><span class="p">,</span> <span class="mf">27.395</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-08'</span><span class="p">,</span> <span class="mf">27.65</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-09'</span><span class="p">,</span> <span class="mf">28.11</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-10'</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-11'</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-12'</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-13'</span><span class="p">,</span> <span class="mf">29.925</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-14'</span><span class="p">,</span> <span class="mf">29.61</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-15'</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>
+  <span class="p">[</span><span class="s1">'2018-08-16'</span><span class="p">,</span> <span class="mf">29.84</span><span class="p">]],</span>
+ <span class="s1">'meta'</span><span class="p">:</span> <span class="p">[{</span><span class="s1">'end_date'</span><span class="p">:</span> <span class="s1">'2018-08-16'</span><span class="p">,</span>
+   <span class="s1">'frequency'</span><span class="p">:</span> <span class="s1">'day'</span><span class="p">,</span>
+   <span class="s1">'start_date'</span><span class="p">:</span> <span class="s1">'2018-08-01'</span><span class="p">},</span>
+  <span class="p">{</span><span class="s1">'catalog'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'title'</span><span class="p">:</span> <span class="s1">'Datos Programación Macroeconómica'</span><span class="p">},</span>
+   <span class="s1">'dataset'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Datos de tipo de cambio $-USD - futuro dólar . Con respecto al dólar de Estados Unidos. Frecuencia diaria.'</span><span class="p">,</span>
+    <span class="s1">'issued'</span><span class="p">:</span> <span class="s1">'2017-09-28'</span><span class="p">,</span>
+    <span class="s1">'source'</span><span class="p">:</span> <span class="s1">'BCRA, MAE, Rofex y Bloomberg'</span><span class="p">,</span>
+    <span class="s1">'title'</span><span class="p">:</span> <span class="s1">'Tipo de Cambio $-USD - Futuro Dólar'</span><span class="p">},</span>
+   <span class="s1">'distribution'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'downloadURL'</span><span class="p">:</span> <span class="s1">'http://infra.datos.gob.ar/catalog/sspm/dataset/168/distribution/168.1/download/datos-tipo-cambio-usd-futuro-dolar-frecuencia-diaria.csv'</span><span class="p">,</span>
+    <span class="s1">'title'</span><span class="p">:</span> <span class="s1">'Tipo de cambio $-USD - futuro dólar. Valores diarios'</span><span class="p">},</span>
+   <span class="s1">'field'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Tipo de Cambio BNA (Vendedor)'</span><span class="p">,</span>
+    <span class="s1">'id'</span><span class="p">:</span> <span class="s1">'168.1_T_CAMBIOR_D_0_0_26'</span><span class="p">,</span>
+    <span class="s1">'units'</span><span class="p">:</span> <span class="s1">'Pesos argentinos por dólar'</span><span class="p">}}],</span>
+ <span class="s1">'params'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'identifiers'</span><span class="p">:</span> <span class="p">[{</span><span class="s1">'dataset'</span><span class="p">:</span> <span class="s1">'168'</span><span class="p">,</span>
+    <span class="s1">'distribution'</span><span class="p">:</span> <span class="s1">'168.1'</span><span class="p">,</span>
+    <span class="s1">'id'</span><span class="p">:</span> <span class="s1">'168.1_T_CAMBIOR_D_0_0_26'</span><span class="p">}],</span>
+  <span class="s1">'ids'</span><span class="p">:</span> <span class="s1">'168.1_T_CAMBIOR_D_0_0_26'</span><span class="p">,</span>
+  <span class="s1">'start_date'</span><span class="p">:</span> <span class="s1">'2018-08'</span><span class="p">}}</span>
+</pre>
+</div>
+<h2 id="con-pandas">
+ Con
+ <code>
+  pandas
+ </code>
+</h2>
+<p>
+ Las llamadas a la API en CSV se pueden leer directamente a un
+ <code>
+  pandas.DataFrame
+ </code>
+ .
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">get_api_call</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">"168.1_T_CAMBIOR_D_0_0_26"</span><span class="p">,</span> <span class="s2">"101.1_I2NG_2016_M_22"</span><span class="p">,</span> 
+    <span class="s2">"116.3_TCRMA_0_M_36"</span><span class="p">,</span> <span class="s2">"143.3_NO_PR_2004_A_21"</span><span class="p">,</span> <span class="s2">"11.3_VMATC_2004_M_12"</span><span class="p">],</span>
+    <span class="n">format</span><span class="o">=</span><span class="s2">"csv"</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span>
+<span class="p">))</span>
+</pre>
+</div>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo  tipo_cambio_bna_vendedor  ipc_2016_nivel_general  \
+   2018-01-01                 19.023065                127.0147
+   2018-02-01                 19.835179                130.2913
+   2018-03-01                 20.229355                133.5028
+   2018-04-01                 20.251100                136.9380
+   2018-05-01                 23.600452                139.5800
+   2018-06-01                 26.674333                145.0582
+   2018-07-01                 27.607645                149.1178
+ tipo_cambio_real_multilateral_actual  indice_serie_original  construccion
+                            96.628715             144.086686    158.920762
+                            96.121512             138.470530    152.630381
+                            93.062453             155.570021    158.931156
+                            90.715862             152.432629    149.860484
+                           104.302984             160.622476    154.011846
+                           114.546258                    NaN           NaN
+                           107.105698                    NaN           NaN
+</pre>
+</div>
+<!-- ## Con `plotly` -->
+<p>
+ Se encuentran disponibles varios archivos con los mismos datos de la base de series de tiempo disponibles a través de la API.
+</p>
+<p>
+ Los datos están para descargar en cuatro formatos:
+</p>
+<ul>
+ <li>
+  CSV
+ </li>
+ <li>
+  XLSX
+ </li>
+ <li>
+  SQL (Una base de datos SQLITE)
+ </li>
+ <li>
+  DTA
+ </li>
+</ul>
+<p>
+ Existen varios paquetes de datos por cada formato:
+</p>
+<ul>
+ <li>
+  Valores y metadatos desagregados: Contiene a la base entera de datos, junto con los metadatos de las series en cada indicador
+ </li>
+ <li>
+  Sólo valores: Contiene a la base entera de datos, con una cantidad de metadatos de las series reducida respecto al paquete anterior
+ </li>
+ <li>
+  Metadatos: Contiene a todos los metadatos de cada serie de tiempo en la base. No contiene datos (indicadores) de las series.
+ </li>
+ <li>
+  Fuentes: Indicadores sobre las fuentes de datos disponibles en la base. Puede resultar útil como punto de partida para buscar series.
+ </li>
+</ul>
+<h2 id="links-de-descarga">
+ Links de descarga
+</h2>
+<p>
+ Los
+ <em>
+  dumps
+ </em>
+ de la base de datos entera están disponibles bajo la siguiente ruta:
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/:dump
+ </code>
+</p>
+<p>
+ Donde
+ <code>
+  :dump
+ </code>
+ puede ser uno de los siguientes archivos:
+</p>
+<p>
+ Formato CSV:
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo-csv.zip
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-valores-csv.zip
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-metadatos.csv
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-fuentes.csv
+  </code>
+ </li>
+</ul>
+<p>
+ Formato XLSX:
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo.xlsx
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-valores.xlsx
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-metadatos.xlsx
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-fuentes.xlsx
+  </code>
+ </li>
+</ul>
+<p>
+ Formato SQL:
+</p>
+<p>
+ La base de datos en SQL contiene a estos paquetes como tablas, todas en un único archivo.
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo-sqlite.zip
+  </code>
+ </li>
+</ul>
+<p>
+ Formato DTA:
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo-valores-dta.zip
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-metadatos.dta
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-fuentes.dta
+  </code>
+ </li>
+</ul>
+<p>
+ Notar que para el formato DTA no se disponibiliza la distribución con valores y metadatos desagregados.
+</p>
+<p>
+ Por ejemplo, la base de series de tiempo entera, junto con varios metadatos de las series, en formato XLSX, se encuentra disponible bajo
+</p>
+<p>
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/series-tiempo.xlsx
+ </code>
+</p>
+<h2 id="dumps-por-catalogo">
+ Dumps por catálogo
+</h2>
+<p>
+ A su vez, también existen versiones de los datos desagregados según el
+ <em>
+  catálogo
+ </em>
+ de origen. Se encuentran en la siguiente URL de descarga:
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/:catalog/:dump
+ </code>
+</p>
+<p>
+ Los catálogos se pueden consultar bajo el siguiente
+ <em>
+  endpoint
+ </em>
+ de la API de búsqueda:
+ <code>
+  https://apis.datos.gob.ar/series/api/search/catalog_id/
+ </code>
+</p>
+<p>
+ Por ejemplo, para consultar las fuentes del catálogo
+ <code>
+  sspm
+ </code>
+ (de la Subsecretaría de Programación Macroeconómica del Ministerio de Hacienda de la Nación), en formato XLSX, se puede acceder en la siguiente URL:
+</p>
+<p>
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/sspm/series-tiempo-fuentes.xlsx
+ </code>
+</p>
+<h1 id="referencia-api-series">
+ Referencia API: series
+</h1>
+<p>
+ Recurso:
+ <code>
+  /series
+ </code>
+</p>
+<p>
+ El recurso
+ <code>
+  /series
+ </code>
+ permite
+ <strong>
+  obtener datos y metadatos
+ </strong>
+ de una o más series, permitiendo hacer filtros por el índice de tiempo, cambios de granularidad en la dimensión temporal y cambios en la unidad de medida de los valores de la serie, entre otras operaciones.
+</p>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#tabla-de-parametros">
+   Tabla de parámetros
+  </a>
+ </li>
+ <li>
+  <a href="#ids">
+   <code>
+    ids
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#representation_mode">
+   <code>
+    representation_mode
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#collapse">
+   <code>
+    collapse
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#collapse_aggregation">
+   <code>
+    collapse_aggregation
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#limit">
+   <code>
+    limit
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#start">
+   <code>
+    start
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#start_date">
+   <code>
+    start_date
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#end_date">
+   <code>
+    end_date
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#format">
+   <code>
+    format
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#header">
+   <code>
+    header
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#sort">
+   <code>
+    sort
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#metadata">
+   <code>
+    metadata
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#decimal">
+   <code>
+    decimal
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#sep">
+   <code>
+    sep
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#flatten">
+   <code>
+    flatten
+   </code>
+  </a>
+ </li>
+ <li>
+  <a href="#last">
+   <code>
+    last
+   </code>
+  </a>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="tabla-de-parametros">
+ Tabla de parámetros
+</h2>
+<table>
+ <tr>
+  <th>
+   Nombre
+  </th>
+  <th>
+   Requerido
+  </th>
+  <th>
+   Descripción
+  </th>
+  <th>
+   Default
+  </th>
+  <th>
+   Ejemplos
+  </th>
+ </tr>
+ <tr>
+  <td>
+   ids
+  </td>
+  <td>
+   Si
+  </td>
+  <td>
+   Lista de caracteres alfanuméricos separados por comas.
+   <br/>
+   <br/>
+   Contiene la especificación de las series a consultar, junto a transformaciones y operaciones.
+  </td>
+  <td>
+   N/A
+  </td>
+  <td>
+   ids=2.4_DGI_1993_T_19,134.2_B_0_0_6
+  </td>
+ </tr>
+ <tr>
+  <td>
+   representation_mode
+  </td>
+ </tr>
+</table>
+<td>
+ No
+</td>
+<td>
+ Uno de:
+ <em>
+  value, change, percent_change, percent_change_a_year_ago
+ </em>
+</td>
+<td>
+ value
+</td>
+<td>
+ representation_mode=percent_change
+</td>
+<tr>
+ <td>
+  collapse
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de:
+ <em>
+  day, week, month, quarter, year
+ </em>
+</td>
+<td>
+ La frecuencia propia de la serie
+</td>
+<td>
+ collapse=year
+ <br/>
+ collapse=quarter
+</td>
+<tr>
+ <td>
+  collapse_aggregation
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de:
+ <em>
+  avg, sum, end_of_period, min, max
+ </em>
+</td>
+<td>
+ avg
+</td>
+<td>
+ collapse_aggregation=sum
+</td>
+<tr>
+ <td>
+  limit
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Número entero positivo, no mayor que 1000.
+</td>
+<td class="s4" dir="ltr">
+ 100
+</td>
+<td>
+ limit=50
+</td>
+<tr>
+ <td>
+  start
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Número entero positivo o 0.
+</td>
+<td class="s4" dir="ltr">
+ 0
+</td>
+<td>
+ start=100
+</td>
+<tr>
+ <td>
+  start_date
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Fecha y hora en formato ISO 8601.
+ <br/>
+ <br/>
+ Si no se especifica este parámetro, se devuelven los datos disponibles para la serie o series desde el valor más antiguo.
+</td>
+<td>
+ N/A
+</td>
+<td>
+ start_date=2016-11-30
+ <br/>
+ start_date=2016-11
+ <br/>
+ start_date=2016
+</td>
+<tr>
+ <td>
+  end_date
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Fecha y hora en formato ISO 8601.
+  <br/>
+  <br/>
+  Si no se especifica este parámetro, se devuelven los datos disponibles para la serie o series hasta el valor más reciente.
+ </td>
+ <td>
+  N/A
+ </td>
+ <td>
+  end_date=2016-11-30
+  <br/>
+  end_date=2016-11
+  <br/>
+  end_date=2016
+ </td>
+</tr>
+<tr>
+ <td>
+  format
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de:
+ <em>
+  json, csv
+ </em>
+</td>
+<td>
+ json
+</td>
+<td>
+ format=csv
+</td>
+<tr>
+ <td>
+  header
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Uno de:
+  <em>
+   titles, ids, descriptions
+  </em>
+ </td>
+ <td>
+  titles
+ </td>
+ <td>
+  header=ids
+ </td>
+</tr>
+<tr>
+ <td>
+  sort
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Uno de:
+  <em>
+   asc, desc
+  </em>
+ </td>
+ <td>
+  asc
+ </td>
+ <td>
+  sort=desc
+ </td>
+</tr>
+<tr>
+ <td>
+  metadata
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Uno de:
+  <em>
+   none, simple, full, only
+  </em>
+ </td>
+ <td>
+  simple
+ </td>
+ <td>
+  metadata=none
+ </td>
+</tr>
+<tr>
+ <td>
+  decimal
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Caracter utilizado para los decimales.
+  <br/>
+  <br/>
+  Uno de:
+  <em>
+   "," o "."
+  </em>
+ </td>
+ <td>
+  .
+ </td>
+ <td>
+  decimal=,
+ </td>
+</tr>
+<tr>
+ <td>
+  sep
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Caracter separador de los valores del CSV.
+  <br/>
+  <br/>
+  Cualquier caracter UTF-8
+ </td>
+</tr>
+<td>
+ ,
+</td>
+<td>
+ sep=|
+</td>
+<tr>
+ <td>
+  flatten
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Aplana la respuesta de metadatos en un objeto con un único nivel (sin objetos anidados). No es necesario darle valor
+ </td>
+ <td>
+ </td>
+ <td>
+  flatten
+ </td>
+</tr>
+<tr>
+ <td>
+  last
+ </td>
+ <td>
+  No
+ </td>
+ <td>
+  Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente. Mutuamente exclusivo con `sort`, `start`, y `limit`.
+ </td>
+ <td>
+  N/A
+ </td>
+ <td>
+  last=12
+ </td>
+</tr>
+<h3 id="ids">
+ <code>
+  ids
+ </code>
+</h3>
+<p>
+ Lista separada por comas de los identificadores de las series a seleccionar para armar la respuesta. Los datos del resultado de la llamada tendrán una columna por cada serie seleccionada, en el mismo orden.
+</p>
+<p>
+ <strong>
+  Este parámetro es requerido para la llamada
+ </strong>
+ . En caso de no suministrarse, se devolverá un error.
+</p>
+<p>
+ Cada identificador de serie podrá ser sufijado con:
+</p>
+<ul>
+ <li>
+  Un modo de representación (
+  <a href="#representation_mode">
+   <code>
+    representation_mode
+   </code>
+  </a>
+  ).
+ </li>
+ <li>
+  Una función de agregación temporal (
+  <a href="#collapse_aggregation">
+   <code>
+    collapse_aggregation
+   </code>
+  </a>
+  ).
+ </li>
+</ul>
+<p>
+ Cuando estos atributos se utilizan como parte del parámetro
+ <code>
+  ids
+ </code>
+ , se deben separar usando el caracter ":". El orden de los componentes no incide en el resultado de la operación.
+</p>
+<p>
+ Ejemplos:
+</p>
+<div class="codehilite">
+ <pre><span></span>ids=2.4_DGI_1993_T_19,134.2_B_0_0_6:change
+ids=2.4_DGI_1993_T_19,134.2_B_0_0_6:sum:change
+ids=2.4_DGI_1993_T_19,134.2_B_0_0_6:change:sum
+ids=2.4_DGI_1993_T_19:percent_change,134.2_B_0_0_6:sum:change
+ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
+</pre>
+</div>
+<h3 id="representationmode">
+ <code>
+  representation_mode
+ </code>
+</h3>
+<p>
+ Este parámetro indica el modo de representación de las series, y se aplica a todas aquellas que no tengan otro modo de representación distinto indicado en el parámetro
+ <a href="#ids">
+  <code>
+   ids
+  </code>
+ </a>
+ en forma individual.
+</p>
+<p>
+ El modo de representación por defecto es el valor medido en la serie (
+ <em>
+  value
+ </em>
+ ).
+</p>
+<p>
+ Los modos de representación disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   value
+  </em>
+  : Es el modo de representación por defecto. Devuelve el valor medido en la serie.
+ </li>
+ <li>
+  <em>
+   change
+  </em>
+  : Devuelve la diferencia absoluta entre el valor del período t y el de t-1.
+ </li>
+ <li>
+  <em>
+   percent_change
+  </em>
+  : Devuelve la variación porcentual entre el valor del período t y el de t-1.
+ </li>
+ <li>
+  <em>
+   percent_change_a_year_ago
+  </em>
+  : Devuelve la variación porcentual entre el valor del período t y el del período t equivalente de hace un año atrás.
+ </li>
+</ul>
+<p>
+ Las funciones de transformación disponibles en
+ <a href="#representation_mode">
+  <code>
+   representation_mode
+  </code>
+ </a>
+ también pueden especificarse para
+ <strong>
+  series individuales
+ </strong>
+ usando la notación
+ <code>
+  :percent_change
+ </code>
+ junto al id de la serie:
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=11.3_VMATC_2004_M_12:percent_change">
+   EMAE Construcción. Variación porcentual de valores mensuales, respecto del período anterior.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change">
+   <code>
+    https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change
+   </code>
+  </a>
+ </p>
+</div>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago">
+   EMAE Construcción (variación porcentual período a período), EMAE Construcción (variación porcentual interanual). Valores mensuales.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago">
+   <code>
+    https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;ids=11.3_VMATC_2004_M_12:percent_change,11.3_VMATC_2004_M_12:percent_change_a_year_ago
+   </code>
+  </a>
+ </p>
+</div>
+<p>
+ El parámetro
+ <a href="#representation_mode">
+  <code>
+   representation_mode
+  </code>
+ </a>
+ seguirá afectando a todas las series para las cuales no se especifique individualmente una función de transformación.
+</p>
+<h3 id="collapse">
+ <code>
+  collapse
+ </code>
+</h3>
+<p>
+ El parámetro
+ <a href="#collapse">
+  <code>
+   collapse
+  </code>
+ </a>
+ modifica la frecuencia de muestreo de los datos de la serie o las series solicitadas. Debe usarse en combinación con
+ <a href="#collapse_aggregation">
+  <code>
+   collapse_aggregation
+  </code>
+ </a>
+ para indicar una funnción de agregación temporal, cuando corresponda.
+</p>
+<p>
+ Las opciones disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   year
+  </em>
+  : Muestra datos agregados anualmente.
+ </li>
+ <li>
+  <em>
+   quarter
+  </em>
+  : Muestra datos agregados trimestralmente.
+ </li>
+ <li>
+  <em>
+   month
+  </em>
+  : Muestra datos agregados mensualmente.
+ </li>
+ <li>
+  <em>
+   week
+  </em>
+  : Muestra datos agregados semanalmente.
+ </li>
+ <li>
+  <em>
+   day
+  </em>
+  : Muestra datos agregados diariamente.
+ </li>
+</ul>
+<p>
+ Si no se indica, se retornan los datos con la
+ <strong>
+  frecuencia original de la serie
+ </strong>
+ .
+</p>
+<p>
+ Si se solicitan
+ <strong>
+  múltiples series de distintas frecuencias
+ </strong>
+ , se utilizará la menor frecuencia de todas ellas (Ej.: si se solicitan a la vez una serie diaria, una mensual y una trimestral, se convertirán todas las series a la frecuencia trimestral).
+</p>
+<p>
+ Si la granularidad temporal solicitada en el valor de
+ <a href="#collapse">
+  <code>
+   collapse
+  </code>
+ </a>
+ es menor a la granularidad propia de alguna de las series solicitadas, la consulta devolverá un error.
+</p>
+<p>
+ El parámetro
+ <a href="#collapse">
+  <code>
+   collapse
+  </code>
+ </a>
+ afecta globalmente a todas las series seleccionadas por el parámetro
+ <a href="#ids">
+  <code>
+   ids
+  </code>
+ </a>
+ en la llamada.
+</p>
+<h3 id="collapseaggregation">
+ <code>
+  collapse_aggregation
+ </code>
+</h3>
+<p>
+ El parámetro
+ <a href="#collapse_aggregation">
+  <code>
+   collapse_aggregation
+  </code>
+ </a>
+ indica la función de agregación temporal que debe usarse para homogeneizar la frecuencia temporal de todas las series solicitadas (Ej.: qué operación realizar para convertir una serie mensual en anual).
+</p>
+<p>
+ Esta función de agregación actuará sobre:
+</p>
+<ul>
+ <li>
+  Las series agrupadas de mayor granularidad temporal (frecuencia más alta) que la granularidad indicada por el parámetro
+  <a href="#collapse">
+   <code>
+    collapse
+   </code>
+  </a>
+ </li>
+ <li>
+  En caso de que no se especifique el parámetro
+  <a href="#collapse">
+   <code>
+    collapse
+   </code>
+  </a>
+  , las series agrupadas de mayor granularidad temporal que la de la serie de menor frecuencia temporal.
+ </li>
+</ul>
+<p>
+ Los valores disponibles para el parámetro son:
+</p>
+<ul>
+ <li>
+  <em>
+   avg
+  </em>
+  : Realiza el promedio de todos los valores agrupados. Es la opción por defecto si no se indica valor para
+  <a href="#collapse_aggregation">
+   <code>
+    collapse_aggregation
+   </code>
+  </a>
+  .
+ </li>
+ <li>
+  <em>
+   sum
+  </em>
+  : Suma todos los valores agrupados.
+ </li>
+ <li>
+  <em>
+   end_of_period
+  </em>
+  : Último valor del período.
+ </li>
+ <li>
+  <em>
+   min
+  </em>
+  : Mínimo entre los valores agrupados.
+ </li>
+ <li>
+  <em>
+   max
+  </em>
+  : Máximo entre los valores agrupados.
+ </li>
+</ul>
+<p>
+ Las funciones de agregación temporal disponibles en
+ <a href="#collapse_aggregation">
+  <code>
+   collapse_aggregation
+  </code>
+ </a>
+ también pueden especificarse para
+ <strong>
+  series individuales
+ </strong>
+ usando la notación
+ <code>
+  :sum
+ </code>
+ junto al id de la serie:
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&amp;collapse=year">
+   Cobro de servicios de turismo y viajes. Valores mensuales promediados y sumados por año.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&amp;collapse=year">
+   <code>
+    https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30:sum&amp;collapse=year
+   </code>
+  </a>
+ </p>
+</div>
+<p>
+ El parámetro
+ <a href="#collapse_aggregation">
+  <code>
+   collapse_aggregation
+  </code>
+ </a>
+ seguirá afectando a todas las series para las cuales no se especifique individualmente una función de agregación temporal.
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="http://datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&amp;collapse=year&amp;collapse_aggregation=sum">
+   Cobro de servicios de turismo y viajes. Valores mensuales promediados y sumados por año.
+  </a>
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&amp;collapse=year&amp;collapse_aggregation=sum">
+   <code>
+    https://apis.datos.gob.ar/series/api/series/?ids=185.1_COBRO_SERVJES_0_M_30:avg,185.1_COBRO_SERVJES_0_M_30&amp;collapse=year&amp;collapse_aggregation=sum
+   </code>
+  </a>
+ </p>
+</div>
+<h3 id="limit">
+ <code>
+  limit
+ </code>
+</h3>
+<p>
+ Este parámetro es utilizado junto a
+ <a href="#start">
+  <code>
+   start
+  </code>
+ </a>
+ para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo, no mayor que 1000, ya que esa es la cantidad máxima de resultados devueltos por la API. El valor por defecto si no se especifica valor alguno es 100.
+</p>
+<h3 id="start">
+ <code>
+  start
+ </code>
+</h3>
+<p>
+ Este parámetro es utilizado junto a
+ <a href="#limit">
+  <code>
+   limit
+  </code>
+ </a>
+ para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo o 0. El valor por defecto si no se especifica valor alguno es 0.
+</p>
+<p>
+ El
+ <a href="#start">
+  <code>
+   start
+  </code>
+ </a>
+ indica el "número de períodos después de
+ <a href="#start_date">
+  <code>
+   start_date
+  </code>
+ </a>
+ " (o el "número de períodos antes de
+ <a href="#end_date">
+  <code>
+   end_date
+  </code>
+ </a>
+ ", dependiendo del ordenamiento
+ <em>
+  asc
+ </em>
+ o
+ <em>
+  desc
+ </em>
+ del parámetro
+ <a href="#sort">
+  <code>
+   sort
+  </code>
+ </a>
+ ) que se saltean desde el comienzo o el final de la serie antes de empezar a devolver valores.
+</p>
+<h3 id="startdate">
+ <code>
+  start_date
+ </code>
+</h3>
+<p>
+ El parámetro
+ <a href="#start_date">
+  <code>
+   start_date
+  </code>
+ </a>
+ indica la fecha menor a partir de la cual se comenzarán a recolectar datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de
+ <a href="#start_date">
+  <code>
+   start_date
+  </code>
+ </a>
+ se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.
+</p>
+<h3 id="enddate">
+ <code>
+  end_date
+ </code>
+</h3>
+<p>
+ El parámetro
+ <a href="#end_date">
+  <code>
+   end_date
+  </code>
+ </a>
+ indica la fecha mayor hasta la cual se recolectarán datos para la respuesta. Los valores cuyo índice de tiempo coincida con el valor de
+ <a href="#end_date">
+  <code>
+   end_date
+  </code>
+ </a>
+ se incluirán en el resultado retornado. Se utilizará como filtro sobre el índice de tiempo de las series de datos.
+</p>
+<h3 id="format">
+ <code>
+  format
+ </code>
+</h3>
+<p>
+ Especifica el formato de la respuesta, siendo
+ <em>
+  json
+ </em>
+ el valor por defecto.
+</p>
+<p>
+ Las opciones disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   json
+  </em>
+  : Devuelve un objeto json con datos y metadatos de las series.
+ </li>
+ <li>
+  <em>
+   csv
+  </em>
+  : Devuelve las series seleccionadas en formato separado por comas. Este tipo de formato no incluye metadatos de las series seleccionadas.
+ </li>
+</ul>
+<h3 id="header">
+ <code>
+  header
+ </code>
+</h3>
+<p>
+ Especifica los atributos de las series a utilizar como
+ <em>
+  headers
+ </em>
+ (cabeceras) de las columnas del archivo CSV generado. Por defecto usa
+ <em>
+  titles
+ </em>
+ , que son los títulos de las series.
+</p>
+<p>
+ Las opciones disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   titles
+  </em>
+  : Títulos de las series, por ejemplo
+  <strong>
+   oferta_global_pib
+  </strong>
+  (default).
+ </li>
+ <li>
+  <em>
+   ids
+  </em>
+  : Identificadores únicos de las series, los mismos pasados al parámetro
+  <code>
+   ids
+  </code>
+  .
+ </li>
+ <li>
+  <em>
+   descriptions
+  </em>
+  : Descripciones completas de las series, por ejemplo
+  <strong>
+   Plazo fijo entre 60-89 días en millones de pesos. Categoría II-VI
+  </strong>
+ </li>
+</ul>
+<h3 id="sort">
+ <code>
+  sort
+ </code>
+</h3>
+<p>
+ Especifica el orden temporal de los resultados devueltos, siendo
+ <em>
+  asc
+ </em>
+ el valor por defecto.
+</p>
+<p>
+ Las opciones disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   asc
+  </em>
+  : Se devuelven los valores más antiguos primero (default).
+ </li>
+ <li>
+  <em>
+   desc
+  </em>
+  : Se devuelven los valores más recientes primero.
+ </li>
+</ul>
+<h3 id="metadata">
+ <code>
+  metadata
+ </code>
+</h3>
+<p>
+ Especifica el nivel de detalle de metadatos requerido por el usuario, siendo
+ <em>
+  simple
+ </em>
+ el valor por defecto. Sólo aplica cuando
+ <code>
+  format=json
+ </code>
+ .
+</p>
+<p>
+ Las opciones disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   none
+  </em>
+  : No se devuelven metadatos, sólo datos.
+ </li>
+ <li>
+  <em>
+   only
+  </em>
+  : No se devuelven datos, sólo metadatos.
+ </li>
+ <li>
+  <em>
+   simple
+  </em>
+  : Se devuelven los metadatos más importantes para comprender y utilizar las series (default).
+ </li>
+ <li>
+  <em>
+   full
+  </em>
+  : Se devuelven todos los metadatos disponibles que tengan relación con cada serie.
+ </li>
+</ul>
+<h3 id="decimal">
+ <code>
+  decimal
+ </code>
+</h3>
+<p>
+ Especifica el caracter utilizado para los números decimales, siendo
+ <em>
+  .
+ </em>
+ el valor por defecto. Sólo aplica cuando
+ <code>
+  format=csv
+ </code>
+ .
+</p>
+<p>
+ Las opciones disponibles son:
+</p>
+<ul>
+ <li>
+  <em>
+   ,
+  </em>
+  : Coma.
+ </li>
+ <li>
+  <em>
+   .
+  </em>
+  : Punto.
+ </li>
+</ul>
+<h3 id="sep">
+ <code>
+  sep
+ </code>
+</h3>
+<p>
+ Especifica el caracter separador de valores, siendo
+ <em>
+  ,
+ </em>
+ el valor por defecto. Sólo aplica cuando
+ <code>
+  format=csv
+ </code>
+ .
+</p>
+<p>
+ Se puede utilizar cualquier caracter UTF-8, si bien se recomienda preservar el uso de la coma en la mayoría de los casos.
+</p>
+<h3 id="flatten">
+ <code>
+  flatten
+ </code>
+</h3>
+<p>
+ Especifica si la respuesta de los metadatos de las series pedidas deberían devolverse en una jerarquía
+ <em>
+  plana
+ </em>
+ .
+</p>
+<p>
+ Cuando el parámetro no es incluido, la respuesta tiene la siguiente estructura:
+</p>
+<div class="codehilite">
+ <pre><span></span>    {
+        "catalog": [&lt;catalog_meta&gt;],
+        "dataset": [&lt;dataset_meta&gt;],
+        "distribution": [&lt;distribution_meta&gt;],
+        "field": [&lt;field_meta&gt;],
+    }
+</pre>
+</div>
+<p>
+ Una consulta con parámetro
+ <code>
+  flatten
+ </code>
+ incluido tendrá la siguiente respuesta de metadatos:
+</p>
+<div class="codehilite">
+ <pre><span></span>    {
+        catalog_meta1: ...,
+        catalog_meta2: ...,
+        dataset_meta1: ...,
+        &lt;nivel&gt;_&lt;meta_key&gt;: &lt;meta_value&gt;
+        ...
+    }
+</pre>
+</div>
+<h3 id="last">
+ <code>
+  last
+ </code>
+</h3>
+<p>
+ Modifica el pedido para devolver los últimos N valores de la(s) serie(s), en orden de fechas ascendiente. Mutuamente exclusivo con
+ <code>
+  sort
+ </code>
+ ,
+ <code>
+  start
+ </code>
+ , y
+ <code>
+  limit
+ </code>
+ .
+</p>
+<p>
+ Un pedido con
+ <code>
+  last=N
+ </code>
+ es equivalente a invertir el orden de un pedido con
+ <code>
+  sort=desc
+ </code>
+ ,
+ <code>
+  limit=N
+ </code>
+ .
+</p>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#referencia-api-search">
+   Referencia API: search
+  </a>
+ </li>
+ <li>
+  <a href="#tabla-de-parametros">
+   Tabla de parámetros
+  </a>
+  <ul>
+   <li>
+    <a href="#q">
+     <code>
+      q
+     </code>
+    </a>
+   </li>
+   <li>
+    <a href="#dataset_theme-units-dataset_publisher_name-dataset_source-catalog_id">
+     <code>
+      dataset_theme
+     </code>
+     ,
+     <code>
+      units
+     </code>
+     ,
+     <code>
+      dataset_publisher_name
+     </code>
+     ,
+     <code>
+      dataset_source
+     </code>
+     ,
+     <code>
+      catalog_id
+     </code>
+    </a>
+   </li>
+   <li>
+    <a href="#limit">
+     <code>
+      limit
+     </code>
+    </a>
+   </li>
+   <li>
+    <a href="#start">
+     <code>
+      start
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h1 id="referencia-api-search">
+ Referencia API: search
+</h1>
+<p>
+ Recurso:
+ <code>
+  /search
+ </code>
+</p>
+<p>
+ El recurso
+ <code>
+  /search
+ </code>
+ permite buscar series a partir de un texto, proporcionando además algunos filtros (ej.: por tema o por unidades de las series).
+</p>
+<h2 id="tabla-de-parametros">
+ Tabla de parámetros
+</h2>
+<table>
+ <tr>
+  <th>
+   Nombre
+  </th>
+  <th>
+   Requerido
+  </th>
+  <th>
+   Descripción
+  </th>
+  <th>
+   Default
+  </th>
+  <th>
+   Ejemplos
+  </th>
+ </tr>
+ <tr>
+  <td>
+   q
+  </td>
+  <td>
+   No
+  </td>
+  <td>
+   Texto
+  </td>
+  <td>
+   N/A
+  </td>
+  <td>
+   q=ipc
+  </td>
+ </tr>
+ <tr>
+  <td>
+   dataset_theme
+  </td>
+ </tr>
+</table>
+<td>
+ No
+</td>
+<td>
+ Uno de los valores listados en
+ <a href="https://apis.datos.gob.ar/series/api/search/dataset_theme">
+  /search/dataset_theme
+ </a>
+</td>
+<td>
+ N/A
+</td>
+<td>
+ dataset_theme="Finanzas Públicas"
+</td>
+<tr>
+ <td>
+  units
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de los valores listados en
+ <a href="https://apis.datos.gob.ar/series/api/search/field_units">
+  /search/field_units
+ </a>
+</td>
+<td>
+ N/A
+</td>
+<td>
+ units="Millones de pesos"
+</td>
+<tr>
+ <td>
+  dataset_publisher_name
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de los valores listados en
+ <a href="https://apis.datos.gob.ar/series/api/search/dataset_publisher_name">
+  /search/dataset_publisher_name
+ </a>
+</td>
+<td>
+ N/A
+</td>
+<td>
+ dataset_publisher_name="Subsecretaría de Programación Macroeconómica."
+</td>
+<tr>
+ <td>
+  dataset_source
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de los valores listados en
+ <a href="https://apis.datos.gob.ar/series/api/search/dataset_source">
+  /search/dataset_source
+ </a>
+</td>
+<td>
+ N/A
+</td>
+<td>
+ dataset_source="Ministerio de Hacienda"
+</td>
+<tr>
+ <td>
+  catalog_id
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Uno de los valores listados en
+ <a href="https://apis.datos.gob.ar/series/api/search/catalog_id">
+  /search/catalog_id
+ </a>
+</td>
+<td>
+ N/A
+</td>
+<td>
+ catalog_id="sspm"
+</td>
+<tr>
+ <td>
+  limit
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Número entero positivo, no mayor que 1000.
+</td>
+<td class="s4" dir="ltr">
+ 10
+</td>
+<td>
+ limit=50
+</td>
+<tr>
+ <td>
+  start
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ Número entero positivo o 0.
+</td>
+<td class="s4" dir="ltr">
+ 0
+</td>
+<td>
+ start=100
+</td>
+<h3 id="q">
+ <code>
+  q
+ </code>
+</h3>
+<p>
+ Texto de entrada a buscar en la base de series de tiempo. Puede ser abritrariamente largo, pero se recomienda ingresar una o más palabras clave.
+</p>
+<h3 id="datasettheme-units-datasetpublishername-datasetsource-catalogid">
+ <code>
+  dataset_theme
+ </code>
+ ,
+ <code>
+  units
+ </code>
+ ,
+ <code>
+  dataset_publisher_name
+ </code>
+ ,
+ <code>
+  dataset_source
+ </code>
+ ,
+ <code>
+  catalog_id
+ </code>
+</h3>
+<p>
+ <strong>
+  Estos parámetros pueden ser usados como filtros en los resultados de la búsqueda
+ </strong>
+ . Al aplicarse, se muestran únicamente aquellos resultados que sean compatibles con la especificación.
+</p>
+<p>
+ Por ejemplo: un pedido con
+ <code>
+  units=Millones de pesos
+ </code>
+ sólo contendrá series de tiempo que estén expresadas en millones de pesos.
+</p>
+<p>
+ <strong>
+  Los términos que aceptan estos parámetros son especificados en
+  <em>
+   recursos auxiliares
+  </em>
+ </strong>
+ que devuelven la lista entera de valores aceptados en los filtros.
+</p>
+<p>
+ Por ejemplo: un pedido a
+ <a href="https://apis.datos.gob.ar/series/api/search/field_units/">
+  <code>
+   /search/field_units
+  </code>
+ </a>
+ devuelve una lista de los términos que se le pueden pasar al parámetro
+ <code>
+  units
+ </code>
+ . Cualquier otra opción devolverá una lista vacía de resultados (al no haber coincidencias). Consultar la tabla de parámetros para ver los endpoints auxiliares.
+</p>
+<h3 id="limit">
+ <code>
+  limit
+ </code>
+</h3>
+<p>
+ Este parámetro es utilizado junto a
+ <a href="#start">
+  <code>
+   start
+  </code>
+ </a>
+ para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo, no mayor que 1000, ya que esa es la cantidad máxima de resultados devueltos por la API. El valor por defecto si no se especifica valor alguno es 10.
+</p>
+<h3 id="start">
+ <code>
+  start
+ </code>
+</h3>
+<p>
+ Este parámetro es utilizado junto a
+ <a href="#limit">
+  <code>
+   limit
+  </code>
+ </a>
+ para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo o 0. El valor por defecto si no se especifica valor alguno es 0.
+</p>
+<p>
+ El
+ <a href="#start">
+  <code>
+   start
+  </code>
+ </a>
+ indica el "número de resultados después del inicio" que se saltea el buscador para el armado de la respuesta.
+</p>
+<h1 id="condiciones-de-uso">
+ Condiciones de uso
+</h1>
+<h2 id="legales">
+ Legales
+</h2>
+<p>
+ Los datos de la API de Series de Tiempo bajo las licencias aplicadas por sus publicadores, que pueden ser consultadas en la
+ <a href="http://infra.datos.gob.ar/catalog/modernizacion/dataset/1/distribution/1.2/download/series-tiempo-metadatos.csv">
+  tabla de metadatos de las series
+ </a>
+ o en el objeto
+ <code>
+  meta
+ </code>
+ devuelto en una consulta a la API con parámetro
+ <code>
+  metadata=full
+ </code>
+ .
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15&amp;metadata=full">
+   https://apis.datos.gob.ar/series/api/series/?ids=103.1_I2N_2016_M_15&amp;metadata=full
+  </a>
+ </p>
+</div>
+<div class="codehilite">
+ <pre><span></span>    <span class="p">{</span>
+      <span class="nt">"catalog"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"publisher"</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">"mbox"</span><span class="p">:</span> <span class="s2">"datoseconomicos@mecon.gov.ar"</span><span class="p">,</span>
+          <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Subsecretaría de Programación Macroeconómica."</span>
+        <span class="p">},</span>
+        <span class="nt">"license"</span><span class="p">:</span> <span class="s2">"Creative Commons Attribution 4.0"</span><span class="p">,</span>
+        <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"Catálogo de datos abiertos de la Subsecretaría de Programación Macroeconómica."</span><span class="p">,</span>
+        <span class="nt">"language"</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="s2">"SPA"</span>
+        <span class="p">],</span>
+        <span class="nt">"superThemeTaxonomy"</span><span class="p">:</span> <span class="s2">"http://datos.gob.ar/superThemeTaxonomy.json"</span><span class="p">,</span>
+        <span class="nt">"issued"</span><span class="p">:</span> <span class="s2">"2017-09-28"</span><span class="p">,</span>
+        <span class="nt">"rights"</span><span class="p">:</span> <span class="s2">"2017-09-28"</span><span class="p">,</span>
+        <span class="nt">"modified"</span><span class="p">:</span> <span class="s2">"2017-09-28"</span><span class="p">,</span>
+        <span class="nt">"spatial"</span><span class="p">:</span> <span class="s2">"ARG"</span><span class="p">,</span>
+        <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"Datos Programación Macroeconómica"</span><span class="p">,</span>
+        <span class="nt">"identifier"</span><span class="p">:</span> <span class="s2">"sspm"</span>
+      <span class="p">},</span>
+      <span class="nt">"dataset"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"publisher"</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">"mbox"</span><span class="p">:</span> <span class="s2">"datoseconomicos@mecon.gov.ar"</span><span class="p">,</span>
+          <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Subsecretaría de Programación Macroeconómica."</span>
+        <span class="p">},</span>
+        <span class="nt">"landingPage"</span><span class="p">:</span> <span class="s2">"https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/"</span><span class="p">,</span>
+        <span class="nt">"keyword"</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span>
+          <span class="s2">"Información Económica al Día"</span><span class="p">,</span>
+          <span class="s2">"Precios"</span>
+        <span class="p">],</span>
+        <span class="nt">"superTheme"</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="s2">"ECON"</span>
+        <span class="p">],</span>
+        <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"Índice de Precios al Consumidor. Por categorías. Base diciembre 2016."</span><span class="p">,</span>
+        <span class="nt">"language"</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="s2">"SPA"</span>
+        <span class="p">],</span>
+        <span class="nt">"issued"</span><span class="p">:</span> <span class="s2">"2017-09-28"</span><span class="p">,</span>
+        <span class="nt">"temporal"</span><span class="p">:</span> <span class="s2">"2016-04-01/2017-06-01"</span><span class="p">,</span>
+        <span class="nt">"source"</span><span class="p">:</span> <span class="s2">"Instituto Nacional de Estadística y Censos (INDEC)"</span><span class="p">,</span>
+        <span class="nt">"theme"</span><span class="p">:</span> <span class="err">Array</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span>
+          <span class="p">{</span>
+            <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Precios"</span><span class="p">,</span>
+            <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"precios"</span><span class="p">,</span>
+            <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"Series de precios"</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="nt">"accrualPeriodicity"</span><span class="p">:</span> <span class="s2">"R/P1M"</span><span class="p">,</span>
+        <span class="nt">"spatial"</span><span class="p">:</span> <span class="s2">"ARG"</span><span class="p">,</span>
+        <span class="nt">"identifier"</span><span class="p">:</span> <span class="s2">"103"</span><span class="p">,</span>
+        <span class="nt">"license"</span><span class="p">:</span> <span class="s2">"Creative Commons Attribution 4.0"</span><span class="p">,</span>
+        <span class="nt">"contactPoint"</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">"fn"</span><span class="p">:</span> <span class="s2">"Subsecretaría de Programación Macroeconómica."</span>
+        <span class="p">},</span>
+        <span class="nt">"accessLevel"</span><span class="p">:</span> <span class="s2">"ABIERTO"</span><span class="p">,</span>
+        <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"Índice de Precios al Consumidor. Apertura por categorías. Base diciembre 2016."</span>
+      <span class="p">},</span>
+      <span class="nt">"distribution"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"accessURL"</span><span class="p">:</span> <span class="s2">"https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/"</span><span class="p">,</span>
+        <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"Índice de Precios al Consumidor. Categorías. Valores mensuales. (Base diciembre 2016)."</span><span class="p">,</span>
+        <span class="nt">"format"</span><span class="p">:</span> <span class="s2">"CSV"</span><span class="p">,</span>
+        <span class="nt">"dataset_identifier"</span><span class="p">:</span> <span class="s2">"103"</span><span class="p">,</span>
+        <span class="nt">"issued"</span><span class="p">:</span> <span class="s2">"2017-09-28"</span><span class="p">,</span>
+        <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"Índice de Precios al Consumidor, por categorías. Base diciembre 2016. Valores mensuales"</span><span class="p">,</span>
+        <span class="nt">"fileName"</span><span class="p">:</span> <span class="s2">"indice-precios-al-consumidor-categorias-base-diciembre-2016-mensual.csv"</span><span class="p">,</span>
+        <span class="nt">"downloadURL"</span><span class="p">:</span> <span class="s2">"http://infra.datos.gob.ar/catalog/sspm/dataset/103/distribution/103.1/download/indice-precios-al-consumidor-categorias-base-diciembre-2016-mensual.csv"</span><span class="p">,</span>
+        <span class="nt">"identifier"</span><span class="p">:</span> <span class="s2">"103.1"</span><span class="p">,</span>
+        <span class="nt">"scrapingFileURL"</span><span class="p">:</span> <span class="s2">"https://www.economia.gob.ar/download/infoeco/apendice4.xlsx"</span><span class="p">,</span>
+        <span class="nt">"frequency"</span><span class="p">:</span> <span class="s2">"R/P1M"</span><span class="p">,</span>
+        <span class="nt">"last_hash"</span><span class="p">:</span> <span class="s2">"355c9dd579208476c6520e8cb05c350dbfcb6b5d5b5743f30db0f8222a0cd6db38048b73ea465102c6c5d2dfa66970eb6857f4ed63cafaaf07fbde193e82979e"</span><span class="p">,</span>
+        <span class="nt">"changed"</span><span class="p">:</span> <span class="s2">"False"</span>
+      <span class="p">},</span>
+      <span class="nt">"field"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"distribution_identifier"</span><span class="p">:</span> <span class="s2">"103.1"</span><span class="p">,</span>
+        <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"IPC Núcleo. Base abr 2016. Mensual"</span><span class="p">,</span>
+        <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"ipc_2016_nucleo"</span><span class="p">,</span>
+        <span class="nt">"dataset_identifier"</span><span class="p">:</span> <span class="s2">"103"</span><span class="p">,</span>
+        <span class="nt">"specialTypeDetail"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="nt">"units"</span><span class="p">:</span> <span class="s2">"Índice Dic-2016=100"</span><span class="p">,</span>
+        <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"number"</span><span class="p">,</span>
+        <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"103.1_I2N_2016_M_15"</span><span class="p">,</span>
+        <span class="nt">"available"</span><span class="p">:</span> <span class="s2">"true"</span><span class="p">,</span>
+        <span class="nt">"last_value"</span><span class="p">:</span> <span class="s2">"149.8703"</span><span class="p">,</span>
+        <span class="nt">"second_to_last_value"</span><span class="p">:</span> <span class="s2">"145.2069"</span><span class="p">,</span>
+        <span class="nt">"last_pct_change"</span><span class="p">:</span> <span class="s2">"0.03211555373746"</span><span class="p">,</span>
+        <span class="nt">"time_index_end"</span><span class="p">:</span> <span class="s2">"2018-08-01"</span><span class="p">,</span>
+        <span class="nt">"frequency"</span><span class="p">:</span> <span class="s2">"R/P1M"</span><span class="p">,</span>
+        <span class="nt">"time_index_size"</span><span class="p">:</span> <span class="s2">"29"</span><span class="p">,</span>
+        <span class="nt">"days_without_data"</span><span class="p">:</span> <span class="s2">"14"</span><span class="p">,</span>
+        <span class="nt">"time_index_start"</span><span class="p">:</span> <span class="s2">"2016-04-01"</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="err">]</span>
+</pre>
+</div>
+<h2 id="tecnicas">
+ Técnicas
+</h2>
+<p>
+ La API de series de tiempo se encuentra en estado
+ <em>
+  beta
+ </em>
+ de desarrollo y las cuotas de uso pueden cambiar significativamente en el futuro, dependiendo de la evolución del desarrollo y uso del servicio.
+</p>
+<p>
+ Actualmente se aplican las siguientes cuotas de uso por IP:
+</p>
+<ul>
+ <li>
+  Por segundo: 30 consultas
+ </li>
+ <li>
+  Por minuto: 1000 consultas
+ </li>
+ <li>
+  Por hora: 10000 consultas
+ </li>
+ <li>
+  Por día: 50000 consultas
+ </li>
+</ul>
+<h1 id="aplicaciones">
+ Aplicaciones
+</h1>
+<p>
+ Lista de proyectos y aplicaciones que utilizan, extienden o documentan la API de Series de Tiempo.
+</p>
+<h2 id="propias">
+ Propias
+</h2>
+<ul>
+ <li>
+  <a href="https://github.com/datosgobar/series-tiempo-ar-landing">
+   datosgobar/series-tiempo-ar-landing
+  </a>
+  : Tablero web modular y parametrizado para armar un
+  <a href="https://datosgobar.github.io/series-tiempo-ar-landing/">
+   dashboard de indicadores
+  </a>
+  con datos y gráficos, basado en la API de Series de Tiempo.
+ </li>
+ <li>
+  <a href="https://github.com/datosgobar/series-tiempo-ar-call-generator">
+   datosgobar/series-tiempo-ar-call-generator
+  </a>
+  :
+  <a href="https://datosgobar.github.io/series-tiempo-ar-call-generator/">
+   Form
+  </a>
+  liviano y sencillo para generar llamadas a la API de Series de Tiempo.
+ </li>
+</ul>
+<h2 id="de-terceros">
+ De terceros
+</h2>
+<ul>
+ <li>
+  <a href="https://github.com/fmgarciadiaz/PortalHacienda">
+   fmgarciadiaz/PortalHacienda
+  </a>
+  : Interface en R para usar la API por
+  <a href="https://twitter.com/fergd1978">
+   @fergd1978
+  </a>
+  .
+ </li>
+ <li>
+  <a href="http://series-de-tiempo-ar-graficos.netlify.com/">
+   http://series-de-tiempo-ar-graficos.netlify.com/
+  </a>
+  : Navegador y visualizador web de series por
+  <a href="https://twitter.com/SoyYoConBonete_">
+   @SoyYoConBonete_
+  </a>
+  .
+ </li>
+</ul>
+<h2 id="contacto">
+ Contacto
+</h2>
+<p>
+ ¿Desarrollaste una librería o tenés un proyecto que usa la API? Te
+ <a href="https://twitter.com/datosgobar">
+  invitamos a contarnos
+ </a>
+ así la agregamos a esta lista.
+</p>
+<p>
+ Para todo lo demás, podés mandarnos tu comentario o consulta a
+ <a href="mailto:datos@modernizacion.gob.ar">
+  datos@modernizacion.gob.ar
+ </a>
+ .
+</p>
+<h1 id="arquitectura-de-la-api-de-series-de-tiempo">
+ Arquitectura de la API de series de tiempo
+</h1>
+<h2 id="introduccion">
+ Introducción
+</h2>
+<p>
+ La API de Series de Tiempo del
+ <a href="http://paquete-apertura-datos.readthedocs.io/es/stable/">
+  Paquete de Apertura de Datos de la República Argentina
+ </a>
+ está basada en una aplicación web
+ <a href="https://www.djangoproject.com">
+  Django
+ </a>
+ que corre bajo
+ <a href="https://www.python.org/">
+  Python2.7
+ </a>
+ que funciona como puerta de entrada a los datos que la misma aloja y procesa.
+</p>
+<p>
+ Los datos mencionados previamente son calculados en base a recursos alojados en distintas ubicaciones dentro de la
+ <em>
+  World Wide Web
+ </em>
+ , que son obtenidos por procesos asicrónicos basados en
+ <a href="http://python-rq.org/">
+  RQ
+ </a>
+ orquestados utilizando
+ <a href="http://supervisord.org/">
+  supervisor
+ </a>
+ y
+ <a href="https://redis.io/">
+  Redis.io
+ </a>
+ .
+</p>
+<p>
+ El almacenamiento de los datos se realiza en un cluster de
+ <a href="https://www.elastic.co/">
+  Elastic
+ </a>
+ y la API utiliza distintas estrategias para acceder a los mismos, realizando transformaciones precalculadas o en memoria.
+</p>
+<h2 id="componentes-de-la-arquitectura">
+ Componentes de la arquitectura
+</h2>
+<p>
+ <img alt="Diagrama de alto nivel de la arquitectura de la API de Series de Tiempo" src="../assets/arquitectura-time-series-ar-api.png"/>
+</p>
+<h3 id="servidor-web">
+ Servidor Web
+</h3>
+<p>
+ El servidor web contiene la aplicación
+ <em>
+  Django
+ </em>
+ que conforma el punto de entrada a la API de Series de Tiempo. La aplicación Django es ejecutada utilizando
+ <em>
+  supervisor
+ </em>
+ y publicada a la web usando el servidor web
+ <a href="https://www.nginx.com/">
+  Nginx
+ </a>
+ .
+</p>
+<p>
+ Ésta publica un conjunto de endpoints sencillos que permiten acceder a los datos y a los metadatos de la información que contiene, permitiendo configurar filtros y expresiones de transformación predefinidas (ver
+ <a href="https://series-tiempo-ar-api.readthedocs.io/es/latest/">
+  documentación de la API de Series de Tiempo
+ </a>
+ ).
+</p>
+<p>
+ Se trata de una aplicación Django 1.11 (por dependencias transitivas, la API no es compatible con Python3) cuyo panel de administración se utiliza exhaustivamente para configurar el funcionamiento de la misma.
+</p>
+<h3 id="cluster-de-workers">
+ Cluster de Workers
+</h3>
+<p>
+ Los workers están conformados por aplicaciones Python que ejecutan el mismo contexto y
+ <em>
+  baseline
+ </em>
+ de código que la aplicación web. Estos procesos Python realizan distintas tareas asincrónicas de administración que permiten el correcto funcionamiento de la API de Serie de Tiempo, como por ejemplo:
+</p>
+<ul>
+ <li>
+  Procesamiento de archivos de configuración.
+ </li>
+ <li>
+  Descarga y validación de los
+  <code>
+   data.json
+  </code>
+  de la red de nodos.
+ </li>
+ <li>
+  Descarga y validación de los recursos pertenecientes a los datasets seleccionados para indexar.
+ </li>
+ <li>
+  Indexación de datos, incluyendo el precálculo de algunos indicadores.
+ </li>
+ <li>
+  Indexación de metadatos de los datos.
+ </li>
+ <li>
+  Generación de reportes.
+ </li>
+ <li>
+  Sincronización de datos con servicios externos.
+ </li>
+</ul>
+<p>
+ Las colas de tareas y los workers están basados en Python-RQ, y las tareas se persisten en un servidor de base de datos en memoria Redis.io.
+</p>
+<h3 id="servidor-de-bases-de-datos">
+ Servidor de bases de datos
+</h3>
+<p>
+ El servidor de bases de datos contiene dos servicios:
+</p>
+<ul>
+ <li>
+  PostgreSQL: Base de datos relacional que contiene el modelo de datos de la aplicación web.
+ </li>
+ <li>
+  Redis: Base de datos en memoria que es utilizado para guardar los datos y metadatos de las tareas asincrónicas a ejecutar por los workers y también es utilizado como caché por la aplicación web.
+ </li>
+</ul>
+<h3 id="cluster-elastic">
+ Cluster Elastic
+</h3>
+<p>
+ El cluster Elastic contiene un número de servidores con el servicio de Elastic search ejecutándose. El mismo está configurado para tener 3
+ <em>
+  shards
+ </em>
+ y una réplica.
+</p>
+<h1 id="development">
+ Development
+</h1>
+<p>
+ A continuación se detallan los pasos a seguir para levantar una versión local de la aplicación, apuntado a futuros desarrolladores de la misma. Este documento asume un entorno Linux para el desarrollo, y fue probado bajo Ubuntu 16.04.
+</p>
+<h2 id="requerimientos">
+ Requerimientos
+</h2>
+<ul>
+ <li>
+  Python 2.7.6
+ </li>
+ <li>
+  Virtualenv
+ </li>
+ <li>
+  Docker
+ </li>
+ <li>
+  Docker compose
+ </li>
+</ul>
+<h2 id="setup">
+ Setup
+</h2>
+<h3 id="virtualenv-con-pyenv">
+ Virtualenv (con Pyenv)
+</h3>
+<p>
+ Es recomendable instalar las dependencias de la aplicación en un
+ <em>
+  entorno virtual
+ </em>
+ para evitar conflictos con otras aplicaciones de versionado de las librerías usadas. Este ejemplo instala un entorno virtual de Python 2.7.6 con el nombre
+ <code>
+  stiempo-api
+ </code>
+ , y todas las dependencias de la aplicación.
+</p>
+<div class="codehilite">
+ <pre><span></span>pyenv virtualenv <span class="m">2</span>.7.6 stiempo-api
+pyenv activate stiempo-api
+pip install -r requirements/local.txt
+</pre>
+</div>
+<h3 id="configuracion">
+ Configuración
+</h3>
+<p>
+ Algunas configuraciones locales (como variables de entorno, o la base de datos usada) pueden llegar a diferir de la versión productiva, y deben ser seteadas manualmente. Para ello se provee una configuración de
+ <em>
+  ejemplo
+ </em>
+ , que puede ser usada como base.
+</p>
+<div class="codehilite">
+ <pre><span></span>cp conf/settings/local_example.py conf/settings/local.py
+cp conf/settings/.env.default_local conf/settings/.env
+</pre>
+</div>
+<p>
+ A su vez, se debe informar a Django cual es el módulo de configuración a leer. Este módulo debe ser el mismo que fue copiado en el paso anterior (
+ <code>
+  conf/settings/local.py
+ </code>
+ en el ejemplo). Esto se hace seteando la variable de entorno
+ <code>
+  DJANGO_SETTINGS_MODULE
+ </code>
+ , lo cual se puede hacer persistente entre sesiones de terminal escribiéndolo en
+ <code>
+  .bashrc
+ </code>
+ (o similar, dependiendo de la terminal utilizada):
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="nb">export</span> <span class="nv">DJANGO_SETTINGS_MODULE</span><span class="o">=</span>conf.settings.local
+</pre>
+</div>
+<h3 id="servicios">
+ Servicios
+</h3>
+<p>
+ Los servicios (PostgreSQL, Elasticsearch, Redis) pueden ser levantados usando Docker y Docker Compose:
+</p>
+<div class="codehilite">
+ <pre><span></span>docker-compose pull
+docker-compose up -d
+</pre>
+</div>
+<h3 id="base-de-datos">
+ Base de datos
+</h3>
+<p>
+ Correr las migraciones de las base de datos:
+</p>
+<div class="codehilite">
+ <pre><span></span>python manage.py migrate
+</pre>
+</div>
+<h3 id="worker">
+ Worker
+</h3>
+<p>
+ Levanta los workers para ejecutar tareas asincrónicas. Notar que esta tarea bloquea la terminal.
+</p>
+<div class="codehilite">
+ <pre><span></span>python manage.py rqworker high default low scrapping
+</pre>
+</div>
+<h3 id="web-server">
+ Web server
+</h3>
+<p>
+ Este comando levanta la aplicación.
+</p>
+<div class="codehilite">
+ <pre><span></span>python manage.py runserver
+</pre>
+</div>
+<p>
+ Si está todo en orden se podrá leer algún mensaje como el siguiente:
+</p>
+<div class="codehilite">
+ <pre><span></span>Django version <span class="m">1</span>.11.6, using settings <span class="s1">'conf.settings.local'</span>
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+</pre>
+</div>
+<h2 id="tests">
+ Tests
+</h2>
+<p>
+ Correr
+ <code>
+  scripts/tests.sh
+ </code>
+ desde el directorio raíz. También se proveen scripts que chequean estilos (
+ <code>
+  scripts/pycodestyle.sh
+ </code>
+ ) y
+ <code>
+  pýlint
+ </code>
+ (
+ <code>
+  scripts/pylint.sh
+ </code>
+ )
+</p>
+<h1 id="documentacion-de-administracion-de-la-api">
+ Documentación de administración de la API
+</h1>
+<p>
+ El proyecto se desdobla en varias aplicaciones, todas ellas con configuraciones particulares, accesibles desde el panel de administración
+ <code>
+  /admin
+ </code>
+ ("el admin").
+</p>
+<h2 id="tareas-en-segundo-plano">
+ Tareas en segundo plano
+</h2>
+<p>
+ La API cuenta con varias tareas que se corren en segundo plano: la lectura de datos de series de tiempo, la indexación de dichos datos al índice de Elasticsearch, la generación de dumps de la base entera, entre otras. Todas las tareas se pueden correr manualmente creando nuevos modelos de tipo "Corrida" desde el admin, por ejemplo,
+ <code>
+  Corridas de importación de analytics
+ </code>
+ ,
+ <code>
+  Corridas de indexación de datos
+ </code>
+ . Dentro de los modelos se encuentran los logs de cada corrida.
+</p>
+<h2 id="programacion-de-tareas">
+ Programación de tareas
+</h2>
+<p>
+ Las tareas se pueden programar como una cola a correrse de manera automática a través de los modelos
+ <code>
+  Synchronizer
+ </code>
+ de
+ <a href="https://github.com/datosgobar/django-datajsonar/">
+  <code>
+   django_datajsonar
+  </code>
+ </a>
+ . Consultar su documentación para más información. A continuación se deja un ejemplo de una secuencia de tareas.
+</p>
+<ul>
+ <li>
+  <code>
+   Read Datajson (corrida completa)
+  </code>
+ </li>
+ <li>
+  <code>
+   Indexación de datos (sólo actualizados)
+  </code>
+ </li>
+ <li>
+  <code>
+   Test de integración
+  </code>
+ </li>
+ <li>
+  <code>
+   Reporte de indexación
+  </code>
+ </li>
+ <li>
+  <code>
+   Indexación de metadatos
+  </code>
+ </li>
+ <li>
+  <code>
+   Generación de dumps CSV
+  </code>
+ </li>
+ <li>
+  <code>
+   Generación de dumps XLSX
+  </code>
+ </li>
+ <li>
+  <code>
+   Generación de dumps SQL
+  </code>
+ </li>
+ <li>
+  <code>
+   Generación de dumps DTA
+  </code>
+ </li>
+</ul>
+<p>
+ Esta programación de tareas se puede realizar creando o editando desde el admin los modelos
+ <code>
+  Synchronizer
+ </code>
+ .
+</p>
+<p>
+ Adicionalmente, se pueden programar corridas individuales utilizando el botón
+ <code>
+  Schedule Task
+ </code>
+ en las vistas individuales de los modelos de tipo "Corrida" mencionados anteriormente, pero es fuertemente recomendado utilizar Synchronizers por su funcionalidad más extensiva.
+</p>
+<h2 id="analytics">
+ Analytics
+</h2>
+<p>
+ Existe un módulo de la aplicación que se dedica a importar datos de uso de la aplicación desde una instanacia de
+ <a href="https://github.com/datosgobar/api-gateway">
+  api-gateway
+ </a>
+ . Se puede configurar a través de la vista "Configuración de importación de analytics" en el admin, a llenar con los campos relevantes de la instancia de API Gateway que querramos consultar, incluyendo ID de la API de series de tiempo en ese proyecto, y una api key. El campo
+ <code>
+  Last Cursor
+ </code>
+ es de uso interno y
+ <strong>
+  no debería ser modificado
+ </strong>
+ .
+</p>
+<h2 id="test-de-integracion">
+ Test de integración
+</h2>
+<p>
+ Existe un módulo que, idealmente justo después de una indexación de datos, se encargue de testear la consistencia de los datos cargados en el índice de Elasticsearch con los datos originales. Para la generación del reporte en casos de errores, se pueden configurar usuarios destinatarios del email de error. en la vista "Configuración del test de integración", así como el endpoint de la misma API a utilizar en los repotes (la API no conoce su propio host name, y por lo tanto debe ser configurado manualmente).
+</p>
+<h2 id="metadatos">
+ Metadatos
+</h2>
+<p>
+ Otra tarea programada es la indexación de metadatos de las series disponibles, para ser consultadas en el endpoint
+ <code>
+  /search
+ </code>
+ . La tarea debe ser corrida siempre después de la indexación de datos, para asegurar que ambos índices contengan datos consistentes entre ellos.
+</p>
+<p>
+ Dentro de la vista "Configuración de búsqueda de series por metadatos", se pueden configurar parámetros de
+ <em>
+  boosting
+ </em>
+ sobre ciertos campos de metadatos, para ir ajustando los resultados de búsqueda. El formato JSON de los parámetros debe ser siempre respetado. A continuación se muestra el valor por defecto:
+</p>
+<p>
+ <code>
+  {"description": {"boost": 1.5}, "dataset_title": {"boost": 1}, "dataset_source": {"boost": 1}, "dataset_description": {"boost": 1}}
+ </code>
+</p>
+<p>
+ Así, el campo
+ <em>
+  description
+ </em>
+ de las series tiene cierta relevancia adicional sobre los demás (1.5 vs 1).
+</p>
+<p>
+ Si se modifica el
+ <em>
+  boost
+ </em>
+ de algún campo, no es necesario reindexar los datos para que el cambio tome efecto, se aplica en tiempo de búsqueda y no de indexación.
+</p>
+<h2 id="dumps">
+ Dumps
+</h2>
+<p>
+ Existen cuatro tareas relacionadas a la generación de dumps de la base entera de series de tiempo. Son una tarea por cada formato disponible: CSV, XLSX, SQL, DTA. Cada tarea genera dumps
+ <em>
+  globales
+ </em>
+ , de la base entera, y también individuales por cada nodo.
+</p>
+<p>
+ Existe una fuerte dependencia entre estas tareas: los dumps en CSV se generan a partir de lecturas a la base de datos para leer metadatos, y al file storage para leer los datos de cada serie. Los demás formatos se generan a partir del dump CSV. Por lo tanto el dump en CSV debe ser programado 3 horas antes que los demás.
+</p>
+<p>
+ Los dumps CSV y XLSX generan
+ <strong>
+  4 distribuciones por catálogo
+ </strong>
+ , Los dumps en SQLite un archivo único por catálogo con varias tablas, y los dumps en DTA 3 archivos, todos disponibles en un endpoint accesible al público. Los dumps generados tendrán los datos de todas las series disponibles por la API, es decir las series cuyos datos fueron indexados exitosamente.
+</p>
+<h1 id="historial-de-versiones">
+ Historial de versiones
+</h1>
+<h2 id="1100">
+ 1.10.0
+</h2>
+<ul>
+ <li>
+  Nuevos metadatos de series:
+  <code>
+   representation_mode
+  </code>
+  y
+  <code>
+   representation_mode_units
+  </code>
+ </li>
+ <li>
+  Borrado del croneado de tareas usado para metadatos, analytics y test de integración. Su funcionalidad quedó deprecada
+por
+  <code>
+   Synchronizer
+  </code>
+  de
+  <code>
+   django_datajsonar
+  </code>
+  .
+ </li>
+</ul>
+<h2 id="190">
+ 1.9.0
+</h2>
+<ul>
+ <li>
+  Bump de la versión de
+  <code>
+   django_datajsonar
+  </code>
+  a 0.1.17, con mejoras de UX de Synchronizers
+ </li>
+ <li>
+  Bump de la versión de
+  <code>
+   series-tiempo-ar
+  </code>
+  a 0.2.1, con una validación adicional para permitir distribuciones con series vacías, hasta cierta proporción.
+ </li>
+ <li>
+  Agregados nuevos metadatos de series (
+  <code>
+   metadata=full
+  </code>
+  o
+  <code>
+   metadata=only
+  </code>
+  ):
+  <code>
+   max_value
+  </code>
+  ,
+  <code>
+   min_value
+  </code>
+  ,
+  <code>
+   average
+  </code>
+ </li>
+</ul>
+<h2 id="180">
+ 1.8.0
+</h2>
+<ul>
+ <li>
+  Integración con django_datajsonar: Uso de Synchronizers y Stages para correr
+tareas asincrónicas de manera ordenada
+ </li>
+</ul>
+<h2 id="170">
+ 1.7.0
+</h2>
+<ul>
+ <li>
+  Optimizaciones de performance en dumps CSV
+ </li>
+ <li>
+  Indexación de datos: siempre se reindexan completamente las distribuciones (
+  <em>
+   refresh
+  </em>
+  )
+ </li>
+ <li>
+  Test de integración y consistencia de los datos, a correr después de la indexación diaria.
+ </li>
+ <li>
+  Bugfix de series sin datos cuando eran pedidas en un solo request
+ </li>
+ <li>
+  Traducción parcial del panel de administración a español
+ </li>
+</ul>
+<h2 id="160">
+ 1.6.0
+</h2>
+<p>
+ Release con herramientas de administración para "refrescar" distribuciones de datos inconsistentes con su fuente.
+</p>
+<h2 id="151">
+ 1.5.1
+</h2>
+<p>
+ Correcciones a dumps:
+</p>
+<ul>
+ <li>
+  Header faltante en hojas adicionales en dump XLSX
+ </li>
+ <li>
+  Columnas y nombres de una tabla de dumps SQL
+ </li>
+ <li>
+  Bugfix de generación de dump global XLSX
+Mejoras de organización en el admin de django
+ </li>
+</ul>
+<h2 id="150">
+ 1.5.0
+</h2>
+<ul>
+ <li>
+  Nuevo parámetro
+  <code>
+   last
+  </code>
+  . Ver
+  <a href="https://series-tiempo-ar-api.readthedocs.io/es/latest/">
+   documentación
+  </a>
+ </li>
+ <li>
+  Permito trailing slashes en URLs de descarga de dumps
+ </li>
+</ul>
+<h2 id="143">
+ 1.4.3
+</h2>
+<ul>
+ <li>
+  Fix de estabilidad de generación de dumps en general.
+ </li>
+</ul>
+<h2 id="142">
+ 1.4.2
+</h2>
+<ul>
+ <li>
+  Fix a tasks asincrónicas de dumps no corriendo correctamente cuando son generadas desde el admin
+ </li>
+</ul>
+<h2 id="140">
+ 1.4.0
+</h2>
+<ul>
+ <li>
+  Orden a filas de dump de metadatos
+ </li>
+ <li>
+  No es más necesario setear dataset_identifier en distributciones para ser indexadas
+ </li>
+ <li>
+  Se permiten csvs de distribuciones con encoding distinto a utf-8
+ </li>
+</ul>
+<h2 id="133">
+ 1.3.3
+</h2>
+<ul>
+ <li>
+  Callables de rqscheduler para dumps CSV y XLSX.
+ </li>
+</ul>
+<h2 id="132">
+ 1.3.2
+</h2>
+<ul>
+ <li>
+  Optimizaciones de memoria de generación dumps xlsx
+ </li>
+</ul>
+<h2 id="131">
+ 1.3.1
+</h2>
+<ul>
+ <li>
+  Pequeño release con un fix a parseo de URLs de descarga de distribuciones
+ </li>
+</ul>
+<h2 id="130-hotfix-2">
+ 1.3.0 hotfix 2
+</h2>
+<ul>
+ <li>
+  Hotfix para servir files de minio desde una ruta interna de la aplicación
+ </li>
+</ul>
+<h2 id="130-hotfix-1">
+ 1.3.0 hotfix 1
+</h2>
+<ul>
+ <li>
+  Hotfixes de logging de dump
+ </li>
+</ul>
+<h2 id="130">
+ 1.3.0
+</h2>
+<ul>
+ <li>
+  Nueva generación de dumps en CSV, usando los datos cargados en postgres, y generando dumps individuales por catálogo.
+ </li>
+ <li>
+  Borrado de datos en el endpoint de /search/ cuando una serie se borra de la base de datos
+ </li>
+</ul>
+<h2 id="121">
+ 1.2.1
+</h2>
+<ul>
+ <li>
+  Refactor e integración de generación de dumps de la base de datos de series de tiempo, para utilizar postgres en vez de Elasticsearch e integrar los archivos al filesystem distribuido
+ </li>
+</ul>
+<h2 id="120">
+ 1.2.0
+</h2>
+<ul>
+ <li>
+  Adopción de
+  <a href="https://semver.org/">
+   semver
+  </a>
+  como sistema de versionado
+ </li>
+ <li>
+  File system distribuido (minio)
+ </li>
+ <li>
+  Optimizaciones en la UI del admin
+ </li>
+ <li>
+  Display de mensajes de error en reportes de indexación
+ </li>
+</ul>
+<h2 id="118">
+ 1.1.8
+</h2>
+<ul>
+ <li>
+  Correcciones en importado de analytics para adaptarse a la nueva API paginada con cursor en api mgmt
+ </li>
+</ul>
+<h2 id="117">
+ 1.1.7
+</h2>
+<ul>
+ <li>
+  Cambio de nombres de respuesta de metadatos.
+ </li>
+ <li>
+  Fixes de usabilidad del admin relacionado a administradores de nodos.
+ </li>
+ <li>
+  Bugfixes en respuesta de /series
+ </li>
+</ul>
+<h2 id="116">
+ 1.1.6
+</h2>
+<ul>
+ <li>
+  Se aumenta el límite de series máximas por request a 40
+ </li>
+ <li>
+  Revisión de nombres y agregado de metadatos en la respuesta de /series
+ </li>
+ <li>
+  Cambio de nombre de parámetro de /search: offset -&gt; start para consistencia con /series
+ </li>
+</ul>
+<h2 id="115">
+ 1.1.5
+</h2>
+<ul>
+ <li>
+  Análisis y tokenización de texto para la búsqueda de metadatos en /search. Permite reconocer palabras sin acento, entre otras cosas.
+ </li>
+ <li>
+  Muestra de metadatos enriquecidos de las series pedidas en /series, cuando se pide la respuesta con metadata=full o metadata=only. Actualmente todos los valores devueltos son de tipo string, sujeto a cambios a futuro.
+ </li>
+</ul>
+<h2 id="114">
+ 1.1.4
+</h2>
+<ul>
+ <li>
+  Modificación de la respuesta de metadatos en search/: se agregan campos dataset.theme, dataset.source y
+field.units. Además se cambia la respuesta de field.periodicity de formato legible por humanos a ISO8601
+ </li>
+</ul>
+<h2 id="113">
+ 1.1.3
+</h2>
+<ul>
+ <li>
+  Actualizaciones de django_datajsonar
+ </li>
+ <li>
+  Se agregan aliases de catálogos para metadatos. Se puede configurar un alias para los filtros catalog_id que sea equivalente a filtrar por uno o más catálogos.
+ </li>
+</ul>
+<h2 id="112">
+ 1.1.2
+</h2>
+<ul>
+ <li>
+  Funcionalidades de importado histórico de analytics, y ampliación de los datos guardados de cada query
+ </li>
+</ul>
+<h2 id="111">
+ 1.1.1
+</h2>
+<ul>
+ <li>
+  Validación de catálogos leídos al generar reporte
+ </li>
+ <li>
+  Fixes a los valores de reportes
+ </li>
+ <li>
+  Fix de metadatos enriquecidos no mostrándose bien en /search/
+ </li>
+</ul>
+<h2 id="110">
+ 1.1.0
+</h2>
+<ul>
+ <li>
+  Nuevo formato de respuesta de metadatos tanto en /series como en /search
+ </li>
+ <li>
+  Mejoras en visualizaciones del admin de django
+ </li>
+</ul>
+<h2 id="1018">
+ 1.0.18
+</h2>
+<ul>
+ <li>
+  Mejoras al endpoint de búsqueda: nuevo parámetro catalog_id
+ </li>
+ <li>
+  Mejoras al indexado de metadatos
+ </li>
+ <li>
+  Configuración de importado de analytics desde un API gateway
+ </li>
+</ul>
+<h2 id="1017">
+ 1.0.17
+</h2>
+<p>
+ Se pasa a usar
+ <code>
+  django_datajsonar
+ </code>
+ como dependencia directa para manejar las entidades procesadas de data.json de los nodos
+</p>
+<h2 id="1016-1">
+ 1.0.16-1
+</h2>
+<p>
+ Actualización de dependencias pydatajson==0.4.12
+</p>
+<h2 id="1016">
+ 1.0.16
+</h2>
+<p>
+ Actualización de validaciones para indexación
+</p>
+<h2 id="1015">
+ 1.0.15
+</h2>
+<p>
+ Release con:
+</p>
+<ul>
+ <li>
+  Resumen de reporte de indexación
+ </li>
+ <li>
+  Detalle de cada entidad indexada como archivos adjuntos en el reporte
+ </li>
+ <li>
+  Reimplementación de aggregations max y min
+ </li>
+ <li>
+  Fechas en el dump de analytics se exportan en horario local
+ </li>
+</ul>
+<h2 id="1014">
+ 1.0.14
+</h2>
+<p>
+ Mejoras al formato del reporte de indexación, junto con mensajes de error más descriptivos
+</p>
+<h2 id="1013">
+ 1.0.13
+</h2>
+<p>
+ Hotfix con fixes a comportamiento erróneo en queries de dos series iguales con distinto modo de representación + uso de caracter decimal no default
+</p>
+<h2 id="1012">
+ 1.0.12
+</h2>
+<p>
+ Release con:
+</p>
+<ul>
+ <li>
+  Permite generar reportes de indexación individuales por nodo
+ </li>
+ <li>
+  Fixes a valores de los reportes (datasets actualizados, no actualizados)
+ </li>
+ <li>
+  Mejoras de performance de la indexación de metadatos
+ </li>
+</ul>
+<h2 id="1011">
+ 1.0.11
+</h2>
+<p>
+ Generación de reporte de indexación completo: Nuevos fields para catálogos, datasets, distribuciones y series.
+</p>
+<h2 id="1010">
+ 1.0.10
+</h2>
+<ul>
+ <li>
+  Mejoras en la generación de reportes de indexación, con más campos reportados.
+ </li>
+</ul>
+<h2 id="109">
+ 1.0.9
+</h2>
+<ul>
+ <li>
+  Mostrado de versión en la página principal del admin de Django
+ </li>
+ <li>
+  Mejora del proceso de indexación y persistencia de las métricas obtenidas
+ </li>
+ <li>
+  Bugfix para permitir que las series de tiempo puedan cambiar de distribución dentro de un mismo catálogo
+ </li>
+</ul>
+<h2 id="108">
+ 1.0.8
+</h2>
+<p>
+ Bugfixes:
+</p>
+<ul>
+ <li>
+  Correcciones a llamadas de series múltiples en orden descendiente
+ </li>
+ <li>
+  Permito la exportación correcta de analytics a CSV en volúmenes grandes
+ </li>
+ <li>
+  Correcciones a guardados de analytics erróneos
+ </li>
+</ul>
+<h2 id="107">
+ 1.0.7
+</h2>
+<p>
+ Endpoint de búsqueda de series:
+ <code>
+  /search
+ </code>
+</p>
+<h2 id="106">
+ 1.0.6
+</h2>
+<p>
+ Fixes a herramientas de administración:
+</p>
+<ul>
+ <li>
+  No se indexan metadatos de series y distribuciones pertenecientes a catálogos no marcados como indexables
+ </li>
+ <li>
+  Finalización automática de la tarea de indexación si no hay datasets marcados como indexable
+ </li>
+ <li>
+  Arreglos a borrados de croneado de tareas de indexación
+ </li>
+</ul>
+<h2 id="103">
+ 1.0.3
+</h2>
+<p>
+ Herramientas de administración:
+</p>
+<ul>
+ <li>
+  Configuración de que nodos y datasets se deben indexar
+ </li>
+ <li>
+  Configuración del croneado de la tarea de indexación
+ </li>
+ <li>
+  Generación de reportes de resultado de indexación por mail a los administradores
+ </li>
+</ul>
+<h2 id="100">
+ 1.0.0
+</h2>
+<p>
+ Release inicial
+</p>

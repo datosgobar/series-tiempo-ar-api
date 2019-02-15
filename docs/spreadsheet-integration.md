@@ -37,39 +37,39 @@ Ver uso del parámetro [`decimal`](reference/api-reference.md#decimal) en la ref
 
 Para que Google Spreadsheet lea correctamente el archivo CSV por defecto, puede elegirse “Estados Unidos” o cualquier otra región compatible como configuración regional.
 
-![](assets/google_drive_letra_1.png)
+<center>![excel](assets/google_drive_letra_1.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_2.png)
+<center>![excel](assets/google_drive_letra_2.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_3.png)
+<center>![excel](assets/google_drive_letra_3.png "google_drive")</center>
 
 ### 2. Importar los datos a la planilla
 
 La función IMPORTDATA() toma la URL de la consulta a la API y trae los datos a la planilla.
 
-![](assets/google_drive_letra_4.png)
+<center>![excel](assets/google_drive_letra_4.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_5.png)
+<center>![excel](assets/google_drive_letra_5.png "google_drive")</center>
 
 ### 3. Elegir el formato de fecha
 
 El índice de tiempo puede verse como un número la primera vez que se importan los datos. Lo más conveniente es seleccionar toda la columna y elegir el formato en el que se desea visualizar la fecha.
 
-![](assets/google_drive_letra_6.png)
+<center>![excel](assets/google_drive_letra_6.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_7.png)
+<center>![excel](assets/google_drive_letra_7.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_8.png)
+<center>![excel](assets/google_drive_letra_8.png "google_drive")</center>
 
 ### 4. Modificar la URL de consulta a la API
 
 Una vez importada la tabla por primera vez, se pueden modificar los distintos parámetros de la consulta según lo que se necesite. La tabla se actualizará con cada cambio.
 
-![](assets/google_drive_letra_9.png)
+<center>![excel](assets/google_drive_letra_9.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_10.png)
+<center>![excel](assets/google_drive_letra_10.png "google_drive")</center>
 <br><br>
-![](assets/google_drive_letra_11.png)
+<center>![excel](assets/google_drive_letra_11.png "google_drive")</center>
 
 ## Excel
 
@@ -88,13 +88,13 @@ Una vez importada la tabla por primera vez, se pueden modificar los distintos pa
 !!! note ""
     [https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,](https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,)
 
-![](assets/excel_letra_1.png)
+<center>![excel](assets/excel_letra_1.png "excel")</center>
 <br><br>
-![](assets/excel_letra_2.png)
+<center>![excel](assets/excel_letra_2.png "excel")</center>
 <br><br>
-![](assets/excel_letra_3.png)
+<center>![excel](assets/excel_letra_3.png "excel")</center>
 <br><br>
-![](assets/excel_letra_4.png)
+<center>![excel](assets/excel_letra_4.png "excel")</center>
 
 ### 2. Editar codificación del archivo origen
 
@@ -104,11 +104,11 @@ La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es 
 
 Click en la rueda de “Origen” > “Origen de archivo” > Elegir “Unicode UTF-8”
 
-![](assets/excel_letra_5.png)
+<center>![excel](assets/excel_letra_5.png "excel")</center>
 <br><br>
-![](assets/excel_letra_6.png)
+<center>![excel](assets/excel_letra_6.png "excel")</center>
 <br><br>
-![](assets/excel_letra_7.png)
+<center>![excel](assets/excel_letra_7.png "excel")</center>
 
 ### 3. Editar los tipos de las columnas
 
@@ -116,12 +116,12 @@ Excel puede no interpretar correctamente las fechas cuando Excel está configura
 
 Si este es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.
 
-![](assets/excel_letra_8.png)
+<center>![excel](assets/excel_letra_8.png "excel")</center>
 <br><br>
-![](assets/excel_letra_9.png)
+<center>![excel](assets/excel_letra_9.png "excel")</center>
 
 ### 4. Guardar las modificaciones y cargar la consulta
 
 Por último, haciendo click en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.
 
-![](assets/excel_letra_14.png)
+<center>![excel](assets/excel_letra_14.png "excel")</center>

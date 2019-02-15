@@ -42,3 +42,6 @@ doctoc: ## generate table of contents, doctoc command line tool required
 # se puede hacer `make test-queries num=200` para hacer un numero de queries
 test-queries:
 	python scripts/api_queries.py $(num) $(url)
+
+pdf:
+	mkdocs_datosgobar md2pdf mkdocs.yml docs/series-tiempo-ar-api-docs.pdf
