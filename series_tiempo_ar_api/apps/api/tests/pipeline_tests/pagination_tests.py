@@ -5,7 +5,7 @@ from django.test import TestCase
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query.pipeline import Pagination
 from series_tiempo_ar_api.apps.api.query.query import Query
-from ..helpers import get_series_id
+from ..helpers import get_series_id, setup_database
 
 SERIES_NAME = get_series_id('month')
 

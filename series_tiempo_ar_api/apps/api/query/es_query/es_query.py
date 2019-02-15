@@ -7,7 +7,6 @@ from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query.es_query.response_formatter import ResponseFormatter
 from series_tiempo_ar_api.apps.api.query.es_query.series import Series
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 
 
 class ESQuery(object):
@@ -21,9 +20,9 @@ class ESQuery(object):
         """
         self.index = index
         self.series = []
-        self.elastic = ElasticInstance()
         self.data = None
         self.count = None
+        self.start_dates = None
         self.reverse_results = False
 
         # Parámetros que deben ser guardados y accedidos varias veces
@@ -66,24 +65,30 @@ class ESQuery(object):
 
     def add_collapse(self, interval):
         self.args[constants.PARAM_PERIODICITY] = interval
+        for serie in self.series:
+            serie.periodicity = interval
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
         self.series.append(Series(series_id=series_id,
                                   index=self.index,
                                   rep_mode=rep_mode,
-                                  args=self.args,
+                                  periodicity=self.args[constants.PARAM_PERIODICITY],
                                   collapse_agg=collapse_agg))
 
-    def add_pagination(self, start, limit):
+    def add_pagination(self, start, limit, start_dates=None):
         if not self.series:
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
-        for serie in self.series:
-            serie.add_pagination(start, limit)
-
-        # Guardo estos parámetros, necesarios en el evento de hacer un collapse
+        # Aplicamos paginación luego, por ahora guardamos los parámetros
         self.args[constants.PARAM_START] = start
         self.args[constants.PARAM_LIMIT] = limit
+        self.start_dates = start_dates or {}
+
+    def setup_series_pagination(self):
+        for serie in self.series:
+            serie.add_pagination(self.args[constants.PARAM_START],
+                                 self.args[constants.PARAM_LIMIT],
+                                 request_start_dates=self.start_dates)
 
     def add_filter(self, start=None, end=None):
         if not self.series:
@@ -109,11 +114,11 @@ class ESQuery(object):
             raise QueryError(strings.EMPTY_QUERY_ERROR)
 
         multi_search = MultiSearch(index=self.index,
-                                   doc_type=settings.TS_DOC_TYPE,
-                                   using=self.elastic)
+                                   doc_type=settings.TS_DOC_TYPE)
 
         for serie in self.series:
             serie.add_collapse(self.args[constants.PARAM_PERIODICITY])
+            self.setup_series_pagination()
             multi_search = multi_search.add(serie.search)
 
         responses = multi_search.execute()

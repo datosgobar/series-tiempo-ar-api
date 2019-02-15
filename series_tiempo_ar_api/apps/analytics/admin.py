@@ -4,11 +4,11 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.core.paginator import Paginator
 from django.db import connection
-from solo.admin import SingletonModelAdmin
+from django_datajsonar.admin.tasks import AbstractTaskAdmin
 
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .models import Query, ImportConfig, AnalyticsImportTask
-from .tasks import import_analytics_from_api_mgmt
+from .tasks import enqueue_new_import_analytics_task, import_analytics
 
 
 class LargeTablePaginator(Paginator):
@@ -31,9 +31,9 @@ class LargeTablePaginator(Paginator):
                                [query.model._meta.db_table])
                 self._count = int(cursor.fetchone()[0])
             except Exception as _:
-                self._count = super(LargeTablePaginator, self)._get_count()
+                self._count = super(LargeTablePaginator, self).count
         else:
-            self._count = super(LargeTablePaginator, self)._get_count()
+            self._count = super(LargeTablePaginator, self).count
 
         return self._count
 
@@ -56,11 +56,12 @@ class ImportConfigAdmin(SingletonAdmin):
     pass
 
 
-class ImportTaskAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'logs', 'timestamp')
+class ImportTaskAdmin(AbstractTaskAdmin):
+    task = import_analytics
 
-    def save_model(self, request, obj, form, change):
-        import_analytics_from_api_mgmt.delay()
+    model = AnalyticsImportTask
+
+    callable_str = 'series_tiempo_ar_api.apps.analytics.tasks.enqueue_new_import_analytics_task'
 
 
 admin.site.register(Query, QueryAdmin)

@@ -22,6 +22,7 @@ SERIES_IS_UPDATED = 'serie_actualizada'
 SERIES_LAST_VALUE = 'serie_valor_ultimo'
 SERIES_SECOND_LAST_VALUE = 'serie_valor_anterior'
 SERIES_PCT_CHANGE = 'serie_var_pct_anterior'
+SERIES_DISCONTINUED = 'serie_discontinuada'
 
 
 METADATA_ROWS = [
@@ -48,7 +49,8 @@ METADATA_ROWS = [
     SERIES_IS_UPDATED,
     SERIES_LAST_VALUE,
     SERIES_SECOND_LAST_VALUE,
-    SERIES_PCT_CHANGE
+    SERIES_PCT_CHANGE,
+    SERIES_DISCONTINUED,
 ]
 
 SOURCES_DATASET_SOURCE = 'dataset_fuente'

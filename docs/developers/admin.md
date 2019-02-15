@@ -1,40 +1,54 @@
-# Features del panel de administrador
+# Documentación de administración de la API
 
-## Configuración del rq-scheduler
+El proyecto se desdobla en varias aplicaciones, todas ellas con configuraciones particulares, accesibles desde el panel de administración `/admin` ("el admin").
 
-Para asegurar la funcionalidad correcta de la indexación, es necesario agregar varios `Repeatable Job` desde el admin de Django. A continuación se muestra una configuración ejemplo. Se recomienda setear la queue a `indexing`.
+## Tareas en segundo plano
 
-![scheduler](../assets/scheduler.png)
+La API cuenta con varias tareas que se corren en segundo plano: la lectura de datos de series de tiempo, la indexación de dichos datos al índice de Elasticsearch, la generación de dumps de la base entera, entre otras. Todas las tareas se pueden correr manualmente creando nuevos modelos de tipo "Corrida" desde el admin, por ejemplo, `Corridas de importación de analytics`, `Corridas de indexación de datos`. Dentro de los modelos se encuentran los logs de cada corrida.
 
-Configurar las siguientes tareas:
+## Programación de tareas
 
-- `series_tiempo_ar_api.libs.indexing.tasks.scheduler` (cada 5 minutos)
-- `series_tiempo_ar_api.apps.management.tasks.schedule_api_indexing` (1 vez por día, programada para correr **despues** de schedule_new_read_datajson_task)
-- `django_datajsonar.tasks.schedule_new_read_datajson_task` (1 vez por día)
-- `django_datajsonar.tasks.close_read_datajson_task` (cada 5 minutos)
+Las tareas se pueden programar como una cola a correrse de manera automática a través de los modelos `Synchronizer` de [`django_datajsonar`](https://github.com/datosgobar/django-datajsonar/). Consultar su documentación para más información. A continuación se deja un ejemplo de una secuencia de tareas. 
 
-La vista de tareas programadas debería parecerse al siguiente ejemplo. Notar que _api indexing_ está programada a las 3 am, y _django_datajsonar indexing_ está a las 12 am, tres horas antes.
+- `Read Datajson (corrida completa)`
+- `Indexación de datos (sólo actualizados)`
+- `Test de integración`
+- `Reporte de indexación`
+- `Indexación de metadatos`
+- `Generación de dumps CSV`
+- `Generación de dumps XLSX`
+- `Generación de dumps SQL`
+- `Generación de dumps DTA`
 
-![repeatable_jobs](../assets/repeatable_jobs.png)
+Esta programación de tareas se puede realizar creando o editando desde el admin los modelos `Synchronizer`.
 
-## Replanificación de tareas
+Adicionalmente, se pueden programar corridas individuales utilizando el botón `Schedule Task` en las vistas individuales de los modelos de tipo "Corrida" mencionados anteriormente, pero es fuertemente recomendado utilizar Synchronizers por su funcionalidad más extensiva.
 
-En el caso de querer reconfigurar las tareas, la manera más segura de hacerlo es realizando los siguientes pasos. **No** se recomienda editar directamente la tarea.
+## Analytics
 
-- En la vista de _Repeatable Jobs_, ubicar el Job ID de la tarea a reprogramar (ver screenshots anteriores), y ubicarla en la vista de _finished jobs_ de `django-rq`, en la URL `/series/django-rq/`. En este ejemplo, si queremos editar el job de "datajson ar indexing", que está bajo la cola default, debemos ver el detalle de la cola haciendo click en el número `9` de _finished jobs_. Allí deberíamos poder ver el job referenciado, `1425c8c4-35d6-4d0c-b716-b3496f64f1d2`.
+Existe un módulo de la aplicación que se dedica a importar datos de uso de la aplicación desde una instanacia de [api-gateway](https://github.com/datosgobar/api-gateway). Se puede configurar a través de la vista "Configuración de importación de analytics" en el admin, a llenar con los campos relevantes de la instancia de API Gateway que querramos consultar, incluyendo ID de la API de series de tiempo en ese proyecto, y una api key. El campo `Last Cursor` es de uso interno y **no debería ser modificado**.
 
-![repeatable_jobs](../assets/django-rq.png)
+## Test de integración
 
-![repeatable_jobs](../assets/django-rq-finished-jobs.png)
+Existe un módulo que, idealmente justo después de una indexación de datos, se encargue de testear la consistencia de los datos cargados en el índice de Elasticsearch con los datos originales. Para la generación del reporte en casos de errores, se pueden configurar usuarios destinatarios del email de error. en la vista "Configuración del test de integración", así como el endpoint de la misma API a utilizar en los repotes (la API no conoce su propio host name, y por lo tanto debe ser configurado manualmente).
 
+## Metadatos
 
-**Borrar** esta tarea, utilizando el menú de _Actions_ provisto en la vista de _finished jobs_, **No** el _Empty Queue_.
+Otra tarea programada es la indexación de metadatos de las series disponibles, para ser consultadas en el endpoint `/search`. La tarea debe ser corrida siempre después de la indexación de datos, para asegurar que ambos índices contengan datos consistentes entre ellos.
 
-- Volver a la vista de _Repeatable Jobs_, y borrar la tarea que se queire editar.
-- Crear la tarea nuevamente con los nuevos parámetros deseados. El _Job ID_ de la nueva tarea debería ser distinto a la anterior.
+Dentro de la vista "Configuración de búsqueda de series por metadatos", se pueden configurar parámetros de _boosting_ sobre ciertos campos de metadatos, para ir ajustando los resultados de búsqueda. El formato JSON de los parámetros debe ser siempre respetado. A continuación se muestra el valor por defecto:
 
+`{"description": {"boost": 1.5}, "dataset_title": {"boost": 1}, "dataset_source": {"boost": 1}, "dataset_description": {"boost": 1}}`
 
-## Indexación manual de metadatos
+Así, el campo _description_ de las series tiene cierta relevancia adicional sobre los demás (1.5 vs 1).
 
-Creando nuevos modelos `IndexMetadataTask` se lanzarán procesos asincrónicos para indexar metadatos de los nodos registrados al cluster de Elasticsearch. Un nuevo proceso de indexación no puede ser lanzado mientras haya algún otro ejecutándose. Se puede seguir el estado de la tarea corriendo a través de los campos del modelo.
+Si se modifica el _boost_ de algún campo, no es necesario reindexar los datos para que el cambio tome efecto, se aplica en tiempo de búsqueda y no de indexación.
+
+## Dumps
+
+Existen cuatro tareas relacionadas a la generación de dumps de la base entera de series de tiempo. Son una tarea por cada formato disponible: CSV, XLSX, SQL, DTA. Cada tarea genera dumps _globales_, de la base entera, y también individuales por cada nodo. 
+
+Existe una fuerte dependencia entre estas tareas: los dumps en CSV se generan a partir de lecturas a la base de datos para leer metadatos, y al file storage para leer los datos de cada serie. Los demás formatos se generan a partir del dump CSV. Por lo tanto el dump en CSV debe ser programado 3 horas antes que los demás.
+
+Los dumps CSV y XLSX generan **4 distribuciones por catálogo**, Los dumps en SQLite un archivo único por catálogo con varias tablas, y los dumps en DTA 3 archivos, todos disponibles en un endpoint accesible al público. Los dumps generados tendrán los datos de todas las series disponibles por la API, es decir las series cuyos datos fueron indexados exitosamente.
 

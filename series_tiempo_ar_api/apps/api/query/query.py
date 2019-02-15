@@ -5,6 +5,7 @@ from typing import Union
 
 from django.conf import settings
 from django_datajsonar.models import Catalog, Dataset, Distribution, Field
+from iso8601 import iso8601
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
@@ -14,6 +15,10 @@ from series_tiempo_ar_api.apps.management import meta_keys
 from .es_query.es_query import ESQuery
 
 datajson_entity = Union[Catalog, Dataset, Distribution, Field]
+
+
+def rep_mode_units(rep_mode: str) -> str:
+    return constants.VERBOSE_REP_MODES[rep_mode]
 
 
 class Query(object):
@@ -26,6 +31,7 @@ class Query(object):
         self.es_index = index
         self.es_query = ESQuery(index)
         self.series_models = []
+        self.series_rep_modes = []
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
         self.metadata_flatten = False
 
@@ -47,7 +53,9 @@ class Query(object):
         return self.es_query.get_series_ids()
 
     def add_pagination(self, start, limit):
-        return self.es_query.add_pagination(start, limit)
+        start_dates = {serie.identifier: meta_keys.get(serie, meta_keys.INDEX_START) for serie in self.series_models}
+        start_dates = {k: iso8601.parse_date(v) if v is not None else None for k, v in start_dates.items()}
+        return self.es_query.add_pagination(start, limit, start_dates=start_dates)
 
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
@@ -62,7 +70,7 @@ class Query(object):
         ]
 
         self.series_models.append(field_model)
-
+        self.series_rep_modes.append(rep_mode)
         series_periodicity = get_periodicity_human_format(
             field_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
 
@@ -157,27 +165,15 @@ class Query(object):
             ...
         }
         """
+        simple_meta = self.metadata_config == constants.METADATA_SIMPLE
+        meta_response = MetadataResponse(serie_model, simple=simple_meta, flat=self.metadata_flatten).get_response()
 
-        metadata = None
-        full_meta_values = (constants.METADATA_ONLY, constants.METADATA_FULL)
-        meta_response = MetadataResponse(serie_model)
-        if self.metadata_config in full_meta_values:
-            metadata = meta_response.get_full_metadata()
-        elif self.metadata_config == constants.METADATA_SIMPLE:
-            metadata = meta_response.get_simple_metadata()
-
-        if self.metadata_flatten:
-            for level in list(metadata):
-                for meta_field in list(metadata[level]):
-                    metadata['{}_{}'.format(level, meta_field)] = metadata[level][meta_field]
-
-                metadata.pop(level)
-
-        return metadata
+        self.append_rep_mode_metadata(serie_model, meta_response)
+        return meta_response
 
     def _calculate_data_frequency(self):
         """Devuelve la periodicidad de la o las series pedidas. Si son
-        muchas devuelve el intervalo de tiempo colapsado
+        muchas devuelve el intervalo de tiempo colapsadoaa
         """
         return self.es_query.args[constants.PARAM_PERIODICITY]
 
@@ -203,3 +199,16 @@ class Query(object):
 
     def reverse(self):
         self.es_query.reverse()
+
+    def append_rep_mode_metadata(self, serie_model: Field, meta_response: dict):
+        rep_mode = self.series_rep_modes[self.series_models.index(serie_model)]
+
+        if self.metadata_flatten:
+            units = rep_mode_units(rep_mode) or meta_response.get('field_units')
+            meta_response['field_representation_mode'] = rep_mode
+            meta_response['field_representation_mode_units'] = units
+
+        else:
+            units = rep_mode_units(rep_mode) or meta_response['field'].get('units')
+            meta_response['field']['representation_mode'] = rep_mode
+            meta_response['field']['representation_mode_units'] = units

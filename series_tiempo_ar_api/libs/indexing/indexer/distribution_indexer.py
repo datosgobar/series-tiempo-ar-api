@@ -6,15 +6,16 @@ from functools import reduce
 import pandas as pd
 from django.conf import settings
 from django_datajsonar.models import Distribution
+from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
+from elasticsearch_dsl import Search
+from elasticsearch_dsl.connections import connections
 from series_tiempo_ar.helpers import freq_iso_to_pandas
 from series_tiempo_ar_api.apps.management import meta_keys
 
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
-from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
 from .operations import process_column
 from .metadata import update_enhanced_meta
 from .index import tseries_index
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class DistributionIndexer:
     def __init__(self, index: str):
-        self.elastic = ElasticInstance.get()
+        self.elastic: Elasticsearch = connections.get_connection()
         self.index_name = index
         self.index = tseries_index(index)
 
@@ -64,13 +65,10 @@ class DistributionIndexer:
             fields (dict): diccionario con estructura titulo: serie_id
         """
 
-        df = read_distribution_csv(distribution)
+        df = read_distribution_csv_as_df(distribution)
 
-        # Borro las columnas que no figuren en los metadatos
-        for column in df.columns:
-            if column not in fields:
-                df.drop(column, axis='columns', inplace=True)
-        columns = [fields[name] for name in df.columns]
+        self.drop_null_or_missing_fields_from_df(df, fields)
+        identifiers = [fields[name] for name in df.columns]
 
         data = df.values
         freq = freq_iso_to_pandas(get_time_index_periodicity(distribution, fields))
@@ -82,11 +80,37 @@ class DistributionIndexer:
                                       df.index[-1],
                                       freq=constants.BUSINESS_DAILY_FREQ)
 
-        return pd.DataFrame(index=new_index, data=data, columns=columns)
+        return pd.DataFrame(index=new_index, data=data, columns=identifiers)
+
+    def drop_null_or_missing_fields_from_df(self, df, fields):
+        for column in df.columns:
+            all_null = df[column].isnull().all()
+            if all_null or column not in fields:
+                df.drop(column, axis='columns', inplace=True)
 
     def add_catalog_keyword(self, actions, distribution):
         for action in actions:
             action['_source']['catalog'] = distribution.dataset.catalog.identifier
+
+    def reindex(self, distribution: Distribution):
+        self._delete_distribution_data(distribution)
+        self.run(distribution)
+
+    def _delete_distribution_data(self, distribution):
+        fields_to_delete = list(
+            distribution.field_set
+            .filter(present=True)
+            .exclude(identifier=None)
+            .values_list('identifier', flat=True)
+        )
+        series_data = Search(using=self.elastic, index=self.index._name).filter('terms', series_id=fields_to_delete)
+        series_data.delete()
+
+
+def read_distribution_csv_as_df(distribution: Distribution) -> pd.DataFrame:
+    return pd.read_csv(distribution.data_file,
+                       parse_dates=[settings.INDEX_COLUMN],
+                       index_col=settings.INDEX_COLUMN)
 
 
 def get_time_index_periodicity(distribution, fields):

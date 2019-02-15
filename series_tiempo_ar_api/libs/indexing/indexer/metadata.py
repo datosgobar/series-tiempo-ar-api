@@ -30,7 +30,10 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
         meta_keys.LAST_VALUE: last,
         meta_keys.SECOND_TO_LAST_VALUE: second_to_last,
         meta_keys.LAST_PCT_CHANGE: last_pct_change,
-        meta_keys.IS_UPDATED: _is_series_updated(days_since_update, periodicity)
+        meta_keys.IS_UPDATED: _is_series_updated(days_since_update, periodicity),
+        meta_keys.MAX: serie.max(),
+        meta_keys.MIN: serie.min(),
+        meta_keys.AVERAGE: serie.mean(),
     }
 
     for meta_key, value in meta.items():

@@ -114,15 +114,18 @@ def process_column(col, index):
 
 def index_transform(col, transform_function, index, series_id, freq, name):
     transform_col = col.resample(freq).apply(transform_function)
-
+    original_freq = col.index.freq
     # Fix a colapsos fuera de fase:
     if freq == constants.PANDAS_SEMESTER:
-        months_offset = transform_col.index[0].month - 1
-        if months_offset:
-            transform_col.drop(transform_col.index[0], inplace=True)
-        offset = pd.DateOffset(months=months_offset)
-        transform_col.index = transform_col.index - offset
-        transform_col.index.freq = constants.PANDAS_SEMESTER
+        if original_freq == constants.PANDAS_SEMESTER:
+            normalize_semestral_time_index(transform_col)
+        else:
+            months_offset = transform_col.index[0].month - 1
+            if months_offset:
+                transform_col.drop(transform_col.index[0], inplace=True)
+            offset = pd.DateOffset(months=months_offset)
+            transform_col.index = transform_col.index - offset
+            transform_col.index.freq = constants.PANDAS_SEMESTER
 
     if not transform_col.count() or transform_col.isnull().all():
         return pd.Series()
@@ -137,6 +140,19 @@ def index_transform(col, transform_function, index, series_id, freq, name):
                                 args=(index, series_id, freq, name))
 
     return result
+
+
+def normalize_semestral_time_index(transform_col):
+    """Modifica el índice de tiempo de una serie de tiempo *semestral* para que sus fechas
+    sean la primer fecha de sus semestres, es decir, 1° de Enero o 1° de Julio sin excepción.
+    """
+    months_offset = transform_col.index[0].month - 1
+    if months_offset and months_offset < 6:
+        offset = pd.DateOffset(months=months_offset)
+    else:
+        offset = pd.DateOffset(months=months_offset - 6)
+    transform_col.index = transform_col.index - offset
+    transform_col.index.freq = constants.PANDAS_SEMESTER
 
 
 def end_of_period(x):

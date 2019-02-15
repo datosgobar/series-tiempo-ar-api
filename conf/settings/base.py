@@ -7,6 +7,8 @@ import environ
 
 from .api.api import *
 from .api.metadata import *
+from elasticsearch_dsl.connections import connections
+
 
 SETTINGS_DIR = environ.Path(__file__) - 1
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
@@ -15,14 +17,8 @@ APPS_DIR = ROOT_DIR.path(dirname(dirname(dirname(__file__))))
 env = environ.Env()
 environ.Env.read_env(SETTINGS_DIR('.env'))
 
-ES_CONFIGURATION = {
-    "ES_URLS": env("ES_URLS", default=DEFAULT_ES_URL).split(","),
-    "CONNECTIONS": {
-        "default": {
-            "timeout": 30,
-        },
-    },
-}
+connections.create_connection(hosts=env("ES_URLS", default=DEFAULT_ES_URL).split(","),
+                              timeout=30)
 
 DEBUG = True
 
@@ -42,13 +38,13 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-ar'
 
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = False
+USE_I18N = True
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
@@ -171,10 +167,11 @@ VENDOR_APPS = (
 APPS = (
     'series_tiempo_ar_api.apps.api.apps.ApiConfig',
     'series_tiempo_ar_api.apps.analytics',
-    'series_tiempo_ar_api.apps.management',
+    'series_tiempo_ar_api.apps.management.apps.ManagementConfig',
     'series_tiempo_ar_api.apps.metadata.apps.MetadataConfig',
     'series_tiempo_ar_api.apps.dump',
     'series_tiempo_ar_api.libs.indexing',
+    'series_tiempo_ar_api.libs.custom_admins',
 )
 
 INSTALLED_APPS = DJANGO_BASE_APPS + VENDOR_APPS + APPS
@@ -272,48 +269,103 @@ DEFAULT_REDIS_HOST = env("DEFAULT_REDIS_HOST", default="localhost")
 DEFAULT_REDIS_PORT = env("DEFAULT_REDIS_PORT", default="6379")
 DEFAULT_REDIS_DB = env("DEFAULT_REDIS_DB", default="0")
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
-    'high': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
-    'low': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
-    'scrapping': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-        'DEFAULT_TIMEOUT': 3600,
-    },
-    'indexing': {
-        'HOST': DEFAULT_REDIS_HOST,
-        'PORT': DEFAULT_REDIS_PORT,
-        'DB': DEFAULT_REDIS_DB,
-    },
+REDIS_SETTINGS = {
+    'HOST': DEFAULT_REDIS_HOST,
+    'PORT': DEFAULT_REDIS_PORT,
+    'DB': DEFAULT_REDIS_DB,
 }
+
+# Colas de Redis. Existe una por tarea asincrónica a ejecutar.
+RQ_QUEUE_NAMES = [
+    'default',
+    'upkeep',
+    'dj_indexing',
+    'indexing',
+    'meta_indexing',
+    'csv_dump',
+    'xlsx_dump',
+    'sql_dump',
+    'dta_dump',
+    'analytics',
+    'integration_test',
+    'api_index',
+    'api_report',
+]
+RQ_QUEUES = {name: REDIS_SETTINGS for name in RQ_QUEUE_NAMES}
 
 ENV_TYPE = env('ENV_TYPE', default='')
 
 # Tarea a ser croneada para indexación. Defaults para uso local, en producción se deben setear estas variables!
 IMPORT_ANALYTICS_SCRIPT_PATH = env('IMPORT_ANALYTICS_CMD_PATH', default='/bin/true import_analytics')
 INDEX_METADATA_SCRIPT_PATH = env('INDEX_METADATA_CMD_PATH', default='/bin/true index_metadata')
+INTEGRATION_TEST_SCRIPT_PATH = env('INTEGRATION_TEST_CMD_PATH', default='/bin/true integration_test')
 
-PROTECTED_MEDIA_DIR = env('PROTECTED_MEDIA_DIR', default=ROOT_DIR('protected'))
-ANALYTICS_CSV_FILENAME = 'analytics.csv'
-
+# Config de Django-datajsonar
 DATAJSON_AR_TIME_SERIES_ONLY = True
 DATAJSON_AR_DISTRIBUTION_STORAGE = 'minio_storage.storage.MinioMediaStorage'
 
+# Minio: File system distribuido, usado para correr tareas que generan archivos en un ambiente, y leerlos
+# desde el web server
 MINIO_STORAGE_ENDPOINT = env('MINIO_STORAGE_ENDPOINT', default="localhost:9000")
 MINIO_STORAGE_USE_HTTPS = False
 MINIO_STORAGE_MEDIA_BUCKET_NAME = env('MINIO_STORAGE_BUCKET_NAME', default='tsapi.dev.media.bucket')
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
+
+# Stages asincrónicos a ejecutar con el Synchronizer de Django-datajsonar
+DATAJSONAR_STAGES = {
+    'Read Datajson (corrida completa)': {
+        'callable_str': 'django_datajsonar.tasks.schedule_full_read_task',
+        'queue': 'indexing',
+        'task': 'django_datajsonar.models.ReadDataJsonTask',
+    },
+    'Read Datajson (sólo metadatos)': {
+        'callable_str': 'django_datajsonar.tasks.schedule_metadata_read_task',
+        'queue': 'indexing',
+        'task': 'django_datajsonar.models.ReadDataJsonTask',
+    },
+    'Indexación de datos (sólo actualizados)': {
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing',
+        'queue': 'api_index',
+        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+    },
+    'Indexación de datos (forzar indexación)': {
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_force_api_indexing',
+        'queue': 'api_index',
+        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+    },
+    'Generación de dumps CSV': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task',
+        'queue': 'csv_dump',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Generación de dumps XLSX': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_xlsx_task',
+        'queue': 'xlsx_dump',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Generación de dumps SQL': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_sql_task',
+        'queue': 'sql_dump',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Generación de dumps DTA': {
+        'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_dta_task',
+        'queue': 'dta_dump',
+        'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
+    },
+    'Indexación de metadatos': {
+        'callable_str': 'series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer.enqueue_new_index_metadata_task',
+        'queue': 'meta_indexing',
+        'task': 'series_tiempo_ar_api.apps.metadata.models.IndexMetadataTask',
+    },
+    'Test de integración': {
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration',
+        'queue': 'integration_test',
+        'task': 'series_tiempo_ar_api.apps.management.models.IntegrationTestTask',
+    },
+    'Reporte de indexación': {
+        'callable_str': 'series_tiempo_ar_api.libs.indexing.tasks.send_indexation_report_email',
+        'queue': 'api_report',
+        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+    }
+}

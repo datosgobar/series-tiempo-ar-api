@@ -6,11 +6,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.core.management import call_command
 from django_datajsonar.models import Node
+from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -25,7 +25,7 @@ class ViewTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(ViewTests, cls).setUpClass()
-        es_client = ElasticInstance.get()
+        es_client = connections.get_connection()
         if es_client.indices.exists(cls.index):
             es_client.indices.delete(cls.index)
         es_client.indices.create(cls.index, body=INDEX_CREATION_BODY)
@@ -75,6 +75,6 @@ class ViewTests(TestCase):
     @classmethod
     def tearDownClass(cls):
         super(ViewTests, cls).tearDownClass()
-        ElasticInstance.get().indices.delete(cls.index)
+        connections.get_connection().indices.delete(cls.index)
         DumpFile.objects.all().delete()
         Node.objects.all().delete()

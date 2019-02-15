@@ -4,12 +4,12 @@ import faker
 import pandas as pd
 from django.test import TestCase
 from django_datajsonar.models import Node
+from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.generator.dta import DtaGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_csv_task
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -60,5 +60,5 @@ class DtaGeneratorTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        ElasticInstance.get().indices.delete(cls.index)
+        connections.get_connection().indices.delete(cls.index)
         super(DtaGeneratorTests, cls).tearDownClass()

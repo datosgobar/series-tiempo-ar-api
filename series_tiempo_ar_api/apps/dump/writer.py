@@ -34,18 +34,7 @@ class Writer:
         else:
             self.action(self.task, self.catalog_id)
 
-        self._finish()
-
-    def _finish(self):
         self.remove_old_dumps()
-
-        _async = settings.RQ_QUEUES['default'].get('ASYNC', True)
-        finish = not _async or (_async and not get_queue('default').count)
-        if finish:
-            self.task.refresh_from_db()
-            self.task.status = self.task.FINISHED
-            self.task.finished = timezone.now()
-            self.task.save()
 
     def remove_old_dumps(self):
         for dump_name, _ in DumpFile.FILENAME_CHOICES:
@@ -69,5 +58,4 @@ class Writer:
             msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.dump_type}: {exc}"
             logger.error(msg)
             GenerateDumpTask.info(self.task, msg)
-            self._finish()
             raise e

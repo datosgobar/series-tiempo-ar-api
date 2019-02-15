@@ -37,6 +37,3 @@ RAVEN_CONFIG = {
 }
 
 INSTALLED_APPS = INSTALLED_APPS + ('raven.contrib.django.raven_compat',)
-SENDFILE_BACKEND = 'sendfile.backends.nginx'
-SENDFILE_ROOT = PROTECTED_MEDIA_DIR
-SENDFILE_URL = env('PROTECTED_INTERNAL_URL', default='/protected')

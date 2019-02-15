@@ -8,12 +8,12 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from elasticsearch.helpers import parallel_bulk
+from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.api.helpers import interval_to_freq_pandas
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
 from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY, \
     FORCE_MERGE_SEGMENTS
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer import operations
 
 DATA_FILE_NAME = 'data.csv'
@@ -27,7 +27,7 @@ class TestDataGenerator(object):
 
     def __init__(self):
         self.prev_values = []
-        self.elastic = ElasticInstance()
+        self.elastic = connections.get_connection()
         self.bulk_items = []
 
     def run(self):

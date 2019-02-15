@@ -38,6 +38,7 @@ class Metadatos(peewee.Model):
     serie_valor_ultimo = peewee.FloatField(null=True)
     serie_valor_anterior = peewee.FloatField(null=True)
     serie_var_pct_anterior = peewee.FloatField(null=True)
+    serie_discontinuada = peewee.BooleanField(null=True)
 
 
 class Valores(peewee.Model):

@@ -4,6 +4,10 @@ from django_rq import job
 from .importer import AnalyticsImporter
 
 
-@job('default', timeout=1000)
-def import_analytics_from_api_mgmt(limit=1000, requests_lib=requests, import_all=False):
-    AnalyticsImporter(limit, requests_lib).run(import_all)
+def enqueue_new_import_analytics_task(limit=1000, requests_lib=requests, import_all=False):
+    AnalyticsImporter(limit=limit, requests_lib=requests_lib).run(import_all)
+
+
+@job('analytics', timeout=1000)
+def import_analytics(task, limit=1000, requests_lib=requests, import_all=False):
+    AnalyticsImporter(task=task, limit=limit, requests_lib=requests_lib).run(import_all)

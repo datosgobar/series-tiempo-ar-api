@@ -5,7 +5,7 @@ from django.contrib import admin, messages
 from django.db.models.query import QuerySet
 from django.utils import timezone
 
-from django_datajsonar.admin import AbstractTaskAdmin
+from django_datajsonar.admin.tasks import AbstractTaskAdmin
 
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_dump_task
 from .models import GenerateDumpTask, DumpFile
@@ -18,6 +18,8 @@ class GenerateDumpTaskAdmin(AbstractTaskAdmin):
     actions = ['delete_model', 'mark_finished']
 
     task = enqueue_dump_task
+
+    callable_str = 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task'
 
     def get_actions(self, request):
         actions = super(GenerateDumpTaskAdmin, self).get_actions(request)

@@ -86,6 +86,8 @@ class SQLGenerator:
             second_last_value = row[self.metadata_rows.index(constants.SERIES_SECOND_LAST_VALUE)] or 0
             last_pct_change = row[self.metadata_rows.index(constants.SERIES_PCT_CHANGE)] or 0
 
+            discontinued = row[self.metadata_rows.index(constants.SERIES_DISCONTINUED)] or False
+
             yield Metadatos(
                 catalogo_id=catalog_id,
                 dataset_id=dataset_id,
@@ -111,6 +113,7 @@ class SQLGenerator:
                 serie_valor_ultimo=last_value,
                 serie_valor_anterior=second_last_value,
                 serie_var_pct_anterior=last_pct_change,
+                serie_discontinuada=discontinued,
             )
 
     def db_name(self):

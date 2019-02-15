@@ -1,24 +1,24 @@
 #! coding: utf-8
 import os
 import datetime
-from unittest import skip
 
-import mock
+from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django_datajsonar.models import Catalog
 from django.core.files import File
+from freezegun import freeze_time
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.libs.indexing.indexer.metadata import update_enhanced_meta
+from series_tiempo_ar_api.libs.indexing.indexer.metadata import update_enhanced_meta, _is_series_updated
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
-@skip
 class FieldEnhancedMetaTests(TestCase):
     catalog_id = 'test_catalog'
 
     def setUp(self):
+        Catalog.objects.all().delete()
         self.catalog = Catalog.objects.create(identifier=self.catalog_id)
         dataset = self.catalog.dataset_set.create(identifier="1")
         self.distribution_id = "1.1"
@@ -65,41 +65,49 @@ class FieldEnhancedMetaTests(TestCase):
         self.assertEqual(meta_keys.get(self.field, meta_keys.INDEX_SIZE),
                          str(len(df)))
 
-    def test_days_since_last_update(self):
-        df = self.init_df()
-        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+    def test_is_daily_series_updated(self):
+        is_updated = _is_series_updated(days_since_last_update=1, periodicity="R/P1D")
 
-        last_date = df.index[-1]
+        self.assertTrue(is_updated)
 
-        # Sólo válido porque la serie es diaria! Con otra periodicity hay que considerar
-        # el fin del período
-        days = (datetime.datetime.today() - last_date).days
+    def test_is_daily_series_not_updated(self):
+        # Hasta dos semanas se considera como actualizada
+        is_updated = _is_series_updated(days_since_last_update=15, periodicity="R/P1D")
 
-        self.assertEqual(meta_keys.get(self.field, meta_keys.DAYS_SINCE_LAST_UPDATE),
-                         str(days))
+        self.assertFalse(is_updated)
 
-    class MockDatetime():
-        def __init__(self, date):
-            self.date = date
-
-        def now(self):
-            return self.date
-
+    @freeze_time("2018-01-01")
     def test_is_not_updated(self):
         df = self.init_df()
-        with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.metadata.datetime',
-                        self.MockDatetime(datetime.datetime(2018, 1, 1))):
-            update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
 
         self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
                          str(False))
 
     def test_is_updated(self):
         df = self.init_df()
-        with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.metadata.datetime', self.MockDatetime(df.index[-1])):
+        with freeze_time(df.index[-1]):
             update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
         self.assertEqual(meta_keys.get(self.field, meta_keys.IS_UPDATED),
                          str(True))
+
+    def test_max(self):
+        df = self.init_df()
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertAlmostEqual(float(meta_keys.get(self.field, meta_keys.MAX)), df[df.columns[0]].max())
+
+    def test_min(self):
+        df = self.init_df()
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertAlmostEqual(float(meta_keys.get(self.field, meta_keys.MIN)), df[df.columns[0]].min())
+
+    def test_average(self):
+        df = self.init_df()
+        update_enhanced_meta(df[df.columns[0]], self.catalog_id, self.distribution_id)
+
+        self.assertAlmostEqual(float(meta_keys.get(self.field, meta_keys.AVERAGE)), df[df.columns[0]].mean())
 
     def init_df(self):
         self.field.distribution.data_file = File(open(os.path.join(SAMPLES_DIR,

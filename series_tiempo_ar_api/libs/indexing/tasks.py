@@ -13,7 +13,6 @@ from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 from .report.report_generator import ReportGenerator
 from .scraping import Scraper
@@ -22,7 +21,7 @@ from .scraping import Scraper
 logger = logging.getLogger(__name__)
 
 
-@job('indexing', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
+@job('api_index', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
                        read_local=False, index=settings.TS_INDEX, force=False):
 
@@ -41,7 +40,7 @@ def index_distribution(distribution_id, node_id, task_id,
             changed = _hash[0].value != distribution_model.data_hash
 
         if changed or force:
-            DistributionIndexer(index=index).run(distribution_model)
+            DistributionIndexer(index=index).reindex(distribution_model)
 
         distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
                                                           defaults={'value': distribution_model.data_hash})
@@ -85,15 +84,7 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
         raise exc  # Django-rq / sentry logging
 
 
-# Para correr con el scheduler
-def scheduler():
+@job("api_report", timeout=-1)
+def send_indexation_report_email():
     task = ReadDataJsonTask.objects.last()
-    if task.status == task.FINISHED:
-        return
-
-    if not get_queue('indexing').jobs:
-        ReportGenerator(task).generate()
-
-    elastic = ElasticInstance.get()
-    if elastic.indices.exists(index=settings.TS_INDEX):
-        elastic.indices.forcemerge(index=settings.TS_INDEX)
+    ReportGenerator(task).generate()

@@ -5,11 +5,11 @@ from django_rq import job
 from elasticsearch import Elasticsearch
 
 from django_datajsonar.models import Node
+from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.apps.metadata.utils import get_random_index_name
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from .catalog_meta_indexer import CatalogMetadataIndexer
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class MetadataIndexer:
 
     def __init__(self, task):
-        self.elastic: Elasticsearch = ElasticInstance.get()
+        self.elastic: Elasticsearch = connections.get_connection()
         self.task = task
 
     def update_alias(self, index_name):
@@ -61,9 +61,14 @@ class MetadataIndexer:
                 self.elastic.indices.delete(index)
 
 
-@job('indexing', timeout=10000)
+@job('meta_indexing', timeout=10000)
 def run_metadata_indexer(task):
     MetadataIndexer(task).run()
     task.refresh_from_db()
     task.status = task.FINISHED
     task.save()
+
+
+@job('meta_indexing', timeout=-1)
+def enqueue_new_index_metadata_task():
+    run_metadata_indexer(IndexMetadataTask.objects.create())

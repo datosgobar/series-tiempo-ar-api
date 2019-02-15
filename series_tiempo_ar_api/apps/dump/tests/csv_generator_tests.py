@@ -9,10 +9,11 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 from django_datajsonar.models import Field, Node, Catalog
+from elasticsearch_dsl.connections import connections
+
 from faker import Faker
 
 from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
-from series_tiempo_ar_api.libs.indexing.elastic import ElasticInstance
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile, ZipDumpFile
@@ -229,15 +230,16 @@ class CSVTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         super(CSVTest, cls).tearDownClass()
-        ElasticInstance.get().indices.delete(cls.index)
+        elastic = connections.get_connection()
+        elastic.indices.delete(cls.index)
         Node.objects.all().delete()
 
 
 class CSVDumpCommandTests(TestCase):
-    fake = Faker()
-    index = fake.word()
 
     def setUp(self):
+        fake = Faker()
+        self.index = fake.word()
         GenerateDumpTask.objects.all().delete()
         DumpFile.objects.all().delete()
 
@@ -274,9 +276,9 @@ class CSVDumpCommandTests(TestCase):
                                              file_type=DumpFile.TYPE_CSV,
                                              node__catalog_id='catalog_two').zipdumpfile_set.first())
 
-    @classmethod
-    def tearDownClass(cls):
-        super(CSVDumpCommandTests, cls).tearDownClass()
-        ElasticInstance.get().indices.delete(cls.index)
+    def tearDown(self):
+        elastic = connections.get_connection()
+        elastic.indices.delete(self.index)
         Catalog.objects.all().delete()
+        DumpFile.objects.all().delete()
         Node.objects.all().delete()

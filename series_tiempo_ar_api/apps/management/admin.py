@@ -2,8 +2,12 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .tasks import read_datajson
-from .models import TaskCron, ReadDataJsonTask
+from django_datajsonar.admin.tasks import AbstractTaskAdmin
+
+from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
+from .tasks.indexation import read_datajson
+from .tasks.integration_test import run_integration
+from .models import ReadDataJsonTask, IntegrationTestTask, IntegrationTestConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -28,42 +32,21 @@ class NodeAdmin(admin.ModelAdmin):
     make_indexable.short_description = 'Marcar como indexable'
 
 
-class IndexingTaskAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'enabled', 'weekdays_only')
+class DataJsonAdmin(AbstractTaskAdmin):
+    task = read_datajson
 
-    actions = ('delete_model',)
+    model = ReadDataJsonTask
 
-    def get_actions(self, request):
-        # Borro la acción de borrado default
-        actions = super(IndexingTaskAdmin, self).get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
-        return actions
-
-    def delete_model(self, _, queryset):
-        # Actualizo los crons del sistema para reflejar el cambio de modelos
-        queryset.delete()
-        TaskCron.update_crontab()
+    callable_str = 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing'
 
 
-class DataJsonAdmin(admin.ModelAdmin):
-    readonly_fields = ('status', 'created', 'finished', 'logs', 'stats')
-    list_display = ('__unicode__', 'status')
+@admin.register(IntegrationTestTask)
+class IntegrationTestTaskAdmin(AbstractTaskAdmin):
+    model = IntegrationTestTask
 
-    def save_model(self, request, obj, form, change):
-        running_status = [ReadDataJsonTask.RUNNING, ReadDataJsonTask.INDEXING]
-        if ReadDataJsonTask.objects.filter(status__in=running_status):
-            return  # Ya hay tarea corriendo, no ejecuto una nueva
-        super(DataJsonAdmin, self).save_model(request, obj, form, change)
-        if obj.indexing_mode == ReadDataJsonTask.UPDATED_ONLY:
-            force = False
-        elif obj.indexing_mode == ReadDataJsonTask.ALL:
-            force = True
-        else:
-            raise RuntimeError
-
-        read_datajson.delay(obj, force=force)  # Ejecuta indexación
+    task = run_integration
+    callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration_test'
 
 
-admin.site.register(TaskCron, IndexingTaskAdmin)
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
+admin.site.register(IntegrationTestConfig, SingletonAdmin)

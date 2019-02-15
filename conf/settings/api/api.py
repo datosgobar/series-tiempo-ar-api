@@ -27,7 +27,7 @@ VALID_STATUS_CODES = (
 )
 
 MAX_SERIES_VALUES = 100000
-MAX_LIMIT = 1000
+MAX_LIMIT = 5000
 
 MAX_ALLOWED_VALUES = {
     'start': MAX_SERIES_VALUES - MAX_LIMIT,  # Offset máximo
@@ -42,6 +42,8 @@ DISTRIBUTION_INDEX_JOB_TIMEOUT = 1000  # Segundos
 # Nombre del grupo de usuarios que reciben reportes de indexación
 READ_DATAJSON_RECIPIENT_GROUP = 'read_datajson_recipients'
 
+# Nombre del grupo de usuarios que reciben reportes de errores en tests de integración
+INTEGRATION_TEST_REPORT_GROUP = 'integration_test_recipients'
 
 # Metadata blacklists
 CATALOG_BLACKLIST = [

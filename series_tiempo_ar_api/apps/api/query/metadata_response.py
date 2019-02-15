@@ -1,6 +1,6 @@
 #! coding: utf-8
 import json
-from typing import Union
+from typing import Union, Dict
 
 from django_datajsonar.models import Field, Catalog, Dataset, Distribution
 
@@ -10,41 +10,26 @@ from series_tiempo_ar_api.apps.api.query import constants
 class MetadataResponse:
     datajson_entity = Union[Catalog, Dataset, Distribution, Field]
 
-    def __init__(self, field: Field):
+    def __init__(self, field: Field, simple: bool, flat: bool):
         self.field = field
+        self.simple = simple
+        self.flat = flat
 
-    def get_simple_metadata(self):
-        """Obtiene los campos de metadatos marcados como simples en
-        la configuración de un modelo de una serie. La estructura
-        final de metadatos respeta el formato de un data.json
-        """
+    def get_response(self):
+        metadata = self._get_full_metadata()
 
-        # Idea: obtener todos los metadatos y descartar los que no queremos
-        meta = self.get_full_metadata()
+        if self.simple:
+            _filter_keys(metadata['catalog'], constants.CATALOG_SIMPLE_META_FIELDS)
+            _filter_keys(metadata['dataset'], constants.DATASET_SIMPLE_META_FIELDS)
+            _filter_keys(metadata['distribution'], constants.DISTRIBUTION_SIMPLE_META_FIELDS)
+            _filter_keys(metadata['field'], constants.FIELD_SIMPLE_META_FIELDS)
 
-        catalog = meta['catalog']
-        for meta_field in list(catalog):
-            if meta_field not in constants.CATALOG_SIMPLE_META_FIELDS:
-                catalog.pop(meta_field)
+        if self.flat:
+            metadata = _flatten_metadata(metadata)
 
-        dataset = meta['dataset']
-        for meta_field in list(dataset):
-            if meta_field not in constants.DATASET_SIMPLE_META_FIELDS:
-                dataset.pop(meta_field)
+        return metadata
 
-        distribution = meta['distribution']
-        for meta_field in list(distribution):
-            if meta_field not in constants.DISTRIBUTION_SIMPLE_META_FIELDS:
-                distribution.pop(meta_field)
-
-        field = meta['field']
-        for meta_field in list(field):
-            if meta_field not in constants.FIELD_SIMPLE_META_FIELDS:
-                field.pop(meta_field)
-
-        return meta
-
-    def get_full_metadata(self):
+    def _get_full_metadata(self):
         distribution = self.field.distribution
         dataset = distribution.dataset
         catalog = dataset.catalog
@@ -84,3 +69,19 @@ class MetadataResponse:
             for theme_dict in theme_details:
                 if theme_id == theme_dict['id']:
                     dataset_meta['theme'].append(theme_dict)
+
+
+def _flatten_metadata(metadata: Dict[str, Dict]) -> dict:
+    result = {}
+    for level, level_meta in metadata.items():
+        for meta_field, value in level_meta.items():
+            flat_key = f'{level}_{meta_field}'
+            result[flat_key] = value
+
+    return result
+
+
+def _filter_keys(metadata, allowed_fields):
+    for meta_field in list(metadata):
+        if meta_field not in allowed_fields:
+            metadata.pop(meta_field)

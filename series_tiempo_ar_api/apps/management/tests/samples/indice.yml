@@ -1,5 +1,0 @@
-sspm:
-  url: "series_tiempo_ar_api/apps/management/tests/samples/sample_data.json"
-  formato: "json"
-  federado: true
-

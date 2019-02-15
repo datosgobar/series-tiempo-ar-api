@@ -41,10 +41,6 @@ RAVEN_CONFIG = {
 
 INSTALLED_APPS += 'raven.contrib.django.raven_compat',
 
-SENDFILE_BACKEND = 'sendfile.backends.nginx'
-SENDFILE_ROOT = PROTECTED_MEDIA_DIR
-SENDFILE_URL = env('PROTECTED_INTERNAL_URL', default='/protected')
-
 MINIO_STORAGE_ACCESS_KEY = env('MINIO_ACCESS_KEY')
 MINIO_STORAGE_SECRET_KEY = env('MINIO_SECRET_KEY')
 
