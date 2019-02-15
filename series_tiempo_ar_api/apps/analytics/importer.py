@@ -5,15 +5,17 @@ import requests
 from django.core.exceptions import FieldError
 from iso8601 import iso8601
 
+from series_tiempo_ar_api.apps.analytics.elasticsearch.index import AnalyticsIndexer
 from series_tiempo_ar_api.apps.analytics.models import AnalyticsImportTask, ImportConfig, Query
 
 
 class AnalyticsImporter:
 
-    def __init__(self, task=None, limit=1000, requests_lib=requests):
+    def __init__(self, task=None, limit=1000, requests_lib=requests, index_to_es=True):
         self.task = task or AnalyticsImportTask.objects.create()
         self.requests = requests_lib
         self.limit = limit
+        self.index_to_es = index_to_es
 
         # Precálculo
         self.loaded_api_mgmt_ids = set(Query.objects.values_list('api_mgmt_id', flat=True))
@@ -48,17 +50,41 @@ class AnalyticsImporter:
 
         response = self.exec_request(cursor=cursor,
                                      kong_api_id=import_config_model.kong_api_id)
-        self._load_queries_into_db(response)
+        self._load_queries(response)
         next_results = response['next']
         while next_results:
             # Actualizo el cursor en cada iteración en caso de error
             import_config_model.last_cursor = parse.parse_qs(parse.urlsplit(next_results).query)['cursor'][0]
             import_config_model.save()
             response = self.exec_request(url=next_results)
-            self._load_queries_into_db(response)
+            self._load_queries(response)
             next_results = response['next']
 
-    def _load_queries_into_db(self, query_results):
+    def _load_queries(self, response):
+        queries = self.create_queries(response)
+        # A db
+        Query.objects.bulk_create(queries)
+        # a ES
+        if self.index_to_es:
+            AnalyticsIndexer().index(queries)
+
+    def exec_request(self, url=None, **params):
+        """Wrapper sobre la llamada a la API de api-mgmt"""
+        if url and params:
+            raise ValueError
+
+        import_config_model = ImportConfig.get_solo()
+
+        if url is None:
+            url = import_config_model.endpoint
+
+        return self.requests.get(
+            url,
+            headers=import_config_model.get_authorization_header(),
+            params=params,
+        ).json()
+
+    def create_queries(self, query_results):
         # Filtramos las queries ya agregadas
         ids = self.loaded_api_mgmt_ids
         results = filter(lambda x: x['id'] not in ids, query_results['results'])
@@ -81,20 +107,4 @@ class AnalyticsImporter:
             ))
             self.loaded_api_mgmt_ids.update([result['id']])
 
-        Query.objects.bulk_create(queries)
-
-    def exec_request(self, url=None, **params):
-        """Wrapper sobre la llamada a la API de api-mgmt"""
-        if url and params:
-            raise ValueError
-
-        import_config_model = ImportConfig.get_solo()
-
-        if url is None:
-            url = import_config_model.endpoint
-
-        return self.requests.get(
-            url,
-            headers=import_config_model.get_authorization_header(),
-            params=params,
-        ).json()
+        return queries
