@@ -12,7 +12,7 @@ fake = Faker()
 class UninitializedImportConfigTests(TestCase):
 
     def test_not_initialized_model(self):
-        enqueue_new_import_analytics_task()
+        enqueue_new_import_analytics_task(index_to_es=False)
         self.assertTrue('Error' in AnalyticsImportTask.objects.last().logs)
 
 
@@ -45,7 +45,7 @@ class ImportTests(TestCase):
         config_model.save()
 
     def test_single_empty_result(self):
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([{
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([{
             'next': None,
             'count': 0,
             'results': []
@@ -54,7 +54,7 @@ class ImportTests(TestCase):
         self.assertEqual(Query.objects.count(), 0)
 
     def test_single_page_results(self):
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -72,7 +72,7 @@ class ImportTests(TestCase):
         self.assertEqual(Query.objects.count(), 1)
 
     def test_many_results(self):
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -101,7 +101,7 @@ class ImportTests(TestCase):
 
         # Borro un dato, y me aseguro que se regenera con import_all
         Query.objects.first().delete()
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -130,7 +130,7 @@ class ImportTests(TestCase):
 
         # Borro un dato. Si no le paso import_all=True, no se va a crear de nuevo
         Query.objects.all().order_by('-timestamp').last().delete()
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 0,
@@ -167,7 +167,7 @@ class ImportTests(TestCase):
                 }
             ]
         }]
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests(responses=return_value))
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests(responses=return_value))
 
         self.assertEqual(Query.objects.count(), 2)
 
@@ -187,13 +187,13 @@ class ImportTests(TestCase):
                 ]
             }
         ]
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests(results))
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests(results))
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests(results))
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests(results))
         # Esperado: que haya un solo objeto query, no se dupliquen los resultados
         self.assertEqual(Query.objects.count(), 1)
 
     def test_ignore_not_series_uri(self):
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -212,7 +212,7 @@ class ImportTests(TestCase):
 
     def test_import_uri_field(self):
         uri = '/series/api/series'
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -232,7 +232,7 @@ class ImportTests(TestCase):
 
     def test_import_status_code_field(self):
         status_code = 200
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -253,7 +253,7 @@ class ImportTests(TestCase):
 
     def test_import_user_agent_field(self):
         agent = fake.word()
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -274,7 +274,7 @@ class ImportTests(TestCase):
 
     def test_import_response_time(self):
         request_time = str(fake.pyfloat(left_digits=1, right_digits=10, positive=True))
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests([
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
             {
                 'next': None,
                 'count': 1,
@@ -319,6 +319,6 @@ class ImportTests(TestCase):
                 }
             ]
         }]
-        enqueue_new_import_analytics_task(requests_lib=FakeRequests(responses=return_value))
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests(responses=return_value))
 
         self.assertIsNotNone(ImportConfig.get_solo().last_cursor)
