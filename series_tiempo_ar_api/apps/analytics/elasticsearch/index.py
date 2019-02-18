@@ -34,14 +34,15 @@ def generate_es_query(queryset):
         if not query.ids:
             continue
 
-        series_ids = json.loads(query.ids)
+        ids = query.ids.replace('\'', '"')
+        series_ids = json.loads(ids)
 
         for serie_string in series_ids:
             yield construct_query_doc(query, serie_string)
 
 
 def construct_query_doc(query, serie_string) -> dict:
-    params = json.loads(query.params) if query.params else {}
+    params = json.loads(query.params.replace('\'', '"')) if query.params else {}
 
     serie_id = serie_string.split(':')[0]
     params.update(get_params(serie_string))
