@@ -31,6 +31,9 @@ class AnalyticsIndexer:
 
 def generate_es_query(queryset):
     for query in queryset:
+        if not query.ids:
+            continue
+
         series_ids = json.loads(query.ids)
 
         for serie_string in series_ids:
