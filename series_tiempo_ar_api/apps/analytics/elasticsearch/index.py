@@ -31,14 +31,17 @@ class AnalyticsIndexer:
 
 def generate_es_query(queryset):
     for query in queryset:
-        if not query.ids:
+        if not query.ids or query.status_code != 200:
             continue
 
         ids = query.ids.replace('\'', '"')
-        series_ids = json.loads(ids)
+        series_ids_params = json.loads(ids)
 
-        for serie_string in series_ids:
-            yield construct_query_doc(query, serie_string)
+        for ids_string in series_ids_params:
+            for serie_string in ids_string.split(','):
+                serie_string = serie_string.strip()
+                if serie_string:
+                    yield construct_query_doc(query, serie_string)
 
 
 def construct_query_doc(query, serie_string) -> dict:
