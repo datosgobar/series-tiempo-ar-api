@@ -24,29 +24,29 @@ class PopularityTests(TestCase):
         cls.field = cls.distribution.field_set.create(identifier='test_field')
 
     def test_metadata_is_created(self, mock_hits, *_):
-        mock_hits.return_value = self.faker.pyint()
-        update_popularity_metadata(self.distribution)
+        mock_value = self._update_popularity_metadata(mock_hits)
 
         hits = int(meta_keys.get(self.field, meta_keys.HITS_TOTAL))
-        self.assertEqual(hits, mock_hits.return_value)
+        self.assertEqual(hits, mock_value)
 
     def test_metadata_is_updated(self, mock_hits, *_):
-        first_value = self.faker.pyint()
-        mock_hits.return_value = first_value
-        update_popularity_metadata(self.distribution)
+        self._update_popularity_metadata(mock_hits)
 
-        updated_value = self.faker.pyint()
-        mock_hits.return_value = updated_value
-        update_popularity_metadata(self.distribution)
+        updated_value = self._update_popularity_metadata(mock_hits)
 
         hits = int(meta_keys.get(self.field, meta_keys.HITS_TOTAL))
         self.assertEqual(hits, updated_value)
 
     def test_all_metadata_created(self, mock_hits, *_):
-        mock_hits.return_value = self.faker.pyint()
-        update_popularity_metadata(self.distribution)
+        self._update_popularity_metadata(mock_hits)
 
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_30_DAYS))
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_90_DAYS))
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_180_DAYS))
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_TOTAL))
+
+    def _update_popularity_metadata(self, mock_hits):
+        mock_value = self.faker.pyint()
+        mock_hits.return_value = mock_value
+        update_popularity_metadata(self.distribution)
+        return mock_value
