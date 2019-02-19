@@ -19,6 +19,11 @@ AVERAGE = 'average'
 MAX = 'max_value'
 MIN = 'min_value'
 
+HITS_TOTAL = 'hits_total'
+HITS_30_DAYS = 'hits_30_days'
+HITS_90_DAYS = 'hits_90_days'
+HITS_180_DAYS = 'hits_180_days'
+
 
 def get(model, key):
     values = model.enhanced_meta.filter(key=key).values_list('value', flat=True)

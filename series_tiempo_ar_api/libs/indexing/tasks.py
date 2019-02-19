@@ -14,6 +14,7 @@ from django_datajsonar.models import Distribution
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 from .report.report_generator import ReportGenerator
 from .scraping import Scraper
 
@@ -46,6 +47,8 @@ def index_distribution(distribution_id, node_id, task_id,
                                                           defaults={'value': distribution_model.data_hash})
         distribution_model.enhanced_meta.update_or_create(key=meta_keys.CHANGED,
                                                           defaults={'value': str(changed)})
+
+        update_popularity_metadata(distribution_model)
 
     except Exception as e:
         _handle_exception(distribution_model.dataset, distribution_id, e, node, task)
