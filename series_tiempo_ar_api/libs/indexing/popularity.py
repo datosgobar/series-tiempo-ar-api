@@ -21,12 +21,20 @@ def update_popularity_metadata(distribution: Distribution):
     series_ids = series.values_list('identifier', flat=True)
 
     for meta_key, days in KEY_DAYS_PAIRS:
-        hits = popularity_aggregation(series_ids, days)
+        agg_result = popularity_aggregation(series_ids, days)
 
-        for serie in series:
-            serie_hits = hits[serie.identifier].count.value
-            serie.enhanced_meta.update_or_create(key=meta_key,
-                                                 defaults={'value': serie_hits})
+        update_series_popularity_metadata(agg_result, meta_key, series)
+
+
+def update_series_popularity_metadata(agg_result, meta_key, series):
+    for serie in series:
+        serie_hits = get_hits(serie.identifier, agg_result)
+        serie.enhanced_meta.update_or_create(key=meta_key,
+                                             defaults={'value': serie_hits})
+
+
+def get_hits(serie_id, agg_result):
+    return agg_result[serie_id].count.value
 
 
 def popularity_aggregation(series_ids: str, days: int):
