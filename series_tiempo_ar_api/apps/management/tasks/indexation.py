@@ -18,7 +18,8 @@ def schedule_api_indexing(force=False):
         logger.info(u'Ya está corriendo una indexación')
         return
 
-    task = ReadDataJsonTask()
+    indexing_mode = ReadDataJsonTask.ALL if force else ReadDataJsonTask.UPDATED_ONLY
+    task = ReadDataJsonTask(indexing_mode=indexing_mode)
     task.save()
 
     read_datajson(task, force=force)
