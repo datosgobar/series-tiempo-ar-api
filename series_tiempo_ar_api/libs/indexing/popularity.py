@@ -55,7 +55,7 @@ def popularity_aggregation(series_ids: str, days: int):
 def get_serie_filter(serie_id: str, days: int) -> dict:
     filters = []
     if days is not None:
-        filters.append(Q('range', timestamp={'gte': f'now-{days}d'}))
+        filters.append(Q('range', timestamp={'gte': f'now-{days}d/d'}))
 
     filters.append(Q('term', serie_id=serie_id))
     return {'bool': {'filter': filters}}
