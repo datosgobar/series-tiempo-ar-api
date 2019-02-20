@@ -1,5 +1,7 @@
 from django_datajsonar.models import Distribution
-from elasticsearch_dsl import Search, Q, Index
+from elasticsearch_dsl import Q, Index
+
+from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.management import meta_keys
 
 KEY_DAYS_PAIRS = (
@@ -11,17 +13,18 @@ KEY_DAYS_PAIRS = (
 
 
 def update_popularity_metadata(distribution: Distribution):
-    if not Index('query').exists():
+    if not Index(SeriesQuery._doc_type.index).exists():
         return
 
     series = distribution.field_set\
-        .exclude(identifier='indice_tiempo')\
+        .exclude(title='indice_tiempo')\
         .exclude(identifier=None)
 
     series_ids = series.values_list('identifier', flat=True)
 
     for meta_key, days in KEY_DAYS_PAIRS:
-        agg_result = popularity_aggregation(series_ids, days)
+        buckets = {serie_id: get_serie_filter(serie_id, days) for serie_id in series_ids}
+        agg_result = popularity_aggregation(buckets)
 
         update_series_popularity_metadata(agg_result, meta_key, series)
 
@@ -37,12 +40,13 @@ def get_hits(serie_id, agg_result):
     return agg_result[serie_id].count.value
 
 
-def popularity_aggregation(series_ids: str, days: int):
-    s = Search(index='query')
+def popularity_aggregation(buckets):
+
+    s = SeriesQuery.search()
     s.aggs \
         .bucket(name="hits_last_days",
                 agg_type='filters',
-                filters={serie_id: get_serie_filter(serie_id, days) for serie_id in series_ids})\
+                filters=buckets)\
         .metric(name='count',
                 agg_type='value_count',
                 field='serie_id')
