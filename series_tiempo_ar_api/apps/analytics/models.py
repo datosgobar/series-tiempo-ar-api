@@ -75,3 +75,15 @@ class AnalyticsImportTask(AbstractTask):
     class Meta:
         verbose_name_plural = "Corridas de importación de analytics"
         verbose_name = "Corrida de importación de analytics"
+
+
+class HitsIndicator(models.Model):
+
+    class Meta:
+        verbose_name = 'Consultas por día de serie'
+        verbose_name_plural = 'Consultas por día de series'
+        unique_together = ('serie_id', 'date', )
+
+    serie_id = models.CharField(max_length=64)
+    date = models.DateField()
+    hits = models.IntegerField()
