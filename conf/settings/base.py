@@ -290,6 +290,8 @@ RQ_QUEUE_NAMES = [
     'integration_test',
     'api_index',
     'api_report',
+    'analytics',
+    'hits_indicators',
 ]
 RQ_QUEUES = {name: REDIS_SETTINGS for name in RQ_QUEUE_NAMES}
 
@@ -367,5 +369,13 @@ DATAJSONAR_STAGES = {
         'callable_str': 'series_tiempo_ar_api.libs.indexing.tasks.send_indexation_report_email',
         'queue': 'api_report',
         'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
-    }
+    },
+    'Importado de analytics': {
+        'callable_str': 'series_tiempo_ar_api.apps.analytics.tasks.enqueue_new_import_analytics_task',
+        'queue': 'analytics',
+    },
+    'Cálculo de indicadores de popularidad': {
+        'callable_str': 'series_tiempo_ar_api.apps.analytics.tasks.enqueue_new_calculate_hits_indicators_task',
+        'queue': 'hits_indicators'
+    },
 }
