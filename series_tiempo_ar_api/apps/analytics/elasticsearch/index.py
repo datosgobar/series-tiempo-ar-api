@@ -1,18 +1,20 @@
 import json
+from json import JSONDecodeError
 
-from elasticsearch.helpers import parallel_bulk
+from elasticsearch.helpers import streaming_bulk, parallel_bulk
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
+from iso8601 import iso8601
 
-from . import constants
+from series_tiempo_ar_api.apps.analytics.models import Query
 from .doc import SeriesQuery
-from .constants import \
-    REP_MODES, AGGREGATIONS, PARAM_REP_MODE, PARAM_COLLAPSE_AGG
+from series_tiempo_ar_api.apps.api.query import constants
+from .constants import SERIES_QUERY_INDEX_NAME
 
 
 class AnalyticsIndexer:
 
-    def __init__(self, index: str = constants.SERIES_QUERY_INDEX_NAME):
+    def __init__(self, index: str = SERIES_QUERY_INDEX_NAME):
         self.es_index = Index(index)
         self.es_index.doc_type(SeriesQuery)
         self.es_connection = connections.get_connection()
@@ -30,7 +32,7 @@ class AnalyticsIndexer:
 
 
 def generate_es_query(queryset):
-    for query in queryset:
+    for query in queryset.iterator():
         if not query.ids or query.status_code != 200:
             continue
 
@@ -44,11 +46,34 @@ def generate_es_query(queryset):
                     yield construct_query_doc(query, serie_string)
 
 
-def construct_query_doc(query, serie_string) -> dict:
-    params = json.loads(query.params.replace('\'', '"')) if query.params else {}
+def _clean_date(date: str):
+    try:
+        return str(iso8601.parse_date(date).date())
+    except iso8601.ParseError:
+        return None
+
+
+def _clean_params(params: dict) -> dict:
+    clean_params = {}
+
+    for param, values in params.items():
+        if values[0]:
+            clean_params[param] = values[0]
+
+    for date_key in constants.DATE_KEYS:
+        if date_key in clean_params:
+            new_date = _clean_date(clean_params[date_key])
+            if new_date:
+                clean_params[date_key] = new_date
+    return clean_params
+
+
+def construct_query_doc(query: Query, serie_string) -> dict:
+    params = read_params(query.params)
 
     serie_id = serie_string.split(':')[0]
     params.update(get_params(serie_string))
+    params = _clean_params(params)
     return SeriesQuery(
         meta={'id': f'{query.id}-{serie_id}'},
         serie_id=serie_id,
@@ -59,6 +84,16 @@ def construct_query_doc(query, serie_string) -> dict:
         request_time=query.request_time,
         status_code=query.status_code
     ).to_dict(include_meta=True)
+
+
+def read_params(params: str) -> dict:
+    if not params:
+        return {}
+
+    try:
+        return json.loads(params.replace('\'', '"'))
+    except JSONDecodeError:  # Varios datos inválidos, no los indexo
+        return {}
 
 
 def get_params(serie_id: str) -> dict:
@@ -77,7 +112,7 @@ def get_params(serie_id: str) -> dict:
 
 
 def _infer_param_key(value):
-    if value in REP_MODES:
-        return PARAM_REP_MODE
-    elif value in AGGREGATIONS:
-        return PARAM_COLLAPSE_AGG
+    if value in constants.REP_MODES:
+        return constants.PARAM_REP_MODE
+    elif value in constants.AGGREGATIONS:
+        return constants.PARAM_COLLAPSE_AGG
