@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import transaction
 from elasticsearch_dsl import Q
 
+from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.analytics.models import HitsIndicator
 from django_datajsonar.models import Field
 
@@ -14,7 +15,7 @@ from series_tiempo_ar_api.libs.indexing.popularity import popularity_aggregation
 def calculate_hits_indicators(for_date: date):
     series_ids = all_time_series()
     start_chunk_index, end_chunk_index = 0, 50
-    series_chunk = series_ids[start_chunk_index, end_chunk_index]
+    series_chunk = series_ids[start_chunk_index:end_chunk_index]
     while series_chunk:
         calculate_hits_indicators_for_series(for_date, series_chunk)
 
@@ -35,8 +36,9 @@ def calculate_hits_indicators_for_series(for_date, series_ids):
 
 
 def get_day_hits(series_ids, for_date):
+    s = SeriesQuery.search().filter('range', timestamp={'gte': f'{for_date}-1d/d'})
     buckets = {serie_id: get_serie_filter(serie_id, for_date) for serie_id in series_ids}
-    return popularity_aggregation(buckets)
+    return popularity_aggregation(s, buckets)
 
 
 def all_time_series():
