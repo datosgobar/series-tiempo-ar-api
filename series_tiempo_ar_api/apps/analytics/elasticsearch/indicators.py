@@ -6,6 +6,8 @@ from elasticsearch_dsl import Q
 
 from series_tiempo_ar_api.apps.analytics.models import HitsIndicator
 from django_datajsonar.models import Field
+
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.indexing.popularity import popularity_aggregation
 
 
@@ -30,6 +32,7 @@ def get_day_hits(series_ids, for_date):
 
 def all_time_series():
     series_ids = Field.objects \
+        .filter(enhanced_meta__key=meta_keys.AVAILABLE)\
         .exclude(title='indice_tiempo') \
         .exclude(identifier=None) \
         .values_list('identifier', flat=True)

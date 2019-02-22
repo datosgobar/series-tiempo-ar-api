@@ -65,6 +65,8 @@ def _clean_params(params: dict) -> dict:
             new_date = _clean_date(clean_params[date_key])
             if new_date:
                 clean_params[date_key] = new_date
+            else:
+                clean_params.pop(date_key)
     return clean_params
 
 
