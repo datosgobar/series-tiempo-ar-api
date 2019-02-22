@@ -13,10 +13,14 @@ from series_tiempo_ar_api.libs.indexing.popularity import popularity_aggregation
 
 def calculate_hits_indicators(for_date: date):
     series_ids = all_time_series()
-    chunk_size = 50
-    for i in range(chunk_size):
-        chunk = series_ids[chunk_size*i:chunk_size*(i+1)]
-        calculate_hits_indicators_for_series(for_date, chunk)
+    start_chunk_index, end_chunk_index = 0, 50
+    series_chunk = series_ids[start_chunk_index, end_chunk_index]
+    while series_chunk:
+        calculate_hits_indicators_for_series(for_date, series_chunk)
+
+        start_chunk_index = end_chunk_index
+        end_chunk_index += 50
+        series_chunk = series_ids[start_chunk_index:end_chunk_index]
 
 
 def calculate_hits_indicators_for_series(for_date, series_ids):

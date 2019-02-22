@@ -49,8 +49,7 @@ def popularity_aggregation(buckets):
                 filters=buckets)\
         .metric(name='count',
                 agg_type='value_count',
-                field='serie_id') \
-        .params(request_timeout=1*len(buckets))
+                field='serie_id')
     s = s[:0]
 
     result = s.execute()
