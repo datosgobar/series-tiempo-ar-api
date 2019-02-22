@@ -13,13 +13,18 @@ from series_tiempo_ar_api.libs.indexing.popularity import popularity_aggregation
 
 def calculate_hits_indicators(for_date: date):
     series_ids = all_time_series()
-    hits = get_day_hits(series_ids, for_date)
+    chunk_size = 50
+    for i in range(chunk_size):
+        chunk = series_ids[chunk_size*i:chunk_size*(i+1)]
+        calculate_hits_indicators_for_series(for_date, chunk)
 
+
+def calculate_hits_indicators_for_series(for_date, series_ids):
+    hits = get_day_hits(series_ids, for_date)
     indicators = []
     for key in hits:
         serie_hits = hits[key].count.value
         indicators.append(HitsIndicator(serie_id=key, date=for_date, hits=serie_hits))
-
     with transaction.atomic():
         HitsIndicator.objects.filter(date=for_date, serie_id__in=series_ids).delete()
         HitsIndicator.objects.bulk_create(indicators)
