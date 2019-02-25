@@ -183,8 +183,6 @@ class CSVTest(TestCase):
         reader = read_file_as_csv(file)
         next(reader)
 
-        # self.assertListEqual(header, constants.METADATA_ROWS)
-
         self.assertEqual(len(list(reader)), 3)  # Un row por serie
 
     def test_sources_csv(self):
@@ -226,6 +224,20 @@ class CSVTest(TestCase):
 
         next(reader)  # Header!!!!
         self.assertEqual(len(list(reader)), 1)  # Un único row, para un único valor del CSV
+
+    def test_metadata_csv_hits(self):
+        file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA,
+                                          file_type=DumpFile.TYPE_CSV).file
+        reader = read_file_as_csv(file)
+        next(reader)  # Header
+
+        row = next(reader)
+
+        field = Field.objects.get(identifier=row[3])
+        self.assertEqual(row[25], meta_keys.get(field, meta_keys.HITS_TOTAL))
+        self.assertEqual(row[26], meta_keys.get(field, meta_keys.HITS_30_DAYS))
+        self.assertEqual(row[27], meta_keys.get(field, meta_keys.HITS_90_DAYS))
+        self.assertEqual(row[28], meta_keys.get(field, meta_keys.HITS_180_DAYS))
 
     @classmethod
     def tearDownClass(cls):
