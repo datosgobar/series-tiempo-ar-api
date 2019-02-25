@@ -12,6 +12,7 @@ from series_tiempo_ar_api.apps.dump.generator.sql.models import Metadatos, proxy
 from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_sql_task
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 from series_tiempo_ar_api.utils.utils import index_catalog
 
@@ -39,14 +40,12 @@ class SQLGeneratorTests(TestCase):
         call_command('generate_dump')
 
     def test_sql_dumps_generated(self):
-        self.assertTrue(Metadata.objects.filter(key='hits_total').count())
         task = GenerateDumpTask.objects.create()
         SQLGenerator(task.id).generate()
 
         self.assertTrue(DumpFile.objects.filter(file_type=DumpFile.TYPE_SQL).count())
 
     def test_sql_dumps_by_catalog(self):
-        self.assertTrue(Metadata.objects.filter(key='hits_total').count())
         enqueue_write_sql_task()
         self.assertEqual(DumpFile.objects.filter(file_type=DumpFile.TYPE_SQL, node=None).count(),
                          1)

@@ -38,7 +38,10 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
     read_datajson(task, read_local=True, whitelist=True)
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
         DistributionIndexer(index=index).run(distribution)
-        update_popularity_metadata(distribution)
+
+        for field in distribution.field_set.all():
+            for key in meta_keys.HITS_KEYS:
+                field.enhanced_meta.create(key=key, value=0)
 
     connections.get_connection().indices.forcemerge(index=index)
 
