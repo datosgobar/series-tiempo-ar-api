@@ -1,5 +1,5 @@
 from django_datajsonar.models import Distribution
-from elasticsearch_dsl import Q, Index
+from elasticsearch_dsl import Q, Index, Search
 
 from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -23,8 +23,9 @@ def update_popularity_metadata(distribution: Distribution):
     series_ids = series.values_list('identifier', flat=True)
 
     for meta_key, days in KEY_DAYS_PAIRS:
-        buckets = {serie_id: get_serie_filter(serie_id, days) for serie_id in series_ids}
-        agg_result = popularity_aggregation(buckets)
+        s = SeriesQuery.search().filter('range', timestamp={'gte': f'now-{days}d/d'})
+        buckets = {serie_id: get_serie_filter(serie_id) for serie_id in series_ids}
+        agg_result = popularity_aggregation(s, buckets)
 
         update_series_popularity_metadata(agg_result, meta_key, series)
 
@@ -40,26 +41,21 @@ def get_hits(serie_id, agg_result):
     return agg_result[serie_id].count.value
 
 
-def popularity_aggregation(buckets):
+def popularity_aggregation(search: Search, buckets):
 
-    s = SeriesQuery.search()
-    s.aggs \
+    search.aggs \
         .bucket(name="hits_last_days",
                 agg_type='filters',
                 filters=buckets)\
         .metric(name='count',
                 agg_type='value_count',
                 field='serie_id')
-    s = s[:0]
+    search = search[:0]
 
-    result = s.execute()
+    result = search.execute()
     return result.aggregations.hits_last_days.buckets
 
 
-def get_serie_filter(serie_id: str, days: int) -> dict:
-    filters = []
-    if days is not None:
-        filters.append(Q('range', timestamp={'gte': f'now-{days}d/d'}))
-
-    filters.append(Q('term', serie_id=serie_id))
+def get_serie_filter(serie_id: str) -> dict:
+    filters = [Q('term', serie_id=serie_id)]
     return {'bool': {'filter': filters}}

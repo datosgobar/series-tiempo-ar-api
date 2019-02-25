@@ -148,3 +148,8 @@ VERBOSE_REP_MODES = {
     PCT_CHANGE: "Variación porcentual respecto del período anterior",
     PCT_CHANGE_YEAR_AGO: "Variación porcentual interanual",
 }
+
+DATE_KEYS = (
+    PARAM_END_DATE,
+    PARAM_START_DATE,
+)
