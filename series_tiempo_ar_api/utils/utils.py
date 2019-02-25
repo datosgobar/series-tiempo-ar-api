@@ -11,6 +11,7 @@ from pydatajson import DataJson
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 
 
 def get_available_fields():
@@ -37,6 +38,8 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
     read_datajson(task, read_local=True, whitelist=True)
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
         DistributionIndexer(index=index).run(distribution)
+        update_popularity_metadata(distribution)
+
     connections.get_connection().indices.forcemerge(index=index)
 
 

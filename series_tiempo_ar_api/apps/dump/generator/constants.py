@@ -23,7 +23,10 @@ SERIES_LAST_VALUE = 'serie_valor_ultimo'
 SERIES_SECOND_LAST_VALUE = 'serie_valor_anterior'
 SERIES_PCT_CHANGE = 'serie_var_pct_anterior'
 SERIES_DISCONTINUED = 'serie_discontinuada'
-
+HITS_TOTAL = 'consultas_total'
+HITS_30_DAYS = 'consultas_30_dias'
+HITS_90_DAYS = 'consultas_90_dias'
+HITS_180_DAYS = 'consultas_180_dias'
 
 METADATA_ROWS = [
     CATALOG_ID,
@@ -51,6 +54,10 @@ METADATA_ROWS = [
     SERIES_SECOND_LAST_VALUE,
     SERIES_PCT_CHANGE,
     SERIES_DISCONTINUED,
+    HITS_TOTAL,
+    HITS_30_DAYS,
+    HITS_90_DAYS,
+    HITS_180_DAYS,
 ]
 
 SOURCES_DATASET_SOURCE = 'dataset_fuente'

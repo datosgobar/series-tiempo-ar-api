@@ -68,5 +68,9 @@ class MetadataCsvGenerator(AbstractDumpGenerator):
             constants.SERIES_LAST_VALUE: values['metadata'].get(meta_keys.LAST_VALUE),
             constants.SERIES_SECOND_LAST_VALUE: values['metadata'].get(meta_keys.SECOND_TO_LAST_VALUE),
             constants.SERIES_PCT_CHANGE: values['metadata'].get(meta_keys.LAST_PCT_CHANGE),
-            constants.SERIES_DISCONTINUED: not field.present
+            constants.SERIES_DISCONTINUED: not field.present,
+            constants.HITS_TOTAL: values['metadata'].get(meta_keys.HITS_TOTAL),
+            constants.HITS_30_DAYS: values['metadata'].get(meta_keys.HITS_30_DAYS),
+            constants.HITS_90_DAYS: values['metadata'].get(meta_keys.HITS_90_DAYS),
+            constants.HITS_180_DAYS: values['metadata'].get(meta_keys.HITS_180_DAYS),
         }

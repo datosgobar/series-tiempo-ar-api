@@ -88,6 +88,11 @@ class SQLGenerator:
 
             discontinued = row[self.metadata_rows.index(constants.SERIES_DISCONTINUED)] or False
 
+            hits_total = row[self.metadata_rows.index(constants.HITS_TOTAL)]
+            hits_60_days = row[self.metadata_rows.index(constants.HITS_30_DAYS)]
+            hits_30_days = row[self.metadata_rows.index(constants.HITS_90_DAYS)]
+            hits_180_days = row[self.metadata_rows.index(constants.HITS_180_DAYS)]
+
             yield Metadatos(
                 catalogo_id=catalog_id,
                 dataset_id=dataset_id,
@@ -114,6 +119,10 @@ class SQLGenerator:
                 serie_valor_anterior=second_last_value,
                 serie_var_pct_anterior=last_pct_change,
                 serie_discontinuada=discontinued,
+                consultas_total=hits_total,
+                consultas_30_dias=hits_30_days,
+                consultas_90_dias=hits_60_days,
+                consultas_180_dias=hits_180_days,
             )
 
     def db_name(self):
