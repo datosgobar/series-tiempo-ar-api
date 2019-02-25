@@ -4,7 +4,7 @@ import peewee
 from django.core.files.temp import NamedTemporaryFile
 from django.core.management import call_command
 from django.test import TestCase
-from django_datajsonar.models import Node, Catalog, Field, Distribution
+from django_datajsonar.models import Node, Catalog, Field, Distribution, Metadata
 from elasticsearch_dsl.connections import connections
 from faker import Faker
 
@@ -39,12 +39,14 @@ class SQLGeneratorTests(TestCase):
         call_command('generate_dump')
 
     def test_sql_dumps_generated(self):
+        self.assertTrue(Metadata.objects.filter(key='hits_total').count())
         task = GenerateDumpTask.objects.create()
         SQLGenerator(task.id).generate()
 
         self.assertTrue(DumpFile.objects.filter(file_type=DumpFile.TYPE_SQL).count())
 
     def test_sql_dumps_by_catalog(self):
+        self.assertTrue(Metadata.objects.filter(key='hits_total').count())
         enqueue_write_sql_task()
         self.assertEqual(DumpFile.objects.filter(file_type=DumpFile.TYPE_SQL, node=None).count(),
                          1)
