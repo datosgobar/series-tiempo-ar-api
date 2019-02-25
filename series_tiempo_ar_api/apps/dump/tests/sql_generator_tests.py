@@ -35,8 +35,6 @@ class SQLGeneratorTests(TestCase):
 
         path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
         index_catalog('catalog_two', path, index=cls.index)
-        for distribution in Distribution.objects.all():
-            update_popularity_metadata(distribution)
 
         call_command('generate_dump')
 
