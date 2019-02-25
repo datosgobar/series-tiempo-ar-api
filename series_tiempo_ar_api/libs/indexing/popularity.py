@@ -23,7 +23,9 @@ def update_popularity_metadata(distribution: Distribution):
     series_ids = series.values_list('identifier', flat=True)
 
     for meta_key, days in KEY_DAYS_PAIRS:
-        s = SeriesQuery.search().filter('range', timestamp={'gte': f'now-{days}d/d'})
+        s = SeriesQuery.search()
+        if days:
+            s = s.filter('range', timestamp={'gte': f'now-{days}d/d'})
         buckets = {serie_id: get_serie_filter(serie_id) for serie_id in series_ids}
         agg_result = popularity_aggregation(s, buckets)
 
