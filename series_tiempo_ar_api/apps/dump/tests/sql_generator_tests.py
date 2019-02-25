@@ -4,7 +4,7 @@ import peewee
 from django.core.files.temp import NamedTemporaryFile
 from django.core.management import call_command
 from django.test import TestCase
-from django_datajsonar.models import Node, Catalog, Field
+from django_datajsonar.models import Node, Catalog, Field, Distribution
 from elasticsearch_dsl.connections import connections
 from faker import Faker
 
@@ -12,6 +12,7 @@ from series_tiempo_ar_api.apps.dump.generator.sql.models import Metadatos, proxy
 from series_tiempo_ar_api.apps.dump.generator.sql.generator import SQLGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_sql_task
+from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 from series_tiempo_ar_api.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
@@ -34,6 +35,8 @@ class SQLGeneratorTests(TestCase):
 
         path = os.path.join(samples_dir, 'leading_nulls_distribution.json')
         index_catalog('catalog_two', path, index=cls.index)
+        for distribution in Distribution.objects.all():
+            update_popularity_metadata(distribution)
 
         call_command('generate_dump')
 
