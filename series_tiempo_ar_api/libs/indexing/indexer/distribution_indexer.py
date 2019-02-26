@@ -117,5 +117,5 @@ def get_time_index_periodicity(distribution, fields):
     time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
     fields.pop('indice_tiempo')
     periodicity = json.loads(time_index.metadata)['specialTypeDetail']
-    distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, value=periodicity)
+    distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, defaults={'value': periodicity})
     return periodicity
