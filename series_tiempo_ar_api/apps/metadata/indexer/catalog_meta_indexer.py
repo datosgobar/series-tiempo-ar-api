@@ -54,8 +54,9 @@ class CatalogMetadataIndexer:
             periodicity = self.fields_meta[field.id].get(meta_keys.PERIODICITY)
             start_date = self.fields_meta[field.id].get(meta_keys.INDEX_START)
             end_date = self.fields_meta[field.id].get(meta_keys.INDEX_END)
+            hits = self.fields_meta[field.id].get(meta_keys.HITS_90_DAYS)
 
-            if not periodicity or not start_date or not end_date:
+            if None in (periodicity, start_date, end_date, hits):
                 msg = "Metadatos enriquecidos faltantes en serie {} ({})" \
                     .format(field.identifier, field.distribution.identifier)
                 self.task.info(self.task, msg)
@@ -77,7 +78,8 @@ class CatalogMetadataIndexer:
                 dataset_description=dataset.get('description'),
                 dataset_publisher_name=dataset.get('publisher', {}).get('name'),
                 dataset_theme=self.themes.get(dataset.get('theme', [None])[0]),
-                catalog_id=self.node.catalog_id
+                catalog_id=self.node.catalog_id,
+                hits=hits,
             )
 
             yield doc

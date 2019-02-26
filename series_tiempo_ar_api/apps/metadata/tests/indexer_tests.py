@@ -14,6 +14,7 @@ from series_tiempo_ar_api.apps.metadata.indexer.catalog_meta_indexer import Cata
 from series_tiempo_ar_api.apps.metadata.indexer.index import add_analyzer
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.apps.management import meta_keys
+
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 fake = faker.Faker()
@@ -74,6 +75,7 @@ class IndexerTests(TestCase):
         if set_availables:
             for field in datajsonar_Field.objects.all():
                 field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
+                field.enhanced_meta.create(key=meta_keys.HITS_90_DAYS, value='0')
 
         index_ok = CatalogMetadataIndexer(node, self.meta_task, fake_index._name).index()
         if index_ok:
