@@ -1,5 +1,5 @@
 #!coding=utf8
-from elasticsearch_dsl import DocType, Keyword, Text, Date, MetaField
+from elasticsearch_dsl import DocType, Keyword, Text, Date, MetaField, Integer
 
 from series_tiempo_ar_api.apps.metadata import constants
 
@@ -23,6 +23,8 @@ class Metadata(DocType):
     periodicity = Keyword()
     start_date = Date()
     end_date = Date()
+
+    hits = Integer()
 
     all = Text(analyzer=constants.ANALYZER)
 
