@@ -1,11 +1,13 @@
 #! coding: utf-8
 import json
 
+from django.contrib.contenttypes.models import ContentType
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import streaming_bulk
 from elasticsearch_dsl.connections import connections
 from pydatajson import DataJson
-from django_datajsonar.models import Field, Node, Metadata, ContentType
+from django_datajsonar.models import Field, Node, Metadata
+
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.metadata import constants
