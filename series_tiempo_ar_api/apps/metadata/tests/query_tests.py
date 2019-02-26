@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import os
+from unittest.mock import call
 
 import mock
 from django.test import TestCase
@@ -99,3 +100,8 @@ class QueryTests(TestCase):
 
         filtered_catalogs = filtered_search.to_dict()['query']['bool']['filter'][0]['terms']['catalog_id']
         self.assertEqual(set(filtered_catalogs), {'catalog_1', 'catalog_2'})
+
+    @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.Search.sort')
+    def test_search_sorted_by_hits_descending(self, mock_search):
+        FieldSearchQuery(args={}).execute()
+        self.assertListEqual(mock_search.call_args_list, [call('-hits')])

@@ -52,6 +52,7 @@ class FieldSearchQuery(object):
             return self.response
 
         search = Metadata.search(index=constants.METADATA_ALIAS)
+        search = search.sort('-hits')
 
         querystring = self.args.get(constants.PARAM_QUERYSTRING)
         if querystring is not None:
@@ -87,6 +88,7 @@ class FieldSearchQuery(object):
                     'time_index_start': start_date,
                     'time_index_end': end_date,
                     'units': getattr(hit, 'units', None),
+                    'hits': getattr(hit, 'hits', None),
                 },
                 'dataset': {
                     'title': getattr(hit, 'dataset_title', None),
