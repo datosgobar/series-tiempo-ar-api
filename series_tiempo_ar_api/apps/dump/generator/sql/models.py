@@ -40,6 +40,11 @@ class Metadatos(peewee.Model):
     serie_var_pct_anterior = peewee.FloatField(null=True)
     serie_discontinuada = peewee.BooleanField(null=True)
 
+    consultas_total = peewee.IntegerField()
+    consultas_30_dias = peewee.IntegerField()
+    consultas_90_dias = peewee.IntegerField()
+    consultas_180_dias = peewee.IntegerField()
+
 
 class Valores(peewee.Model):
     class Meta:

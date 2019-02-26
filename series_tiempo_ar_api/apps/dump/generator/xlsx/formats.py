@@ -50,6 +50,10 @@ formats = {
         meta.METADATA_ROWS.index(meta.SERIES_VALUES_AMT): int_format,
         meta.METADATA_ROWS.index(meta.SERIES_DAYS_SINCE_LAST_UPDATE): int_format,
         meta.METADATA_ROWS.index(meta.SERIES_IS_UPDATED): bool_format,
+        meta.METADATA_ROWS.index(meta.HITS_TOTAL): int_format,
+        meta.METADATA_ROWS.index(meta.HITS_30_DAYS): int_format,
+        meta.METADATA_ROWS.index(meta.HITS_90_DAYS): int_format,
+        meta.METADATA_ROWS.index(meta.HITS_180_DAYS): int_format,
     },
 
     DumpFile.FILENAME_SOURCES: {
