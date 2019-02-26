@@ -88,7 +88,7 @@ class FieldSearchQuery(object):
                     'time_index_start': start_date,
                     'time_index_end': end_date,
                     'units': getattr(hit, 'units', None),
-                    'hits': getattr(hit, 'hits', None),
+                    'hits_90_days': getattr(hit, 'hits', None),
                 },
                 'dataset': {
                     'title': getattr(hit, 'dataset_title', None),
