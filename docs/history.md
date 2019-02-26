@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.11.0
+
+Metadatos de consultas de las series: rutina de cálculo diaria, uso en dumps y en resultados de búsqueda de series
+
 ## 1.10.0
 
 - Nuevos metadatos de series: `representation_mode` y `representation_mode_units`
