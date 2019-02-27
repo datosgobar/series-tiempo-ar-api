@@ -22,6 +22,9 @@ def update_popularity_metadata(distribution: Distribution):
 
     series_ids = series.values_list('identifier', flat=True)
 
+    if not series_ids:
+        return
+
     for meta_key, days in KEY_DAYS_PAIRS:
         s = SeriesQuery.search()
         if days:
