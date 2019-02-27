@@ -12,7 +12,9 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
 
     field = Field.objects.get(distribution__dataset__catalog__identifier=catalog_id,
                               distribution__identifier=distribution_id,
-                              identifier=serie.name)
+                              distribution__present=True,
+                              identifier=serie.name,
+                              present=True)
     periodicity = meta_keys.get(field.distribution, meta_keys.PERIODICITY)
     days_since_update = (datetime.now() - _get_last_day_of_period(serie, periodicity)).days
 

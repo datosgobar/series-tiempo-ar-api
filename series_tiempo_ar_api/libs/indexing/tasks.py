@@ -31,7 +31,8 @@ def index_distribution(distribution_id, node_id, task_id,
     task = ReadDataJsonTask.objects.get(id=task_id)
     catalog = DataJson(json.loads(node.catalog))
     distribution_model = Distribution.objects.get(identifier=distribution_id,
-                                                  dataset__catalog__identifier=node.catalog_id)
+                                                  dataset__catalog__identifier=node.catalog_id,
+                                                  present=True)
 
     try:
         Scraper(read_local).run(distribution_model, catalog)
@@ -72,7 +73,8 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
     with transaction.atomic():
         try:
             distribution = Distribution.objects.get(identifier=distribution_id,
-                                                    dataset__catalog__identifier=node.catalog_id)
+                                                    dataset__catalog__identifier=node.catalog_id,
+                                                    present=True)
             distribution.error_msg = msg
             distribution.error = True
             distribution.field_set.update(error=True)

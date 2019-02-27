@@ -295,7 +295,7 @@ class IdsField(BaseOperation):
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        field_model = models.Field.objects.filter(identifier=series_id)
+        field_model = models.Field.objects.filter(identifier=series_id, present=True)
         if not field_model:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None

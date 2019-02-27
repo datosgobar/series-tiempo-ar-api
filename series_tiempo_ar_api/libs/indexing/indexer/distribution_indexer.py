@@ -113,7 +113,7 @@ def read_distribution_csv_as_df(distribution: Distribution) -> pd.DataFrame:
 
 
 def get_time_index_periodicity(distribution, fields):
-    time_index = distribution.field_set.get(identifier=fields['indice_tiempo'])
+    time_index = distribution.field_set.get(title='indice_tiempo', present=True)
     fields.pop('indice_tiempo')
     periodicity = json.loads(time_index.metadata)['specialTypeDetail']
     distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, defaults={'value': periodicity})
