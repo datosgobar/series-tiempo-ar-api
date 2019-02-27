@@ -9,10 +9,14 @@ from series_tiempo_ar_api.apps.management import meta_keys
 
 def delete_all_but_last_periodicity(apps, schema_editor):
     Metadata = apps.get_model('django_datajsonar', 'Metadata')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
     db_alias = schema_editor.connection.alias
 
+    distribution_ct = ContentType.objects.get_by_natural_key('django_datajsonar', 'distribution')
     found_distributions = set()
-    periodicites= Metadata.objects.using(db_alias).filter(key=meta_keys.PERIODICITY).order_by('-id')
+    periodicites = Metadata.objects.using(db_alias).filter(
+        key=meta_keys.PERIODICITY,
+        content_type=distribution_ct).order_by('-id')
 
     for metadata in periodicites:
         distribution = metadata.object_id
@@ -26,6 +30,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('management', '0006_auto_20190208_1509'),
+        ('contenttypes', '0001_initial'),
     ]
 
     operations = [
