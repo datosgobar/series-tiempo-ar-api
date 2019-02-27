@@ -4,26 +4,14 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-from series_tiempo_ar_api.apps.management import meta_keys
+
+# No op mantenida para consistencia
+def delete_all_but_last_periodicity(*_):
+    pass
 
 
-def delete_all_but_last_periodicity(apps, schema_editor):
-    Metadata = apps.get_model('django_datajsonar', 'Metadata')
-    ContentType = apps.get_model('contenttypes', 'ContentType')
-    db_alias = schema_editor.connection.alias
-
-    distribution_ct = ContentType.objects.get_by_natural_key('django_datajsonar', 'distribution')
-    found_distributions = set()
-    periodicites = Metadata.objects.using(db_alias).filter(
-        key=meta_keys.PERIODICITY,
-        content_type=distribution_ct).order_by('-id')
-
-    for metadata in periodicites:
-        distribution = metadata.object_id
-        if distribution in found_distributions:
-            metadata.delete()
-
-        found_distributions.add(distribution)
+def revert(*_):
+    pass
 
 
 class Migration(migrations.Migration):
@@ -31,8 +19,9 @@ class Migration(migrations.Migration):
     dependencies = [
         ('management', '0006_auto_20190208_1509'),
         ('contenttypes', '0001_initial'),
+        ('django_datajsonar', '0020_auto_20190131_1213')
     ]
 
     operations = [
-        migrations.RunPython(delete_all_but_last_periodicity)
+        migrations.RunPython(delete_all_but_last_periodicity, revert)
     ]
