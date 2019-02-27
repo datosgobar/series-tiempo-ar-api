@@ -23,7 +23,10 @@ class FieldEnhancedMetaTests(TestCase):
         dataset = self.catalog.dataset_set.create(identifier="1")
         self.distribution_id = "1.1"
         distribution = dataset.distribution_set.create(identifier=self.distribution_id)
-        distribution.enhanced_meta.create(key=meta_keys.PERIODICITY, value='R/P1D')
+        distribution.field_set.create(title='indice_tiempo',
+                                      identifier='indice_tiempo',
+                                      metadata='{"specialTypeDetail": "R/P1D"}',
+                                      present=True)
         self.field = distribution.field_set.create(identifier='test_series')
 
     def test_start_end_dates(self):
