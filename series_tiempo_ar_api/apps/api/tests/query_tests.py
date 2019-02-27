@@ -43,7 +43,7 @@ class QueryTests(TestCase):
     def test_collapse_index_metadata_frequency(self):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series, self.field)
-        self.query.add_collapse(collapse=collapse_interval)
+        self.query.update_collapse(collapse=collapse_interval)
         self.query.run()
 
         index_frequency = self.query.get_metadata()[0]['frequency']
@@ -52,7 +52,7 @@ class QueryTests(TestCase):
     def test_collapse_index_metadata_start_end_dates(self):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series, self.field)
-        self.query.add_collapse(collapse=collapse_interval)
+        self.query.update_collapse(collapse=collapse_interval)
         data = self.query.run()['data']
 
         index_meta = self.query.get_metadata()[0]
@@ -63,7 +63,7 @@ class QueryTests(TestCase):
     def test_invalid_collapse(self):
         collapse_interval = 'day'  # Serie cargada es mensual
         self.query.add_series(self.single_series, self.field)
-        self.query.add_collapse(collapse=collapse_interval)
+        self.query.update_collapse(collapse=collapse_interval)
 
     def test_identifiers(self):
 
@@ -81,7 +81,7 @@ class QueryTests(TestCase):
 
         self.query.add_series(day_series_name, field)
 
-        self.query.add_collapse(collapse='week')
+        self.query.update_collapse(collapse='week')
         self.query.sort(how='asc')
         data = self.query.run()['data']
 
@@ -213,7 +213,7 @@ class QueryTests(TestCase):
 
     def test_full_metadata_periodicty_with_collapse(self):
         self.query.add_series(self.single_series, self.field)
-        self.query.add_collapse('year')
+        self.query.update_collapse('year')
         self.query.set_metadata_config('full')
 
         resp = self.query.run()

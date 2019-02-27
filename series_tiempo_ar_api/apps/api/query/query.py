@@ -63,26 +63,21 @@ class Query(object):
     def add_series(self, name, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
+        self.series_models.append(field_model)
+        self.series_rep_modes.append(rep_mode)
+        periodicities = self._series_periodicities()
+        max_periodicity = self.get_max_periodicity(periodicities)
+        self.update_collapse(collapse=max_periodicity)
+
+        self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
+
+    def _series_periodicities(self):
         periodicities = [
             get_periodicity_human_format(
                 field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
             for field in self.series_models
         ]
-
-        self.series_models.append(field_model)
-        self.series_rep_modes.append(rep_mode)
-        series_periodicity = get_periodicity_human_format(
-            field_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
-
-        periodicity = get_periodicity_human_format(
-            field_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
-        if periodicities and series_periodicity not in periodicities:
-            # Hay varias series con distintas periodicities, colapso los datos
-            periodicities.append(series_periodicity)
-            periodicity = self.get_max_periodicity(periodicities)
-            self.add_collapse(collapse=periodicity)
-
-        self.es_query.add_series(name, rep_mode, periodicity, collapse_agg)
+        return periodicities
 
     @staticmethod
     def get_max_periodicity(periodicities):
@@ -95,7 +90,7 @@ class Query(object):
 
         return order[index]
 
-    def add_collapse(self, collapse=None):
+    def update_collapse(self, collapse=None):
         self._validate_collapse(collapse)
         self.es_query.add_collapse(collapse)
 

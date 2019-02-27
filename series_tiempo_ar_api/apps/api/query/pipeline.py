@@ -368,7 +368,7 @@ class Collapse(BaseOperation):
             return
 
         try:
-            query.add_collapse(collapse=collapse)
+            query.update_collapse(collapse=collapse)
         except CollapseError:
             msg = strings.INVALID_COLLAPSE.format(collapse)
             self._append_error(msg)
