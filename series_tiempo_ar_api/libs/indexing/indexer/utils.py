@@ -1,5 +1,5 @@
 from django.db.models import Count
-from django_datajsonar.models import Distribution
+from django_datajsonar.models import Distribution, Field
 
 
 def remove_duplicated_fields(distribution: Distribution):
@@ -9,5 +9,5 @@ def remove_duplicated_fields(distribution: Distribution):
                       .filter(identifier_count__gt=1))
 
     for identifier in non_unique_ids:
-        fields = distribution.field_set.filter(identifier=identifier).exclude(present=True)
-        fields.first().delete()
+        fields = Field.objects.filter(identifier=identifier).exclude(present=True)
+        fields.delete()

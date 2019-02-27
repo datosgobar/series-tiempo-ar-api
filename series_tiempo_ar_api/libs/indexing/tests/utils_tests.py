@@ -40,7 +40,7 @@ class DuplicatedFieldsTests(TestCase):
 
         self.assertEqual(self.distribution.field_set.count(), 1)
 
-    def test_run_not_present_removes_only_one(self):
+    def test_run_not_present_removes_non_present(self):
         identifier = fake.pystr()
 
         Field.objects.create(distribution=self.distribution,
@@ -50,11 +50,11 @@ class DuplicatedFieldsTests(TestCase):
         Field.objects.create(distribution=self.distribution,
                              identifier=identifier,
                              title="other_title",
-                             present=False)
+                             present=True)
 
         remove_duplicated_fields(self.distribution)
 
-        self.assertEqual(self.distribution.field_set.count(), 1)
+        self.assertTrue(self.distribution.field_set.get(identifier=identifier).present)
 
     def test_run_multiple_single_fields(self):
         Field.objects.create(distribution=self.distribution,

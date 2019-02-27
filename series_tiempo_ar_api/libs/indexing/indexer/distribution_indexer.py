@@ -48,7 +48,6 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-        remove_duplicated_fields(distribution)
         for field in distribution.field_set.exclude(title='indice_tiempo'):
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
 
