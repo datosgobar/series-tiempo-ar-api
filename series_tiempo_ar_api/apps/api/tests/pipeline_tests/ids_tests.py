@@ -1,12 +1,13 @@
 #! coding: utf-8
 from django.conf import settings
 from django.test import TestCase
+from django_datajsonar.models import Field
 
 from series_tiempo_ar_api.apps.api.query.pipeline import \
     IdsField
 from series_tiempo_ar_api.apps.api.query.query import Query
 from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
-from series_tiempo_ar_api.apps.api.tests.helpers import setup_database
+from series_tiempo_ar_api.apps.management import meta_keys
 from ..helpers import get_series_id
 from ..support.pipeline import time_serie_name
 
@@ -157,3 +158,9 @@ class IdsTest(TestCase):
 
         self.cmd.run(self.query, {'ids': multi_series})
         self.assertIn(invalid, self.cmd.failed_series)
+
+    def test_serie_without_index_start(self):
+        Field.objects.get(identifier=self.single_series).enhanced_meta.get(key=meta_keys.INDEX_START).delete()
+        self.cmd.run(self.query, {'ids': self.single_series})
+
+        self.assertTrue(self.cmd.errors)

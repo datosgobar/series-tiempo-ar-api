@@ -295,16 +295,23 @@ class IdsField(BaseOperation):
         pedida es un ID contenido en la base de datos. De no
         encontrarse, llena la lista de errores según corresponda.
         """
-        field_model = models.Field.objects.filter(identifier=series_id, present=True)
-        if not field_model:
+
+        try:
+            field_model = models.Field.objects.get(identifier=series_id, present=True)
+        except models.Field.DoesNotExist:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
 
-        available = field_model[0].enhanced_meta.filter(key=meta_keys.AVAILABLE)
-        if not available or available[0] == 'False':
+        index_start_metadata = meta_keys.get(field_model, meta_keys.INDEX_START)
+        if index_start_metadata is None:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
-        return field_model[0]
+
+        available = meta_keys.get(field_model, meta_keys.AVAILABLE)
+        if not available or available.lower() == 'false':
+            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
+            return None
+        return field_model
 
     def _parse_single_series(self, serie):
         """Parsea una serie invididual. Actualiza la lista de errores
