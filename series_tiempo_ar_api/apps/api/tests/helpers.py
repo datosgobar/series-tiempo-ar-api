@@ -70,6 +70,7 @@ def init_month_series(dataset):
     field.save()
     field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='True')
     field.enhanced_meta.create(key=meta_keys.PERIODICITY, value='R/P1M')
+    field.enhanced_meta.create(key=meta_keys.INDEX_START, value='1910-01-01')
 
     return dataset
 
