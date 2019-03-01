@@ -55,3 +55,12 @@ class MetadataConfig(SingletonModel):
                                       'dataset_source': {'boost': 1},
                                       'dataset_title': {'boost': 1},
                                       'description': {'boost': 1.5}})
+
+
+class SeriesUnits(models.Model):
+    class Meta:
+        verbose_name = 'Unidades de serie'
+        verbose_name_plural = 'Unidades de series'
+
+    name = models.CharField(max_length=64, unique=True)
+    percentage = models.BooleanField(default=False)
