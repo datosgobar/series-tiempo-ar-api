@@ -5,8 +5,8 @@ import zipfile
 from django.core.files import File
 from django.db import models
 from django.conf import settings
-from django_datajsonar.models import AbstractTask, Node
 from minio_storage.storage import MinioMediaStorage, create_minio_client_from_settings
+from django_datajsonar.models import AbstractTask, Node
 from . import constants
 
 

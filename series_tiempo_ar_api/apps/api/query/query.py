@@ -4,8 +4,8 @@ from collections import OrderedDict
 from typing import Union
 
 from django.conf import settings
-from django_datajsonar.models import Catalog, Dataset, Distribution, Field
 from iso8601 import iso8601
+from django_datajsonar.models import Catalog, Dataset, Distribution, Field
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format

@@ -2,11 +2,11 @@
 from __future__ import unicode_literals
 
 
-from django_datajsonar import models as djar_models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models
 from solo.models import SingletonModel
+from django_datajsonar import models as djar_models
 
 from .indicator_names import IndicatorNamesMixin
 

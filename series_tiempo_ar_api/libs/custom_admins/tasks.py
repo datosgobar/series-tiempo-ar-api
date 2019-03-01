@@ -1,6 +1,6 @@
 from django.conf import settings
-from django_datajsonar.models import Distribution
 from django_rq import job
+from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 

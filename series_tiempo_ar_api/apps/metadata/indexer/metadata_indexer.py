@@ -4,8 +4,8 @@ import logging
 from django_rq import job
 from elasticsearch import Elasticsearch
 
-from django_datajsonar.models import Node
 from elasticsearch_dsl.connections import connections
+from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask

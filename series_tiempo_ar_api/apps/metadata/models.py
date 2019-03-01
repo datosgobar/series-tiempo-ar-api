@@ -6,8 +6,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django_datajsonar.models import AbstractTask, Node
 from solo.models import SingletonModel
+from django_datajsonar.models import AbstractTask, Node
 
 
 class IndexMetadataTask(AbstractTask):

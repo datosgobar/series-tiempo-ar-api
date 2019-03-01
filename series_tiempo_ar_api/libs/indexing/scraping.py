@@ -1,17 +1,14 @@
 #! coding: utf-8
 import logging
-import urllib.parse
-from io import BytesIO
 
-import requests
 import pandas as pd
 from django.conf import settings
-from django_datajsonar.models import Distribution
 from pydatajson import DataJson
 from series_tiempo_ar.validations import validate_distribution
+from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
-from .strings import NO_DISTRIBUTION_URL, NO_DATASET_IDENTIFIER
+from .strings import NO_DATASET_IDENTIFIER
 
 logger = logging.getLogger(__name__)
 

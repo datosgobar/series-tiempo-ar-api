@@ -5,17 +5,17 @@ from functools import reduce
 
 import pandas as pd
 from django.conf import settings
-from django_datajsonar.models import Distribution
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.connections import connections
 from series_tiempo_ar.helpers import freq_iso_to_pandas
-from series_tiempo_ar_api.apps.management import meta_keys
+from django_datajsonar.models import Distribution
 
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
-from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
+
 from .operations import process_column
 from .metadata import update_enhanced_meta
 from .index import tseries_index

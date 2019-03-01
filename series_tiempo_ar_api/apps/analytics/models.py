@@ -6,8 +6,8 @@ import requests
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
-from django_datajsonar.models import AbstractTask
 from solo.models import SingletonModel
+from django_datajsonar.models import AbstractTask
 
 
 class Query(models.Model):

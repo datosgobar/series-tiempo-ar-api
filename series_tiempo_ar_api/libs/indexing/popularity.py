@@ -1,5 +1,5 @@
-from django_datajsonar.models import Distribution
 from elasticsearch_dsl import Q, Index, Search
+from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.management import meta_keys
