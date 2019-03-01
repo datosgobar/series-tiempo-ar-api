@@ -3,10 +3,12 @@ from pydatajson import DataJson
 
 from django_datajsonar.models import Catalog, Field, Distribution, Dataset
 from series_tiempo_ar_api.apps.management.models import Indicator
-from series_tiempo_ar_api.utils.utils import get_available_fields
 
 
 # pylint: disable=R0914
+from series_tiempo_ar_api.libs.field_utils import get_available_series
+
+
 class IndicatorsGenerator(object):
 
     def __init__(self, node, task):
@@ -77,7 +79,7 @@ class IndicatorsGenerator(object):
         available = len(data_json.get_datasets(only_time_series=True))
         self.create(type=Indicator.DATASET_AVAILABLE, value=available, node=node)
 
-        total = get_available_fields().filter(distribution__dataset__catalog=catalog)\
+        total = get_available_series().filter(distribution__dataset__catalog=catalog)\
             .values_list('distribution__dataset').distinct().count()
         self.create(type=Indicator.DATASET_TOTAL, value=total, node=node)
 
@@ -118,7 +120,7 @@ class IndicatorsGenerator(object):
                     node=node)
 
         self.create(type=Indicator.DISTRIBUTION_TOTAL,
-                    value=get_available_fields().filter(distribution__dataset__catalog=catalog).
+                    value=get_available_series().filter(distribution__dataset__catalog=catalog).
                     values_list('distribution').distinct().count(),
                     node=node)
 
@@ -162,5 +164,5 @@ class IndicatorsGenerator(object):
                     node=node)
 
         self.create(type=Indicator.FIELD_TOTAL,
-                    value=get_available_fields().filter(distribution__dataset__catalog=catalog).count(),
+                    value=get_available_series().filter(distribution__dataset__catalog=catalog).count(),
                     node=node)

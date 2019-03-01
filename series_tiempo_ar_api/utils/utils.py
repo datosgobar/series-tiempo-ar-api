@@ -14,14 +14,6 @@ from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import Dist
 from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 
 
-def get_available_fields():
-    available_ids = Metadata.objects.filter(
-        key=meta_keys.AVAILABLE,
-        content_type__model='field'
-    ).values_list('object_id')
-    return Field.objects.filter(id__in=available_ids).exclude(title='indice_tiempo')
-
-
 def index_catalog(catalog_id, catalog_path, index, node=None):
     """Indexa un catálogo. Útil para tests"""
     if not node:
