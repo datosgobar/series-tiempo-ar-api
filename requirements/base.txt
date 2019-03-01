@@ -21,3 +21,4 @@ django-minio-storage
 xlsxwriter==1.1.1
 peewee==3.7.1
 chardet==3.0.4
+django-modeladmin-reorder==0.3.1

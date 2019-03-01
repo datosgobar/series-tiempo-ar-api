@@ -94,6 +94,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 )
 
 ANONYMOUS_USER_ID = -1
@@ -162,6 +163,7 @@ VENDOR_APPS = (
     'django_datajsonar',
     'solo',
     'minio_storage',
+    'admin_reorder',
 )
 
 APPS = (
@@ -379,3 +381,15 @@ DATAJSONAR_STAGES = {
         'queue': 'hits_indicators'
     },
 }
+
+ADMIN_REORDER = (
+    'auth',
+    'django_datajsonar',
+    'management',
+    'metadata',
+    'dump',
+    'analytics',
+    {'app': 'des', 'label': 'Configuración correo'},
+    'scheduler',
+    'sites',
+)
