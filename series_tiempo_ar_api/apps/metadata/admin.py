@@ -3,11 +3,12 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib import messages
+from django.db.models import QuerySet
 from django_datajsonar.admin.tasks import AbstractTaskAdmin
 from django_datajsonar.models import Field
 
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
-from .models import IndexMetadataTask, CatalogAlias, Synonym, MetadataConfig
+from .models import IndexMetadataTask, CatalogAlias, Synonym, MetadataConfig, SeriesUnits
 from .indexer.metadata_indexer import run_metadata_indexer
 
 
@@ -35,3 +36,18 @@ class SynonymAdmin(admin.ModelAdmin):
 @admin.register(MetadataConfig)
 class MetadataConfigAdmin(SingletonAdmin):
     pass
+
+
+@admin.register(SeriesUnits)
+class SeriesUnitsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'percentage')
+    actions = ('enable_percentage', 'disable_percentage')
+
+    def enable_percentage(self, _, queryset: QuerySet):
+        queryset.update(percentage=True)
+
+    enable_percentage.short_description = 'Marcar como unidad porcentual'
+
+    def disable_percentage(self, _, queryset: QuerySet):
+        queryset.update(percentage=False)
+    disable_percentage.short_description = 'Marcar como unidad no porcentual'

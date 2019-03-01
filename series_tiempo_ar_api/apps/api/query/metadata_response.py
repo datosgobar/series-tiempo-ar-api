@@ -5,6 +5,7 @@ from typing import Union, Dict
 from django_datajsonar.models import Field, Catalog, Dataset, Distribution
 
 from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
 
 class MetadataResponse:
@@ -41,8 +42,27 @@ class MetadataResponse:
             'catalog': self._get_full_metadata_for_model(catalog),
             'dataset': dataset_meta,
             'distribution': self._get_full_metadata_for_model(distribution),
-            'field': self._get_full_metadata_for_model(self.field),
+            'field': self._field_metadata(self.field),
         }
+
+    def _field_metadata(self, field: Field):
+        metadata = self._get_full_metadata_for_model(field)
+        if self.simple:
+            return metadata
+
+        metadata.update({'is_percentage': False})
+        units = metadata.get('units')
+
+        if not units:
+            return metadata
+
+        try:
+            series_units = SeriesUnits.objects.get(name=units)
+        except SeriesUnits.DoesNotExist:
+            return metadata
+
+        metadata['is_percentage'] = series_units.percentage
+        return metadata
 
     def _get_full_metadata_for_model(self, model: datajson_entity):
         metadata = {}
