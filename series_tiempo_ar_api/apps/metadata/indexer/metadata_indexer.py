@@ -8,6 +8,7 @@ from django_datajsonar.models import Node
 from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.metadata import constants
+from series_tiempo_ar_api.apps.metadata.indexer.units import update_units
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.apps.metadata.utils import get_random_index_name
 from .catalog_meta_indexer import CatalogMetadataIndexer
@@ -64,6 +65,7 @@ class MetadataIndexer:
 @job('meta_indexing', timeout=10000)
 def run_metadata_indexer(task):
     MetadataIndexer(task).run()
+    update_units()
     task.refresh_from_db()
     task.status = task.FINISHED
     task.save()
