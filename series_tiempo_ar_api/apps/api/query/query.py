@@ -202,8 +202,12 @@ class Query(object):
             units = rep_mode_units(rep_mode) or meta_response.get('field_units')
             meta_response['field_representation_mode'] = rep_mode
             meta_response['field_representation_mode_units'] = units
+            if rep_mode in (constants.PCT_CHANGE, constants.PCT_CHANGE_YEAR_AGO):
+                meta_response['field_is_percentage'] = True
 
         else:
             units = rep_mode_units(rep_mode) or meta_response['field'].get('units')
             meta_response['field']['representation_mode'] = rep_mode
             meta_response['field']['representation_mode_units'] = units
+            if rep_mode in (constants.PCT_CHANGE, constants.PCT_CHANGE_YEAR_AGO):
+                meta_response['field']['is_percentage'] = True
