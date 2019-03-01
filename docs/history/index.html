@@ -2,7 +2,7 @@
 
 
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" class="no-js">
   <head>
     
@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.6">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-4.0.2">
     
     
       
@@ -47,7 +47,7 @@
     
     
 	
-      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.982221ab.css">
       
       
     
@@ -55,7 +55,7 @@
 
     
     
-      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../assets/javascripts/modernizr.1f0bcf2b.js"></script>
     
     <script src="../js/extra.js"></script>
 
@@ -68,7 +68,36 @@
     
     <link rel="stylesheet" href="../assets/fonts/material-icons.css">
     
+    
       <link rel="stylesheet" href="../css/extra_rtd.css">
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-91435482-1", "https://datosgobar.github.io/series-tiempo-ar-api/")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
     
     
   </head>
@@ -125,22 +154,19 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
-            
-              <span class="md-header-nav__topic">
-                API de Series de Tiempo
-              </span>
-              <span class="md-header-nav__topic">
-                Historial de versiones
-              </span>
-            
+            <span class="md-header-nav__topic">
+              API de Series de Tiempo
+            </span>
+            <span class="md-header-nav__topic">
+              Historial de versiones
+            </span>
           
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
         
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
           
-            <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
-            
 <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
@@ -163,7 +189,6 @@
     </div>
   </div>
 </div>
-          
         
       </div>
       
@@ -174,20 +199,18 @@
 
   
 
-
-  <a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      GitHub
+<a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
           </div>
         </div>
       
@@ -251,20 +274,18 @@
 
   
 
-
-  <a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      GitHub
+<a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
           </div>
         
       
@@ -548,260 +569,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#100" title="1.0.0" class="md-nav__link">
-    1.0.0
+  <a href="#1110" title="1.11.0" class="md-nav__link">
+    1.11.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#103" title="1.0.3" class="md-nav__link">
-    1.0.3
+  <a href="#1100" title="1.10.0" class="md-nav__link">
+    1.10.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#106" title="1.0.6" class="md-nav__link">
-    1.0.6
+  <a href="#190" title="1.9.0" class="md-nav__link">
+    1.9.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#107" title="1.0.7" class="md-nav__link">
-    1.0.7
+  <a href="#180" title="1.8.0" class="md-nav__link">
+    1.8.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#108" title="1.0.8" class="md-nav__link">
-    1.0.8
+  <a href="#170" title="1.7.0" class="md-nav__link">
+    1.7.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#109" title="1.0.9" class="md-nav__link">
-    1.0.9
+  <a href="#160" title="1.6.0" class="md-nav__link">
+    1.6.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#1010" title="1.0.10" class="md-nav__link">
-    1.0.10
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1011" title="1.0.11" class="md-nav__link">
-    1.0.11
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1012" title="1.0.12" class="md-nav__link">
-    1.0.12
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1013" title="1.0.13" class="md-nav__link">
-    1.0.13
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1014" title="1.0.14" class="md-nav__link">
-    1.0.14
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1015" title="1.0.15" class="md-nav__link">
-    1.0.15
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1016" title="1.0.16" class="md-nav__link">
-    1.0.16
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1016-1" title="1.0.16-1" class="md-nav__link">
-    1.0.16-1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1017" title="1.0.17" class="md-nav__link">
-    1.0.17
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1018" title="1.0.18" class="md-nav__link">
-    1.0.18
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#110" title="1.1.0" class="md-nav__link">
-    1.1.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#111" title="1.1.1" class="md-nav__link">
-    1.1.1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#112" title="1.1.2" class="md-nav__link">
-    1.1.2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#113" title="1.1.3" class="md-nav__link">
-    1.1.3
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#114" title="1.1.4" class="md-nav__link">
-    1.1.4
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#115" title="1.1.5" class="md-nav__link">
-    1.1.5
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#116" title="1.1.6" class="md-nav__link">
-    1.1.6
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#117" title="1.1.7" class="md-nav__link">
-    1.1.7
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#118" title="1.1.8" class="md-nav__link">
-    1.1.8
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#120" title="1.2.0" class="md-nav__link">
-    1.2.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#121" title="1.2.1" class="md-nav__link">
-    1.2.1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#130" title="1.3.0" class="md-nav__link">
-    1.3.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#130-hotfix-1" title="1.3.0 hotfix 1" class="md-nav__link">
-    1.3.0 hotfix 1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#130-hotfix-2" title="1.3.0 hotfix 2" class="md-nav__link">
-    1.3.0 hotfix 2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#131" title="1.3.1" class="md-nav__link">
-    1.3.1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#132" title="1.3.2" class="md-nav__link">
-    1.3.2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#133" title="1.3.3" class="md-nav__link">
-    1.3.3
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#140" title="1.4.0" class="md-nav__link">
-    1.4.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#140_1" title="1.4.0" class="md-nav__link">
-    1.4.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#142" title="1.4.2" class="md-nav__link">
-    1.4.2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#143" title="1.4.3" class="md-nav__link">
-    1.4.3
+  <a href="#151" title="1.5.1" class="md-nav__link">
+    1.5.1
   </a>
   
 </li>
@@ -814,8 +625,253 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#151" title="1.5.1" class="md-nav__link">
-    1.5.1
+  <a href="#143" title="1.4.3" class="md-nav__link">
+    1.4.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#142" title="1.4.2" class="md-nav__link">
+    1.4.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#140" title="1.4.0" class="md-nav__link">
+    1.4.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#133" title="1.3.3" class="md-nav__link">
+    1.3.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#132" title="1.3.2" class="md-nav__link">
+    1.3.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#131" title="1.3.1" class="md-nav__link">
+    1.3.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130-hotfix-2" title="1.3.0 hotfix 2" class="md-nav__link">
+    1.3.0 hotfix 2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130-hotfix-1" title="1.3.0 hotfix 1" class="md-nav__link">
+    1.3.0 hotfix 1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130" title="1.3.0" class="md-nav__link">
+    1.3.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#121" title="1.2.1" class="md-nav__link">
+    1.2.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#120" title="1.2.0" class="md-nav__link">
+    1.2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#118" title="1.1.8" class="md-nav__link">
+    1.1.8
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#117" title="1.1.7" class="md-nav__link">
+    1.1.7
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#116" title="1.1.6" class="md-nav__link">
+    1.1.6
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#115" title="1.1.5" class="md-nav__link">
+    1.1.5
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#114" title="1.1.4" class="md-nav__link">
+    1.1.4
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#113" title="1.1.3" class="md-nav__link">
+    1.1.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#112" title="1.1.2" class="md-nav__link">
+    1.1.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#111" title="1.1.1" class="md-nav__link">
+    1.1.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" title="1.1.0" class="md-nav__link">
+    1.1.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1018" title="1.0.18" class="md-nav__link">
+    1.0.18
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1017" title="1.0.17" class="md-nav__link">
+    1.0.17
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1016-1" title="1.0.16-1" class="md-nav__link">
+    1.0.16-1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1016" title="1.0.16" class="md-nav__link">
+    1.0.16
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1015" title="1.0.15" class="md-nav__link">
+    1.0.15
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1014" title="1.0.14" class="md-nav__link">
+    1.0.14
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1013" title="1.0.13" class="md-nav__link">
+    1.0.13
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1012" title="1.0.12" class="md-nav__link">
+    1.0.12
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1011" title="1.0.11" class="md-nav__link">
+    1.0.11
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1010" title="1.0.10" class="md-nav__link">
+    1.0.10
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#109" title="1.0.9" class="md-nav__link">
+    1.0.9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#108" title="1.0.8" class="md-nav__link">
+    1.0.8
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#107" title="1.0.7" class="md-nav__link">
+    1.0.7
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#106" title="1.0.6" class="md-nav__link">
+    1.0.6
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#103" title="1.0.3" class="md-nav__link">
+    1.0.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100" title="1.0.0" class="md-nav__link">
+    1.0.0
   </a>
   
 </li>
@@ -854,260 +910,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#100" title="1.0.0" class="md-nav__link">
-    1.0.0
+  <a href="#1110" title="1.11.0" class="md-nav__link">
+    1.11.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#103" title="1.0.3" class="md-nav__link">
-    1.0.3
+  <a href="#1100" title="1.10.0" class="md-nav__link">
+    1.10.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#106" title="1.0.6" class="md-nav__link">
-    1.0.6
+  <a href="#190" title="1.9.0" class="md-nav__link">
+    1.9.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#107" title="1.0.7" class="md-nav__link">
-    1.0.7
+  <a href="#180" title="1.8.0" class="md-nav__link">
+    1.8.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#108" title="1.0.8" class="md-nav__link">
-    1.0.8
+  <a href="#170" title="1.7.0" class="md-nav__link">
+    1.7.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#109" title="1.0.9" class="md-nav__link">
-    1.0.9
+  <a href="#160" title="1.6.0" class="md-nav__link">
+    1.6.0
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#1010" title="1.0.10" class="md-nav__link">
-    1.0.10
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1011" title="1.0.11" class="md-nav__link">
-    1.0.11
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1012" title="1.0.12" class="md-nav__link">
-    1.0.12
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1013" title="1.0.13" class="md-nav__link">
-    1.0.13
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1014" title="1.0.14" class="md-nav__link">
-    1.0.14
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1015" title="1.0.15" class="md-nav__link">
-    1.0.15
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1016" title="1.0.16" class="md-nav__link">
-    1.0.16
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1016-1" title="1.0.16-1" class="md-nav__link">
-    1.0.16-1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1017" title="1.0.17" class="md-nav__link">
-    1.0.17
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1018" title="1.0.18" class="md-nav__link">
-    1.0.18
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#110" title="1.1.0" class="md-nav__link">
-    1.1.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#111" title="1.1.1" class="md-nav__link">
-    1.1.1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#112" title="1.1.2" class="md-nav__link">
-    1.1.2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#113" title="1.1.3" class="md-nav__link">
-    1.1.3
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#114" title="1.1.4" class="md-nav__link">
-    1.1.4
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#115" title="1.1.5" class="md-nav__link">
-    1.1.5
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#116" title="1.1.6" class="md-nav__link">
-    1.1.6
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#117" title="1.1.7" class="md-nav__link">
-    1.1.7
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#118" title="1.1.8" class="md-nav__link">
-    1.1.8
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#120" title="1.2.0" class="md-nav__link">
-    1.2.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#121" title="1.2.1" class="md-nav__link">
-    1.2.1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#130" title="1.3.0" class="md-nav__link">
-    1.3.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#130-hotfix-1" title="1.3.0 hotfix 1" class="md-nav__link">
-    1.3.0 hotfix 1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#130-hotfix-2" title="1.3.0 hotfix 2" class="md-nav__link">
-    1.3.0 hotfix 2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#131" title="1.3.1" class="md-nav__link">
-    1.3.1
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#132" title="1.3.2" class="md-nav__link">
-    1.3.2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#133" title="1.3.3" class="md-nav__link">
-    1.3.3
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#140" title="1.4.0" class="md-nav__link">
-    1.4.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#140_1" title="1.4.0" class="md-nav__link">
-    1.4.0
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#142" title="1.4.2" class="md-nav__link">
-    1.4.2
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#143" title="1.4.3" class="md-nav__link">
-    1.4.3
+  <a href="#151" title="1.5.1" class="md-nav__link">
+    1.5.1
   </a>
   
 </li>
@@ -1120,8 +966,253 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#151" title="1.5.1" class="md-nav__link">
-    1.5.1
+  <a href="#143" title="1.4.3" class="md-nav__link">
+    1.4.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#142" title="1.4.2" class="md-nav__link">
+    1.4.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#140" title="1.4.0" class="md-nav__link">
+    1.4.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#133" title="1.3.3" class="md-nav__link">
+    1.3.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#132" title="1.3.2" class="md-nav__link">
+    1.3.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#131" title="1.3.1" class="md-nav__link">
+    1.3.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130-hotfix-2" title="1.3.0 hotfix 2" class="md-nav__link">
+    1.3.0 hotfix 2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130-hotfix-1" title="1.3.0 hotfix 1" class="md-nav__link">
+    1.3.0 hotfix 1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130" title="1.3.0" class="md-nav__link">
+    1.3.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#121" title="1.2.1" class="md-nav__link">
+    1.2.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#120" title="1.2.0" class="md-nav__link">
+    1.2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#118" title="1.1.8" class="md-nav__link">
+    1.1.8
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#117" title="1.1.7" class="md-nav__link">
+    1.1.7
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#116" title="1.1.6" class="md-nav__link">
+    1.1.6
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#115" title="1.1.5" class="md-nav__link">
+    1.1.5
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#114" title="1.1.4" class="md-nav__link">
+    1.1.4
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#113" title="1.1.3" class="md-nav__link">
+    1.1.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#112" title="1.1.2" class="md-nav__link">
+    1.1.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#111" title="1.1.1" class="md-nav__link">
+    1.1.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" title="1.1.0" class="md-nav__link">
+    1.1.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1018" title="1.0.18" class="md-nav__link">
+    1.0.18
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1017" title="1.0.17" class="md-nav__link">
+    1.0.17
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1016-1" title="1.0.16-1" class="md-nav__link">
+    1.0.16-1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1016" title="1.0.16" class="md-nav__link">
+    1.0.16
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1015" title="1.0.15" class="md-nav__link">
+    1.0.15
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1014" title="1.0.14" class="md-nav__link">
+    1.0.14
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1013" title="1.0.13" class="md-nav__link">
+    1.0.13
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1012" title="1.0.12" class="md-nav__link">
+    1.0.12
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1011" title="1.0.11" class="md-nav__link">
+    1.0.11
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1010" title="1.0.10" class="md-nav__link">
+    1.0.10
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#109" title="1.0.9" class="md-nav__link">
+    1.0.9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#108" title="1.0.8" class="md-nav__link">
+    1.0.8
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#107" title="1.0.7" class="md-nav__link">
+    1.0.7
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#106" title="1.0.6" class="md-nav__link">
+    1.0.6
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#103" title="1.0.3" class="md-nav__link">
+    1.0.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100" title="1.0.0" class="md-nav__link">
+    1.0.0
   </a>
   
 </li>
@@ -1146,180 +1237,35 @@
                 
                 
                 <h1 id="historial-de-versiones">Historial de versiones</h1>
-<h2 id="100">1.0.0</h2>
-<p>Release inicial</p>
-<h2 id="103">1.0.3</h2>
-<p>Herramientas de administración:</p>
+<h2 id="1110">1.11.0</h2>
+<p>Metadatos de consultas de las series: rutina de cálculo diaria, uso en dumps y en resultados de búsqueda de series</p>
+<h2 id="1100">1.10.0</h2>
 <ul>
-<li>Configuración de que nodos y datasets se deben indexar</li>
-<li>Configuración del croneado de la tarea de indexación</li>
-<li>Generación de reportes de resultado de indexación por mail a los administradores </li>
+<li>Nuevos metadatos de series: <code>representation_mode</code> y <code>representation_mode_units</code></li>
+<li>Borrado del croneado de tareas usado para metadatos, analytics y test de integración. Su funcionalidad quedó deprecada
+por <code>Synchronizer</code> de <code>django_datajsonar</code>.</li>
 </ul>
-<h2 id="106">1.0.6</h2>
-<p>Fixes a herramientas de administración:</p>
+<h2 id="190">1.9.0</h2>
 <ul>
-<li>No se indexan metadatos de series y distribuciones pertenecientes a catálogos no marcados como indexables</li>
-<li>Finalización automática de la tarea de indexación si no hay datasets marcados como indexable</li>
-<li>Arreglos a borrados de croneado de tareas de indexación</li>
+<li>Bump de la versión de <code>django_datajsonar</code> a 0.1.17, con mejoras de UX de Synchronizers</li>
+<li>Bump de la versión de <code>series-tiempo-ar</code> a 0.2.1, con una validación adicional para permitir distribuciones con series vacías, hasta cierta proporción.</li>
+<li>Agregados nuevos metadatos de series (<code>metadata=full</code> o <code>metadata=only</code>): <code>max_value</code>, <code>min_value</code>, <code>average</code></li>
 </ul>
-<h2 id="107">1.0.7</h2>
-<p>Endpoint de búsqueda de series: <code>/search</code></p>
-<h2 id="108">1.0.8</h2>
-<p>Bugfixes:</p>
+<h2 id="180">1.8.0</h2>
 <ul>
-<li>Correcciones a llamadas de series múltiples en orden descendiente</li>
-<li>Permito la exportación correcta de analytics a CSV en volúmenes grandes</li>
-<li>Correcciones a guardados de analytics erróneos</li>
+<li>Integración con django_datajsonar: Uso de Synchronizers y Stages para correr
+tareas asincrónicas de manera ordenada</li>
 </ul>
-<h2 id="109">1.0.9</h2>
+<h2 id="170">1.7.0</h2>
 <ul>
-<li>Mostrado de versión en la página principal del admin de Django</li>
-<li>Mejora del proceso de indexación y persistencia de las métricas obtenidas</li>
-<li>Bugfix para permitir que las series de tiempo puedan cambiar de distribución dentro de un mismo catálogo</li>
+<li>Optimizaciones de performance en dumps CSV </li>
+<li>Indexación de datos: siempre se reindexan completamente las distribuciones (<em>refresh</em>)</li>
+<li>Test de integración y consistencia de los datos, a correr después de la indexación diaria.</li>
+<li>Bugfix de series sin datos cuando eran pedidas en un solo request</li>
+<li>Traducción parcial del panel de administración a español</li>
 </ul>
-<h2 id="1010">1.0.10</h2>
-<ul>
-<li>Mejoras en la generación de reportes de indexación, con más campos reportados.</li>
-</ul>
-<h2 id="1011">1.0.11</h2>
-<p>Generación de reporte de indexación completo: Nuevos fields para catálogos, datasets, distribuciones y series.</p>
-<h2 id="1012">1.0.12</h2>
-<p>Release con:</p>
-<ul>
-<li>Permite generar reportes de indexación individuales por nodo</li>
-<li>Fixes a valores de los reportes (datasets actualizados, no actualizados)</li>
-<li>Mejoras de performance de la indexación de metadatos</li>
-</ul>
-<h2 id="1013">1.0.13</h2>
-<p>Hotfix con fixes a comportamiento erróneo en queries de dos series iguales con distinto modo de representación + uso de caracter decimal no default</p>
-<h2 id="1014">1.0.14</h2>
-<p>Mejoras al formato del reporte de indexación, junto con mensajes de error más descriptivos</p>
-<h2 id="1015">1.0.15</h2>
-<p>Release con:</p>
-<ul>
-<li>Resumen de reporte de indexación</li>
-<li>Detalle de cada entidad indexada como archivos adjuntos en el reporte</li>
-<li>Reimplementación de aggregations max y min</li>
-<li>Fechas en el dump de analytics se exportan en horario local</li>
-</ul>
-<h2 id="1016">1.0.16</h2>
-<p>Actualización de validaciones para indexación</p>
-<h2 id="1016-1">1.0.16-1</h2>
-<p>Actualización de dependencias pydatajson==0.4.12</p>
-<h2 id="1017">1.0.17</h2>
-<p>Se pasa a usar <code>django_datajsonar</code> como dependencia directa para manejar las entidades procesadas de data.json de los nodos</p>
-<h2 id="1018">1.0.18</h2>
-<ul>
-<li>Mejoras al endpoint de búsqueda: nuevo parámetro catalog_id</li>
-<li>Mejoras al indexado de metadatos</li>
-<li>Configuración de importado de analytics desde un API gateway</li>
-</ul>
-<h2 id="110">1.1.0</h2>
-<ul>
-<li>Nuevo formato de respuesta de metadatos tanto en /series como en /search</li>
-<li>Mejoras en visualizaciones del admin de django</li>
-</ul>
-<h2 id="111">1.1.1</h2>
-<ul>
-<li>Validación de catálogos leídos al generar reporte</li>
-<li>Fixes a los valores de reportes</li>
-<li>Fix de metadatos enriquecidos no mostrándose bien en /search/</li>
-</ul>
-<h2 id="112">1.1.2</h2>
-<ul>
-<li>Funcionalidades de importado histórico de analytics, y ampliación de los datos guardados de cada query</li>
-</ul>
-<h2 id="113">1.1.3</h2>
-<ul>
-<li>Actualizaciones de django_datajsonar</li>
-<li>Se agregan aliases de catálogos para metadatos. Se puede configurar un alias para los filtros catalog_id que sea equivalente a filtrar por uno o más catálogos.</li>
-</ul>
-<h2 id="114">1.1.4</h2>
-<ul>
-<li>Modificación de la respuesta de metadatos en search/: se agregan campos dataset.theme, dataset.source y
-field.units. Además se cambia la respuesta de field.periodicity de formato legible por humanos a ISO8601</li>
-</ul>
-<h2 id="115">1.1.5</h2>
-<ul>
-<li>Análisis y tokenización de texto para la búsqueda de metadatos en /search. Permite reconocer palabras sin acento, entre otras cosas.</li>
-<li>Muestra de metadatos enriquecidos de las series pedidas en /series, cuando se pide la respuesta con metadata=full o metadata=only. Actualmente todos los valores devueltos son de tipo string, sujeto a cambios a futuro.</li>
-</ul>
-<h2 id="116">1.1.6</h2>
-<ul>
-<li>Se aumenta el límite de series máximas por request a 40</li>
-<li>Revisión de nombres y agregado de metadatos en la respuesta de /series</li>
-<li>Cambio de nombre de parámetro de /search: offset -&gt; start para consistencia con /series</li>
-</ul>
-<h2 id="117">1.1.7</h2>
-<ul>
-<li>Cambio de nombres de respuesta de metadatos.</li>
-<li>Fixes de usabilidad del admin relacionado a administradores de nodos.</li>
-<li>Bugfixes en respuesta de /series</li>
-</ul>
-<h2 id="118">1.1.8</h2>
-<ul>
-<li>Correcciones en importado de analytics para adaptarse a la nueva API paginada con cursor en api mgmt</li>
-</ul>
-<h2 id="120">1.2.0</h2>
-<ul>
-<li>Adopción de <a href="https://semver.org/">semver</a> como sistema de versionado</li>
-<li>File system distribuido (minio)</li>
-<li>Optimizaciones en la UI del admin</li>
-<li>Display de mensajes de error en reportes de indexación</li>
-</ul>
-<h2 id="121">1.2.1</h2>
-<ul>
-<li>Refactor e integración de generación de dumps de la base de datos de series de tiempo, para utilizar postgres en vez de Elasticsearch e integrar los archivos al filesystem distribuido</li>
-</ul>
-<h2 id="130">1.3.0</h2>
-<ul>
-<li>Nueva generación de dumps en CSV, usando los datos cargados en postgres, y generando dumps individuales por catálogo.</li>
-<li>Borrado de datos en el endpoint de /search/ cuando una serie se borra de la base de datos</li>
-</ul>
-<h2 id="130-hotfix-1">1.3.0 hotfix 1</h2>
-<ul>
-<li>Hotfixes de logging de dump</li>
-</ul>
-<h2 id="130-hotfix-2">1.3.0 hotfix 2</h2>
-<ul>
-<li>Hotfix para servir files de minio desde una ruta interna de la aplicación</li>
-</ul>
-<h2 id="131">1.3.1</h2>
-<ul>
-<li>Pequeño release con un fix a parseo de URLs de descarga de distribuciones</li>
-</ul>
-<h2 id="132">1.3.2</h2>
-<ul>
-<li>Optimizaciones de memoria de generación dumps xlsx</li>
-</ul>
-<h2 id="133">1.3.3</h2>
-<ul>
-<li>Callables de rqscheduler para dumps CSV y XLSX.</li>
-</ul>
-<h2 id="140">1.4.0</h2>
-<ul>
-<li>Nuevo formato de dump SQL con dos tablas (datos, metadatos)</li>
-<li>Fixes de usabilidad para dumps XLSX</li>
-</ul>
-<h2 id="140_1">1.4.0</h2>
-<ul>
-<li>Orden a filas de dump de metadatos</li>
-<li>No es más necesario setear dataset_identifier en distributciones para ser indexadas</li>
-<li>Se permiten csvs de distribuciones con encoding distinto a utf-8</li>
-</ul>
-<h2 id="142">1.4.2</h2>
-<ul>
-<li>Fix a tasks asincrónicas de dumps no corriendo correctamente cuando son generadas desde el admin</li>
-</ul>
-<h2 id="143">1.4.3</h2>
-<ul>
-<li>Fix de estabilidad de generación de dumps en general.</li>
-</ul>
-<h2 id="150">1.5.0</h2>
-<ul>
-<li>Nuevo parámetro <code>last</code>. Ver <a href="https://series-tiempo-ar-api.readthedocs.io/es/latest/">documentación</a></li>
-<li>Permito trailing slashes en URLs de descarga de dumps</li>
-</ul>
+<h2 id="160">1.6.0</h2>
+<p>Release con herramientas de administración para "refrescar" distribuciones de datos inconsistentes con su fuente.</p>
 <h2 id="151">1.5.1</h2>
 <p>Correcciones a dumps:</p>
 <ul>
@@ -1328,6 +1274,175 @@ field.units. Además se cambia la respuesta de field.periodicity de formato legi
 <li>Bugfix de generación de dump global XLSX
 Mejoras de organización en el admin de django</li>
 </ul>
+<h2 id="150">1.5.0</h2>
+<ul>
+<li>Nuevo parámetro <code>last</code>. Ver <a href="https://series-tiempo-ar-api.readthedocs.io/es/latest/">documentación</a></li>
+<li>Permito trailing slashes en URLs de descarga de dumps</li>
+</ul>
+<h2 id="143">1.4.3</h2>
+<ul>
+<li>Fix de estabilidad de generación de dumps en general.</li>
+</ul>
+<h2 id="142">1.4.2</h2>
+<ul>
+<li>Fix a tasks asincrónicas de dumps no corriendo correctamente cuando son generadas desde el admin</li>
+</ul>
+<h2 id="140">1.4.0</h2>
+<ul>
+<li>Orden a filas de dump de metadatos</li>
+<li>No es más necesario setear dataset_identifier en distributciones para ser indexadas</li>
+<li>Se permiten csvs de distribuciones con encoding distinto a utf-8</li>
+</ul>
+<h2 id="133">1.3.3</h2>
+<ul>
+<li>Callables de rqscheduler para dumps CSV y XLSX.</li>
+</ul>
+<h2 id="132">1.3.2</h2>
+<ul>
+<li>Optimizaciones de memoria de generación dumps xlsx</li>
+</ul>
+<h2 id="131">1.3.1</h2>
+<ul>
+<li>Pequeño release con un fix a parseo de URLs de descarga de distribuciones</li>
+</ul>
+<h2 id="130-hotfix-2">1.3.0 hotfix 2</h2>
+<ul>
+<li>Hotfix para servir files de minio desde una ruta interna de la aplicación</li>
+</ul>
+<h2 id="130-hotfix-1">1.3.0 hotfix 1</h2>
+<ul>
+<li>Hotfixes de logging de dump</li>
+</ul>
+<h2 id="130">1.3.0</h2>
+<ul>
+<li>Nueva generación de dumps en CSV, usando los datos cargados en postgres, y generando dumps individuales por catálogo.</li>
+<li>Borrado de datos en el endpoint de /search/ cuando una serie se borra de la base de datos</li>
+</ul>
+<h2 id="121">1.2.1</h2>
+<ul>
+<li>Refactor e integración de generación de dumps de la base de datos de series de tiempo, para utilizar postgres en vez de Elasticsearch e integrar los archivos al filesystem distribuido</li>
+</ul>
+<h2 id="120">1.2.0</h2>
+<ul>
+<li>Adopción de <a href="https://semver.org/">semver</a> como sistema de versionado</li>
+<li>File system distribuido (minio)</li>
+<li>Optimizaciones en la UI del admin</li>
+<li>Display de mensajes de error en reportes de indexación</li>
+</ul>
+<h2 id="118">1.1.8</h2>
+<ul>
+<li>Correcciones en importado de analytics para adaptarse a la nueva API paginada con cursor en api mgmt</li>
+</ul>
+<h2 id="117">1.1.7</h2>
+<ul>
+<li>Cambio de nombres de respuesta de metadatos.</li>
+<li>Fixes de usabilidad del admin relacionado a administradores de nodos.</li>
+<li>Bugfixes en respuesta de /series</li>
+</ul>
+<h2 id="116">1.1.6</h2>
+<ul>
+<li>Se aumenta el límite de series máximas por request a 40</li>
+<li>Revisión de nombres y agregado de metadatos en la respuesta de /series</li>
+<li>Cambio de nombre de parámetro de /search: offset -&gt; start para consistencia con /series</li>
+</ul>
+<h2 id="115">1.1.5</h2>
+<ul>
+<li>Análisis y tokenización de texto para la búsqueda de metadatos en /search. Permite reconocer palabras sin acento, entre otras cosas.</li>
+<li>Muestra de metadatos enriquecidos de las series pedidas en /series, cuando se pide la respuesta con metadata=full o metadata=only. Actualmente todos los valores devueltos son de tipo string, sujeto a cambios a futuro.</li>
+</ul>
+<h2 id="114">1.1.4</h2>
+<ul>
+<li>Modificación de la respuesta de metadatos en search/: se agregan campos dataset.theme, dataset.source y
+field.units. Además se cambia la respuesta de field.periodicity de formato legible por humanos a ISO8601</li>
+</ul>
+<h2 id="113">1.1.3</h2>
+<ul>
+<li>Actualizaciones de django_datajsonar</li>
+<li>Se agregan aliases de catálogos para metadatos. Se puede configurar un alias para los filtros catalog_id que sea equivalente a filtrar por uno o más catálogos.</li>
+</ul>
+<h2 id="112">1.1.2</h2>
+<ul>
+<li>Funcionalidades de importado histórico de analytics, y ampliación de los datos guardados de cada query</li>
+</ul>
+<h2 id="111">1.1.1</h2>
+<ul>
+<li>Validación de catálogos leídos al generar reporte</li>
+<li>Fixes a los valores de reportes</li>
+<li>Fix de metadatos enriquecidos no mostrándose bien en /search/</li>
+</ul>
+<h2 id="110">1.1.0</h2>
+<ul>
+<li>Nuevo formato de respuesta de metadatos tanto en /series como en /search</li>
+<li>Mejoras en visualizaciones del admin de django</li>
+</ul>
+<h2 id="1018">1.0.18</h2>
+<ul>
+<li>Mejoras al endpoint de búsqueda: nuevo parámetro catalog_id</li>
+<li>Mejoras al indexado de metadatos</li>
+<li>Configuración de importado de analytics desde un API gateway</li>
+</ul>
+<h2 id="1017">1.0.17</h2>
+<p>Se pasa a usar <code>django_datajsonar</code> como dependencia directa para manejar las entidades procesadas de data.json de los nodos</p>
+<h2 id="1016-1">1.0.16-1</h2>
+<p>Actualización de dependencias pydatajson==0.4.12</p>
+<h2 id="1016">1.0.16</h2>
+<p>Actualización de validaciones para indexación</p>
+<h2 id="1015">1.0.15</h2>
+<p>Release con:</p>
+<ul>
+<li>Resumen de reporte de indexación</li>
+<li>Detalle de cada entidad indexada como archivos adjuntos en el reporte</li>
+<li>Reimplementación de aggregations max y min</li>
+<li>Fechas en el dump de analytics se exportan en horario local</li>
+</ul>
+<h2 id="1014">1.0.14</h2>
+<p>Mejoras al formato del reporte de indexación, junto con mensajes de error más descriptivos</p>
+<h2 id="1013">1.0.13</h2>
+<p>Hotfix con fixes a comportamiento erróneo en queries de dos series iguales con distinto modo de representación + uso de caracter decimal no default</p>
+<h2 id="1012">1.0.12</h2>
+<p>Release con:</p>
+<ul>
+<li>Permite generar reportes de indexación individuales por nodo</li>
+<li>Fixes a valores de los reportes (datasets actualizados, no actualizados)</li>
+<li>Mejoras de performance de la indexación de metadatos</li>
+</ul>
+<h2 id="1011">1.0.11</h2>
+<p>Generación de reporte de indexación completo: Nuevos fields para catálogos, datasets, distribuciones y series.</p>
+<h2 id="1010">1.0.10</h2>
+<ul>
+<li>Mejoras en la generación de reportes de indexación, con más campos reportados.</li>
+</ul>
+<h2 id="109">1.0.9</h2>
+<ul>
+<li>Mostrado de versión en la página principal del admin de Django</li>
+<li>Mejora del proceso de indexación y persistencia de las métricas obtenidas</li>
+<li>Bugfix para permitir que las series de tiempo puedan cambiar de distribución dentro de un mismo catálogo</li>
+</ul>
+<h2 id="108">1.0.8</h2>
+<p>Bugfixes:</p>
+<ul>
+<li>Correcciones a llamadas de series múltiples en orden descendiente</li>
+<li>Permito la exportación correcta de analytics a CSV en volúmenes grandes</li>
+<li>Correcciones a guardados de analytics erróneos</li>
+</ul>
+<h2 id="107">1.0.7</h2>
+<p>Endpoint de búsqueda de series: <code>/search</code></p>
+<h2 id="106">1.0.6</h2>
+<p>Fixes a herramientas de administración:</p>
+<ul>
+<li>No se indexan metadatos de series y distribuciones pertenecientes a catálogos no marcados como indexables</li>
+<li>Finalización automática de la tarea de indexación si no hay datasets marcados como indexable</li>
+<li>Arreglos a borrados de croneado de tareas de indexación</li>
+</ul>
+<h2 id="103">1.0.3</h2>
+<p>Herramientas de administración:</p>
+<ul>
+<li>Configuración de que nodos y datasets se deben indexar</li>
+<li>Configuración del croneado de la tarea de indexación</li>
+<li>Generación de reportes de resultado de indexación por mail a los administradores </li>
+</ul>
+<h2 id="100">1.0.0</h2>
+<p>Release inicial</p>
                 
                   
                 
@@ -1377,15 +1492,13 @@ Mejoras de organización en el admin de django</li>
           Material for MkDocs</a>
       </div>
       
-        
-      
     </div>
   </div>
 </footer>
       
     </div>
     
-      <script src="../assets/javascripts/application.5e60981f.js"></script>
+      <script src="../assets/javascripts/application.d9aa80ab.js"></script>
       
         
         
@@ -1403,11 +1516,6 @@ Mejoras de organización en el admin de django</li>
         
       
       <script>app.initialize({version:"1.0",url:{base:".."}})</script>
-      
-    
-    
-      
-        <script>!function(e,a,t,n,o,c,i){e.GoogleAnalyticsObject=o,e.ga=e.ga||function(){(e.ga.q=e.ga.q||[]).push(arguments)},e.ga.l=1*new Date,c=a.createElement(t),i=a.getElementsByTagName(t)[0],c.async=1,c.src="https://www.google-analytics.com/analytics.js",i.parentNode.insertBefore(c,i)}(window,document,"script",0,"ga"),ga("create","UA-91435482-1","https://datosgobar.github.io/series-tiempo-ar-api/"),ga("set","anonymizeIp",!0),ga("send","pageview");var links=document.getElementsByTagName("a");if(Array.prototype.map.call(links,function(e){e.host!=document.location.host&&e.addEventListener("click",function(){var a=e.getAttribute("data-md-action")||"follow";ga("send","event","outbound",a,e.href)})}),document.forms.search){var query=document.forms.search.query;query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}</script>
       
     
   </body>

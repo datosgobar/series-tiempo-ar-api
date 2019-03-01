@@ -2,7 +2,7 @@
 
 
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" class="no-js">
   <head>
     
@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.6">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-4.0.2">
     
     
       
@@ -47,7 +47,7 @@
     
     
 	
-      <link rel="stylesheet" href="../../assets/stylesheets/application.451f80e5.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.982221ab.css">
       
       
     
@@ -55,7 +55,7 @@
 
     
     
-      <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../../assets/javascripts/modernizr.1f0bcf2b.js"></script>
     
     <script src="../../js/extra.js"></script>
 
@@ -68,7 +68,36 @@
     
     <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
+    
       <link rel="stylesheet" href="../../css/extra_rtd.css">
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-91435482-1", "https://datosgobar.github.io/series-tiempo-ar-api/")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
     
     
   </head>
@@ -104,7 +133,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#features-del-panel-de-administrador" tabindex="1" class="md-skip">
+      <a href="#documentacion-de-administracion-de-la-api" tabindex="1" class="md-skip">
         Saltar a contenido
       </a>
     
@@ -125,22 +154,19 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
-            
-              <span class="md-header-nav__topic">
-                API de Series de Tiempo
-              </span>
-              <span class="md-header-nav__topic">
-                Administración
-              </span>
-            
+            <span class="md-header-nav__topic">
+              API de Series de Tiempo
+            </span>
+            <span class="md-header-nav__topic">
+              Administración
+            </span>
           
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
         
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
           
-            <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
-            
 <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
@@ -163,7 +189,6 @@
     </div>
   </div>
 </div>
-          
         
       </div>
       
@@ -174,20 +199,18 @@
 
   
 
-
-  <a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      GitHub
+<a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
           </div>
         </div>
       
@@ -251,20 +274,18 @@
 
   
 
-
-  <a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      GitHub
+<a href="https://github.com/datosgobar/series-tiempo-ar-api/" title="Ir al repositorio" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
           </div>
         
       
@@ -532,22 +553,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuracion-del-rq-scheduler" title="Configuración del rq-scheduler" class="md-nav__link">
-    Configuración del rq-scheduler
+  <a href="#tareas-en-segundo-plano" title="Tareas en segundo plano" class="md-nav__link">
+    Tareas en segundo plano
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#replanificacion-de-tareas" title="Replanificación de tareas" class="md-nav__link">
-    Replanificación de tareas
+  <a href="#programacion-de-tareas" title="Programación de tareas" class="md-nav__link">
+    Programación de tareas
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#indexacion-manual-de-metadatos" title="Indexación manual de metadatos" class="md-nav__link">
-    Indexación manual de metadatos
+  <a href="#analytics" title="Analytics" class="md-nav__link">
+    Analytics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-de-integracion" title="Test de integración" class="md-nav__link">
+    Test de integración
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metadatos" title="Metadatos" class="md-nav__link">
+    Metadatos
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dumps" title="Dumps" class="md-nav__link">
+    Dumps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unidades-porcentuales-y-no-porcentuales" title="Unidades porcentuales y no porcentuales" class="md-nav__link">
+    Unidades porcentuales y no porcentuales
   </a>
   
 </li>
@@ -604,22 +653,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuracion-del-rq-scheduler" title="Configuración del rq-scheduler" class="md-nav__link">
-    Configuración del rq-scheduler
+  <a href="#tareas-en-segundo-plano" title="Tareas en segundo plano" class="md-nav__link">
+    Tareas en segundo plano
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#replanificacion-de-tareas" title="Replanificación de tareas" class="md-nav__link">
-    Replanificación de tareas
+  <a href="#programacion-de-tareas" title="Programación de tareas" class="md-nav__link">
+    Programación de tareas
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#indexacion-manual-de-metadatos" title="Indexación manual de metadatos" class="md-nav__link">
-    Indexación manual de metadatos
+  <a href="#analytics" title="Analytics" class="md-nav__link">
+    Analytics
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-de-integracion" title="Test de integración" class="md-nav__link">
+    Test de integración
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metadatos" title="Metadatos" class="md-nav__link">
+    Metadatos
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dumps" title="Dumps" class="md-nav__link">
+    Dumps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unidades-porcentuales-y-no-porcentuales" title="Unidades porcentuales y no porcentuales" class="md-nav__link">
+    Unidades porcentuales y no porcentuales
   </a>
   
 </li>
@@ -643,33 +720,41 @@
                   <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/developers/admin.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="features-del-panel-de-administrador">Features del panel de administrador</h1>
-<h2 id="configuracion-del-rq-scheduler">Configuración del rq-scheduler</h2>
-<p>Para asegurar la funcionalidad correcta de la indexación, es necesario agregar varios <code>Repeatable Job</code> desde el admin de Django. A continuación se muestra una configuración ejemplo. Se recomienda setear la queue a <code>indexing</code>.</p>
-<p><img alt="scheduler" src="../../assets/scheduler.png" /></p>
-<p>Configurar las siguientes tareas:</p>
+                <h1 id="documentacion-de-administracion-de-la-api">Documentación de administración de la API</h1>
+<p>El proyecto se desdobla en varias aplicaciones, todas ellas con configuraciones particulares, accesibles desde el panel de administración <code>/admin</code> ("el admin").</p>
+<h2 id="tareas-en-segundo-plano">Tareas en segundo plano</h2>
+<p>La API cuenta con varias tareas que se corren en segundo plano: la lectura de datos de series de tiempo, la indexación de dichos datos al índice de Elasticsearch, la generación de dumps de la base entera, entre otras. Todas las tareas se pueden correr manualmente creando nuevos modelos de tipo "Corrida" desde el admin, por ejemplo, <code>Corridas de importación de analytics</code>, <code>Corridas de indexación de datos</code>. Dentro de los modelos se encuentran los logs de cada corrida.</p>
+<h2 id="programacion-de-tareas">Programación de tareas</h2>
+<p>Las tareas se pueden programar como una cola a correrse de manera automática a través de los modelos <code>Synchronizer</code> de <a href="https://github.com/datosgobar/django-datajsonar/"><code>django_datajsonar</code></a>. Consultar su documentación para más información. A continuación se deja un ejemplo de una secuencia de tareas. </p>
 <ul>
-<li><code>series_tiempo_ar_api.libs.indexing.tasks.scheduler</code> (cada 5 minutos)</li>
-<li><code>series_tiempo_ar_api.apps.management.tasks.schedule_api_indexing</code> (1 vez por día, programada para correr <strong>despues</strong> de schedule_new_read_datajson_task)</li>
-<li><code>django_datajsonar.tasks.schedule_new_read_datajson_task</code> (1 vez por día)</li>
-<li><code>django_datajsonar.tasks.close_read_datajson_task</code> (cada 5 minutos)</li>
+<li><code>Read Datajson (corrida completa)</code></li>
+<li><code>Indexación de datos (sólo actualizados)</code></li>
+<li><code>Test de integración</code></li>
+<li><code>Reporte de indexación</code></li>
+<li><code>Indexación de metadatos</code></li>
+<li><code>Generación de dumps CSV</code></li>
+<li><code>Generación de dumps XLSX</code></li>
+<li><code>Generación de dumps SQL</code></li>
+<li><code>Generación de dumps DTA</code></li>
 </ul>
-<p>La vista de tareas programadas debería parecerse al siguiente ejemplo. Notar que <em>api indexing</em> está programada a las 3 am, y <em>django_datajsonar indexing</em> está a las 12 am, tres horas antes.</p>
-<p><img alt="repeatable_jobs" src="../../assets/repeatable_jobs.png" /></p>
-<h2 id="replanificacion-de-tareas">Replanificación de tareas</h2>
-<p>En el caso de querer reconfigurar las tareas, la manera más segura de hacerlo es realizando los siguientes pasos. <strong>No</strong> se recomienda editar directamente la tarea.</p>
-<ul>
-<li>En la vista de <em>Repeatable Jobs</em>, ubicar el Job ID de la tarea a reprogramar (ver screenshots anteriores), y ubicarla en la vista de <em>finished jobs</em> de <code>django-rq</code>, en la URL <code>/series/django-rq/</code>. En este ejemplo, si queremos editar el job de "datajson ar indexing", que está bajo la cola default, debemos ver el detalle de la cola haciendo click en el número <code>9</code> de <em>finished jobs</em>. Allí deberíamos poder ver el job referenciado, <code>1425c8c4-35d6-4d0c-b716-b3496f64f1d2</code>.</li>
-</ul>
-<p><img alt="repeatable_jobs" src="../../assets/django-rq.png" /></p>
-<p><img alt="repeatable_jobs" src="../../assets/django-rq-finished-jobs.png" /></p>
-<p><strong>Borrar</strong> esta tarea, utilizando el menú de <em>Actions</em> provisto en la vista de <em>finished jobs</em>, <strong>No</strong> el <em>Empty Queue</em>.</p>
-<ul>
-<li>Volver a la vista de <em>Repeatable Jobs</em>, y borrar la tarea que se queire editar.</li>
-<li>Crear la tarea nuevamente con los nuevos parámetros deseados. El <em>Job ID</em> de la nueva tarea debería ser distinto a la anterior.</li>
-</ul>
-<h2 id="indexacion-manual-de-metadatos">Indexación manual de metadatos</h2>
-<p>Creando nuevos modelos <code>IndexMetadataTask</code> se lanzarán procesos asincrónicos para indexar metadatos de los nodos registrados al cluster de Elasticsearch. Un nuevo proceso de indexación no puede ser lanzado mientras haya algún otro ejecutándose. Se puede seguir el estado de la tarea corriendo a través de los campos del modelo.</p>
+<p>Esta programación de tareas se puede realizar creando o editando desde el admin los modelos <code>Synchronizer</code>.</p>
+<p>Adicionalmente, se pueden programar corridas individuales utilizando el botón <code>Schedule Task</code> en las vistas individuales de los modelos de tipo "Corrida" mencionados anteriormente, pero es fuertemente recomendado utilizar Synchronizers por su funcionalidad más extensiva.</p>
+<h2 id="analytics">Analytics</h2>
+<p>Existe un módulo de la aplicación que se dedica a importar datos de uso de la aplicación desde una instanacia de <a href="https://github.com/datosgobar/api-gateway">api-gateway</a>. Se puede configurar a través de la vista "Configuración de importación de analytics" en el admin, a llenar con los campos relevantes de la instancia de API Gateway que querramos consultar, incluyendo ID de la API de series de tiempo en ese proyecto, y una api key. El campo <code>Last Cursor</code> es de uso interno y <strong>no debería ser modificado</strong>.</p>
+<h2 id="test-de-integracion">Test de integración</h2>
+<p>Existe un módulo que, idealmente justo después de una indexación de datos, se encargue de testear la consistencia de los datos cargados en el índice de Elasticsearch con los datos originales. Para la generación del reporte en casos de errores, se pueden configurar usuarios destinatarios del email de error. en la vista "Configuración del test de integración", así como el endpoint de la misma API a utilizar en los repotes (la API no conoce su propio host name, y por lo tanto debe ser configurado manualmente).</p>
+<h2 id="metadatos">Metadatos</h2>
+<p>Otra tarea programada es la indexación de metadatos de las series disponibles, para ser consultadas en el endpoint <code>/search</code>. La tarea debe ser corrida siempre después de la indexación de datos, para asegurar que ambos índices contengan datos consistentes entre ellos.</p>
+<p>Dentro de la vista "Configuración de búsqueda de series por metadatos", se pueden configurar parámetros de <em>boosting</em> sobre ciertos campos de metadatos, para ir ajustando los resultados de búsqueda. El formato JSON de los parámetros debe ser siempre respetado. A continuación se muestra el valor por defecto:</p>
+<p><code>{"description": {"boost": 1.5}, "dataset_title": {"boost": 1}, "dataset_source": {"boost": 1}, "dataset_description": {"boost": 1}}</code></p>
+<p>Así, el campo <em>description</em> de las series tiene cierta relevancia adicional sobre los demás (1.5 vs 1).</p>
+<p>Si se modifica el <em>boost</em> de algún campo, no es necesario reindexar los datos para que el cambio tome efecto, se aplica en tiempo de búsqueda y no de indexación.</p>
+<h2 id="dumps">Dumps</h2>
+<p>Existen cuatro tareas relacionadas a la generación de dumps de la base entera de series de tiempo. Son una tarea por cada formato disponible: CSV, XLSX, SQL, DTA. Cada tarea genera dumps <em>globales</em>, de la base entera, y también individuales por cada nodo. </p>
+<p>Existe una fuerte dependencia entre estas tareas: los dumps en CSV se generan a partir de lecturas a la base de datos para leer metadatos, y al file storage para leer los datos de cada serie. Los demás formatos se generan a partir del dump CSV. Por lo tanto el dump en CSV debe ser programado 3 horas antes que los demás.</p>
+<p>Los dumps CSV y XLSX generan <strong>4 distribuciones por catálogo</strong>, Los dumps en SQLite un archivo único por catálogo con varias tablas, y los dumps en DTA 3 archivos, todos disponibles en un endpoint accesible al público. Los dumps generados tendrán los datos de todas las series disponibles por la API, es decir las series cuyos datos fueron indexados exitosamente.</p>
+<h2 id="unidades-porcentuales-y-no-porcentuales">Unidades porcentuales y no porcentuales</h2>
+<p>Una vez cargadas e indexadas las series, en la vista de <code>Unidades de series</code> en el admin se pueden indicar cuales de las unidades se deberían interpretar como porcentuales. Por defecto todas las unidades existentes son tratadas como valores absolutos. Cuando una unidad se marque como porcentual, en la respuesta de metadatos de las series, el campo <code>ìs_percentage</code> pasará a valer <code>true</code> en todos los casos de consulta de series que estén representadas bajo esa unidad. El propósito de esta funcionalidad es para indicarle a los usuarios de manera más sencilla si los valores de una serie deberían ser tratados como porcentajes o no.</p>
                 
                   
                 
@@ -733,15 +818,13 @@
           Material for MkDocs</a>
       </div>
       
-        
-      
     </div>
   </div>
 </footer>
       
     </div>
     
-      <script src="../../assets/javascripts/application.5e60981f.js"></script>
+      <script src="../../assets/javascripts/application.d9aa80ab.js"></script>
       
         
         
@@ -759,11 +842,6 @@
         
       
       <script>app.initialize({version:"1.0",url:{base:"../.."}})</script>
-      
-    
-    
-      
-        <script>!function(e,a,t,n,o,c,i){e.GoogleAnalyticsObject=o,e.ga=e.ga||function(){(e.ga.q=e.ga.q||[]).push(arguments)},e.ga.l=1*new Date,c=a.createElement(t),i=a.getElementsByTagName(t)[0],c.async=1,c.src="https://www.google-analytics.com/analytics.js",i.parentNode.insertBefore(c,i)}(window,document,"script",0,"ga"),ga("create","UA-91435482-1","https://datosgobar.github.io/series-tiempo-ar-api/"),ga("set","anonymizeIp",!0),ga("send","pageview");var links=document.getElementsByTagName("a");if(Array.prototype.map.call(links,function(e){e.host!=document.location.host&&e.addEventListener("click",function(){var a=e.getAttribute("data-md-action")||"follow";ga("send","event","outbound",a,e.href)})}),document.forms.search){var query=document.forms.search.query;query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}</script>
       
     
   </body>

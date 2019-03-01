@@ -52,3 +52,7 @@ Existe una fuerte dependencia entre estas tareas: los dumps en CSV se generan a 
 
 Los dumps CSV y XLSX generan **4 distribuciones por catálogo**, Los dumps en SQLite un archivo único por catálogo con varias tablas, y los dumps en DTA 3 archivos, todos disponibles en un endpoint accesible al público. Los dumps generados tendrán los datos de todas las series disponibles por la API, es decir las series cuyos datos fueron indexados exitosamente.
 
+
+## Unidades porcentuales y no porcentuales
+
+Una vez cargadas e indexadas las series, en la vista de `Unidades de series` en el admin se pueden indicar cuales de las unidades se deberían interpretar como porcentuales. Por defecto todas las unidades existentes son tratadas como valores absolutos. Cuando una unidad se marque como porcentual, en la respuesta de metadatos de las series, el campo `ìs_percentage` pasará a valer `true` en todos los casos de consulta de series que estén representadas bajo esa unidad. El propósito de esta funcionalidad es para indicarle a los usuarios de manera más sencilla si los valores de una serie deberían ser tratados como porcentajes o no.
