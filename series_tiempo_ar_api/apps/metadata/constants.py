@@ -6,6 +6,7 @@ METADATA_DOC_TYPE = 'doc'
 PARAM_LIMIT = 'limit'
 PARAM_OFFSET = 'start'
 PARAM_QUERYSTRING = 'q'
+PARAM_AGGREGATIONS = 'aggregations'
 
 FILTER_ARGS = {
     # Pares nombre_arg: field del documento en elasticsearch
