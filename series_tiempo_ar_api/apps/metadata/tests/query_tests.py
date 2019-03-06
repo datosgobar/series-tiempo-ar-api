@@ -6,8 +6,9 @@ from unittest.mock import call
 
 import mock
 from django.test import TestCase
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, MultiSearch
 
+from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.models import CatalogAlias
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 from .utils import get_mock_search
@@ -21,7 +22,7 @@ class QueryTests(TestCase):
     def test_no_querystring_is_valid(self):
         query = FieldSearchQuery(args={})
 
-        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+        with mock.patch.object(MultiSearch, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertFalse(result.get('errors'))
@@ -43,7 +44,7 @@ class QueryTests(TestCase):
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
 
-        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+        with mock.patch.object(MultiSearch, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertEqual(len(result['data']), result['count'])
@@ -55,7 +56,7 @@ class QueryTests(TestCase):
                                        'limit': limit,
                                        'start': offset})
 
-        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+        with mock.patch.object(MultiSearch, 'execute', return_value=get_mock_search()):
             result = query.execute()
 
         self.assertEqual(result['limit'], int(limit))
@@ -82,7 +83,7 @@ class QueryTests(TestCase):
         q = FieldSearchQuery(args={'q': 'a'})
 
         mock_search = get_mock_search()
-        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+        with mock.patch.object(MultiSearch, 'execute', return_value=get_mock_search()):
             result = q.execute()
 
         self.assertTrue(result['data'][0]['field']['frequency'], mock_search.periodicity)
@@ -100,3 +101,20 @@ class QueryTests(TestCase):
 
         filtered_catalogs = filtered_search.to_dict()['query']['bool']['filter'][0]['terms']['catalog_id']
         self.assertEqual(set(filtered_catalogs), {'catalog_1', 'catalog_2'})
+
+    @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.MultiSearch')
+    @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.Search.sort')
+    def test_search_sorted_by_hits_descending(self, mock_search, *_):
+        FieldSearchQuery(args={}).execute()
+        self.assertListEqual(mock_search.call_args_list, [call('-hits')])
+
+    def test_aggregation(self):
+        response = FieldSearchQuery(args={'aggregations': True}).execute()
+        self.assertEqual(len(response['aggregations']), len(constants.FILTER_ARGS))
+
+    @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.MultiSearch.execute')
+    def test_no_aggregations_if_not_requested(self, execute):
+        execute.return_value = [mock.MagicMock()]
+        resp = FieldSearchQuery(args={}).execute()
+
+        self.assertNotIn('aggregations', resp)
