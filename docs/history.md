@@ -1,5 +1,12 @@
 # Historial de versiones
 
+## 1.12.0
+
+- Bugfixes en indexación y respuesta de API series (#471, #473, #474)
+- Administración de unidades de series, con atributo de si son porcentuales
+- Conteo de series en cada filtro de metadatos
+- Actualización de validaciones de series durante la indexación
+
 ## 1.11.0
 
 Metadatos de consultas de las series: rutina de cálculo diaria, uso en dumps y en resultados de búsqueda de series
