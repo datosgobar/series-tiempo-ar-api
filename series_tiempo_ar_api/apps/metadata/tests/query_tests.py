@@ -108,7 +108,8 @@ class QueryTests(TestCase):
         FieldSearchQuery(args={}).execute()
         self.assertListEqual(mock_search.call_args_list, [call('-hits')])
 
-    def test_aggregation(self):
+    @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.MultiSearch.execute')
+    def test_aggregation(self, *_):
         response = FieldSearchQuery(args={'aggregations': True}).execute()
         self.assertEqual(len(response['aggregations']), len(constants.FILTER_ARGS))
 
