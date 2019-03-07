@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.12.1
+
+- Revert al uso de metadatos de consultas en el endpoint de búsqueda
+- Revert al conteo de series en cada filtro de metadatos.
+- Nuevo parámetro para `/search`: `aggregations` muestra el conteo de series relevantes para la búsqueda dada, desagregadas según los varios filtros posibles
+
 ## 1.12.0
 
 - Bugfixes en indexación y respuesta de API series (#471, #473, #474)
