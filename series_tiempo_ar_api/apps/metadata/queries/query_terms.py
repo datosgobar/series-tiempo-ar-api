@@ -20,7 +20,7 @@ def query_field_terms(field=None, search=None):
 
 
 def format_response(search_result):
-    sources = [{"label": source['key'], "series_count": source['doc_count']}
+    sources = [source['key']
                for source in search_result.aggregations.results.buckets]
     response = {
         'data': sources

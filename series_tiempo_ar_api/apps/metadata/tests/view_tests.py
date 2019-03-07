@@ -34,7 +34,7 @@ class DatasetSourceTests(TestCase):
         with mock.patch.object(Search, 'execute', return_value=search_mock):
             response = self.client.get(reverse('api:metadata:dataset_source'))
             response_sources = json.loads(response.content)['data'][0]
-            self.assertIn(test_source, response_sources['label'])
+            self.assertIn(test_source, response_sources)
 
 
 class FieldUnitTests(TestCase):
@@ -48,7 +48,7 @@ class FieldUnitTests(TestCase):
             response = self.client.get(reverse('api:metadata:field_units'))
             response_sources = json.loads(response.content)['data'][0]
             # Expected: search results in 'data' list
-            self.assertIn(test_unit, response_sources['label'])
+            self.assertIn(test_unit, response_sources)
 
 
 class PublisherNameTests(TestCase):
@@ -62,7 +62,7 @@ class PublisherNameTests(TestCase):
             response = self.client.get(reverse('api:metadata:dataset_publisher_name'))
             response_sources = json.loads(response.content)['data'][0]
             # Expected: search results in 'data' list
-            self.assertIn(test_unit, response_sources['label'])
+            self.assertIn(test_unit, response_sources)
 
 
 class CatalogIDTests(TestCase):
@@ -76,4 +76,4 @@ class CatalogIDTests(TestCase):
             response = self.client.get(reverse('api:metadata:catalog_id'))
             response_sources = json.loads(response.content)['data'][0]
             # Expected: search results in 'data' list
-            self.assertIn(test_unit, response_sources['label'])
+            self.assertIn(test_unit, response_sources)

@@ -17,7 +17,7 @@ class FieldTermsTest(TestCase):
 
         with mock.patch.object(Search, 'execute', return_value=search_mock):
             terms = query_field_terms(field='test_field')['data']
-            result = terms[0]['label']
+            result = terms[0]
             self.assertEqual(test_value, result)
 
     @raises(ValueError)
