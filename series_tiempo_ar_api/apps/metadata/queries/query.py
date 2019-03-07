@@ -52,7 +52,7 @@ class FieldSearchQuery(object):
             return self.response
 
         search = Metadata.search(index=constants.METADATA_ALIAS)
-        search = search.sort('-hits')
+        # search = search.sort('-hits')
 
         querystring = self.args.get(constants.PARAM_QUERYSTRING)
         if querystring is not None:
