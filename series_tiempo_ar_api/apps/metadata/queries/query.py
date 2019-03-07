@@ -165,6 +165,9 @@ class FieldSearchQuery(object):
 
         aggregations = {}
         for response, key in zip(aggregations_responses, self.aggregations_keys):
-            aggregations[key] = format_response(response)['data']
+            aggregations[key] = [
+                {'label': source['key'], 'series_count': source['doc_count']}
+                for source in response.aggregations.results.buckets
+            ]
 
         self.response['aggregations'] = aggregations

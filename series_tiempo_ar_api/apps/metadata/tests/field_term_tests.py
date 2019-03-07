@@ -13,12 +13,11 @@ class FieldTermsTest(TestCase):
     def test_run(self):
         test_value = 'test_value'
         search_mock = mock.MagicMock()
-        search_mock.aggregations.results.buckets = [{'key': test_value, 'doc_count': 1}]
+        search_mock.aggregations.results.buckets = [{'key': test_value}]
 
         with mock.patch.object(Search, 'execute', return_value=search_mock):
             terms = query_field_terms(field='test_field')['data']
-            result = terms[0]
-            self.assertEqual(test_value, result)
+            self.assertIn(test_value, terms)
 
     @raises(ValueError)
     def test_no_params(self):
