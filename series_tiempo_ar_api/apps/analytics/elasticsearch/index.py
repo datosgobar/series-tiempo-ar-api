@@ -1,6 +1,7 @@
 import json
 from json import JSONDecodeError
 
+from django.db.models import QuerySet
 from elasticsearch.helpers import streaming_bulk, parallel_bulk
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
@@ -19,7 +20,7 @@ class AnalyticsIndexer:
         self.es_index.doc_type(SeriesQuery)
         self.es_connection = connections.get_connection()
 
-    def index(self, queryset):
+    def index(self, queryset: QuerySet):
         self._init_index()
 
         for success, info in parallel_bulk(self.es_connection, generate_es_query(queryset)):

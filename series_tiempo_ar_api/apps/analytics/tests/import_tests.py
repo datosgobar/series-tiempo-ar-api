@@ -1,8 +1,11 @@
 #!coding=utf8
 from decimal import Decimal
 
+from django.core.exceptions import FieldError
 from faker import Faker
 from django.test import TestCase
+from nose.tools import raises
+
 from series_tiempo_ar_api.apps.analytics.tasks import enqueue_new_import_analytics_task
 from series_tiempo_ar_api.apps.analytics.models import ImportConfig, Query, AnalyticsImportTask
 
@@ -11,9 +14,9 @@ fake = Faker()
 
 class UninitializedImportConfigTests(TestCase):
 
+    @raises(FieldError)
     def test_not_initialized_model(self):
         enqueue_new_import_analytics_task(index_to_es=False)
-        self.assertTrue('Error' in AnalyticsImportTask.objects.last().logs)
 
 
 class FakeRequests:

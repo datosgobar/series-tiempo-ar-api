@@ -32,6 +32,7 @@ class AnalyticsImporter:
             AnalyticsImportTask.info(self.task, "Todo OK")
         except Exception as e:
             AnalyticsImportTask.info(self.task, "Error importando analytics: {}".format(e))
+            raise e
 
         self.task.refresh_from_db()
         self.task.status = AnalyticsImportTask.FINISHED
@@ -66,6 +67,7 @@ class AnalyticsImporter:
         Query.objects.bulk_create(queries)
         # a ES
         if self.index_to_es:
+            queries = Query.objects.filter(api_mgmt_id__in=[q.api_mgmt_id for q in queries])
             AnalyticsIndexer().index(queries)
 
     def exec_request(self, url=None, **params):
