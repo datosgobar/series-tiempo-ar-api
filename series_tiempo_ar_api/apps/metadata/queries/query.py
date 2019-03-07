@@ -112,7 +112,7 @@ class FieldSearchQuery(object):
 
     def get_search(self):
         search = Metadata.search(index=constants.METADATA_ALIAS)
-        search = search.sort('-hits')
+        # search = search.sort('-hits')
         search = self.setup_query(search)
         offset = self.args[constants.PARAM_OFFSET]
         limit = self.args[constants.PARAM_LIMIT]
