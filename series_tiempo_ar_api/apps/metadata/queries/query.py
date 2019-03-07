@@ -1,7 +1,8 @@
 #! coding: utf-8
-from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl import Search, Q, MultiSearch
 
 from series_tiempo_ar_api.apps.metadata.models import MetadataConfig
+from series_tiempo_ar_api.apps.metadata.queries.query_terms import setup_field_terms_search, format_response
 from series_tiempo_ar_api.apps.metadata.utils import resolve_catalog_id_aliases
 from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Metadata
 from series_tiempo_ar_api.apps.metadata import strings, constants
@@ -14,6 +15,7 @@ class FieldSearchQuery(object):
         self.args = args
         self.response = {}
         self.errors = []
+        self.aggregations_keys = []
 
     def validate(self):
         """Valida los parámetros de la query, actualizando la lista de errores de ser necesario"""
@@ -51,59 +53,81 @@ class FieldSearchQuery(object):
             self.response['errors'] = self.errors
             return self.response
 
-        search = Metadata.search(index=constants.METADATA_ALIAS)
-        # search = search.sort('-hits')
+        multi_search = self.get_multi_search()
 
-        querystring = self.args.get(constants.PARAM_QUERYSTRING)
-        if querystring is not None:
-            search = self.setup_query(search)
+        responses = multi_search.execute()
+        self.populate_response(responses[0])
+        self.populate_aggregations(responses[1:])
 
-        offset = self.args[constants.PARAM_OFFSET]
-        limit = self.args[constants.PARAM_LIMIT]
-        search = search[offset:limit + offset]
+        return self.response
 
-        for arg, field in constants.FILTER_ARGS.items():
-            search = self.add_filters(search, arg, field)
-
-        response = search.execute()
+    def populate_response(self, response):
         self.response = {
             'data': [],
             'count': response.hits.total
         }
         for hit in response:
-            start_date = getattr(hit, 'start_date', None)
-            if start_date:
-                start_date = start_date.date()
-
-            end_date = getattr(hit, 'end_date', None)
-            if end_date:
-                end_date = end_date.date()
-
-            self.response['data'].append({
-                'field': {
-                    'id': getattr(hit, 'id', None),
-                    'description': getattr(hit, 'description', None),
-                    'title': getattr(hit, 'title', None),
-                    'frequency': getattr(hit, 'periodicity', None),
-                    'time_index_start': start_date,
-                    'time_index_end': end_date,
-                    'units': getattr(hit, 'units', None),
-                    'hits_90_days': getattr(hit, 'hits', None),
-                },
-                'dataset': {
-                    'title': getattr(hit, 'dataset_title', None),
-                    'publisher': {
-                        'name': getattr(hit, 'dataset_publisher_name', None),
-                    },
-                    'source': getattr(hit, 'dataset_source', None),
-                    'theme': getattr(hit, 'dataset_theme', None),
-                }
-            })
+            self.append_hit(hit)
 
         self.response[constants.PARAM_LIMIT] = self.args[constants.PARAM_LIMIT]
         self.response[constants.PARAM_OFFSET] = self.args[constants.PARAM_OFFSET]
 
-        return self.response
+    def append_hit(self, hit):
+        start_date = getattr(hit, 'start_date', None)
+        if start_date:
+            start_date = start_date.date()
+        end_date = getattr(hit, 'end_date', None)
+        if end_date:
+            end_date = end_date.date()
+        self.response['data'].append({
+            'field': {
+                'id': getattr(hit, 'id', None),
+                'description': getattr(hit, 'description', None),
+                'title': getattr(hit, 'title', None),
+                'frequency': getattr(hit, 'periodicity', None),
+                'time_index_start': start_date,
+                'time_index_end': end_date,
+                'units': getattr(hit, 'units', None),
+                'hits_90_days': getattr(hit, 'hits', None),
+            },
+            'dataset': {
+                'title': getattr(hit, 'dataset_title', None),
+                'publisher': {
+                    'name': getattr(hit, 'dataset_publisher_name', None),
+                },
+                'source': getattr(hit, 'dataset_source', None),
+                'theme': getattr(hit, 'dataset_theme', None),
+            }
+        })
+
+    def get_multi_search(self):
+        multi_search = MultiSearch()
+        search = self.get_search()
+        multi_search = multi_search.add(search)
+
+        if self.args.get(constants.PARAM_AGGREGATIONS) is not None:
+            multi_search = self.add_terms_aggregations(multi_search)
+
+        return multi_search
+
+    def get_search(self):
+        search = Metadata.search(index=constants.METADATA_ALIAS)
+        # search = search.sort('-hits')
+        search = self.setup_query(search)
+        offset = self.args[constants.PARAM_OFFSET]
+        limit = self.args[constants.PARAM_LIMIT]
+        search = search[offset:limit + offset]
+        for arg, field in constants.FILTER_ARGS.items():
+            search = self.add_filters(search, arg, field)
+        return search
+
+    def add_terms_aggregations(self, multi_search):
+        for response_term, es_field_term in constants.FILTER_ARGS.items():
+            self.aggregations_keys.append(response_term)
+            agg_search = self.get_search()
+            agg_search = setup_field_terms_search(es_field_term, agg_search)
+            multi_search = multi_search.add(agg_search)
+        return multi_search
 
     def append_error(self, msg):
         self.errors.append({'error': msg})
@@ -126,8 +150,24 @@ class FieldSearchQuery(object):
         return search
 
     def setup_query(self, search: Search):
+        if self.args.get(constants.PARAM_QUERYSTRING) is None:
+            return search
+
         queries = []
         for field, values in MetadataConfig.get_solo().query_config.items():
             queries.append(Q('bool', should=Q('match', **{field: self.args.get(constants.PARAM_QUERYSTRING)}), **values))
         return search.query('dis_max',
                             queries=queries)
+
+    def populate_aggregations(self, aggregations_responses):
+        if not aggregations_responses:
+            return
+
+        aggregations = {}
+        for response, key in zip(aggregations_responses, self.aggregations_keys):
+            aggregations[key] = [
+                {'label': source['key'], 'series_count': source['doc_count']}
+                for source in response.aggregations.results.buckets
+            ]
+
+        self.response['aggregations'] = aggregations

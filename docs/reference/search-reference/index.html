@@ -487,6 +487,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#aggregations" title="aggregations" class="md-nav__link">
+    aggregations
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -682,6 +689,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#aggregations" title="aggregations" class="md-nav__link">
+    aggregations
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -790,6 +804,13 @@
         <td class="s4" dir="ltr">0</td>
         <td>start=100</td>
     </tr>
+    <tr>
+        <td>aggregations</a></td>
+        <td>No</td>
+        <td>N/A</td>
+        <td class="s4" dir="ltr">N/A</td>
+        <td>N/A</td>
+    </tr>
 </table>
 
 <h3 id="q"><code>q</code></h3>
@@ -804,6 +825,72 @@
 <h3 id="start"><code>start</code></h3>
 <p>Este parámetro es utilizado junto a <a href="#limit"><code>limit</code></a> para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo o 0. El valor por defecto si no se especifica valor alguno es 0.</p>
 <p>El <a href="#start"><code>start</code></a> indica el "número de resultados después del inicio" que se saltea el buscador para el armado de la respuesta.</p>
+<h3 id="aggregations"><code>aggregations</code></h3>
+<p>La presencia de este parámetro agrega un objeto nuevo a la respuesta de la API bajo la clave <code>aggregations</code>, que contiene la cantidad de ocurrencias totales de la búsqueda discriminando por los distintos filtros posibles. Si el parámetro no está presente, no se calculan las agregaciones.</p>
+<p>Un ejemplo posible de la respuesta:</p>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;aggregations&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;dataset_theme&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Finanzas Públicas&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">904</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Precios&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">522</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Sector Externo&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">21</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;units&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Millones de pesos&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">904</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Índice&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">509</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Millones de dólares&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">21</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Variación Porcentual&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">12</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Variación intermensual&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">1</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;dataset_publisher_name&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Subsecretaría de Programación Macroeconómica.&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">1447</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;dataset_source&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Ministerio de Hacienda&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">925</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Instituto Nacional de Estadística y Censos (INDEC)&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">522</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;catalog_id&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;sspm&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;series_count&quot;</span><span class="p">:</span> <span class="mi">1447</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
                 
                   
                 

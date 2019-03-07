@@ -5,7 +5,7 @@ import json
 import mock
 from django.test import TestCase
 from django.urls import reverse
-from elasticsearch_dsl.search import Search
+from elasticsearch_dsl.search import Search, MultiSearch
 
 from .utils import get_mock_search
 
@@ -13,7 +13,7 @@ from .utils import get_mock_search
 class ViewTests(TestCase):
 
     def test_response_format(self):
-        with mock.patch.object(Search, 'execute', return_value=get_mock_search()):
+        with mock.patch.object(MultiSearch, 'execute', return_value=get_mock_search()):
             response = self.client.get(reverse('api:metadata:search'),
                                        data={'q': 'algodon'})
 

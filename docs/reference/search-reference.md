@@ -83,6 +83,13 @@ El recurso `/search` permite buscar series a partir de un texto, proporcionando 
         <td class="s4" dir="ltr">0</td>
         <td>start=100</td>
     </tr>
+    <tr>
+        <td>aggregations</a></td>
+        <td>No</td>
+        <td>N/A</td>
+        <td class="s4" dir="ltr">N/A</td>
+        <td>N/A</td>
+    </tr>
 </table>
 
 ### `q`
@@ -109,6 +116,73 @@ Este parámetro es utilizado junto a [`limit`](#limit) para controlar el paginad
 
 El [`start`](#start) indica el "número de resultados después del inicio" que se saltea el buscador para el armado de la respuesta.
 
+### `aggregations`
 
+La presencia de este parámetro agrega un objeto nuevo a la respuesta de la API bajo la clave `aggregations`, que contiene la cantidad de ocurrencias totales de la búsqueda discriminando por los distintos filtros posibles. Si el parámetro no está presente, no se calculan las agregaciones.
 
+ Un ejemplo posible de la respuesta:
 
+```json
+{
+  "aggregations": {
+    "dataset_theme": [
+      {
+        "label": "Finanzas Públicas",
+        "series_count": 904
+      },
+      {
+        "label": "Precios",
+        "series_count": 522
+      },
+      {
+        "label": "Sector Externo",
+        "series_count": 21
+      }
+    ],
+    "units": [
+      {
+        "label": "Millones de pesos",
+        "series_count": 904
+      },
+      {
+        "label": "Índice",
+        "series_count": 509
+      },
+      {
+        "label": "Millones de dólares",
+        "series_count": 21
+      },
+      {
+        "label": "Variación Porcentual",
+        "series_count": 12
+      },
+      {
+        "label": "Variación intermensual",
+        "series_count": 1
+      }
+    ],
+    "dataset_publisher_name": [
+      {
+        "label": "Subsecretaría de Programación Macroeconómica.",
+        "series_count": 1447
+      }
+    ],
+    "dataset_source": [
+      {
+        "label": "Ministerio de Hacienda",
+        "series_count": 925
+      },
+      {
+        "label": "Instituto Nacional de Estadística y Censos (INDEC)",
+        "series_count": 522
+      }
+    ],
+    "catalog_id": [
+      {
+        "label": "sspm",
+        "series_count": 1447
+      }
+    ]
+  }
+}
+```
