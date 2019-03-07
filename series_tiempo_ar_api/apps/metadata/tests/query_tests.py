@@ -109,11 +109,6 @@ class QueryTests(TestCase):
         self.assertListEqual(mock_search.call_args_list, [call('-hits')])
 
     @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.MultiSearch.execute')
-    def test_aggregation(self, *_):
-        response = FieldSearchQuery(args={'aggregations': True}).execute()
-        self.assertEqual(len(response['aggregations']), len(constants.FILTER_ARGS))
-
-    @mock.patch('series_tiempo_ar_api.apps.metadata.queries.query.MultiSearch.execute')
     def test_no_aggregations_if_not_requested(self, execute):
         execute.return_value = [mock.MagicMock()]
         resp = FieldSearchQuery(args={}).execute()
