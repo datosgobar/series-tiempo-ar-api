@@ -22,8 +22,7 @@ def query_field_terms(field=None):
     search = search[:0]  # Descarta resultados de search, solo nos importa el aggregation
     search_result = search.execute()
 
-    sources = [{"label": source['key'], "series_count": source['doc_count']}
-               for source in search_result.aggregations.results.buckets]
+    sources = [source['key'] for source in search_result.aggregations.results.buckets]
     response = {
         'data': sources
     }
