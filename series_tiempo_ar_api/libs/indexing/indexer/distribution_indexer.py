@@ -4,7 +4,6 @@ import logging
 from functools import reduce
 
 import pandas as pd
-from django.conf import settings
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
@@ -67,7 +66,9 @@ class DistributionIndexer:
         seteando el índice de tiempo correcto y validando las columnas
         dentro de los datos
         """
-        df = read_distribution_csv_as_df(distribution)
+        df = read_distribution_csv_as_df(distribution, time_index)
+        fields = SeriesRepository.get_present_series(distribution=distribution)
+        drop_null_or_missing_fields_from_df(df, [field.title for field in fields])
 
         data = df.values
         new_index = generate_df_time_index(df, time_index)
@@ -92,13 +93,10 @@ class DistributionIndexer:
         series_data.delete()
 
 
-def read_distribution_csv_as_df(distribution: Distribution) -> pd.DataFrame:
-    fields = SeriesRepository.get_present_series(distribution=distribution)
+def read_distribution_csv_as_df(distribution: Distribution, time_index: Field) -> pd.DataFrame:
     df = pd.read_csv(distribution.data_file,
-                     parse_dates=[settings.INDEX_COLUMN],
-                     index_col=settings.INDEX_COLUMN)
-    drop_null_or_missing_fields_from_df(df, [field.title for field in fields])
-
+                     parse_dates=[time_index.title],
+                     index_col=time_index.title)
     return df
 
 
