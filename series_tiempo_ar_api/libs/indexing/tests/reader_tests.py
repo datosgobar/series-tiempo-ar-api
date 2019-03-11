@@ -34,12 +34,11 @@ class IndexerTests(TestCase):
         self._index_catalog('full_ts_data.json')
 
         distribution = Distribution.objects.get(identifier="212.1")
-        fields = distribution.field_set.all()
-        fields = {field.title: field.identifier for field in fields}
-        df = DistributionIndexer(self.test_index).init_df(distribution, fields)
+        time_index = distribution.field_set.first()
+        df = DistributionIndexer(self.test_index).init_df(distribution, time_index)
 
-        for field in fields.values():
-            self.assertTrue(field in df.columns)
+        for field in distribution.field_set.exclude(id=time_index.id):
+            self.assertTrue(field.identifier in df.columns)
 
     def test_indexing(self):
         self._index_catalog('full_ts_data.json')

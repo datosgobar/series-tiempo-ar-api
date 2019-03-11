@@ -10,9 +10,10 @@ from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.connections import connections
 from series_tiempo_ar.helpers import freq_iso_to_pandas
-from django_datajsonar.models import Distribution
+from django_datajsonar.models import Distribution, Field
 
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.libs.field_utils import get_distribution_time_index, SeriesRepository
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 
@@ -30,62 +31,48 @@ class DistributionIndexer:
         self.index = tseries_index(index)
 
     def run(self, distribution):
-        fields = distribution.field_set.all()
-        fields = {field.title: field.identifier for field in fields}
-        df = self.init_df(distribution, fields)
+        time_index = get_distribution_time_index(distribution)
+        df = self.init_df(distribution, time_index)
 
-        # Aplica la operación de procesamiento e indexado a cada columna
-        result = [process_column(df[col], self.index_name) for col in df.columns]
+        actions = self.generate_es_actions(df, distribution)
 
-        if not result:  # Distribución sin series cargadas
+        if not actions:
             return
 
-        # List flatten: si el resultado son múltiples listas las junto en una sola
-        actions = reduce(lambda x, y: x + y, result) if isinstance(result[0], list) else result
-
-        self.add_catalog_keyword(actions, distribution)
         for success, info in parallel_bulk(self.elastic, actions):
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-        for field in distribution.field_set.exclude(title='indice_tiempo'):
-            field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
-
-        # Cálculo de metadatos adicionales sobre cada serie
+        self.update_distribution_metadata(distribution, time_index)
         df.apply(update_enhanced_meta, args=(distribution.dataset.catalog.identifier, distribution.identifier))
 
-    def init_df(self, distribution, fields):
+    def generate_es_actions(self, df, distribution):
+        es_actions = [process_column(df[col], self.index_name) for col in df.columns]
+
+        # List flatten: si el resultado son múltiples listas las junto en una sola
+        actions = reduce(lambda x, y: x + y, es_actions) if isinstance(es_actions[0], list) else es_actions
+        self.add_catalog_keyword(actions, distribution)
+        return actions
+
+    def update_distribution_metadata(self, distribution, time_index):
+        for field in SeriesRepository.get_present_series(distribution=distribution).exclude(id=time_index.id):
+            field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
+        # Cálculo de metadatos adicionales sobre cada serie
+        distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY,
+                                                    defaults={
+                                                        'value': get_distribution_time_index_periodicity(time_index)})
+
+    def init_df(self, distribution: Distribution, time_index: Field):
         """Inicializa el DataFrame del CSV de la distribución pasada,
         seteando el índice de tiempo correcto y validando las columnas
         dentro de los datos
-
-        Args:
-            distribution (Distribution): modelo de distribución válido
-            fields (dict): diccionario con estructura titulo: serie_id
         """
-
         df = read_distribution_csv_as_df(distribution)
 
-        self.drop_null_or_missing_fields_from_df(df, fields)
-        identifiers = [fields[name] for name in df.columns]
-
         data = df.values
-        freq = freq_iso_to_pandas(get_time_index_periodicity(distribution, fields))
-        new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
-
-        # Chequeo de series de días hábiles (business days)
-        if freq == constants.DAILY_FREQ and new_index.size > df.index.size:
-            new_index = pd.date_range(df.index[0],
-                                      df.index[-1],
-                                      freq=constants.BUSINESS_DAILY_FREQ)
-
+        new_index = generate_df_time_index(df, time_index)
+        identifiers = get_distribution_series_identifers(distribution, series_titles=df.columns)
         return pd.DataFrame(index=new_index, data=data, columns=identifiers)
-
-    def drop_null_or_missing_fields_from_df(self, df, fields):
-        for column in df.columns:
-            all_null = df[column].isnull().all()
-            if all_null or column not in fields:
-                df.drop(column, axis='columns', inplace=True)
 
     def add_catalog_keyword(self, actions, distribution):
         for action in actions:
@@ -97,8 +84,7 @@ class DistributionIndexer:
 
     def _delete_distribution_data(self, distribution):
         fields_to_delete = list(
-            distribution.field_set
-            .filter(present=True)
+            SeriesRepository.get_present_series(distribution=distribution)
             .exclude(identifier=None)
             .values_list('identifier', flat=True)
         )
@@ -107,14 +93,41 @@ class DistributionIndexer:
 
 
 def read_distribution_csv_as_df(distribution: Distribution) -> pd.DataFrame:
-    return pd.read_csv(distribution.data_file,
-                       parse_dates=[settings.INDEX_COLUMN],
-                       index_col=settings.INDEX_COLUMN)
+    fields = SeriesRepository.get_present_series(distribution=distribution)
+    df = pd.read_csv(distribution.data_file,
+                     parse_dates=[settings.INDEX_COLUMN],
+                     index_col=settings.INDEX_COLUMN)
+    drop_null_or_missing_fields_from_df(df, [field.title for field in fields])
+
+    return df
 
 
-def get_time_index_periodicity(distribution, fields):
-    time_index = distribution.field_set.get(title='indice_tiempo', present=True)
-    fields.pop('indice_tiempo')
-    periodicity = json.loads(time_index.metadata)['specialTypeDetail']
-    distribution.enhanced_meta.update_or_create(key=meta_keys.PERIODICITY, defaults={'value': periodicity})
+def drop_null_or_missing_fields_from_df(df, field_titles):
+    for column in df.columns:
+        all_null = df[column].isnull().all()
+        if all_null or column not in field_titles:
+            df.drop(column, axis='columns', inplace=True)
+
+
+def get_distribution_time_index_periodicity(time_index: Field) -> str:
+    periodicity = json.loads(time_index.metadata)[constants.SPECIAL_TYPE_DETAIL]
     return periodicity
+
+
+def generate_df_time_index(df: pd.DataFrame, time_index: Field):
+    periodicity = get_distribution_time_index_periodicity(time_index)
+    freq = freq_iso_to_pandas(periodicity)
+    new_index = pd.date_range(df.index[0], df.index[-1], freq=freq)
+
+    # Chequeo de series de días hábiles (business days)
+    if freq == constants.DAILY_FREQ and new_index.size > df.index.size:
+        new_index = pd.date_range(df.index[0],
+                                  df.index[-1],
+                                  freq=constants.BUSINESS_DAILY_FREQ)
+    return new_index
+
+
+def get_distribution_series_identifers(distribution: Distribution, series_titles: list) -> list:
+    identifier_for_each_title = {s.title: s.identifier
+                                 for s in SeriesRepository.get_present_series(distribution=distribution)}
+    return [identifier_for_each_title[title] for title in series_titles]

@@ -1,8 +1,7 @@
 #! coding: utf-8
+import json
 import os
-import datetime
 
-from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django_datajsonar.models import Catalog
 from django.core.files import File
@@ -25,9 +24,11 @@ class FieldEnhancedMetaTests(TestCase):
         distribution = dataset.distribution_set.create(identifier=self.distribution_id)
         distribution.field_set.create(title='indice_tiempo',
                                       identifier='indice_tiempo',
-                                      metadata='{"specialTypeDetail": "R/P1D"}',
+                                      metadata=json.dumps({"specialType": "time_index", "specialTypeDetail": "R/P1D"}),
                                       present=True)
-        self.field = distribution.field_set.create(identifier='test_series')
+        distribution.enhanced_meta.create(key=meta_keys.PERIODICITY, value='R/P1D')
+        # Mismo title que dentro de la distribucion "daily_periodicity.csv"
+        self.field = distribution.field_set.create(title='tasas_interes_call', identifier='test_series')
 
     def test_start_end_dates(self):
         df = self.init_df()
@@ -115,11 +116,12 @@ class FieldEnhancedMetaTests(TestCase):
     def init_df(self):
         self.field.distribution.data_file = File(open(os.path.join(SAMPLES_DIR,
                                                                    'daily_periodicity.csv')))
-        self.field.distribution.field_set.create(identifier='indice_tiempo',
-                                                 metadata='{"specialTypeDetail": "R/P1D"}')
+        time_index = self.field.distribution.field_set.create(title="indice_tiempo",
+                                                              identifier='indice_tiempo',
+                                                              metadata=json.dumps({"specialType": "time_index",
+                                                                                  "specialTypeDetail": "R/P1D"}))
         df = DistributionIndexer('test_index').init_df(
             self.field.distribution,
-            {'tasas_interes_call': self.field.identifier,
-             'indice_tiempo': 'indice_tiempo'}
+            time_index
         )
         return df
