@@ -11,6 +11,8 @@ from elasticsearch_dsl.connections import connections
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field, Catalog
 from django_datajsonar.models import ReadDataJsonTask, Node
+
+from series_tiempo_ar_api.libs.field_utils import SeriesRepository
 from series_tiempo_ar_api.utils import utils
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
@@ -213,6 +215,10 @@ class IndexerTests(TestCase):
     def _index_catalog(self, catalog_path, node=None):
         path = os.path.join(SAMPLES_DIR, catalog_path)
         utils.index_catalog(CATALOG_ID, path, self.test_index, node=node)
+
+    def test_different_time_index_name(self):
+        self._index_catalog('different_time_index_name.json')
+        self.assertEqual(SeriesRepository.get_available_series().count(), 1)
 
 
 @mock.patch("series_tiempo_ar_api.libs.indexing.tasks.DistributionIndexer.reindex")
