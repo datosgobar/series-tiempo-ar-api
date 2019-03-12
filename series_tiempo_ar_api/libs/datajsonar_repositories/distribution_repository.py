@@ -17,4 +17,5 @@ class DistributionRepository:
             if meta.get(constants.SPECIAL_TYPE) == constants.TIME_INDEX:
                 return field
 
-        raise Field.DoesNotExist
+        msg = f"No se encontró un índice de tiempo para la distribución: {self.instance.identifier}"
+        raise Field.DoesNotExist(msg)
