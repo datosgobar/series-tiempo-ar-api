@@ -7,8 +7,7 @@ from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.analytics.models import HitsIndicator
 from django_datajsonar.models import Field
 
-from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.libs.field_utils import SeriesRepository
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
 def calculate_hits_indicators(for_date: date):
