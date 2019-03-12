@@ -12,7 +12,7 @@ from series_tiempo_ar.helpers import freq_iso_to_pandas
 from django_datajsonar.models import Distribution, Field
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.libs.field_utils import get_distribution_time_index
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
@@ -31,7 +31,7 @@ class DistributionIndexer:
         self.index = tseries_index(index)
 
     def run(self, distribution):
-        time_index = get_distribution_time_index(distribution)
+        time_index = DistributionRepository(distribution).get_time_index_series()
         df = self.init_df(distribution, time_index)
 
         actions = self.generate_es_actions(df, distribution)
