@@ -7,6 +7,7 @@ import pandas as pd
 from django.conf import settings
 from django_datajsonar.models import Distribution
 
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing.strings import NO_DISTRIBUTION_URL
 
 
@@ -26,7 +27,8 @@ def read_distribution_csv(distribution: Distribution) -> pd.DataFrame:
         content = requests.get(url, verify=False).content
 
     encoding = chardet.detect(content)['encoding']
+    time_index = DistributionRepository(distribution).get_time_index_series().title
     return pd.read_csv(BytesIO(content),
                        encoding=encoding,
-                       parse_dates=[settings.INDEX_COLUMN],
-                       index_col=settings.INDEX_COLUMN)
+                       parse_dates=[time_index],
+                       index_col=time_index)

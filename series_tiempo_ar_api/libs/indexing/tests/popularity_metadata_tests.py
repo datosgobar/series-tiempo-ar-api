@@ -22,6 +22,7 @@ class PopularityTests(TestCase):
         cls.distribution = Distribution.objects.create(dataset=dataset, identifier='test_distribution')
 
         cls.field = cls.distribution.field_set.create(identifier='test_field')
+        cls.field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
 
     def test_metadata_is_created(self, mock_hits, *_):
         mock_value = self._update_popularity_metadata(mock_hits)

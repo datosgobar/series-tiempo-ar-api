@@ -7,6 +7,7 @@ from pydatajson import DataJson
 from series_tiempo_ar.validations import validate_distribution
 from django_datajsonar.models import Distribution
 
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
 from .strings import NO_DATASET_IDENTIFIER
 
@@ -46,8 +47,9 @@ class Scraper(object):
         """
         if self.read_local:
             path = model.download_url
+            time_index = DistributionRepository(model).get_time_index_series().title
             return pd.read_csv(path,
-                               parse_dates=[settings.INDEX_COLUMN],
-                               index_col=settings.INDEX_COLUMN)
+                               parse_dates=[time_index],
+                               index_col=time_index)
 
         return read_distribution_csv(model)

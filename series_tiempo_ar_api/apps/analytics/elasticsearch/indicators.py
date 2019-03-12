@@ -7,7 +7,7 @@ from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.analytics.models import HitsIndicator
 from django_datajsonar.models import Field
 
-from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
 def calculate_hits_indicators(for_date: date):
@@ -40,9 +40,6 @@ def get_day_hits(for_date):
 
 
 def all_time_series():
-    series_ids = Field.objects \
-        .filter(enhanced_meta__key=meta_keys.AVAILABLE)\
-        .exclude(title='indice_tiempo') \
-        .exclude(identifier=None) \
+    series_ids = SeriesRepository.get_available_series()\
         .values_list('identifier', flat=True)
     return series_ids
