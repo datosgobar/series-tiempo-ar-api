@@ -40,5 +40,6 @@ def get_day_hits(for_date):
 
 
 def all_time_series():
-    series_ids = SeriesRepository.get_available_series()
+    series_ids = SeriesRepository.get_available_series()\
+        .values_list('identifier', flat=True)
     return series_ids
