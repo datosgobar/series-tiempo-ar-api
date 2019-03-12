@@ -12,7 +12,7 @@ from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field, Catalog
 from django_datajsonar.models import ReadDataJsonTask, Node
 
-from series_tiempo_ar_api.libs.field_utils import SeriesRepository
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 from series_tiempo_ar_api.utils import utils
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask

@@ -1,7 +1,7 @@
 import json
 
 from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
-from series_tiempo_ar_api.libs.field_utils import get_available_series
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
 def update_units():
@@ -12,7 +12,7 @@ def update_units():
 
 
 def get_all_available_series_units() -> set:
-    series_metadata = get_available_series() \
+    series_metadata = SeriesRepository.get_available_series() \
         .values_list('metadata', flat=True)
 
     catalog_units = set()
