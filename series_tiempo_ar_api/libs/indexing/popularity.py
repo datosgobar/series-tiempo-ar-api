@@ -3,6 +3,7 @@ from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 KEY_DAYS_PAIRS = (
     (meta_keys.HITS_TOTAL, None),
@@ -16,9 +17,7 @@ def update_popularity_metadata(distribution: Distribution):
     if not Index(SeriesQuery._doc_type.index).exists():
         return
 
-    series = distribution.field_set\
-        .exclude(title='indice_tiempo')\
-        .exclude(identifier=None)
+    series = SeriesRepository.get_available_series(distribution=distribution)
 
     series_ids = series.values_list('identifier', flat=True)
 
