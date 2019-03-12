@@ -6,7 +6,7 @@ from series_tiempo_ar_api.apps.management.models import Indicator
 
 
 # pylint: disable=R0914
-from series_tiempo_ar_api.libs.field_utils import get_available_series
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
 class IndicatorsGenerator(object):
@@ -79,7 +79,7 @@ class IndicatorsGenerator(object):
         available = len(data_json.get_datasets(only_time_series=True))
         self.create(type=Indicator.DATASET_AVAILABLE, value=available, node=node)
 
-        total = get_available_series().filter(distribution__dataset__catalog=catalog)\
+        total = SeriesRepository.get_available_series().filter(distribution__dataset__catalog=catalog)\
             .values_list('distribution__dataset').distinct().count()
         self.create(type=Indicator.DATASET_TOTAL, value=total, node=node)
 
@@ -119,8 +119,9 @@ class IndicatorsGenerator(object):
                     value=len(data_json.get_distributions(only_time_series=True)),
                     node=node)
 
+        available_series = SeriesRepository.get_available_series()
         self.create(type=Indicator.DISTRIBUTION_TOTAL,
-                    value=get_available_series().filter(distribution__dataset__catalog=catalog).
+                    value=available_series.filter(distribution__dataset__catalog=catalog).
                     values_list('distribution').distinct().count(),
                     node=node)
 
@@ -163,6 +164,11 @@ class IndicatorsGenerator(object):
                     value=len(data_json.get_fields(only_time_series=True)),
                     node=node)
 
+        series_count = SeriesRepository\
+            .get_available_series()\
+            .filter(distribution__dataset__catalog=catalog)\
+            .count()
+
         self.create(type=Indicator.FIELD_TOTAL,
-                    value=get_available_series().filter(distribution__dataset__catalog=catalog).count(),
+                    value=series_count,
                     node=node)

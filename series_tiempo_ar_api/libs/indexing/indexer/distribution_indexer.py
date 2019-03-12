@@ -12,7 +12,8 @@ from series_tiempo_ar.helpers import freq_iso_to_pandas
 from django_datajsonar.models import Distribution, Field
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.libs.field_utils import get_distribution_time_index, SeriesRepository
+from series_tiempo_ar_api.libs.field_utils import get_distribution_time_index
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 from series_tiempo_ar_api.libs.indexing import constants
 from series_tiempo_ar_api.libs.indexing import strings
 
