@@ -6,9 +6,7 @@ from .base import *
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('Admin name', 'admin_name@devartis.com'),
-)
+
 
 MANAGERS = ADMINS
 
