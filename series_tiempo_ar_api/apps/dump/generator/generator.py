@@ -10,6 +10,7 @@ from series_tiempo_ar_api.apps.dump.generator.sources import SourcesCsvGenerator
 from series_tiempo_ar_api.apps.dump.generator.values_csv import ValuesCsvGenerator
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 from .full_csv import FullCsvGenerator
 
@@ -32,7 +33,7 @@ class DumpGenerator:
         """Inicializa en un diccionario con IDs de series como clave los valores a escribir en cada
         uno de los CSV.
         """
-        fields = Field.objects.all()
+        fields = SeriesRepository.get_available_series()
 
         if self.catalog:
             try:
@@ -44,9 +45,7 @@ class DumpGenerator:
                 distribution__dataset__catalog=catalog
             )
 
-        fields = fields.filter(
-            enhanced_meta__key=meta_keys.AVAILABLE,
-        ).prefetch_related(
+        fields = fields.prefetch_related(
             'distribution',
             'distribution__dataset',
             'distribution__dataset__catalog',

@@ -46,6 +46,22 @@ class SeriesRepositoryTests(TestCase):
         non_present_field = self.distribution.field_set.create(present=False)
         non_present_field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
         series = SeriesRepository.get_available_series()
+        self.assertTrue(series)
+
+    def test_present_and_available_series(self):
+        field = self.distribution.field_set.create()
+        field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
+        self.assertEqual(SeriesRepository.get_present_and_available_series().count(), 1)
+
+    def test_present_and_available_series_non_present(self):
+        non_present_field = self.distribution.field_set.create(present=False)
+        non_present_field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
+        series = SeriesRepository.get_present_and_available_series()
+        self.assertFalse(series)
+
+    def test_present_and_available_series_non_available(self):
+        self.distribution.field_set.create(present=True)
+        series = SeriesRepository.get_present_and_available_series()
         self.assertFalse(series)
 
     def test_custom_filter(self):
