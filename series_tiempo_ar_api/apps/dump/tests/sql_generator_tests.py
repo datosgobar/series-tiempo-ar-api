@@ -54,6 +54,12 @@ class SQLGeneratorTests(TestCase):
         self.assertEqual(DumpFile.objects.filter(file_type=DumpFile.TYPE_SQL, node__catalog_id='catalog_two').count(),
                          1)
 
+    def test_no_popularity_metadata(self):
+        Metadata.objects.filter(key=meta_keys.HITS_90_DAYS).delete()
+        call_command('generate_dump')
+        enqueue_write_sql_task()
+        self.assertTrue(DumpFile.objects.count())
+
     @classmethod
     def tearDownClass(cls):
         super(SQLGeneratorTests, cls).tearDownClass()

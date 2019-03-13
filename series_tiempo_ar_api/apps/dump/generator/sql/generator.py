@@ -88,10 +88,10 @@ class SQLGenerator:
 
             discontinued = row[self.metadata_rows.index(constants.SERIES_DISCONTINUED)] or False
 
-            hits_total = row[self.metadata_rows.index(constants.HITS_TOTAL)]
-            hits_60_days = row[self.metadata_rows.index(constants.HITS_30_DAYS)]
-            hits_30_days = row[self.metadata_rows.index(constants.HITS_90_DAYS)]
-            hits_180_days = row[self.metadata_rows.index(constants.HITS_180_DAYS)]
+            hits_total = row[self.metadata_rows.index(constants.HITS_TOTAL)] or 0
+            hits_60_days = row[self.metadata_rows.index(constants.HITS_30_DAYS)] or 0
+            hits_30_days = row[self.metadata_rows.index(constants.HITS_90_DAYS)] or 0
+            hits_180_days = row[self.metadata_rows.index(constants.HITS_180_DAYS)] or 0
 
             yield Metadatos(
                 catalogo_id=catalog_id,
