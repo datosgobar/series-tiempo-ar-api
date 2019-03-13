@@ -5,7 +5,7 @@ from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
-class FieldUtilsTests(TestCase):
+class SeriesRepositoryTests(TestCase):
 
     def setUp(self):
         catalog = Catalog.objects.create()
