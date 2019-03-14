@@ -41,7 +41,7 @@ class DumpGenerator:
             except Catalog.DoesNotExist:
                 return
 
-            fields = Field.objects.filter(
+            fields = fields.filter(
                 distribution__dataset__catalog=catalog
             )
 

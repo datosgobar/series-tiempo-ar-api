@@ -239,6 +239,17 @@ class CSVTest(TestCase):
         self.assertEqual(row[27], meta_keys.get(field, meta_keys.HITS_90_DAYS))
         self.assertEqual(row[28], meta_keys.get(field, meta_keys.HITS_180_DAYS))
 
+    def test_run_catalog_unavailable_fields(self):
+        field = Field.objects.last()
+        field.enhanced_meta.get(key=meta_keys.AVAILABLE).delete()
+        task = GenerateDumpTask.objects.create()
+        DumpGenerator(task, self.catalog_id).generate()
+        file = task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA,
+                                     file_type=DumpFile.TYPE_CSV).file
+        reader = read_file_as_csv(file)
+        for row in reader:
+            self.assertNotEqual(row[5], field.title)
+
     @classmethod
     def tearDownClass(cls):
         super(CSVTest, cls).tearDownClass()
