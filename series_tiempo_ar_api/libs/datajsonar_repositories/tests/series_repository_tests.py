@@ -8,6 +8,7 @@ from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import 
 class SeriesRepositoryTests(TestCase):
 
     def setUp(self):
+        Catalog.objects.all().delete()
         catalog = Catalog.objects.create()
         dataset = catalog.dataset_set.create()
         self.distribution = dataset.distribution_set.create()
