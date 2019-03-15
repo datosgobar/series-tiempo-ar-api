@@ -67,7 +67,7 @@ class ReportGenerator(object):
         subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
 
         msg = render_to_string('indexing/report.txt', context=context)
-        mail = EmailMultiAlternatives(subject, msg, settings.EMAIL_HOST_USER, emails)
+        mail = EmailMultiAlternatives(subject, msg, from_email=None, to=emails)
         html_msg = render_to_string('indexing/report.html', context=context)
         mail.attach_alternative(html_msg, 'text/html')
 

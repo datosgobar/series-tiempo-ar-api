@@ -73,7 +73,7 @@ def send_email(result: list, task: IntegrationTestTask):
         return
 
     msg = "Errores en los datos de las series detectados. Ver el archivo adjunto"
-    mail = EmailMultiAlternatives(subject, msg, settings.EMAIL_HOST_USER, emails)
+    mail = EmailMultiAlternatives(subject, msg, from_email=None, to=emails)
     mail.attach('errors.csv', generate_errors_csv(result), 'text/csv')
     sent = mail.send()
     if not sent:
