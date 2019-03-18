@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.13.0
+
+- Parametrización del índice de tiempo: no es más necesario utilizar un índice de tiempo con nombre `indice_tiempo` para indexar distribuciones
+- Cambios de respuesta: percent_change cambia su nombre _verbose_ a `Variación porcentual período anterior`
+- Validaciones adicionales en generación de dumps CSV y SQL
+
 ## 1.12.1
 
 - Revert al uso de metadatos de consultas en el endpoint de búsqueda
