@@ -33,7 +33,7 @@ class DumpGenerator:
         """Inicializa en un diccionario con IDs de series como clave los valores a escribir en cada
         uno de los CSV.
         """
-        fields = SeriesRepository.get_available_series()
+        fields = SeriesRepository.get_available_series().exclude(identifier=None)
 
         if self.catalog:
             try:
