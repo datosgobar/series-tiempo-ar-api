@@ -59,7 +59,7 @@ def run_integration(task: IntegrationTestTask = None):
 
     if len(result):
         send_email(result, task)
-    send_email(result, task)
+
     task.refresh_from_db()
     task.status = IntegrationTestTask.FINISHED
     task.save()
