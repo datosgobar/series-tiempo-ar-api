@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 import datetime
 
 from dateutil.relativedelta import relativedelta
+from des.models import DynamicEmailConfiguration
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.mail import send_mail
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -67,7 +69,9 @@ class ReportGenerator(object):
         subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
 
         msg = render_to_string('indexing/report.txt', context=context)
-        mail = EmailMultiAlternatives(subject, msg, from_email=None, to=emails)
+
+        config = DynamicEmailConfiguration.get_solo()
+        mail = EmailMultiAlternatives(subject, msg, from_email=config.from_email, to=emails)
         html_msg = render_to_string('indexing/report.html', context=context)
         mail.attach_alternative(html_msg, 'text/html')
 
