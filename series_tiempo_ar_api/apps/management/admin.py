@@ -47,5 +47,6 @@ class IntegrationTestTaskAdmin(AbstractTaskAdmin):
 
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration'
 
+
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
 admin.site.register(IntegrationTestConfig, SingletonAdmin)

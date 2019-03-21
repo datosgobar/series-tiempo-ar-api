@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.13.1
+
+- Fix a mails de test de integración mandandose múltiplies veces, y ocasionalmente con un attachment vacío
+- Bump de versión micro de django_datajsonar
+- Fix al callable_str de RunIntegrationTaskAdmin incorrecto
+
 ## 1.13.0
 
 - Parametrización del índice de tiempo: no es más necesario utilizar un índice de tiempo con nombre `indice_tiempo` para indexar distribuciones
