@@ -40,13 +40,12 @@ class DataJsonAdmin(AbstractTaskAdmin):
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing'
 
 
-@admin.register(IntegrationTestTask)
 class IntegrationTestTaskAdmin(AbstractTaskAdmin):
     model = IntegrationTestTask
 
     task = run_integration
-    callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration_test'
 
+    callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration'
 
 admin.site.register(ReadDataJsonTask, DataJsonAdmin)
 admin.site.register(IntegrationTestConfig, SingletonAdmin)
