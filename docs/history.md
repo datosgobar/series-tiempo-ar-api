@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.13.2
+
+- Fix a mails no utilizando el campo from_email de la configuración dinámica.
+
 ## 1.13.1
 
 - Fix a mails de test de integración mandandose múltiplies veces, y ocasionalmente con un attachment vacío
