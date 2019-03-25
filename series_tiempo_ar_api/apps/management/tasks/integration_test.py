@@ -2,6 +2,7 @@ import csv
 from io import StringIO, BytesIO
 
 import pandas as pd
+from des.models import DynamicEmailConfiguration
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.test import Client
@@ -73,7 +74,8 @@ def send_email(result: list, task: IntegrationTestTask):
         return
 
     msg = "Errores en los datos de las series detectados. Ver el archivo adjunto"
-    mail = EmailMultiAlternatives(subject, msg, from_email=None, to=emails)
+    config = DynamicEmailConfiguration.get_solo()
+    mail = EmailMultiAlternatives(subject, msg, from_email=config.from_email, to=emails)
     mail.attach('errors.csv', generate_errors_csv(result), 'text/csv')
     sent = mail.send()
     if not sent:
