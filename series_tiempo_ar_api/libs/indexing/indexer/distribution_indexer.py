@@ -15,7 +15,7 @@ from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.data_frame import get_distribution_time_index_periodicity, init_df
 
 from .operations import process_column
-from .metadata import update_enhanced_meta
+from .metadata import calculate_enhanced_meta
 from .index import tseries_index
 
 logger = logging.getLogger(__name__)
@@ -40,8 +40,7 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-        self.update_distribution_metadata(distribution, time_index)
-        df.apply(update_enhanced_meta, args=(distribution.dataset.catalog.identifier, distribution.identifier))
+        self.update_distribution_indexation_metadata(distribution, time_index)
 
     def generate_es_actions(self, df, distribution):
         es_actions = [process_column(df[col], self.index_name) for col in df.columns]
@@ -51,7 +50,7 @@ class DistributionIndexer:
         self.add_catalog_keyword(actions, distribution)
         return actions
 
-    def update_distribution_metadata(self, distribution, time_index):
+    def update_distribution_indexation_metadata(self, distribution, time_index):
         for field in SeriesRepository.get_present_series(distribution=distribution).exclude(id=time_index.id):
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
         # Cálculo de metadatos adicionales sobre cada serie

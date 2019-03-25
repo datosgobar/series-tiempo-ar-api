@@ -223,7 +223,7 @@ class CSVTest(TestCase):
         reader = read_file_as_csv(file)
 
         next(reader)  # Header!!!!
-        self.assertEqual(len(list(reader)), 1)  # Un único row, para un único valor del CSV
+        self.assertEqual(len(list(reader)), 2)
 
     def test_metadata_csv_hits(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA,

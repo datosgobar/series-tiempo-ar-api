@@ -13,6 +13,7 @@ def init_df(distribution: Distribution, time_index: Field):
     seteando el índice de tiempo correcto y validando las columnas
     dentro de los datos
     """
+    distribution.refresh_from_db()  # Recarga la distribución si ya fue leída
     df = read_distribution_csv_as_df(distribution, time_index)
     fields = SeriesRepository.get_present_series(distribution=distribution)
     drop_null_or_missing_fields_from_df(df, [field.title for field in fields])
