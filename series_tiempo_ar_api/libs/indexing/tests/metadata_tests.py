@@ -8,8 +8,8 @@ from django.core.files import File
 from freezegun import freeze_time
 
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.libs.indexing.indexer.data_frame import init_df
 from series_tiempo_ar_api.libs.indexing.indexer.metadata import update_enhanced_meta, _is_series_updated
-from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
@@ -120,7 +120,7 @@ class FieldEnhancedMetaTests(TestCase):
                                                               identifier='indice_tiempo',
                                                               metadata=json.dumps({"specialType": "time_index",
                                                                                   "specialTypeDetail": "R/P1D"}))
-        df = DistributionIndexer('test_index').init_df(
+        df = init_df(
             self.field.distribution,
             time_index
         )

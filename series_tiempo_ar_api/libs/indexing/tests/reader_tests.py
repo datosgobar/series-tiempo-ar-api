@@ -13,6 +13,7 @@ from django_datajsonar.models import Distribution, Field, Catalog
 from django_datajsonar.models import ReadDataJsonTask, Node
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
+from series_tiempo_ar_api.libs.indexing.indexer.data_frame import init_df
 from series_tiempo_ar_api.utils import utils
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
@@ -37,7 +38,7 @@ class IndexerTests(TestCase):
 
         distribution = Distribution.objects.get(identifier="212.1")
         time_index = distribution.field_set.first()
-        df = DistributionIndexer(self.test_index).init_df(distribution, time_index)
+        df = init_df(distribution, time_index)
 
         for field in distribution.field_set.exclude(id=time_index.id):
             self.assertTrue(field.identifier in df.columns)
