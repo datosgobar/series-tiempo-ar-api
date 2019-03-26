@@ -29,8 +29,17 @@ class DistributionRepositoryTests(TestCase):
         distribution = Mock()
         distribution.dataset.catalog.identifier = 'test_node'
 
-        node = Node(catalog_id='test_node', catalog_url='test', indexable=True)
+        node = Node(catalog_id='test_node')
         with patch('series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository.Node') as fake_node:
             fake_node.objects.get.return_value = node
             self.assertTrue(fake_node.objects.get.called_with(catalog_id='test_node'))
             self.assertEqual(DistributionRepository(distribution).get_node(), node)
+
+    @patch('series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository.Node')
+    @patch('series_tiempo_ar_api.libs.datajsonar_repositories.node_repository.NodeRepository')
+    def test_get_data_json(self, repository, fake_node):
+        distribution = Mock()
+        node = Node(catalog_id='test_node')
+        fake_node.objects.get.return_value = node
+        DistributionRepository(distribution).get_data_json()
+        self.assertTrue(repository.called_with(node))

@@ -2,6 +2,7 @@ import json
 
 from django_datajsonar.models import Distribution, Field, Node
 
+from series_tiempo_ar_api.libs.datajsonar_repositories.node_repository import NodeRepository
 from series_tiempo_ar_api.libs.indexing import constants
 
 
@@ -22,3 +23,6 @@ class DistributionRepository:
 
     def get_node(self):
         return Node.objects.get(catalog_id=self.instance.dataset.catalog.identifier)
+
+    def get_data_json(self):
+        return NodeRepository(self.get_node()).read_catalog()
