@@ -1,6 +1,6 @@
 import json
 
-from django_datajsonar.models import Distribution, Field
+from django_datajsonar.models import Distribution, Field, Node
 
 from series_tiempo_ar_api.libs.indexing import constants
 
@@ -19,3 +19,6 @@ class DistributionRepository:
 
         msg = f"No se encontró un índice de tiempo para la distribución: {self.instance.identifier}"
         raise Field.DoesNotExist(msg)
+
+    def get_node(self):
+        return Node.objects.get(catalog_id=self.instance.dataset.catalog.identifier)
