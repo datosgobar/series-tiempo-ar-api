@@ -1,8 +1,8 @@
 import json
 import pandas as pd
 
-from django_datajsonar.models import Field, Distribution
 from series_tiempo_ar.helpers import freq_iso_to_pandas
+from django_datajsonar.models import Field, Distribution
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 from series_tiempo_ar_api.libs.indexing import constants
