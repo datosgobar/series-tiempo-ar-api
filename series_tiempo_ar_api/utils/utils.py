@@ -5,7 +5,7 @@ import json
 
 from django_datajsonar.models import Node, ReadDataJsonTask, \
     Distribution
-from series_tiempo_ar_api.apps.management import models as mgmt
+from series_tiempo_ar_api.apps.management import models as mgmt, meta_keys
 from django_datajsonar.tasks import read_datajson
 from elasticsearch_dsl.connections import connections
 from pydatajson import DataJson
@@ -30,6 +30,10 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
     index_task = mgmt.ReadDataJsonTask.objects.create()
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
         index_distribution(distribution.identifier, node.id, index_task.id, index=index, read_local=True, force=True)
+
+        for field in distribution.field_set.all():
+            for key in meta_keys.HITS_KEYS:
+                field.enhanced_meta.create(key=key, value=0)
 
     es_client = connections.get_connection()
     if es_client.indices.exists(index=index):
