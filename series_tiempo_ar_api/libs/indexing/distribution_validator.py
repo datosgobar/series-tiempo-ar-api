@@ -18,14 +18,6 @@ class DistributionValidator(object):
         self.read_local = read_local
 
     def run(self, distribution_model: Distribution, catalog: DataJson):
-        """
-        Valida las distribuciones de series de tiempo de un catálogo
-        entero a partir de su URL, o archivo fuente
-
-        Returns:
-            bool: True si la distribución pasa las validaciones, False caso contrario
-        """
-
         df = self.init_df(distribution_model)
 
         dataset_id = distribution_model.dataset.identifier
