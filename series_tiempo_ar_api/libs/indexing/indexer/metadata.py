@@ -6,16 +6,10 @@ from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.management import meta_keys
 
 
-def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str):
+def calculate_enhanced_meta(serie: pd.Series, periodicity: str) -> dict:
     """Crea o actualiza los metadatos enriquecidos de la serie pasada. El título de
     la misma DEBE ser el ID de la serie en la base de datos"""
 
-    field = Field.objects.get(distribution__dataset__catalog__identifier=catalog_id,
-                              distribution__identifier=distribution_id,
-                              distribution__present=True,
-                              identifier=serie.name,
-                              present=True)
-    periodicity = meta_keys.get(field.distribution, meta_keys.PERIODICITY)
     days_since_update = (datetime.now() - _get_last_day_of_period(serie, periodicity)).days
 
     last = serie[-1]
@@ -38,8 +32,7 @@ def update_enhanced_meta(serie: pd.Series, catalog_id: str, distribution_id: str
         meta_keys.AVERAGE: serie.mean(),
     }
 
-    for meta_key, value in meta.items():
-        field.enhanced_meta.update_or_create(key=meta_key, defaults={'value': value})
+    return meta
 
 
 def _get_last_day_of_period(serie: pd.Series, periodicity: str) -> pd.datetime:
