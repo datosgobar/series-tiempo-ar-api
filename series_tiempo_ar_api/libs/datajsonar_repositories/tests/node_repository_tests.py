@@ -3,7 +3,7 @@ import os
 import mock
 from django.test import TestCase
 
-from series_tiempo_ar_api.libs.datajsonar_repositories.NodeRepository import NodeRepository
+from series_tiempo_ar_api.libs.datajsonar_repositories.node_repository import NodeRepository
 
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
