@@ -2,7 +2,6 @@
 import logging
 
 import pandas as pd
-from django.conf import settings
 from pydatajson import DataJson
 from series_tiempo_ar.validations import validate_distribution
 from django_datajsonar.models import Distribution
@@ -14,7 +13,7 @@ from .strings import NO_DATASET_IDENTIFIER
 logger = logging.getLogger(__name__)
 
 
-class Scraper(object):
+class DistributionValidator(object):
     def __init__(self, read_local=False):
         self.read_local = read_local
 

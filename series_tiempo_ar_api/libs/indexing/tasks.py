@@ -20,7 +20,7 @@ from series_tiempo_ar_api.libs.indexing.indexer.metadata import calculate_enhanc
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
 from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 from .report.report_generator import ReportGenerator
-from .scraping import Scraper
+from .distribution_validator import DistributionValidator
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ def index_distribution(distribution_id, node_id, task_id,
                                                   present=True)
 
     try:
-        Scraper(read_local).run(distribution_model, catalog)
+        DistributionValidator(read_local).run(distribution_model, catalog)
 
         changed = True
         _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
