@@ -1,7 +1,7 @@
 import json
 
 from django_datajsonar.models import Node
-from mock import Mock, patch
+from mock import Mock, patch, MagicMock
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from nose.tools import raises
@@ -43,3 +43,14 @@ class DistributionRepositoryTests(TestCase):
         fake_node.objects.get.return_value = node
         DistributionRepository(distribution).get_data_json()
         self.assertTrue(repository.called_with(node))
+
+    def test_read_csv_as_dataframe(self):
+        time_index_title = 'indice_tiempo'
+        time_index_field = Mock(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), title=time_index_title)
+
+        distribution = MagicMock()
+        distribution.field_set.all.return_value = [time_index_field]
+
+        with patch('series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository.pandas.read_csv') as read_csv:
+            DistributionRepository(distribution).read_csv_as_time_series_dataframe()
+            read_csv.assert_called_with(distribution.download_url, index_col=time_index_title, parse_dates=[time_index_title])
