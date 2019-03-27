@@ -4,12 +4,11 @@ import os
 from typing import Callable
 import pandas as pd
 
-from django.conf import settings
 from django_datajsonar.models import Field, Distribution
 
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.utils.csv_reader import read_distribution_csv
+from series_tiempo_ar_api.libs.utils.csv_reader import read_distribution_csv
 
 logger = logging.Logger(__name__)
 

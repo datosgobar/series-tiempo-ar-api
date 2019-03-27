@@ -1,10 +1,10 @@
 import os
-from unittest import TestCase
+from django.test import TestCase
 
 from mock import Mock
 from nose.tools import raises
 
-from series_tiempo_ar_api.utils.distribution_csv_reader import DistributionCsvReader
+from series_tiempo_ar_api.libs.utils.distribution_csv_reader import DistributionCsvReader
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 

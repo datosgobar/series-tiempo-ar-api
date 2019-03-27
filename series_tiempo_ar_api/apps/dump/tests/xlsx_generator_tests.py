@@ -8,7 +8,7 @@ from faker import Faker
 from series_tiempo_ar_api.apps.dump.generator.xlsx.generator import generate, sort_key
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_xlsx_task
-from series_tiempo_ar_api.utils.utils import index_catalog
+from series_tiempo_ar_api.libs.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 

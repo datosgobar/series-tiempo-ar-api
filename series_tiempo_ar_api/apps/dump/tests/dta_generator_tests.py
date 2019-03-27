@@ -10,7 +10,7 @@ from series_tiempo_ar_api.apps.dump.generator import constants
 from series_tiempo_ar_api.apps.dump.generator.dta import DtaGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile
 from series_tiempo_ar_api.apps.dump.tasks import enqueue_write_csv_task
-from series_tiempo_ar_api.utils.utils import index_catalog
+from series_tiempo_ar_api.libs.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 

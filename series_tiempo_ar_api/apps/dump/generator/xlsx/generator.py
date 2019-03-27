@@ -5,7 +5,7 @@ from django.core.files import File
 from series_tiempo_ar_api.apps.dump.generator.xlsx.formats import formats
 from series_tiempo_ar_api.apps.dump.generator.xlsx.workbook import DumpWorkbook
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
-from series_tiempo_ar_api.utils.utils import read_file_as_csv
+from series_tiempo_ar_api.libs.utils.utils import read_file_as_csv
 
 
 class XLSXWriter:
