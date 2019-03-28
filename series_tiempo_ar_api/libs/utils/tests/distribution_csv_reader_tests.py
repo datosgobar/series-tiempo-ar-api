@@ -36,3 +36,11 @@ class DistributionCsvReaderTests(TestCase):
         with patch('series_tiempo_ar_api.libs.utils.distribution_csv_reader.pd.read_csv') as read_csv:
             DistributionCsvReader(distribution, index_col).read()
             read_csv.assert_called_with(quoted_url, index_col=index_col, parse_dates=[index_col])
+
+    def test_read_utf8_distribution(self):
+        distribution = Mock(download_url=os.path.join(SAMPLES_DIR, 'daily_periodicity_utf8.csv'))
+        index_col = 'índice_tiempo'
+        data_frame = DistributionCsvReader(distribution, index_col).read()
+
+        series = ['tasas_interés_call', 'tasas_interés_badlar', 'tasas_interés_pm']
+        self.assertListEqual(list(data_frame.columns), series)
