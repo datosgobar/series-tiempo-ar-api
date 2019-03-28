@@ -18,7 +18,8 @@ class DistributionCsvReaderTests(TestCase):
         index_col = 'indice_tiempo'
         data_frame = DistributionCsvReader(distribution, index_col).read()
 
-        self.assertListEqual(list(data_frame.columns), ['tasas_interes_call', 'tasas_interes_badlar', 'tasas_interes_pm'])
+        series = ['tasas_interes_call', 'tasas_interes_badlar', 'tasas_interes_pm']
+        self.assertListEqual(list(data_frame.columns), series)
 
     @raises(ValueError)
     def test_validate_distribution_empty_url(self):
