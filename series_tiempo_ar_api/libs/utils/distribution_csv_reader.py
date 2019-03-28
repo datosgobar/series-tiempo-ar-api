@@ -1,9 +1,6 @@
 import urllib.parse
-from io import BytesIO
 
-import chardet
 import pandas as pd
-import requests
 
 
 class DistributionCsvReader:
@@ -20,7 +17,13 @@ class DistributionCsvReader:
         # Fix a pandas fallando en lectura de URLs no ascii
         url = url.encode('UTF-8')
         url = urllib.parse.quote(url, safe='/:?=&')
+        try:
+            return self.read_csv_with_encoding(url, 'utf-8')
+        except UnicodeDecodeError:
+            return self.read_csv_with_encoding(url, 'latin1')
 
+    def read_csv_with_encoding(self, url, encoding):
         return pd.read_csv(url,
                            parse_dates=[self.index_col],
-                           index_col=self.index_col)
+                           index_col=self.index_col,
+                           encoding=encoding)
