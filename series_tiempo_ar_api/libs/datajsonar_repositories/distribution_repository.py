@@ -1,16 +1,19 @@
 import json
-import pandas  # Import pesado!
 
 from django_datajsonar.models import Distribution, Field, Node
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.node_repository import NodeRepository
 from series_tiempo_ar_api.libs.indexing import constants
+from series_tiempo_ar_api.libs.utils.distribution_csv_reader import DistributionCsvReader
 
 
 class DistributionRepository:
 
-    def __init__(self, instance: Distribution):
+    def __init__(self,
+                 instance: Distribution,
+                 csv_reader=DistributionCsvReader):
         self.instance = instance
+        self.csv_reader = csv_reader
 
     def get_time_index_series(self):
         fields = self.instance.field_set.all()
@@ -30,6 +33,4 @@ class DistributionRepository:
 
     def read_csv_as_time_series_dataframe(self):
         time_index = self.get_time_index_series().title
-        return pandas.read_csv(self.instance.download_url,
-                               parse_dates=[time_index],
-                               index_col=time_index)
+        return self.csv_reader(self.instance, time_index).read()

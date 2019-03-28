@@ -46,11 +46,12 @@ class DistributionRepositoryTests(TestCase):
 
     def test_read_csv_as_dataframe(self):
         time_index_title = 'indice_tiempo'
-        time_index_field = Mock(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), title=time_index_title)
+        time_index_field = Mock(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}),
+                                title=time_index_title)
 
         distribution = MagicMock()
         distribution.field_set.all.return_value = [time_index_field]
 
-        with patch('series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository.pandas.read_csv') as read_csv:
-            DistributionRepository(distribution).read_csv_as_time_series_dataframe()
-            read_csv.assert_called_with(distribution.download_url, index_col=time_index_title, parse_dates=[time_index_title])
+        csv_reader = Mock()
+        DistributionRepository(distribution, csv_reader=csv_reader).read_csv_as_time_series_dataframe()
+        csv_reader.assert_called_with(distribution, time_index_title)

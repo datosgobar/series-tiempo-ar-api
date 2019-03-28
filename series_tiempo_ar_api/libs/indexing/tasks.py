@@ -1,12 +1,10 @@
 #! coding: utf-8
-import json
 import logging
 from traceback import format_exc
 
 from django.conf import settings
 from django.db import transaction
 from django_rq import job
-from pydatajson import DataJson
 
 from django_datajsonar.models import Node
 from django_datajsonar.models import Distribution
@@ -32,13 +30,12 @@ def index_distribution(distribution_id, node_id, task_id,
 
     node = Node.objects.get(id=node_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
-    catalog = DataJson(json.loads(node.catalog))
     distribution_model = Distribution.objects.get(identifier=distribution_id,
                                                   dataset__catalog__identifier=node.catalog_id,
                                                   present=True)
 
     try:
-        DistributionValidator(read_local).run(distribution_model, catalog)
+        DistributionValidator(read_local).run(distribution_model)
 
         changed = True
         _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
