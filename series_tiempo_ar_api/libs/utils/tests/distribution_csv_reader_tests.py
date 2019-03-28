@@ -1,7 +1,9 @@
 import os
+import urllib.parse
+
 from django.test import TestCase
 
-from mock import Mock
+from mock import Mock, patch
 from nose.tools import raises
 
 from series_tiempo_ar_api.libs.utils.distribution_csv_reader import DistributionCsvReader
@@ -24,3 +26,12 @@ class DistributionCsvReaderTests(TestCase):
 
         index_col = 'indice_tiempo'
         DistributionCsvReader(distribution, index_col).read()
+
+    def test_validate_non_ascii_url(self):
+        url = 'http://nón.ascii.url.com/file.csv'
+        quoted_url = urllib.parse.quote(url, safe='/:?=&')
+        distribution = Mock(download_url='http://nón.ascii.url.com/file.csv')
+        index_col = 'indice_tiempo'
+        with patch('series_tiempo_ar_api.libs.utils.distribution_csv_reader.pd.read_csv') as read_csv:
+            DistributionCsvReader(distribution, index_col).read()
+            read_csv.assert_called_with(quoted_url, index_col=index_col, parse_dates=[index_col])
