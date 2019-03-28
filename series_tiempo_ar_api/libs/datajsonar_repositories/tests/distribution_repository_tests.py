@@ -1,7 +1,7 @@
 import json
 
 from django_datajsonar.models import Node
-from mock import Mock, patch, MagicMock
+from mock import Mock, patch
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from nose.tools import raises
@@ -49,7 +49,7 @@ class DistributionRepositoryTests(TestCase):
         time_index_field = Mock(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}),
                                 title=time_index_title)
 
-        distribution = MagicMock()
+        distribution = Mock()
         distribution.field_set.all.return_value = [time_index_field]
 
         csv_reader = Mock()
