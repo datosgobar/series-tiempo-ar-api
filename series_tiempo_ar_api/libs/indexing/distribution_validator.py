@@ -20,7 +20,7 @@ class DistributionValidator(object):
         self.data_validator = data_validator
 
     def run(self, distribution_model: Distribution):
-        """Lanza excepciónes si la distribución no es válida"""
+        """Lanza excepciones si la distribución no es válida"""
         df = self.distribution_repository(distribution_model).read_csv_as_time_series_dataframe()
 
         catalog = self.distribution_repository(distribution_model).get_data_json()
