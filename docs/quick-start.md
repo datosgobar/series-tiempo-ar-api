@@ -5,16 +5,16 @@
  
 
 - [1. Buscar series](#1-buscar-series)
-  - [En un archivo](#en-un-archivo)
-  - [En el explorador de series](#en-el-explorador-de-series)
+    - [En un archivo](#en-un-archivo)
+    - [En el explorador de series](#en-el-explorador-de-series)
 - [2. Armar consulta](#2-armar-consulta)
-  - [Manualmente](#manualmente)
-  - [En el generador de consultas](#en-el-generador-de-consultas)
+    - [Manualmente](#manualmente)
+    - [En el generador de consultas](#en-el-generador-de-consultas)
 - [3. Realizar consulta](#3-realizar-consulta)
-  - [Consultar o integrar JSON](#consultar-o-integrar-json)
-  - [Descargar CSV](#descargar-csv)
-  - [Integrar en planilla de cálculo](#integrar-en-planilla-de-calculo)
-  - [Consultar en el explorador de series](#consultar-en-el-explorador-de-series)
+    - [Consultar o integrar JSON](#consultar-o-integrar-json)
+    - [Descargar CSV](#descargar-csv)
+    - [Integrar en planilla de cálculo](#integrar-en-planilla-de-calculo)
+    - [Consultar en el explorador de series](#consultar-en-el-explorador-de-series)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
