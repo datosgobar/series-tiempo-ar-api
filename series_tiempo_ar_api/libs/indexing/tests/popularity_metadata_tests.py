@@ -17,6 +17,7 @@ class PopularityTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super(PopularityTests, cls).setUpClass()
+        Catalog.objects.all().delete()
         catalog = Catalog.objects.create(identifier='test_catalog')
         dataset = Dataset.objects.create(catalog=catalog)
         cls.distribution = Distribution.objects.create(dataset=dataset, identifier='test_distribution')

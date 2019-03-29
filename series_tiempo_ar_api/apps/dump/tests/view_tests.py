@@ -11,7 +11,7 @@ from elasticsearch_dsl.connections import connections
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import DumpFile, GenerateDumpTask
 from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY
-from series_tiempo_ar_api.utils.utils import index_catalog
+from series_tiempo_ar_api.libs.utils.utils import index_catalog
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 

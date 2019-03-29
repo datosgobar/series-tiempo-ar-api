@@ -1,23 +1,24 @@
 #! coding: utf-8
-import json
 import logging
 from traceback import format_exc
 
 from django.conf import settings
 from django.db import transaction
-from django_rq import job, get_queue
-from pydatajson import DataJson
+from django_rq import job
 
 from django_datajsonar.models import Node
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
+from series_tiempo_ar_api.libs.indexing.indexer.data_frame import init_df, get_distribution_time_index_periodicity
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
+from series_tiempo_ar_api.libs.indexing.indexer.metadata import calculate_enhanced_meta
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
 from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 from .report.report_generator import ReportGenerator
-from .scraping import Scraper
+from .distribution_validator import DistributionValidator
 
 
 logger = logging.getLogger(__name__)
@@ -29,13 +30,12 @@ def index_distribution(distribution_id, node_id, task_id,
 
     node = Node.objects.get(id=node_id)
     task = ReadDataJsonTask.objects.get(id=task_id)
-    catalog = DataJson(json.loads(node.catalog))
     distribution_model = Distribution.objects.get(identifier=distribution_id,
                                                   dataset__catalog__identifier=node.catalog_id,
                                                   present=True)
 
     try:
-        Scraper(read_local).run(distribution_model, catalog)
+        DistributionValidator(read_local).run(distribution_model)
 
         changed = True
         _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)
@@ -52,6 +52,17 @@ def index_distribution(distribution_id, node_id, task_id,
 
 
 def update_distribution_metadata(changed, distribution_model):
+    time_index = DistributionRepository(distribution_model).get_time_index_series()
+    df = init_df(distribution_model, time_index)
+
+    periodicity = get_distribution_time_index_periodicity(time_index)
+    for serie in df.columns:
+        meta = calculate_enhanced_meta(df[serie], periodicity)
+
+        field = distribution_model.field_set.get(identifier=serie, present=True)
+        for meta_key, value in meta.items():
+            field.enhanced_meta.update_or_create(key=meta_key, defaults={'value': value})
+
     distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
                                                       defaults={'value': distribution_model.data_hash})
     distribution_model.enhanced_meta.update_or_create(key=meta_keys.CHANGED,

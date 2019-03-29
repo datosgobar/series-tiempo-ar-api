@@ -17,7 +17,7 @@ from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.dump.generator.generator import DumpGenerator
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask, DumpFile, ZipDumpFile
-from series_tiempo_ar_api.utils.utils import index_catalog, read_file_as_csv
+from series_tiempo_ar_api.libs.utils.utils import index_catalog, read_file_as_csv
 
 samples_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'samples')
 
@@ -223,7 +223,7 @@ class CSVTest(TestCase):
         reader = read_file_as_csv(file)
 
         next(reader)  # Header!!!!
-        self.assertEqual(len(list(reader)), 1)  # Un único row, para un único valor del CSV
+        self.assertEqual(len(list(reader)), 2)
 
     def test_metadata_csv_hits(self):
         file = self.task.dumpfile_set.get(file_name=DumpFile.FILENAME_METADATA,
