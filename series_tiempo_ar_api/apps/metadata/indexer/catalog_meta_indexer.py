@@ -13,6 +13,7 @@ from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.metadata import constants
 from series_tiempo_ar_api.apps.metadata.indexer.index import init_index
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
 class CatalogMetadataIndexer:
@@ -87,18 +88,9 @@ class CatalogMetadataIndexer:
             yield doc
 
     def get_available_fields(self):
-        field_content_type = ContentType.objects.get_for_model(Field)
-        available_fields = Metadata.objects.filter(
-            key=meta_keys.AVAILABLE,
-            value='true',
-            content_type=field_content_type).values_list('object_id', flat=True)
-        fields = Field.objects.filter(
-            distribution__dataset__catalog__identifier=self.node.catalog_id,
-            id__in=available_fields,
-            present=True,
-            error=False,
+        return SeriesRepository.get_available_series(
+            distribution__dataset__catalog__identifier=self.node.catalog_id
         )
-        return fields
 
     def init_fields_meta_cache(self):
         field_content_type = ContentType.objects.get_for_model(Field)
