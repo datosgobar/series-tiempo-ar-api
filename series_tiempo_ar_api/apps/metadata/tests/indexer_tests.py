@@ -56,6 +56,13 @@ class IndexerTests(TestCase):
 
         self.assertTrue(index_ok)
 
+    def test_non_present_fields(self):
+        series_indexed = self._index(catalog_id='test_catalog',
+                                     catalog_url='single_distribution.json',
+                                     set_present=False)
+
+        self.assertTrue(series_indexed)
+
     def test_multiple_catalogs(self):
         self._index(catalog_id='test_catalog',
                                catalog_url='single_distribution.json')
@@ -75,7 +82,7 @@ class IndexerTests(TestCase):
                  catalog_id='other_catalog')
         self.assertTrue(other_search.execute())
 
-    def _index(self, catalog_id, catalog_url, set_availables=True, set_error=False):
+    def _index(self, catalog_id, catalog_url, set_availables=True, set_error=False, set_present=True):
         node = Node.objects.create(
             catalog_id=catalog_id,
             catalog_url=os.path.join(SAMPLES_DIR, catalog_url),
@@ -88,7 +95,7 @@ class IndexerTests(TestCase):
                 field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
                 field.enhanced_meta.create(key=meta_keys.HITS_90_DAYS, value='0')
 
-        datajsonar_Field.objects.update(error=set_error)
+        datajsonar_Field.objects.update(error=set_error, present=set_present)
 
         index_ok = CatalogMetadataIndexer(node, self.meta_task, self.fake_index._name).index()
         if index_ok:
