@@ -34,27 +34,28 @@ class IndexerTests(TestCase):
         self.meta_task = IndexMetadataTask.objects.create()
 
     def test_index(self):
-        index_ok = self._index(catalog_id='test_catalog', catalog_url='single_distribution.json')
+        series_indexed = self._index(catalog_id='test_catalog',
+                                     catalog_url='single_distribution.json')
         search = Search(
             index=self.fake_index._name,
         ).filter('term',
                  catalog_id='test_catalog')
-        self.assertTrue(index_ok)
+        self.assertTrue(series_indexed)
         self.assertTrue(search.execute())
 
     def test_index_unavailable_fields(self):
-        index_ok = self._index(catalog_id='test_catalog',
-                               catalog_url='single_distribution.json',
-                               set_availables=False)
+        series_indexed = self._index(catalog_id='test_catalog',
+                                     catalog_url='single_distribution.json',
+                                     set_availables=False)
 
-        self.assertFalse(index_ok)
+        self.assertFalse(series_indexed)
 
     def test_errored_fields(self):
-        index_ok = self._index(catalog_id='test_catalog',
-                               catalog_url='single_distribution.json',
-                               set_error=True)
+        series_indexed = self._index(catalog_id='test_catalog',
+                                     catalog_url='single_distribution.json',
+                                     set_error=True)
 
-        self.assertTrue(index_ok)
+        self.assertTrue(series_indexed)
 
     def test_non_present_fields(self):
         series_indexed = self._index(catalog_id='test_catalog',
