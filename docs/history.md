@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.14.0
+
+- Bump de versión de django_datjasonar a 0.1.22
+- Bugfix en cálculo de metadatos enriquecidos: ahora se calculan en todas las indexaciones, y no sólo cuando una distribución es actualizada
+
 ## 1.13.2
 
 - Fix a mails no utilizando el campo from_email de la configuración dinámica.
