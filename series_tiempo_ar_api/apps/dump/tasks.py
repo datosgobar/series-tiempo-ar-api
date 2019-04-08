@@ -41,15 +41,15 @@ def write_xlsx(task_id, catalog=None):
 
 # Funciones callable sin argumentos para rqscheduler
 @job('csv_dump')
-def enqueue_write_csv_task(*_):
+def enqueue_write_csv_task(node=None):
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_CSV)
-    write_csv.delay(task.id)
+    write_csv.delay(task.id, node.catalog_id if node else None)
 
 
 @job('xlsx_dump')
-def enqueue_write_xlsx_task(*_):
+def enqueue_write_xlsx_task(node=None):
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_XLSX)
-    write_xlsx.delay(task.id)
+    write_xlsx.delay(task.id, node.catalog_id if node else None)
 
 
 @job('sql_dump', timeout='2h')
@@ -62,9 +62,9 @@ def write_sql(task_id, catalog=None):
 
 
 @job('sql_dump')
-def enqueue_write_sql_task(*_):
+def enqueue_write_sql_task(node=None):
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_SQL)
-    write_sql.delay(task.id)
+    write_sql.delay(task.id, node.catalog_id if node else None)
 
 
 @job('dta_dump', timeout='1h')
@@ -77,6 +77,6 @@ def write_dta(task_id, catalog=None):
 
 
 @job('dta_dump')
-def enqueue_write_dta_task(*_):
+def enqueue_write_dta_task(node=None):
     task = GenerateDumpTask.objects.create(file_type=GenerateDumpTask.TYPE_DTA)
-    write_dta.delay(task.id)
+    write_dta.delay(task.id, node.catalog_id if node else None)

@@ -39,10 +39,11 @@ class MetadataIndexer:
             "actions": actions
         })
 
-    def run(self):
+    def run(self, nodes=None):
+        nodes = nodes or Node.objects.filter(indexable=True)
         index = get_random_index_name()
         index_created = False
-        for node in Node.objects.filter(indexable=True):
+        for node in nodes:
             try:
                 IndexMetadataTask.info(self.task,
                                        u'Inicio de la indexación de metadatos de {}'
@@ -63,8 +64,8 @@ class MetadataIndexer:
 
 
 @job('meta_indexing', timeout=10000)
-def run_metadata_indexer(task):
-    MetadataIndexer(task).run()
+def run_metadata_indexer(task, node):
+    MetadataIndexer(task).run([node])
     update_units()
     task.refresh_from_db()
     task.status = task.FINISHED
@@ -72,5 +73,5 @@ def run_metadata_indexer(task):
 
 
 @job('meta_indexing', timeout=-1)
-def enqueue_new_index_metadata_task(*_):
-    run_metadata_indexer(IndexMetadataTask.objects.create())
+def enqueue_new_index_metadata_task(node=None):
+    run_metadata_indexer(IndexMetadataTask.objects.create(), node)
