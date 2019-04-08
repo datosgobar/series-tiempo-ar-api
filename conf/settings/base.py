@@ -330,12 +330,12 @@ DATAJSONAR_STAGES = {
     'Indexación de datos (sólo actualizados)': {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing',
         'queue': 'api_index',
-        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+        'task': 'series_tiempo_ar_api.apps.management.models.IndexDataTask',
     },
     'Indexación de datos (forzar indexación)': {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_force_api_indexing',
         'queue': 'api_index',
-        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+        'task': 'series_tiempo_ar_api.apps.management.models.IndexDataTask',
     },
     'Generación de dumps CSV': {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task',
@@ -363,14 +363,14 @@ DATAJSONAR_STAGES = {
         'task': 'series_tiempo_ar_api.apps.metadata.models.IndexMetadataTask',
     },
     'Test de integración': {
-        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration',
+        'callable_str': 'series_tiempo_ar_api.apps.management.tasks.integration_test.enqueue_new_integration_test',
         'queue': 'integration_test',
         'task': 'series_tiempo_ar_api.apps.management.models.IntegrationTestTask',
     },
     'Reporte de indexación': {
         'callable_str': 'series_tiempo_ar_api.libs.indexing.tasks.send_indexation_report_email',
         'queue': 'api_report',
-        'task': 'series_tiempo_ar_api.apps.management.models.ReadDataJsonTask',
+        'task': 'series_tiempo_ar_api.apps.management.models.IndexDataTask',
     },
     'Importado de analytics': {
         'callable_str': 'series_tiempo_ar_api.apps.analytics.tasks.enqueue_new_import_analytics_task',

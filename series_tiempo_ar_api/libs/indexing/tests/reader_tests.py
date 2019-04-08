@@ -15,7 +15,7 @@ from django_datajsonar.models import ReadDataJsonTask, Node
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 from series_tiempo_ar_api.libs.indexing.indexer.data_frame import init_df
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask as ManagementTask
+from series_tiempo_ar_api.apps.management.models import IndexDataTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
 

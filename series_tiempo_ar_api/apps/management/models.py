@@ -11,7 +11,7 @@ from django_datajsonar import models as djar_models
 from .indicator_names import IndicatorNamesMixin
 
 
-class ReadDataJsonTask(djar_models.AbstractTask):
+class IndexDataTask(djar_models.AbstractTask):
     class Meta:
         verbose_name = "Corrida de indexación de datos"
         verbose_name_plural = "Corridas de indexación de datos"
@@ -34,7 +34,7 @@ class Indicator(models.Model, IndicatorNamesMixin):
     type = models.CharField(max_length=100, choices=IndicatorNamesMixin.TYPE_CHOICES)
     value = models.FloatField(default=0)
     node = models.ForeignKey(to=djar_models.Node, on_delete=models.CASCADE)
-    task = models.ForeignKey(to=ReadDataJsonTask, on_delete=models.CASCADE)
+    task = models.ForeignKey(to=IndexDataTask, on_delete=models.CASCADE)
 
 
 class IntegrationTestTask(djar_models.AbstractTask):

@@ -27,7 +27,7 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
     task.save()
 
     read_datajson(task, read_local=True, whitelist=True)
-    index_task = mgmt.ReadDataJsonTask.objects.create()
+    index_task = mgmt.IndexDataTask.objects.create()
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
         index_distribution(distribution.identifier, node.id, index_task.id, index=index, read_local=True, force=True)
 

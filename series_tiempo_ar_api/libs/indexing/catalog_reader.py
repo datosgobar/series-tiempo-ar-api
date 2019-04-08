@@ -6,7 +6,7 @@ import json
 from pydatajson import DataJson
 
 from django_datajsonar.models import Distribution
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from series_tiempo_ar_api.apps.management.models import IndexDataTask
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
 
@@ -21,7 +21,7 @@ def index_catalog(node, task, read_local=False, force=False):
         node.catalog = json.dumps(catalog)
         node.save()
     except Exception as e:
-        ReadDataJsonTask.info(task, READ_ERROR.format(node.catalog_id, e))
+        IndexDataTask.info(task, READ_ERROR.format(node.catalog_id, e))
         return
 
     distributions = Distribution.objects.filter(present=True,
