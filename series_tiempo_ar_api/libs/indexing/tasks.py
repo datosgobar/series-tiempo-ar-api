@@ -10,7 +10,7 @@ from django_datajsonar.models import Node
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.management.models import ReadDataJsonTask
+from series_tiempo_ar_api.apps.management.models import IndexDataTask
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing.indexer.data_frame import init_df, get_distribution_time_index_periodicity
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
@@ -29,7 +29,7 @@ def index_distribution(distribution_id, node_id, task_id,
                        read_local=False, index=settings.TS_INDEX, force=False):
 
     node = Node.objects.get(id=node_id)
-    task = ReadDataJsonTask.objects.get(id=task_id)
+    task = IndexDataTask.objects.get(id=task_id)
     distribution_model = Distribution.objects.get(identifier=distribution_id,
                                                   dataset__catalog__identifier=node.catalog_id,
                                                   present=True)
@@ -78,7 +78,7 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
     else:
         e_msg = format_exc()
     msg = msg.format(distribution_id, node.catalog_id, e_msg)
-    ReadDataJsonTask.info(task, msg)
+    IndexDataTask.info(task, msg)
     logger.info(msg)
 
     with transaction.atomic():
@@ -106,6 +106,6 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
 
 
 @job("api_report", timeout=-1)
-def send_indexation_report_email():
-    task = ReadDataJsonTask.objects.last()
+def send_indexation_report_email(*_):
+    task = IndexDataTask.objects.last()
     ReportGenerator(task).generate()

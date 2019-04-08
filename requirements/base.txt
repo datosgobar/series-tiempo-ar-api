@@ -15,7 +15,7 @@ django-ipware==1.1.6
 django-sendfile==0.3.11
 python-crontab==2.2.8
 django-des==2.2.0
--e git+git://github.com/datosgobar/django-datajsonar@0.1.22#egg=django_datajsonar
+-e git+git://github.com/datosgobar/django-datajsonar@master#egg=django_datajsonar
 django-solo==1.1.2
 django-minio-storage
 xlsxwriter==1.1.1

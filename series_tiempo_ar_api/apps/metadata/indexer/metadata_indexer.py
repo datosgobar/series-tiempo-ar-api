@@ -72,5 +72,5 @@ def run_metadata_indexer(task):
 
 
 @job('meta_indexing', timeout=-1)
-def enqueue_new_index_metadata_task():
+def enqueue_new_index_metadata_task(*_):
     run_metadata_indexer(IndexMetadataTask.objects.create())

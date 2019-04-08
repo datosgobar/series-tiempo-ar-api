@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django_datajsonar.admin.tasks import AbstractTaskAdmin
+from scheduler.admin import RepeatableJobAdmin
+from scheduler.models import RepeatableJob
 
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .tasks.indexation import read_datajson
 from .tasks.integration_test import run_integration
-from .models import ReadDataJsonTask, IntegrationTestTask, IntegrationTestConfig
+from .models import IndexDataTask, IntegrationTestTask, IntegrationTestConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -35,7 +37,7 @@ class NodeAdmin(admin.ModelAdmin):
 class DataJsonAdmin(AbstractTaskAdmin):
     task = read_datajson
 
-    model = ReadDataJsonTask
+    model = IndexDataTask
 
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing'
 
@@ -48,5 +50,7 @@ class IntegrationTestTaskAdmin(AbstractTaskAdmin):
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration'
 
 
-admin.site.register(ReadDataJsonTask, DataJsonAdmin)
+admin.site.register(IndexDataTask, DataJsonAdmin)
 admin.site.register(IntegrationTestConfig, SingletonAdmin)
+admin.site.unregister(RepeatableJob)
+admin.site.register(RepeatableJob, RepeatableJobAdmin)

@@ -92,5 +92,5 @@ def generate_errors_csv(result: list):
 
 
 @job("integration_test")
-def enqueue_new_integration_test():
+def enqueue_new_integration_test(*_):
     run_integration()

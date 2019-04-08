@@ -10,7 +10,7 @@ from .importer import AnalyticsImporter
 
 
 @job('analytics')
-def enqueue_new_import_analytics_task(limit=1000, requests_lib=requests, import_all=False, index_to_es=True):
+def enqueue_new_import_analytics_task(limit=1000, requests_lib=requests, import_all=False, index_to_es=True, **_):
     AnalyticsImporter(limit=limit, requests_lib=requests_lib, index_to_es=index_to_es).run(import_all)
 
 
@@ -20,6 +20,6 @@ def import_analytics(task, limit=1000, requests_lib=requests, import_all=False, 
 
 
 @job('hits_indicators', timeout=1000)
-def enqueue_new_calculate_hits_indicators_task():
+def enqueue_new_calculate_hits_indicators_task(*_):
     yesterday = datetime.date.today() - relativedelta(days=1)
     calculate_hits_indicators(for_date=yesterday)
