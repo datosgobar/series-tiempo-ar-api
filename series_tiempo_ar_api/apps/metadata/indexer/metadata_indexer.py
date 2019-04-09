@@ -39,8 +39,7 @@ class MetadataIndexer:
             "actions": actions
         })
 
-    def run(self, nodes=None):
-        nodes = nodes or Node.objects.filter(indexable=True)
+    def run(self, nodes):
         index = get_random_index_name()
         index_created = False
         for node in nodes:
@@ -64,8 +63,9 @@ class MetadataIndexer:
 
 
 @job('meta_indexing', timeout=10000)
-def run_metadata_indexer(task, node):
-    MetadataIndexer(task).run([node])
+def run_metadata_indexer(task, node=None):
+    node = [node] if node is not None else Node.objects.filter(indexable=True)
+    MetadataIndexer(task).run(node)
     update_units()
     task.refresh_from_db()
     task.status = task.FINISHED
