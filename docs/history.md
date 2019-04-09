@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.15.0
+
+- Bump de versión de django_datajsonar a 0.2.0, y adaptando la base de código para ser compatible con dicha versión
+- Bugfix de indexación de metadatos: ahora se indexan todas las series _disponibles_ en vez de las _disponibles sin error_
+
 ## 1.14.0
 
 - Bump de versión de django_datjasonar a 0.1.22
