@@ -14,4 +14,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         force = options['force']
-        schedule_api_indexing(force)
+        schedule_api_indexing(force=force)
