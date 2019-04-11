@@ -56,6 +56,6 @@ class Writer:
         except Exception as e:
             exc = str(e) or format_exc(e)
             msg = f"{self.catalog_id or 'global'}: Error generando el dump {self.dump_type}: {exc}"
-            logger.error(msg)
+            logger.warning(msg)
             GenerateDumpTask.info(self.task, msg)
             raise e

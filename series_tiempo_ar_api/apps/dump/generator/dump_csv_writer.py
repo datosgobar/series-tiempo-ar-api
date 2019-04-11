@@ -59,7 +59,7 @@ class CsvDumpWriter:
         except Exception as e:
             msg = f'[{self.tag} Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
             GenerateDumpTask.info(self.task, msg)
-            logger.error(msg)
+            logger.warning(msg)
 
     def write_serie(self, serie: pd.Series, periodicity: str, fields: dict, writer: csv.writer):
         field_id = fields[serie.name]

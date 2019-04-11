@@ -1,13 +1,10 @@
 #! coding: utf-8
-import logging
 
 from series_tiempo_ar.validations import validate_distribution
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing import constants
-
-logger = logging.getLogger(__name__)
 
 
 class DistributionValidator(object):

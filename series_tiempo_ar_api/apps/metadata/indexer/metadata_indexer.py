@@ -13,8 +13,6 @@ from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
 from series_tiempo_ar_api.apps.metadata.utils import get_random_index_name
 from .catalog_meta_indexer import CatalogMetadataIndexer
 
-logger = logging.getLogger(__name__)
-
 
 class MetadataIndexer:
 
