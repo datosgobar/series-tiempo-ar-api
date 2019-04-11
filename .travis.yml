@@ -33,7 +33,7 @@ install:
 script:
 - npm run jsc
 - scripts/tests.sh
-- scripts/pylint.sh
+- scripts/pylint.sh --full
 - scripts/pycodestyle.sh
 
 after_success:
