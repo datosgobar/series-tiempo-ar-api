@@ -101,9 +101,6 @@ def _handle_exception(dataset_model, distribution_id, exc, node, task):
     dataset_model.catalog.error = True
     dataset_model.catalog.save()
 
-    if settings.RQ_QUEUES['indexing'].get('ASYNC', True):
-        raise exc  # Django-rq / sentry logging
-
 
 @job("api_report", timeout=-1)
 def send_indexation_report_email(*_):
