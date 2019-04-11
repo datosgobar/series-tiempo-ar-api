@@ -1,3 +1,4 @@
+from des.models import DynamicEmailConfiguration
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
@@ -59,3 +60,11 @@ class ReportMailSenderTests(TestCase):
         ReportMailSender(admins=NodeAdmins(node), subject=self.subject, body=self.body).send()
 
         self.assertIn(email, mail.outbox[0].recipients())
+
+    def test_from_email_is_read_from_des(self):
+        email = 'new_from_email@test_mail.com'
+        config = DynamicEmailConfiguration.get_solo()
+        config.from_email = email
+        config.save()
+        ReportMailSender(admins=self.admins, subject=self.subject, body=self.body).send()
+        self.assertEqual(mail.outbox[0].from_email, config.from_email)
