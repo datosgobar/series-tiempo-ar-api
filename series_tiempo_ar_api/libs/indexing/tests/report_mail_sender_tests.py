@@ -4,6 +4,9 @@ from django.test import TestCase
 from django.core import mail
 
 from django.conf import settings
+from django_datajsonar.models import Node
+
+from series_tiempo_ar_api.libs.indexing.report.node_admins import GlobalAdmins, NodeAdmins
 from series_tiempo_ar_api.libs.indexing.report.report_mail_sender import ReportMailSender
 
 
@@ -16,24 +19,25 @@ class ReportMailSenderTests(TestCase):
                                         password='test_password',
                                         email='test_email@mail.com')
         self.user.groups.add(Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP))
+        self.admins = GlobalAdmins()
 
     def test_send_mail(self):
-        ReportMailSender(node=None, subject=self.subject, body=self.body).send()
+        ReportMailSender(admins=self.admins, subject=self.subject, body=self.body).send()
 
         self.assertEqual(len(mail.outbox), 1)
 
     def test_mail_sent_is_to_all_datajson_recipients_users(self):
-        ReportMailSender(node=None, subject=self.subject, body=self.body).send()
+        ReportMailSender(admins=self.admins, subject=self.subject, body=self.body).send()
 
         self.assertIn(self.user.email, mail.outbox[0].recipients())
 
     def test_if_no_recipients_mail_is_not_sent(self):
         self.user.groups.clear()
-        ReportMailSender(node=None, subject=self.subject, body=self.body).send()
+        ReportMailSender(admins=self.admins, subject=self.subject, body=self.body).send()
         self.assertEqual(len(mail.outbox), 0)
 
     def test_mail_send_with_attachment(self):
-        sender = ReportMailSender(node=None, subject=self.subject, body=self.body)
+        sender = ReportMailSender(admins=self.admins, subject=self.subject, body=self.body)
         file_name, body = 'test.csv', 'body'
         sender.add_csv_attachment('test.csv', 'body')
         sender.send()
@@ -44,6 +48,14 @@ class ReportMailSenderTests(TestCase):
         self.assertEqual(body, attachment_body)
 
     def test_subject_and_body(self):
-        ReportMailSender(node=None, subject=self.subject, body=self.body).send()
+        ReportMailSender(admins=self.admins, subject=self.subject, body=self.body).send()
         self.assertEqual(mail.outbox[0].subject, self.subject)
         self.assertEqual(mail.outbox[0].body, self.body)
+
+    def test_individual_node_report_it_sent_only_to_node_admins(self):
+        node = Node.objects.create(indexable=True, catalog_id='catalog_id', catalog_url='http://catalog_url.com')
+        email = 'other@test.email.com'
+        node.admins.add(User.objects.create(username='other_user', password='other_password', email=email))
+        ReportMailSender(admins=NodeAdmins(node), subject=self.subject, body=self.body).send()
+
+        self.assertIn(email, mail.outbox[0].recipients())

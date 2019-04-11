@@ -1,21 +1,17 @@
 from des.models import DynamicEmailConfiguration
-from django.conf import settings
-from django.contrib.auth.models import Group
 from django.core.mail import EmailMultiAlternatives
 
 
 class ReportMailSender:
 
-    def __init__(self, node, subject, body):
-        self.node = node
+    def __init__(self, admins, subject, body):
+        self.admins = admins
         self.subject = subject
         self.body = body
         self.attachments = []
 
     def send(self):
-        recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
-
-        emails = [user.email for user in recipients]
+        emails = self.admins.get_emails()
 
         config = DynamicEmailConfiguration.get_solo()
         mail = EmailMultiAlternatives(self.subject, self.body, from_email=config.from_email, to=emails)
