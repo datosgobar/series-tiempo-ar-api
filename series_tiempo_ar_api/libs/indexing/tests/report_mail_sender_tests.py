@@ -29,3 +29,14 @@ class ReportMailSenderTests(TestCase):
         self.user.groups.clear()
         ReportMailSender(node=None).send()
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_mail_send_with_attachment(self):
+        sender = ReportMailSender(node=None)
+        file_name, body = 'test.csv', 'body'
+        sender.add_csv_attachment('test.csv', 'body')
+        sender.send()
+
+        attachment_file_name, attachment_body, _ = mail.outbox[0].attachments[0]
+
+        self.assertEqual(file_name, attachment_file_name)
+        self.assertEqual(body, attachment_body)
