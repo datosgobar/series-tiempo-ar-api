@@ -24,3 +24,8 @@ class ReportMailSenderTests(TestCase):
         ReportMailSender(node=None).send()
 
         self.assertIn(self.user.email, mail.outbox[0].recipients())
+
+    def test_if_no_recipients_mail_is_not_sent(self):
+        self.user.groups.clear()
+        ReportMailSender(node=None).send()
+        self.assertEqual(len(mail.outbox), 0)
