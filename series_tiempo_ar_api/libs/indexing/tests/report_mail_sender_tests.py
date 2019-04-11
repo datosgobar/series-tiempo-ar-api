@@ -68,3 +68,13 @@ class ReportMailSenderTests(TestCase):
         config.save()
         ReportMailSender(admins=self.admins, subject=self.subject, body=self.body).send()
         self.assertEqual(mail.outbox[0].from_email, config.from_email)
+
+    def test_add_plaintext_attachment(self):
+        sender = ReportMailSender(admins=self.admins, subject=self.subject, body=self.body)
+        file_name, body = 'plain.txt', 'body'
+        sender.add_plaintext_attachment(file_name, body)
+        sender.send()
+        attachment_file_name, attachment_body, _ = mail.outbox[0].attachments[0]
+
+        self.assertEqual(file_name, attachment_file_name)
+        self.assertEqual(body, attachment_body)

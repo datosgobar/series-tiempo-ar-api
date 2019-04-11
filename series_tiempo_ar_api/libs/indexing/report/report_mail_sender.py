@@ -17,10 +17,13 @@ class ReportMailSender:
         mail = EmailMultiAlternatives(self.subject, self.body, from_email=config.from_email, to=emails)
         mail.attach_alternative(self.body, 'text/html')
 
-        for file_name, body in self.attachments:
-            mail.attach(file_name, body, 'text/csv')
+        for attachment_args in self.attachments:
+            mail.attach(*attachment_args)
 
         mail.send()
 
     def add_csv_attachment(self, file_name, body):
-        self.attachments.append((file_name, body))
+        self.attachments.append((file_name, body, 'text/csv'))
+
+    def add_plaintext_attachment(self, file_name, body):
+        self.attachments.append((file_name, body, 'text/plain'))

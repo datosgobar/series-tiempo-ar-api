@@ -66,7 +66,6 @@ class ReportGenerator(object):
 
     def add_attachments(self, mail_sender, node):
         mail_attachments = (
-            ('errors.log', self.task.logs),
             ('catalogs.csv', attachments.generate_catalog_attachment(node=node)),
             ('datasets.csv', attachments.generate_dataset_attachment(node=node)),
             ('distributions.csv', attachments.generate_distribution_attachment(node=node)),
@@ -74,6 +73,9 @@ class ReportGenerator(object):
         )
         for file_name, body in mail_attachments:
             mail_sender.add_csv_attachment(file_name, body)
+
+        # No se manda si task.logs está vacío
+        mail_sender.add_plaintext_attachment('errors.log', self.task.logs)
 
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
