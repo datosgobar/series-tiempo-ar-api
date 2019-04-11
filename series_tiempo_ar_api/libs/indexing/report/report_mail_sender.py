@@ -6,8 +6,10 @@ from django.core.mail import EmailMultiAlternatives
 
 class ReportMailSender:
 
-    def __init__(self, node):
+    def __init__(self, node, subject, body):
         self.node = node
+        self.subject = subject
+        self.body = body
         self.attachments = []
 
     def send(self):
@@ -16,7 +18,7 @@ class ReportMailSender:
         emails = [user.email for user in recipients]
 
         config = DynamicEmailConfiguration.get_solo()
-        mail = EmailMultiAlternatives('test', 'test', from_email=config.from_email, to=emails)
+        mail = EmailMultiAlternatives(self.subject, self.body, from_email=config.from_email, to=emails)
 
         for file_name, body in self.attachments:
             mail.attach(file_name, body, 'text/csv')
