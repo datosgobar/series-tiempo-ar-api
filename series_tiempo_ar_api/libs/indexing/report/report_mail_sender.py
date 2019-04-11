@@ -15,6 +15,7 @@ class ReportMailSender:
 
         config = DynamicEmailConfiguration.get_solo()
         mail = EmailMultiAlternatives(self.subject, self.body, from_email=config.from_email, to=emails)
+        mail.attach_alternative(self.body, 'text/html')
 
         for file_name, body in self.attachments:
             mail.attach(file_name, body, 'text/csv')

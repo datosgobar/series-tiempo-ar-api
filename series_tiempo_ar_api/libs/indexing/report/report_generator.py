@@ -3,11 +3,7 @@ from __future__ import unicode_literals
 import datetime
 
 from dateutil.relativedelta import relativedelta
-from des.models import DynamicEmailConfiguration
 from django.conf import settings
-from django.contrib.auth.models import Group
-from django.core.mail import send_mail
-from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 
@@ -16,6 +12,8 @@ from series_tiempo_ar_api.apps.analytics.models import Query
 from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
+from series_tiempo_ar_api.libs.indexing.report.node_admins import GlobalAdmins, NodeAdmins
+from series_tiempo_ar_api.libs.indexing.report.report_mail_sender import ReportMailSender
 
 
 class ReportGenerator(object):
@@ -57,33 +55,25 @@ class ReportGenerator(object):
         self.send_email(context, node)
 
     def send_email(self, context, node=None):
-        if not node:
-            recipients = Group.objects.get(name=settings.READ_DATAJSON_RECIPIENT_GROUP).user_set.all()
-        else:
-            recipients = node.admins.all()
-
-        emails = [user.email for user in recipients]
-        if not emails:  # Nothing to do here
-            return
         start_time = self._format_date(self.task.created)
-        subject = u'[{}] API Series de Tiempo: {}'.format(settings.ENV_TYPE, start_time)
-
-        msg = render_to_string('indexing/report.txt', context=context)
-
-        config = DynamicEmailConfiguration.get_solo()
-        mail = EmailMultiAlternatives(subject, msg, from_email=config.from_email, to=emails)
+        subject = f'[{settings.ENV_TYPE}] API Series de Tiempo: {start_time}'
         html_msg = render_to_string('indexing/report.html', context=context)
-        mail.attach_alternative(html_msg, 'text/html')
+        admins = NodeAdmins(node) if node else GlobalAdmins()
 
-        mail.attach('errors.log', self.task.logs, 'text/plain')
-        mail.attach('catalogs.csv', attachments.generate_catalog_attachment(node=node), 'text/csv')
-        mail.attach('datasets.csv', attachments.generate_dataset_attachment(node=node), 'text/csv')
-        mail.attach('distributions.csv', attachments.generate_distribution_attachment(node=node), 'text/csv')
-        mail.attach('series.csv', attachments.generate_field_attachment(node=node), 'text/csv')
+        sender = ReportMailSender(admins=admins, subject=subject, body=html_msg)
+        self.add_attachments(sender, node)
+        sender.send()
 
-        sent = mail.send()
-        if emails and not sent:
-            raise ValueError
+    def add_attachments(self, mail_sender, node):
+        mail_attachments = (
+            ('errors.log', self.task.logs),
+            ('catalogs.csv', attachments.generate_catalog_attachment(node=node)),
+            ('datasets.csv', attachments.generate_dataset_attachment(node=node)),
+            ('distributions.csv', attachments.generate_distribution_attachment(node=node)),
+            ('series.csv', attachments.generate_field_attachment(node=node)),
+        )
+        for file_name, body in mail_attachments:
+            mail_sender.add_csv_attachment(file_name, body)
 
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
