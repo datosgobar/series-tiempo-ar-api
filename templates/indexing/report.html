@@ -2,6 +2,7 @@
 <html lang="en">
 <body>
     <p>Horario de finalización: {{ finish_time }}</p>
+    {% if node %}<p>Catálogo: {{ node.catalog_id }}</p>{% endif %}
 
     <h4>Resumen</h4>
     <ul>
@@ -14,7 +15,7 @@
     Queries del día anterior: {{ queries }}
     <hr>
     <h4>Detalle</h4>
-    {% if not is_partial_report %}
+    {% if node is not None %}
     <p>Catálogos:</p>
     <ul>
         <li>nuevos: {{ catalogos_nuevos_cant }}</li>

@@ -45,8 +45,8 @@ class ReportGenerator(object):
 
         context = {
             'finish_time': self._format_date(self.task.finished),
-            'is_partial_report': bool(node),
-            'queries': self.get_queries()
+            'queries': self.get_queries(),
+            'node': node,
         }
         context.update({
             indicator: self._get_indicator_value(indicator, node=node)
