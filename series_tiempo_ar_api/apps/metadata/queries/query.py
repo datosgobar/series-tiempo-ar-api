@@ -141,7 +141,7 @@ class FieldSearchQuery(object):
         if not terms:
             return search
 
-        terms = terms.split(',')
+        terms = terms.split('||')
         if arg_name == 'catalog_id':
             terms = resolve_catalog_id_aliases(terms)
 
