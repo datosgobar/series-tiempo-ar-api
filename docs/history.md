@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.17.0
+
+- Cambio caracter separador en /search: de ',' -> '||' (dos caracteres)
+
 ## 1.16.0
 
 - Muestro ID de catalogos en reportes individuales

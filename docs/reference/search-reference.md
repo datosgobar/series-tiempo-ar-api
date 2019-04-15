@@ -106,6 +106,8 @@ Por ejemplo: un pedido con `units=Millones de pesos` sólo contendrá series de 
 
 Por ejemplo: un pedido a [`/search/field_units`](https://apis.datos.gob.ar/series/api/search/field_units/) devuelve una lista de los términos que se le pueden pasar al parámetro `units`. Cualquier otra opción devolverá una lista vacía de resultados (al no haber coincidencias). Consultar la tabla de parámetros para ver los endpoints auxiliares.
 
+Se pueden armar consultas que filtren por más de un valor, separando los valores deseados por `||`. Por ejemplo: `units=Pesos||Millones de pesos`.
+
 ### `limit`
 
 Este parámetro es utilizado junto a [`start`](#start) para controlar el paginado de los resultados devueltos por la API. Debe especificarse un número entero positivo, no mayor que 1000, ya que esa es la cantidad máxima de resultados devueltos por la API. El valor por defecto si no se especifica valor alguno es 10.
