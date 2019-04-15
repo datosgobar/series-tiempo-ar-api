@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.16.0
+
+- Muestro ID de catalogos en reportes individuales
+- Mejoras de manejo de errores de tareas asincronicas
+
 ## 1.15.0
 
 - Bump de versión de django_datajsonar a 0.2.0, y adaptando la base de código para ser compatible con dicha versión
