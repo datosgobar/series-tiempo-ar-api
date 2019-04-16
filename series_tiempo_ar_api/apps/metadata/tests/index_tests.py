@@ -3,6 +3,7 @@
 from django.test import TestCase
 from faker import Faker
 
+from elasticsearch_dsl.connections import connections
 from series_tiempo_ar_api.apps.metadata.indexer.index import get_fields_meta_index
 from series_tiempo_ar_api.apps.metadata.models import Synonym
 from series_tiempo_ar_api.apps.metadata import constants
@@ -34,3 +35,8 @@ class IndexTests(TestCase):
 
         self.assertEqual(len(filters['synonyms']), 3)
         self.assertEqual(set(filters['synonyms']), set(terms))
+
+    def tearDown(self) -> None:
+        elastic = connections.get_connection()
+        if elastic.indices.exists(self.index_name):
+            elastic.indices.delete(self.index_name)

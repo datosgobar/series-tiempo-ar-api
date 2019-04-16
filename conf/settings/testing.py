@@ -41,3 +41,5 @@ MINIO_STORAGE_SECRET_KEY = "development"
 
 DUMP_LOG_EXCEPTIONS = False
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
+TS_INDEX = 'indicators_test'

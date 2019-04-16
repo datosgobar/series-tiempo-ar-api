@@ -1,6 +1,7 @@
 import os
 from random import shuffle
 
+from elasticsearch_dsl.connections import connections
 from django.core.management import call_command
 from django.test import TestCase
 from faker import Faker
@@ -45,6 +46,11 @@ class XLSXGeneratorTests(TestCase):
                          len(DumpFile.FILENAME_CHOICES))
         self.assertEqual(DumpFile.objects.filter(file_type=DumpFile.TYPE_XLSX, node__catalog_id='catalog_two').count(),
                          len(DumpFile.FILENAME_CHOICES))
+
+    def tearDown(self) -> None:
+        elastic = connections.get_connection()
+        if elastic.indices.exists(self.index):
+            elastic.indices.delete(self.index)
 
 
 class SheetSortTests(TestCase):
