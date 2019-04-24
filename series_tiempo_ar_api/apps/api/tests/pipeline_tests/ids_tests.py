@@ -164,3 +164,8 @@ class IdsTest(TestCase):
         self.cmd.run(self.query, {'ids': self.single_series})
 
         self.assertTrue(self.cmd.errors)
+
+    def test_non_present_series(self):
+        Field.objects.filter(identifier=self.single_series).update(present=False)
+        self.cmd.run(self.query, {'ids': self.single_series})
+        self.assertFalse(self.cmd.errors)
