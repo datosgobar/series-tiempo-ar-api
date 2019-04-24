@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.18.0
+
+- Fixes en indexación de distribuciones, no se verifica el certificado de SSL (necesario para obtener datos de algunos publicadores)
+- Fix a lectura de series marcadas como no presentes
+
 ## 1.17.0
 
 - Cambio caracter separador en /search: de ',' -> '||' (dos caracteres)
