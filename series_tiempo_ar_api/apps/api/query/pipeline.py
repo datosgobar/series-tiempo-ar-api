@@ -297,7 +297,7 @@ class IdsField(BaseOperation):
         """
 
         try:
-            field_model = models.Field.objects.get(identifier=series_id, present=True)
+            field_model = models.Field.objects.get(identifier=series_id)
         except models.Field.DoesNotExist:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
