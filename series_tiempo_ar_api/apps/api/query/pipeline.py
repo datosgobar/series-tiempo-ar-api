@@ -18,6 +18,7 @@ from series_tiempo_ar_api.apps.api.query.strings import SERIES_DOES_NOT_EXIST
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
 class QueryPipeline(object):
@@ -296,9 +297,9 @@ class IdsField(BaseOperation):
         encontrarse, llena la lista de errores según corresponda.
         """
 
-        try:
-            field_model = models.Field.objects.get(identifier=series_id)
-        except models.Field.DoesNotExist:
+
+        field_model = SeriesRepository.get_available_series(identifier=series_id).first()
+        if field_model is None:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
 
@@ -307,10 +308,6 @@ class IdsField(BaseOperation):
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
             return None
 
-        available = meta_keys.get(field_model, meta_keys.AVAILABLE)
-        if not available or available.lower() == 'false':
-            self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
-            return None
         return field_model
 
     def _parse_single_series(self, serie):
