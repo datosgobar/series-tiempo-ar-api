@@ -297,7 +297,6 @@ class IdsField(BaseOperation):
         encontrarse, llena la lista de errores según corresponda.
         """
 
-
         field_model = SeriesRepository.get_available_series(identifier=series_id).first()
         if field_model is None:
             self._append_error(SERIES_DOES_NOT_EXIST.format(series_id), series_id=series_id)
