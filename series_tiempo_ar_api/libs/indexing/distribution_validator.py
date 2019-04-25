@@ -4,7 +4,6 @@ from series_tiempo_ar.validations import validate_distribution
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
-from series_tiempo_ar_api.libs.indexing import constants
 
 
 class DistributionValidator(object):
@@ -22,6 +21,6 @@ class DistributionValidator(object):
 
         catalog = self.distribution_repository(distribution_model).get_data_json()
         distribution = catalog.get_distribution(distribution_model.identifier)
-        dataset = catalog.get_dataset(distribution[constants.DATASET_IDENTIFIER])
+        dataset = catalog.get_dataset(distribution_model.dataset.identifier)
 
         self.data_validator(df, catalog, dataset, distribution)
