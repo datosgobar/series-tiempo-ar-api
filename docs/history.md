@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.19.0
+
+- Fix de regresión de lectura de dataset identifiers durante la indexación de datos a Elasticsearch
+
 ## 1.18.0
 
 - Fixes en indexación de distribuciones, no se verifica el certificado de SSL (necesario para obtener datos de algunos publicadores)
