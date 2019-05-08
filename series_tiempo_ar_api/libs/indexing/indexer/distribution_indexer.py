@@ -28,10 +28,7 @@ class DistributionIndexer:
         self.index = tseries_index(index)
 
     def run(self, distribution):
-        time_index = DistributionRepository(distribution).get_time_index_series()
-        df = init_df(distribution, time_index)
-
-        actions = self.generate_es_actions(df, distribution)
+        actions = self.generate_es_actions(distribution)
 
         if not actions:
             return
@@ -40,17 +37,27 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-        self.update_distribution_indexation_metadata(distribution, time_index)
+        self.update_distribution_indexation_metadata(distribution)
 
-    def generate_es_actions(self, df, distribution):
+    def generate_es_actions(self, distribution):
+        time_index = DistributionRepository(distribution).get_time_index_series()
+        df = init_df(distribution, time_index)
+
         es_actions = [process_column(df[col], self.index_name) for col in df.columns]
+
+        if not es_actions:
+            logger.warning(strings.NO_SERIES,
+                           distribution.identifier,
+                           distribution.dataset.catalog.identifier)
+            return []
 
         # List flatten: si el resultado son múltiples listas las junto en una sola
         actions = reduce(lambda x, y: x + y, es_actions) if isinstance(es_actions[0], list) else es_actions
         self.add_catalog_keyword(actions, distribution)
         return actions
 
-    def update_distribution_indexation_metadata(self, distribution, time_index):
+    def update_distribution_indexation_metadata(self, distribution):
+        time_index = DistributionRepository(distribution).get_time_index_series()
         for field in SeriesRepository.get_present_series(distribution=distribution).exclude(id=time_index.id):
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
         # Cálculo de metadatos adicionales sobre cada serie
