@@ -15,7 +15,6 @@ from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.data_frame import get_distribution_time_index_periodicity, init_df
 
 from .operations import process_column
-from .metadata import calculate_enhanced_meta
 from .index import tseries_index
 
 logger = logging.getLogger(__name__)
@@ -43,13 +42,13 @@ class DistributionIndexer:
         time_index = DistributionRepository(distribution).get_time_index_series()
         df = init_df(distribution, time_index)
 
-        es_actions = [process_column(df[col], self.index_name) for col in df.columns]
-
-        if not es_actions:
+        if not df.columns.any():
             logger.warning(strings.NO_SERIES,
                            distribution.identifier,
                            distribution.dataset.catalog.identifier)
             return []
+
+        es_actions = [process_column(df[col], self.index_name) for col in df.columns]
 
         # List flatten: si el resultado son múltiples listas las junto en una sola
         actions = reduce(lambda x, y: x + y, es_actions) if isinstance(es_actions[0], list) else es_actions
