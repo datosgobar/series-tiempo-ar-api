@@ -1,3 +1,5 @@
+from io import SEEK_SET
+
 import pandas as pd
 
 
@@ -8,14 +10,15 @@ class DistributionCsvReader:
         self.index_col = index_col
 
     def read(self):
-        url = self.distribution.data_file
-        if url is None:
+        data_file = self.distribution.data_file
+        if data_file is None:
             raise ValueError
 
         try:
-            return self.read_csv_with_encoding(url, 'utf-8')
+            return self.read_csv_with_encoding(data_file, 'utf-8')
         except UnicodeDecodeError:
-            return self.read_csv_with_encoding(url, 'latin1')
+            data_file.seek(SEEK_SET)
+            return self.read_csv_with_encoding(self.distribution.data_file, 'latin1')
 
     def read_csv_with_encoding(self, data_file, encoding):
         return pd.read_csv(data_file,
