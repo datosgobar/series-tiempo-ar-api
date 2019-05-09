@@ -13,7 +13,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 class DistributionCsvReaderTests(TestCase):
 
     def test_reader_returns_time_series_data_frame(self):
-        distribution = Mock(data_file=open(os.path.join(SAMPLES_DIR, 'daily_periodicity.csv')))
+        distribution = Mock(data_file=open(os.path.join(SAMPLES_DIR, 'daily_periodicity.csv'), 'rb'))
         index_col = 'indice_tiempo'
         data_frame = DistributionCsvReader(distribution, index_col).read()
 
@@ -28,7 +28,7 @@ class DistributionCsvReaderTests(TestCase):
         DistributionCsvReader(distribution, index_col).read()
 
     def test_read_utf8_distribution(self):
-        distribution = Mock(data_file=open(os.path.join(SAMPLES_DIR, 'daily_periodicity_utf8.csv')))
+        distribution = Mock(data_file=open(os.path.join(SAMPLES_DIR, 'daily_periodicity_utf8.csv'), 'rb'))
         index_col = 'índice_tiempo'
         data_frame = DistributionCsvReader(distribution, index_col).read()
 
@@ -36,7 +36,7 @@ class DistributionCsvReaderTests(TestCase):
         self.assertListEqual(list(data_frame.columns), series)
 
     def test_read_latin1_distribution(self):
-        distribution = Mock(data_file=open(os.path.join(SAMPLES_DIR, 'daily_periodicity_latin1.csv'), encoding='latin-1'))
+        distribution = Mock(data_file=open(os.path.join(SAMPLES_DIR, 'daily_periodicity_latin1.csv'), 'rb'))
         index_col = 'índice_tiempo'
         data_frame = DistributionCsvReader(distribution, index_col).read()
 
