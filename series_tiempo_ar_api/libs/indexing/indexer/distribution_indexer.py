@@ -15,7 +15,6 @@ from series_tiempo_ar_api.libs.indexing import strings
 from series_tiempo_ar_api.libs.indexing.indexer.data_frame import get_distribution_time_index_periodicity, init_df
 
 from .operations import process_column
-from .metadata import calculate_enhanced_meta
 from .index import tseries_index
 
 logger = logging.getLogger(__name__)
@@ -28,10 +27,7 @@ class DistributionIndexer:
         self.index = tseries_index(index)
 
     def run(self, distribution):
-        time_index = DistributionRepository(distribution).get_time_index_series()
-        df = init_df(distribution, time_index)
-
-        actions = self.generate_es_actions(df, distribution)
+        actions = self.generate_es_actions(distribution)
 
         if not actions:
             return
@@ -40,9 +36,18 @@ class DistributionIndexer:
             if not success:
                 logger.warning(strings.BULK_REQUEST_ERROR, info)
 
-        self.update_distribution_indexation_metadata(distribution, time_index)
+        self.update_distribution_indexation_metadata(distribution)
 
-    def generate_es_actions(self, df, distribution):
+    def generate_es_actions(self, distribution):
+        time_index = DistributionRepository(distribution).get_time_index_series()
+        df = init_df(distribution, time_index)
+
+        if not df.columns.any():
+            logger.warning(strings.NO_SERIES,
+                           distribution.identifier,
+                           distribution.dataset.catalog.identifier)
+            return []
+
         es_actions = [process_column(df[col], self.index_name) for col in df.columns]
 
         # List flatten: si el resultado son múltiples listas las junto en una sola
@@ -50,7 +55,8 @@ class DistributionIndexer:
         self.add_catalog_keyword(actions, distribution)
         return actions
 
-    def update_distribution_indexation_metadata(self, distribution, time_index):
+    def update_distribution_indexation_metadata(self, distribution):
+        time_index = DistributionRepository(distribution).get_time_index_series()
         for field in SeriesRepository.get_present_series(distribution=distribution).exclude(id=time_index.id):
             field.enhanced_meta.update_or_create(key=meta_keys.AVAILABLE, value='true')
         # Cálculo de metadatos adicionales sobre cada serie
