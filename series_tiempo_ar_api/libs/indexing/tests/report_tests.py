@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
 from django.core import mail
-from django_datajsonar.models import Distribution
+from django_datajsonar.models import Distribution, Node
 
 from series_tiempo_ar_api.apps.management.models import IndexDataTask
 from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
@@ -44,3 +44,10 @@ class ReportMailSenderTests(TestCase):
         ReportGenerator(self.task).generate()
         self.assertIn(error_msg, mail.outbox[0].body)
         self.assertNotIn(Distribution.objects.filter(error=False).first().identifier, mail.outbox[0].body)
+
+    def test_single_node_report_is_sent(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
+        Node.objects.get(catalog_id='test_catalog').admins.add(User.objects.first())
+        ReportGenerator(self.task).generate()
+
+        self.assertTrue(len(mail.outbox), 2)
