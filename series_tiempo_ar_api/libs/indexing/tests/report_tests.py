@@ -8,7 +8,7 @@ from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management.models import IndexDataTask
 from series_tiempo_ar_api.libs.indexing.report.report_generator import ReportGenerator
-from series_tiempo_ar_api.libs.utils.utils import test_read_datajson
+from series_tiempo_ar_api.libs.utils.utils import parse_catalog
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
@@ -26,7 +26,7 @@ class ReportMailSenderTests(TestCase):
         self.assertTrue(len(mail.outbox), 1)
 
     def test_mail_has_distribution_error_in_body(self):
-        test_read_datajson('test_catalog', os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
         Distribution.objects.update(error_msg="My error message")
         ReportGenerator(self.task).generate()
         self.assertIn("My error message", mail.outbox[0].body)
