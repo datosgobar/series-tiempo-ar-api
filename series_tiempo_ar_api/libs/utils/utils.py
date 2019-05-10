@@ -43,6 +43,7 @@ def test_read_datajson(catalog_id, catalog_path, node=None):
     read_datajson(task, read_local=True, whitelist=True)
     return node
 
+
 def read_file_as_csv(file):
     reader = csv.reader(codecs.iterdecode(file, 'utf-8'))
     return reader
