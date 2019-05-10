@@ -51,3 +51,17 @@ class ReportMailSenderTests(TestCase):
         ReportGenerator(self.task).generate()
 
         self.assertTrue(len(mail.outbox), 2)
+
+    def test_single_node_report_has_errors_only_from_its_own_catalog(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        parse_catalog('other_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        Node.objects.get(catalog_id='test_catalog').admins.add(User.objects.first())
+
+        error_id = Distribution.objects.filter(dataset__catalog__identifier='test_catalog',
+                                               error=True).first().identifier
+        other_id = Distribution.objects.filter(
+            dataset__catalog__identifier='other_catalog',
+            error=True).first().identifier
+        ReportGenerator(self.task).generate()
+        self.assertIn(error_id, mail.outbox[1].body)
+        self.assertNotIn(other_id, mail.outbox[1].body)

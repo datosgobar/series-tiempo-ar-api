@@ -48,8 +48,11 @@ class ReportGenerator(object):
         self.send_email(context, node)
 
     def generate_context(self, node):
+        distribution_errors = DistributionRepository.get_all_errored()
+        if node:
+            distribution_errors = distribution_errors.filter(dataset__catalog__identifier=node.catalog_id)
         context = {
-            'distribution_errors': DistributionRepository.get_all_errored(),
+            'distribution_errors': distribution_errors,
             'finish_time': self._format_date(self.task.finished),
             'queries': self.get_queries(),
             'node': node,
