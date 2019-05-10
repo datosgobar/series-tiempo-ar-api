@@ -1,74 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
 <body>
-    <p>Horario de finalización: {{ finish_time }}</p>
-    {% if node %}<p>Catálogo: {{ node.catalog_id }}</p>{% endif %}
+<p>Horario de finalización: {{ finish_time }}</p>
+{% if node %}<p>Catálogo: {{ node.catalog_id }}</p>{% endif %}
 
-    <h4>Resumen</h4>
-    <ul>
-        <li>Cantidad datasets total: {{ datasets_disponibles_cant }} (disponibles para indexar)</li>
-        <li>Cantidad datasets API: {{ datasets_cant }} (accesibles por API)</li>
-        <li>Cantidad series total: {{ series_disponibles_cant }} (publicadas en catálogos)</li>
-        <li>Cantidad series API: {{ field_cant }} (accesibles por API)</li>
-    </ul>
+<h4>Resumen</h4>
+<ul>
+    <li>Cantidad datasets total: {{ datasets_disponibles_cant }} (disponibles para indexar)</li>
+    <li>Cantidad datasets API: {{ datasets_cant }} (accesibles por API)</li>
+    <li>Cantidad series total: {{ series_disponibles_cant }} (publicadas en catálogos)</li>
+    <li>Cantidad series API: {{ field_cant }} (accesibles por API)</li>
+</ul>
 
-    Queries del día anterior: {{ queries }}
-    <hr>
-    <h4>Detalle</h4>
-    {% if node is not None %}
-    <p>Catálogos:</p>
-    <ul>
-        <li>nuevos: {{ catalogos_nuevos_cant }}</li>
-        <li>actualizados: {{ catalogos_actualizados_cant }}</li>
-        <li>no actualizados: {{ catalogos_no_actualizados_cant }}</li>
-        <li>totales: {{ catalogos_cant }}</li>
-        <li>error: {{ catalogos_error_cant }}</li>
-    </ul>
-    {% endif %}
+Queries del día anterior: {{ queries }}
+<hr>
+{% if distribution_errors %}
+<h4>Errores</h4><br>
+<table>
+    <tr>
+        <th>Catálogo</th>
+        <th>Distribución</th>
+        <th>Error</th>
+    </tr>
+    {% for distribution in distribution_errors %}
+    <tr>
+        <td>{{ distribution.dataset.catalog.identifier}}</td>
+        <td>{{ distribution.identifier }}</td>
+        <td>{{ distribution.error_msg }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
-    <p>Datasets:</p>
-    <ul>
-        <li>federables (actualizados): {{ datasets_actualizados_cant }}</li>
-        <li>federables (no actualizados): {{ datasets_no_actualizados_cant }}</li>
-        <li>federables (discontinuados): {{ datasets_indexables_discontinuados_cant }}</li>
-        <li>federables (totales): {{ datasets_indexables_cant }}</li>
-        <li>error: {{ datasets_error_cant }}</li>
-        <li>no federables (nuevos): {{ datasets_nuevos_cant }}</li>
-        <li>no federables (anteriores): {{ datasets_no_indexables_anteriores_cant }}</li>
-        <li>no federables (discontinuados): {{ datasets_no_indexables_discontinuados_cant }}</li>
-        <li>no federables (totales): {{ datasets_no_indexables_cant }}</li>
-        <li>totales (disponibles para indexar): {{ datasets_disponibles_cant }}</li>
-        <li>totales (accesibles por API): {{ datasets_cant }}</li>
-    </ul>
+<hr>{% endif %}
+<h4>Detalle</h4>
+{% if node is not None %}
+<p>Catálogos:</p>
+<ul>
+    <li>nuevos: {{ catalogos_nuevos_cant }}</li>
+    <li>actualizados: {{ catalogos_actualizados_cant }}</li>
+    <li>no actualizados: {{ catalogos_no_actualizados_cant }}</li>
+    <li>totales: {{ catalogos_cant }}</li>
+    <li>error: {{ catalogos_error_cant }}</li>
+</ul>
+{% endif %}
 
-    <p>Distribuciones:</p>
-    <ul>
-        <li>federables (actualizados): {{ distribuciones_actualizadas_cant }}</li>
-        <li>federables (no actualizados): {{ distribuciones_no_actualizadas_cant }}</li>
-        <li>federables (discontinuadas): {{ distribuciones_indexables_discontinuadas_cant }}</li>
-        <li>federables (totales): {{ distribuciones_indexables_cant }}</li>
-        <li>error: {{ distribuciones_error_cant }}</li>
-        <li>no federables (nuevos): {{ distribuciones_nuevas_cant }}</li>
-        <li>no federables (anteriores): {{ distribuciones_no_indexables_anteriores_cant }}</li>
-        <li>no federables (discontinuadas): {{ distribuciones_no_indexables_discontinuadas_cant }}</li>
-        <li>no federables (totales): {{ distribuciones_no_indexables_cant }}</li>
-        <li>totales (disponibles para indexar): {{ distribuciones_disponibles_cant }}</li>
-        <li>totales (accesibles por API): {{ distribuciones_cant }}</li>
-    </ul>
+<p>Datasets:</p>
+<ul>
+    <li>federables (actualizados): {{ datasets_actualizados_cant }}</li>
+    <li>federables (no actualizados): {{ datasets_no_actualizados_cant }}</li>
+    <li>federables (discontinuados): {{ datasets_indexables_discontinuados_cant }}</li>
+    <li>federables (totales): {{ datasets_indexables_cant }}</li>
+    <li>error: {{ datasets_error_cant }}</li>
+    <li>no federables (nuevos): {{ datasets_nuevos_cant }}</li>
+    <li>no federables (anteriores): {{ datasets_no_indexables_anteriores_cant }}</li>
+    <li>no federables (discontinuados): {{ datasets_no_indexables_discontinuados_cant }}</li>
+    <li>no federables (totales): {{ datasets_no_indexables_cant }}</li>
+    <li>totales (disponibles para indexar): {{ datasets_disponibles_cant }}</li>
+    <li>totales (accesibles por API): {{ datasets_cant }}</li>
+</ul>
 
-    <p>Series:</p>
-    <ul>
-        <li>federables (actualizados): {{ series_actualizadas_cant }}</li>
-        <li>federables (no actualizados): {{ series_no_actualizadas_cant }}</li>
-        <li>federables (discontinuadas): {{ series_indexables_discontinuadas_cant }}</li>
-        <li>federables (totales): {{ series_indexables_cant }}</li>
-        <li>error: {{ series_error_cant }}</li>
-        <li>no federables (nuevos): {{ series_nuevas_cant }}</li>
-        <li>no federables (anteriores): {{ series_no_indexables_anteriores_cant }}</li>
-        <li>no federables (discontinuadas): {{ series_no_indexables_discontinuadas_cant }}</li>
-        <li>no federables (totales): {{ series_no_indexables_cant }}</li>
-        <li>totales (publicados en catálogos): {{ series_disponibles_cant }}</li>
-        <li>totales (accesibles por API): {{ field_cant }}</li>
-    </ul>
+<p>Distribuciones:</p>
+<ul>
+    <li>federables (actualizados): {{ distribuciones_actualizadas_cant }}</li>
+    <li>federables (no actualizados): {{ distribuciones_no_actualizadas_cant }}</li>
+    <li>federables (discontinuadas): {{ distribuciones_indexables_discontinuadas_cant }}</li>
+    <li>federables (totales): {{ distribuciones_indexables_cant }}</li>
+    <li>error: {{ distribuciones_error_cant }}</li>
+    <li>no federables (nuevos): {{ distribuciones_nuevas_cant }}</li>
+    <li>no federables (anteriores): {{ distribuciones_no_indexables_anteriores_cant }}</li>
+    <li>no federables (discontinuadas): {{ distribuciones_no_indexables_discontinuadas_cant }}</li>
+    <li>no federables (totales): {{ distribuciones_no_indexables_cant }}</li>
+    <li>totales (disponibles para indexar): {{ distribuciones_disponibles_cant }}</li>
+    <li>totales (accesibles por API): {{ distribuciones_cant }}</li>
+</ul>
+
+<p>Series:</p>
+<ul>
+    <li>federables (actualizados): {{ series_actualizadas_cant }}</li>
+    <li>federables (no actualizados): {{ series_no_actualizadas_cant }}</li>
+    <li>federables (discontinuadas): {{ series_indexables_discontinuadas_cant }}</li>
+    <li>federables (totales): {{ series_indexables_cant }}</li>
+    <li>error: {{ series_error_cant }}</li>
+    <li>no federables (nuevos): {{ series_nuevas_cant }}</li>
+    <li>no federables (anteriores): {{ series_no_indexables_anteriores_cant }}</li>
+    <li>no federables (discontinuadas): {{ series_no_indexables_discontinuadas_cant }}</li>
+    <li>no federables (totales): {{ series_no_indexables_cant }}</li>
+    <li>totales (publicados en catálogos): {{ series_disponibles_cant }}</li>
+    <li>totales (accesibles por API): {{ field_cant }}</li>
+</ul>
 </body>
 </html>

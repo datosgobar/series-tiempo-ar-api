@@ -7,9 +7,10 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from django_datajsonar.models import Catalog, Node
+from django_datajsonar.models import Catalog, Node, Distribution
 from series_tiempo_ar_api.apps.analytics.models import Query
 from series_tiempo_ar_api.apps.management.models import Indicator
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
 from series_tiempo_ar_api.libs.indexing.report.node_admins import GlobalAdmins, NodeAdmins
@@ -43,7 +44,15 @@ class ReportGenerator(object):
         (default), genera el reporte de indexación global
         """
 
+        context = self.generate_context(node)
+        self.send_email(context, node)
+
+    def generate_context(self, node):
+        distribution_errors = DistributionRepository.get_all_errored()
+        if node:
+            distribution_errors = distribution_errors.filter(dataset__catalog__identifier=node.catalog_id)
         context = {
+            'distribution_errors': distribution_errors,
             'finish_time': self._format_date(self.task.finished),
             'queries': self.get_queries(),
             'node': node,
@@ -52,7 +61,7 @@ class ReportGenerator(object):
             indicator: self._get_indicator_value(indicator, node=node)
             for indicator, _ in Indicator.TYPE_CHOICES
         })
-        self.send_email(context, node)
+        return context
 
     def send_email(self, context, node=None):
         start_time = self._format_date(self.task.created)
