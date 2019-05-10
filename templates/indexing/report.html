@@ -33,7 +33,7 @@
 
 Queries del día anterior: {{ queries }}
 <hr>
-
+{% if distribution_errors %}
 <h4>Errores</h4><br>
 <table>
     <tr>
@@ -50,7 +50,7 @@ Queries del día anterior: {{ queries }}
     {% endfor %}
 </table>
 
-<hr>
+<hr>{% endif %}
 <h4>Detalle</h4>
 {% if node is not None %}
 <p>Catálogos:</p>
