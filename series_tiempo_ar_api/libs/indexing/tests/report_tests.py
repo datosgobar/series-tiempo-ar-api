@@ -30,3 +30,9 @@ class ReportMailSenderTests(TestCase):
         Distribution.objects.update(error_msg="My error message")
         ReportGenerator(self.task).generate()
         self.assertIn("My error message", mail.outbox[0].body)
+
+    def test_report_of_some_errored_distributions_some_ok(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        ReportGenerator(self.task).generate()
+        error_msg = Distribution.objects.filter(error=True).first().error_msg
+        self.assertIn(error_msg, mail.outbox[0].body)
