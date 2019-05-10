@@ -15,18 +15,8 @@ from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 
 def index_catalog(catalog_id, catalog_path, index, node=None):
     """Indexa un catálogo. Útil para tests"""
-    if not node:
-        node = Node.objects.create(catalog_id=catalog_id,
-                                   catalog_url=catalog_path,
-                                   indexable=True)
+    node = test_read_datajson(catalog_id, catalog_path, node)
 
-    catalog = DataJson(node.catalog_url)
-    node.catalog = json.dumps(catalog)
-    node.save()
-    task = ReadDataJsonTask()
-    task.save()
-
-    read_datajson(task, read_local=True, whitelist=True)
     index_task = mgmt.IndexDataTask.objects.create()
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
         index_distribution(distribution.identifier, node.id, index_task.id, index=index, read_local=True, force=True)
@@ -39,6 +29,19 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
     if es_client.indices.exists(index=index):
         es_client.indices.forcemerge(index=index)
 
+
+def test_read_datajson(catalog_id, catalog_path, node=None):
+    if not node:
+        node = Node.objects.create(catalog_id=catalog_id,
+                                   catalog_url=catalog_path,
+                                   indexable=True)
+    catalog = DataJson(node.catalog_url)
+    node.catalog = json.dumps(catalog)
+    node.save()
+    task = ReadDataJsonTask()
+    task.save()
+    read_datajson(task, read_local=True, whitelist=True)
+    return node
 
 def read_file_as_csv(file):
     reader = csv.reader(codecs.iterdecode(file, 'utf-8'))

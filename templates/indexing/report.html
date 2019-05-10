@@ -14,6 +14,20 @@
 
     Queries del día anterior: {{ queries }}
     <hr>
+
+    <h4>Errores</h4><br>
+    <table>
+        <tr><th>Catálogo</th><th>Distribución</th> <th>Error</th></tr>
+        {% for distribution in distribution_errors %}
+            <tr>
+                <td>{{ distribution.dataset.catalog.identifier}}</td>
+                <td>{{ distribution.identifier }}</td>
+                <td>{{ distribution.error_msg }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <hr>
     <h4>Detalle</h4>
     {% if node is not None %}
     <p>Catálogos:</p>

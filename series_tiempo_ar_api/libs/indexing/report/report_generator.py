@@ -7,7 +7,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from django_datajsonar.models import Catalog, Node
+from django_datajsonar.models import Catalog, Node, Distribution
 from series_tiempo_ar_api.apps.analytics.models import Query
 from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.indexing.report import attachments
@@ -48,6 +48,7 @@ class ReportGenerator(object):
 
     def generate_context(self, node):
         context = {
+            'distribution_errors': [Distribution.objects.first()],
             'finish_time': self._format_date(self.task.finished),
             'queries': self.get_queries(),
             'node': node,
