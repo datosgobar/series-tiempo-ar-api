@@ -27,7 +27,7 @@ class ReportMailSenderTests(TestCase):
 
     def test_mail_has_distribution_error_in_body(self):
         parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
-        Distribution.objects.update(error_msg="My error message")
+        Distribution.objects.update(error=True, error_msg="My error message")
         ReportGenerator(self.task).generate()
         self.assertIn("My error message", mail.outbox[0].body)
 
@@ -36,3 +36,11 @@ class ReportMailSenderTests(TestCase):
         ReportGenerator(self.task).generate()
         error_msg = Distribution.objects.filter(error=True).first().error_msg
         self.assertIn(error_msg, mail.outbox[0].body)
+
+    def test_report_errors_in_one_catalog_ok_in_other(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        parse_catalog('other_catalog', os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
+        error_msg = Distribution.objects.filter(error=True).first().error_msg
+        ReportGenerator(self.task).generate()
+        self.assertIn(error_msg, mail.outbox[0].body)
+        self.assertNotIn(Distribution.objects.filter(error=False).first().identifier, mail.outbox[0].body)

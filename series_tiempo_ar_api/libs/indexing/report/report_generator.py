@@ -10,6 +10,7 @@ from django.utils import timezone
 from django_datajsonar.models import Catalog, Node, Distribution
 from series_tiempo_ar_api.apps.analytics.models import Query
 from series_tiempo_ar_api.apps.management.models import Indicator
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing.report import attachments
 from series_tiempo_ar_api.libs.indexing.report.indicators_generator import IndicatorsGenerator
 from series_tiempo_ar_api.libs.indexing.report.node_admins import GlobalAdmins, NodeAdmins
@@ -48,7 +49,7 @@ class ReportGenerator(object):
 
     def generate_context(self, node):
         context = {
-            'distribution_errors': [Distribution.objects.first()],
+            'distribution_errors': DistributionRepository.get_all_errored(),
             'finish_time': self._format_date(self.task.finished),
             'queries': self.get_queries(),
             'node': node,
