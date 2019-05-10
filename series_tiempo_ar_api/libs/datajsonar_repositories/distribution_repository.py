@@ -34,3 +34,7 @@ class DistributionRepository:
     def read_csv_as_time_series_dataframe(self):
         time_index = self.get_time_index_series().title
         return self.csv_reader(self.instance, time_index).read()
+
+    @classmethod
+    def get_all_errored(cls):
+        return []

@@ -1,4 +1,5 @@
 import json
+import os
 
 from django_datajsonar.models import Node
 from mock import Mock, patch
@@ -8,6 +9,9 @@ from nose.tools import raises
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing import constants
+from series_tiempo_ar_api.libs.utils.utils import test_read_datajson
+
+SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
 class DistributionRepositoryTests(TestCase):
@@ -55,3 +59,8 @@ class DistributionRepositoryTests(TestCase):
         csv_reader = Mock()
         DistributionRepository(distribution, csv_reader=csv_reader).read_csv_as_time_series_dataframe()
         csv_reader.assert_called_with(distribution, time_index_title)
+
+    def test_get_errored_distributions_is_empty_if_all_ok(self):
+        test_read_datajson('test_catalog', os.path.join(SAMPLES_DIR, 'test_catalog.json'))
+
+        self.assertFalse(DistributionRepository.get_all_errored())
