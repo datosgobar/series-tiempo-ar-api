@@ -5,7 +5,7 @@ from mock import Mock, patch
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from nose.tools import raises
-from django_datajsonar.models import Node
+from django_datajsonar.models import Node, Distribution
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing import constants
@@ -64,3 +64,10 @@ class DistributionRepositoryTests(TestCase):
         parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'test_catalog.json'))
 
         self.assertFalse(DistributionRepository.get_all_errored())
+
+    def test_get_errored_distributions(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'test_catalog.json'))
+        Distribution.objects.filter(dataset__catalog__identifier='test_catalog'). \
+            update(error=True, error_msg="Error!")
+
+        self.assertEqual(DistributionRepository.get_all_errored().first().error_msg, "Error!")

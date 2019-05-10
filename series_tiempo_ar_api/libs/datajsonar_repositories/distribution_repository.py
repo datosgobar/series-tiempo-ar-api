@@ -37,4 +37,4 @@ class DistributionRepository:
 
     @classmethod
     def get_all_errored(cls):
-        return []
+        return Distribution.objects.filter(error=True)
