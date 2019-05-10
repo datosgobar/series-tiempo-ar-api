@@ -43,6 +43,10 @@ class ReportGenerator(object):
         (default), genera el reporte de indexación global
         """
 
+        context = self.generate_context(node)
+        self.send_email(context, node)
+
+    def generate_context(self, node):
         context = {
             'finish_time': self._format_date(self.task.finished),
             'queries': self.get_queries(),
@@ -52,7 +56,7 @@ class ReportGenerator(object):
             indicator: self._get_indicator_value(indicator, node=node)
             for indicator, _ in Indicator.TYPE_CHOICES
         })
-        self.send_email(context, node)
+        return context
 
     def send_email(self, context, node=None):
         start_time = self._format_date(self.task.created)
