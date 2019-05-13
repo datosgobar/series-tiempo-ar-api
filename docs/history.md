@@ -1,5 +1,11 @@
 # Historial de versiones
 
+
+## 1.20.0 - 2019/05/13
+
+- Validaciones adicionales en indexación de datos relacionadas con encoding de archivos en latin1
+- Tabla de errores de distribuciones en reporte de indexación
+
 ## 1.19.0
 
 - Fix de regresión de lectura de dataset identifiers durante la indexación de datos a Elasticsearch
