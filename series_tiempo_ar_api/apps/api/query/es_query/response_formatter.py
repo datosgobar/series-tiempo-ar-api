@@ -5,7 +5,7 @@ from series_tiempo_ar_api.apps.api.helpers import get_relative_delta
 from series_tiempo_ar_api.apps.api.query import constants
 
 
-class ResponseFormatter(object):
+class ResponseFormatter:
 
     def __init__(self, series, responses, args):
         self.series = series

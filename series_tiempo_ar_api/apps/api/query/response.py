@@ -11,7 +11,7 @@ from series_tiempo_ar_api.apps.api.exceptions import InvalidFormatError
 from series_tiempo_ar_api.apps.api.query import constants
 
 
-class BaseFormatter(object):
+class BaseFormatter:
     def run(self, query, query_args):
         raise NotImplementedError
 
@@ -73,7 +73,7 @@ class CSVFormatter(BaseFormatter):
         return response
 
 
-class ResponseFormatterGenerator(object):
+class ResponseFormatterGenerator:
 
     formatters = {
         constants.FORMAT_JSON: JsonFormatter,

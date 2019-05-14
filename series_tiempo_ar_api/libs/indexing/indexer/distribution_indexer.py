@@ -48,7 +48,7 @@ class DistributionIndexer:
                            distribution.dataset.catalog.identifier)
             return []
 
-        es_actions = [process_column(df[col], self.index_name) for col in df.columns]
+        es_actions = [process_column(df[col], self.index_name) for col in list(df.columns)]
 
         # List flatten: si el resultado son múltiples listas las junto en una sola
         actions = reduce(lambda x, y: x + y, es_actions) if isinstance(es_actions[0], list) else es_actions

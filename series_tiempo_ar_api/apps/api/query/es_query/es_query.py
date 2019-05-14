@@ -9,7 +9,7 @@ from series_tiempo_ar_api.apps.api.query.es_query.response_formatter import Resp
 from series_tiempo_ar_api.apps.api.query.es_query.series import Series
 
 
-class ESQuery(object):
+class ESQuery:
     """Representa una query de la API de series de tiempo, que termina
     devolviendo resultados de datos leídos de ElasticSearch"""
 

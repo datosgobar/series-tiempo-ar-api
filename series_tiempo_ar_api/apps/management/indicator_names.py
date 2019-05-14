@@ -1,7 +1,7 @@
 #! coding: utf-8
 
 
-class IndicatorNamesMixin(object):
+class IndicatorNamesMixin:
     CATALOG_NEW = 'catalogos_nuevos_cant'
     CATALOG_UPDATED = 'catalogos_actualizados_cant'
     CATALOG_NOT_UPDATED = 'catalogos_no_actualizados_cant'

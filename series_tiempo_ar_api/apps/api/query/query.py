@@ -21,7 +21,7 @@ def rep_mode_units(rep_mode: str) -> str:
     return constants.VERBOSE_REP_MODES[rep_mode]
 
 
-class Query(object):
+class Query:
     """Encapsula la query pedida por un usuario. Tiene dos componentes
     principales: la parte de datos obtenida haciendo llamadas a
     Elasticsearch, y los metadatos guardados en la base de datos

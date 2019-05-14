@@ -9,7 +9,7 @@ from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.es_query.periods_between import periods_between
 
 
-class Series(object):
+class Series:
     def __init__(self, index, series_id, rep_mode, periodicity, collapse_agg=None):
         self.index = index
         self.series_id = series_id

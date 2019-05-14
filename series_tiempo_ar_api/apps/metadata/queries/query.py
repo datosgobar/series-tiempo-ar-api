@@ -8,7 +8,7 @@ from series_tiempo_ar_api.apps.metadata.indexer.doc_types import Metadata
 from series_tiempo_ar_api.apps.metadata import strings, constants
 
 
-class FieldSearchQuery(object):
+class FieldSearchQuery:
     """Ejecuta una query de búsquerda de metadatos de Field, a través de Elasticsearch"""
 
     def __init__(self, args):

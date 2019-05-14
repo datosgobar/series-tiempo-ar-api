@@ -10,7 +10,7 @@ CATALOG_HEADER = u'catalog_id'
 DATASET_ID_HEADER = u'dataset_identifier'
 
 
-class DatasetIndexableToggler(object):
+class DatasetIndexableToggler:
 
     def __init__(self):
         self.logs = []

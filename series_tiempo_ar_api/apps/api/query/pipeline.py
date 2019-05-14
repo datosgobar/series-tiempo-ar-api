@@ -21,7 +21,7 @@ from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
-class QueryPipeline(object):
+class QueryPipeline:
     """Pipeline del proceso de queries de la serie de tiempo. Ejecuta
     varias operaciones o comandos sobre un objeto query, usando los
     parámetros pasados por el request"""
@@ -84,7 +84,7 @@ class QueryPipeline(object):
         return JsonResponse(response, status=constants.RESPONSE_ERROR_CODE)
 
 
-class BaseOperation(object):
+class BaseOperation:
     def __init__(self):
         self.errors = []
         self.failed_series = []

@@ -6,7 +6,7 @@ from django_datajsonar.models import Distribution
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 
 
-class DistributionValidator(object):
+class DistributionValidator:
     def __init__(self,
                  read_local=False,
                  distribution_repository=DistributionRepository,

@@ -56,7 +56,7 @@ def update_distribution_metadata(changed, distribution_model):
     df = init_df(distribution_model, time_index)
 
     periodicity = get_distribution_time_index_periodicity(time_index)
-    for serie in df.columns:
+    for serie in list(df.columns):
         meta = calculate_enhanced_meta(df[serie], periodicity)
 
         field = distribution_model.field_set.get(identifier=serie, present=True)

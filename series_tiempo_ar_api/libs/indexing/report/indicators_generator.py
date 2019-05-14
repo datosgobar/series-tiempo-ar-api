@@ -9,7 +9,7 @@ from series_tiempo_ar_api.apps.management.models import Indicator
 from series_tiempo_ar_api.libs.datajsonar_repositories.series_repository import SeriesRepository
 
 
-class IndicatorsGenerator(object):
+class IndicatorsGenerator:
 
     def __init__(self, node, task):
         self.node = node

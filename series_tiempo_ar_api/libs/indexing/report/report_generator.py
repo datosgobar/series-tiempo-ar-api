@@ -17,7 +17,7 @@ from series_tiempo_ar_api.libs.indexing.report.node_admins import GlobalAdmins, 
 from series_tiempo_ar_api.libs.indexing.report.report_mail_sender import ReportMailSender
 
 
-class ReportGenerator(object):
+class ReportGenerator:
     DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
     def __init__(self, task):
