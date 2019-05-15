@@ -5,10 +5,10 @@ import os
 
 import faker
 from elasticsearch_dsl import Index, Search
+from elasticsearch_dsl.connections import connections
 from django.test import TestCase
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import ReadDataJsonTask, Node, Field as datajsonar_Field, Catalog
-from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.metadata.indexer.catalog_meta_indexer import CatalogMetadataIndexer
 from series_tiempo_ar_api.apps.metadata.indexer.index import add_analyzer
@@ -66,7 +66,7 @@ class IndexerTests(TestCase):
 
     def test_multiple_catalogs(self):
         self._index(catalog_id='test_catalog',
-                               catalog_url='single_distribution.json')
+                    catalog_url='single_distribution.json')
 
         self._index(catalog_id='other_catalog',
                     catalog_url='second_single_distribution.json')
@@ -82,6 +82,15 @@ class IndexerTests(TestCase):
         ).filter('term',
                  catalog_id='other_catalog')
         self.assertTrue(other_search.execute())
+
+    def test_index_no_theme_taxonomy(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='no_theme_taxonomy.json')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term',
+                 catalog_id='test_catalog')
+        self.assertTrue(search.execute())
 
     def _index(self, catalog_id, catalog_url, set_availables=True, set_error=False, set_present=True):
         node = Node.objects.create(
