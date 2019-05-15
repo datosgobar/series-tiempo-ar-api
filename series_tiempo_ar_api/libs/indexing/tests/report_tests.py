@@ -65,3 +65,16 @@ class ReportMailSenderTests(TestCase):
         ReportGenerator(self.task).generate()
         self.assertIn(error_id, mail.outbox[1].body)
         self.assertNotIn(other_id, mail.outbox[1].body)
+
+    def test_erorrs_from_multiple_catalogs_sorted_by_catalog_id(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        parse_catalog('other_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        ReportGenerator(self.task).generate()
+        error_id = Distribution.objects.filter(dataset__catalog__identifier='test_catalog',
+                                               error=True).first().identifier
+        other_id = Distribution.objects.filter(
+            dataset__catalog__identifier='other_catalog',
+            error=True).first().identifier
+
+        body = mail.outbox[0].body
+        self.assertGreater(body.index(error_id), body.index(other_id))

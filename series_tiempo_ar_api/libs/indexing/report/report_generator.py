@@ -48,7 +48,7 @@ class ReportGenerator:
         self.send_email(context, node)
 
     def generate_context(self, node):
-        distribution_errors = DistributionRepository.get_all_errored()
+        distribution_errors = DistributionRepository.get_all_errored().order_by('dataset__catalog__identifier')
         if node:
             distribution_errors = distribution_errors.filter(dataset__catalog__identifier=node.catalog_id)
         context = {
