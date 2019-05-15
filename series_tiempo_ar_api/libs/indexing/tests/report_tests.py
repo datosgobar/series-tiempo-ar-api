@@ -78,3 +78,15 @@ class ReportMailSenderTests(TestCase):
 
         body = mail.outbox[0].body
         self.assertGreater(body.index(error_id), body.index(other_id))
+
+    def test_errors_in_same_distribution_sorted_by_distribution_id(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        ReportGenerator(self.task).generate()
+        sorted_error_ids = sorted(Distribution.objects.filter(
+            dataset__catalog__identifier='test_catalog',
+            error=True).values_list('identifier', flat=True))
+
+        first_error_id = sorted_error_ids[0]
+        second_error_id = sorted_error_ids[1]
+        body = mail.outbox[0].body
+        self.assertGreater(body.index(second_error_id), body.index(first_error_id))
