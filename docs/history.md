@@ -1,6 +1,12 @@
 # Historial de versiones
 
 
+## 1.21.0 - 2019/05/15
+
+- Cambios en la rutina de indexación de metadatos para hacer ciertos campos no obligatorios (`themeTaxonomy` de un catálogo fuente)
+- La tabla de errores del reporte de indexación ahora viene ordenada según el ID del catálogo, y luego el ID de la distribución errónea
+
+
 ## 1.20.0 - 2019/05/13
 
 - Validaciones adicionales en indexación de datos relacionadas con encoding de archivos en latin1
