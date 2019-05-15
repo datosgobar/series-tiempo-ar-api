@@ -18,7 +18,7 @@ env = environ.Env()
 environ.Env.read_env(SETTINGS_DIR('.env'))
 
 connections.create_connection(hosts=env("ES_URLS", default=DEFAULT_ES_URL).split(","),
-                              timeout=30)
+                              timeout=100)
 
 DEBUG = True
 
