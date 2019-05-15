@@ -31,7 +31,7 @@ class CatalogMetadataIndexer:
         self.init_fields_meta_cache()
         try:
             data_json = DataJson(node.catalog_url)
-            themes = data_json['themeTaxonomy']
+            themes = data_json.get('themeTaxonomy', [])
             self.themes = self.get_themes(themes)
         except Exception:
             raise ValueError("Error de lectura de los themes del catálogo")

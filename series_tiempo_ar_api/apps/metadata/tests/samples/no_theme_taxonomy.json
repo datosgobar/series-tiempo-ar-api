@@ -1,0 +1,723 @@
+{
+    "publisher": {
+        "mbox": "datoseconomicos@mecon.gov.ar",
+        "name": "Subsecretaría de Programación Macroeconómica."
+    },
+    "license": "Open Database License (ODbL) v1.0",
+    "description": "Catálogo de datos abiertos de la Subsecretaría de Programación Macroeconómica.",
+    "language": [
+        "SPA"
+    ],
+    "superThemeTaxonomy": "http://datos.gob.ar/superThemeTaxonomy.json",
+    "issued": "2017-09-28",
+    "rights": "2017-09-28",
+    "modified": "2017-09-28",
+    "dataset": [
+        {
+            "publisher": {
+                "mbox": "datoseconomicos@mecon.gov.ar",
+                "name": "Subsecretaría de Programación Macroeconómica."
+            },
+            "landingPage": "http://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+            "description": "Precios FOB oficiales en dólares por tonelada",
+            "superTheme": [
+                "ECON"
+            ],
+            "title": "Precios FOB oficiales",
+            "language": [
+                "SPA"
+            ],
+            "issued": "2017-12-11",
+            "temporal": "1993-01-04/2017-11-29",
+            "modified": "2018-01-12T07:00:02.490530-03:00",
+            "source": "Ministerio de Agroindustria",
+            "theme": [
+                "externo"
+            ],
+            "keyword": [
+                "Información Económica al Día",
+                "Sector Externo",
+                "Precios"
+            ],
+            "accrualPeriodicity": "R/P1D",
+            "spatial": "ARG",
+            "identifier": "358",
+            "contactPoint": {
+                "fn": "Subsecretaría de Programación Macroeconómica."
+            },
+            "accessLevel": "ABIERTO",
+            "distribution": [
+                {
+                    "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+                    "scrapingFileSheet": "38. Precios FOB oficiales",
+                    "description": "Precios FOB oficiales. Valores diarios en dólares por tonelada",
+                    "title": "Precios FOB oficiales. Valores diarios",
+                    "dataset_identifier": "358",
+                    "issued": "2017-12-11",
+                    "format": "CSV",
+                    "modified": "2018-01-12T07:00:02.490530-03:00",
+                    "fileName": "precios-fob-oficiales-valores-diarios.csv",
+                    "downloadURL": "http://infra.datos.gob.ar/catalog/sspm/dataset/358/distribution/358.1/download/precios-fob-oficiales-valores-diarios.csv",
+                    "field": [
+                        {
+                            "distribution_identifier": "358.1",
+                            "title": "indice_tiempo",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "A10",
+                            "specialTypeDetail": "R/P1D",
+                            "units": "Dolares por tonelada",
+                            "specialType": "time_index",
+                            "type": "date",
+                            "id": "358.1_INDICE_TIEMPO__13",
+                            "scrapingDataStartCell": "A11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Tortas, \"Expellers\", \"Pellets\" y Harina de soja, \"Pellets\", de harina de extracción",
+                            "title": "tortas_expellers_pellets_harina_soja_pellets_harina_extr",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "B10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TORTAS_EXPXTR__56",
+                            "scrapingDataStartCell": "B11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Tortas, \"Expellers\", \"Pellets\" y Harina de soja, \"Pellets\", Harinas de tortas",
+                            "title": "tortas_expellers_pellets_harina_soja_pellets_harinas_tortas",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "C10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TORTAS_EXPTAS__59",
+                            "scrapingDataStartCell": "C11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Habas de soja, Los Demás, A granel con hasta un 15 % embolsado",
+                            "title": "habas_soja_demas_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "D10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_HABAS_SOJAADO__52",
+                            "scrapingDataStartCell": "D11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Habas de soja, Los Demás, Más del 15 % embolsado",
+                            "title": "habas_soja_demas_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "E10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_HABAS_SOJAADO__43",
+                            "scrapingDataStartCell": "E11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Aceite de soja, a granel",
+                            "title": "aceite_soja_granel",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "F10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ACEITE_SOJNEL__18",
+                            "scrapingDataStartCell": "F11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Maíz, Los demás. En grano., A granel con hasta un 15 % embolsado",
+                            "title": "maiz_demas_grano_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "G10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MAIZ_DEMASADO__52",
+                            "scrapingDataStartCell": "G11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Maíz, Los demás. En grano., Más del 15 % embolsado",
+                            "title": "maiz_demas_grano_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "H10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MAIZ_DEMASADO__43",
+                            "scrapingDataStartCell": "H11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Maíz, Maíz Pisingallo, A granel con hasta un 15 % embolsado",
+                            "title": "maiz_maiz_pisingallo_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "I10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MAIZ_MAIZ_ADO__56",
+                            "scrapingDataStartCell": "I11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Maíz, Maíz Pisingallo, Más del 15 % embolsado",
+                            "title": "maiz_maiz_pisingallo_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "J10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MAIZ_MAIZ_ADO__47",
+                            "scrapingDataStartCell": "J11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Maíz, Flint o Plata, A granel con hasta un 15 % embolsado",
+                            "title": "maiz_flint_plata_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "K10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MAIZ_FLINTADO__52",
+                            "scrapingDataStartCell": "K11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Maíz, Flint o Plata, Más del 15 % embolsado",
+                            "title": "maiz_flint_plata_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "L10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MAIZ_FLINTADO__43",
+                            "scrapingDataStartCell": "L11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Trigo Pan, Trigo Pan, A granel con hasta un 15 % embolsado",
+                            "title": "trigo_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "M10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TRIGO_GRANADO__41",
+                            "scrapingDataStartCell": "M11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Trigo Pan, Trigo Pan, Más del 15 % embolsado",
+                            "title": "trigo_pan_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "N10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TRIGO_PAN_ADO__36",
+                            "scrapingDataStartCell": "N11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Aceite de Girasol, a granel",
+                            "title": "aceite_girasol_granel",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "O10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ACEITE_GIRNEL__21",
+                            "scrapingDataStartCell": "O11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Malta cervecera, Malta de cebada cervecera",
+                            "title": "malta_cervecera_malta_cebada_cervecera",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "P10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_MALTA_CERVERA__38",
+                            "scrapingDataStartCell": "P11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cebada, (no) Cervecera, A granel con hasta un 15 % embolsado",
+                            "title": "cebada_cervecera_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "Q10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CEBADA_CERADO__52",
+                            "scrapingDataStartCell": "Q11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cebada, Cervecera, Más del 15 % embolsado",
+                            "title": "cebada_cervecera_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "R10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CEBADA_CERADO__43",
+                            "scrapingDataStartCell": "R11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cacahuate o maní, Cacahuate o maní confitería y/o tostadero",
+                            "title": "cacahuate_mani_confiteria_tostadero",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "S10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CACAHUATE_ERO__35",
+                            "scrapingDataStartCell": "S11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cacahuate o maní, Los Demás, A granel con hasta un 15 % embolsado",
+                            "title": "cacahuate_mani_demas_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "T10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CACAHUATE_ADO__56",
+                            "scrapingDataStartCell": "T11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cacahuate o maní, Los Demás, Más del 15 % embolsado",
+                            "title": "cacahuate_mani_demas_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "U10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CACAHUATE_ADO__47",
+                            "scrapingDataStartCell": "U11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cacahuate o maní, Maní partido",
+                            "title": "cacahuate_mani_mani_partido",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "V10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CACAHUATE_IDO__27",
+                            "scrapingDataStartCell": "V11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cebada, Cervecera, A granel con hasta un 15 % embolsado",
+                            "title": "cebada_cervecera_detalle_granel_hasta_15_porciento_embol",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "W10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CEBADA_CERADO_II__52",
+                            "scrapingDataStartCell": "W11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Cebada, Cervecera, en granel Más del 15 % embolsado",
+                            "title": "cebada_cervecera_granel_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "X10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_CEBADA_CERADO_III__43",
+                            "scrapingDataStartCell": "X11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arroz, Arroz Semiblanqueado o blanqueado incluso pulido o glaseado, - no parbolizado, contenido grano quebrado < o = al 10%",
+                            "title": "arroz_no_parbolizado_cont_grano_quebrado_men_igual_10porc",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "Y10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARR_SB_B_PORC__59",
+                            "scrapingDataStartCell": "Y11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arroz, Arroz Semiblanqueado o blanqueado incluso pulido o glaseado, - no parbolizado, contenido grano quebrado > al 10%",
+                            "title": "arroz_puli_glas_no_parbo_cont_grano_quebrado_may_10porc",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "Z10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARR_SB_B_PORC__53",
+                            "scrapingDataStartCell": "Z11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arroz, Arroz Semiblanqueado o blanqueado incluso pulido o glaseado. Los demás no parbolizados., - Contenido grano quebrado < o = al 10%",
+                            "title": "arroz_pulido_glasaseado_cont_gra_quebr_men_igual_10porc",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AA10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARR_SB_B_PORC_II__59",
+                            "scrapingDataStartCell": "AA11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arroz, Arroz Semiblanqueado o blanqueado incluso pulido o glaseado. Los demás no parbolizados., - Contenido grano quebrado > al 10%",
+                            "title": "arroz_pulido_glaseado_contenido_grano_quebrado_may_10porc",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AB10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARR_SB_B_PORC_IV__53",
+                            "scrapingDataStartCell": "AB11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Harina de trigo, Harina de trigo",
+                            "title": "harina_trigo",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AC10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_HARINA_TRIIGO__12",
+                            "scrapingDataStartCell": "AC11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Sorgo granífero, Los Demás, A granel con hasta un 15 % embolsado",
+                            "title": "sorgo_granifero_demas_granel_hasta_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AD10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_SORGO_GRANADO__57",
+                            "scrapingDataStartCell": "AD11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Sorgo granífero, Los Demás, Más del 15 % embolsado",
+                            "title": "sorgo_granifero_demas_mas_15_porciento_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AE10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_SORGO_GRANADO__48",
+                            "scrapingDataStartCell": "AE11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Porotos, Blancos Alubias, Ovales, En Envases mayores de 20 Kg.",
+                            "title": "poro_blanc_alubias_ovales_envases_may_20_kg",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AF10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_PORO_BLANC_KG__43",
+                            "scrapingDataStartCell": "AF11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Porotos, Blancos, Alubias, En Envases mayores de 20 Kg. desde 191 y hasta 220 gramos cada 100 gramos",
+                            "title": "poro_blanc_alubias_env_may_20_kg_dsd_191_hta_220_gr_c_100_gr",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AG10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_PORO_BLANC_GR__60",
+                            "scrapingDataStartCell": "AG11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Porotos, Blancos, Alubias, En Envases mayores de 20 Kg. desde 221 gramos por cada 100 gramos",
+                            "title": "poro_blanc_alubias_env_may_20_kg_dsd_221_gr_cada_100_gr",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AH10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_PORO_BLANC_GR__55",
+                            "scrapingDataStartCell": "AH11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Porotos, Blancos, Alubias, En Envases mayores de 20 Kg. hasta 190 gramos por cada 100 gramos",
+                            "title": "poro_blanc_alubias_env_may_20_kg_hta_190_gr_cada_100_gr",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AI10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_PORO_BLANC_GR_IVI__55",
+                            "scrapingDataStartCell": "AI11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Porotos, Negros, En Envases mayores de 20 Kg.",
+                            "title": "poro_negros_envases_may_20_kg",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AJ10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_PORO_NEGRO_KG__29",
+                            "scrapingDataStartCell": "AJ11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Tortas, \"Expellers\", \"Pellets\" y Harinas de girasol, Tortas",
+                            "title": "tortas_expellers_pellets_harinas_girasol_tortas",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AK10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TORTAS_EXPTAS__47",
+                            "scrapingDataStartCell": "AK11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Tortas, \"Expellers\", \"Pellets\" y Harinas de girasol, Harinas de tortas",
+                            "title": "tortas_expellers_pellets_harinas_girasol_harinas_tortas",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AL10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TORTAS_EXPTAS__55",
+                            "scrapingDataStartCell": "AL11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Tortas, \"Expellers\", \"Pellets\" y Harinas de girasol, \"Pellets\", integral",
+                            "title": "tortas_expellers_pellets_harinas_girasol_pellets_integral",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AM10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TORTAS_EXPRAL__57",
+                            "scrapingDataStartCell": "AM11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Tortas, \"Expellers\", \"Pellets\" y Harinas de girasol, \"Pellets\", de harina de extracción",
+                            "title": "tortas_expellers_pellets_harinas_girasol_pellets_extr",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AN10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_TORTAS_EXPXTR__53",
+                            "scrapingDataStartCell": "AN11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Semilla de Girasol. Unicamente para industria, Los Demás, A granel con hasta un 15 % embolsado",
+                            "title": "semilla_girasol_unica_ind_demas_granel_hta_15_porc_embol",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AO10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_SEMILLA_GIBOL__56",
+                            "scrapingDataStartCell": "AO11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Semilla de Girasol. Unicamente para industria, Los Demás, Girasol, tipo confitería",
+                            "title": "semilla_girasol_unica_ind_demas_girasol_tipo_confiteria",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AP10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_SEMILLA_GIRIA__55",
+                            "scrapingDataStartCell": "AP11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Semilla de Girasol. Unicamente para industria, Los Demás, Más del 15 % embolsado",
+                            "title": "semilla_girasol_unica_ind_demas_mas_15_por_embolsado",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AQ10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_SEMILLA_GIADO__52",
+                            "scrapingDataStartCell": "AQ11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Aceite de cacahuete o maní, a granel",
+                            "title": "aceite_cacahuete_mani_granel",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AR10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ACEITE_CACNEL__28",
+                            "scrapingDataStartCell": "AR11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado B",
+                            "title": "s_cardar_peinar_desmo_algo_grado_b",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AS10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_S_CARDAR_PO_B__34",
+                            "scrapingDataStartCell": "AS11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado C",
+                            "title": "algo_s_cardar_peinar_desmo_grado_c",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AT10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ALGO_S_CARO_C__34",
+                            "scrapingDataStartCell": "AT11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado C 1/2",
+                            "title": "s_cardar_peinar_desmo_grado_c_1_2",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AU10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_S_CARDAR_P1_2__33",
+                            "scrapingDataStartCell": "AU11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado D 1/2 Long. 27,0 mm (1 1/16)",
+                            "title": "s_cardar_peinar_desmo_grado_d_1_2_long_27_mm_1_1_16",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AV10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_S_CARDAR_P_16__51",
+                            "scrapingDataStartCell": "AV11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado D Long. 27,0 mm (1 1/16)",
+                            "title": "s_cardar_peinar_desmo_grado_d_long_27_mm_1_1_16",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AW10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_S_CARDAR_P_16__47",
+                            "scrapingDataStartCell": "AW11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado E Long. 26,2 mm (1 1/32)",
+                            "title": "s_cardar_peinar_desmotado_grado_long_26_mm_1_1_32",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AX10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_S_CARDAR_P_32__49",
+                            "scrapingDataStartCell": "AX11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Algodón s/cardar ni peinar simplemente desmotado, Algodón Grado F Long. 26,2 mm (1 1/32)",
+                            "title": "sin_cardar_peinar_desmotado_grado_f_long_26_mm_1_1_32",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AY10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_SIN_CARDAR_32__53",
+                            "scrapingDataStartCell": "AY11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Garbanzos, Enteros",
+                            "title": "garbanzos_enteros",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "AZ10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_GARBANZOS_ROS__17",
+                            "scrapingDataStartCell": "AZ11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Garbanzos, Partidos",
+                            "title": "garbanzos_partidos",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BA10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_GARBANZOS_DOS__18",
+                            "scrapingDataStartCell": "BA11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Porotos, Colorados, En Envases mayores de 20 Kg.",
+                            "title": "porotos_colorados_envases_mayores_20_kg",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BB10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_POROTOS_CO_KG__39",
+                            "scrapingDataStartCell": "BB11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arvejas, Enteras",
+                            "title": "arvejas_enteras",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BC10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARVEJAS_ENRAS__15",
+                            "scrapingDataStartCell": "BC11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arvejas, Partidas",
+                            "title": "arvejas_partidas",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BD10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARVEJAS_PADAS__16",
+                            "scrapingDataStartCell": "BD11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Aceite de Girasol, Los Demás, Refinado a granel",
+                            "title": "aceite_girasol_demas_refinado_granel",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BE10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ACEITE_GIRNEL__36",
+                            "scrapingDataStartCell": "BE11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Aceite de Girasol, Los Demás, Refinado en tambores de mas de 200 litros",
+                            "title": "aceite_girasol_demas_refinado_tambores_mas_200_litros",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BF10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ACEITE_GIRROS__53",
+                            "scrapingDataStartCell": "BF11"
+                        },
+                        {
+                            "distribution_identifier": "358.1",
+                            "description": "Arroz, Arroz descascarillado (arroz cargo o arroz pardo), Los demás. No parbolizado",
+                            "title": "arroz_descascarillado_arroz_cargo_arroz_pardo_demas_no_parbo",
+                            "dataset_identifier": "358",
+                            "scrapingIdentifierCell": "BG10",
+                            "units": "Dolares por tonelada",
+                            "type": "number",
+                            "id": "358.1_ARROZ_DESCRBO__60",
+                            "scrapingDataStartCell": "BG11"
+                        }
+                    ],
+                    "draft": false,
+                    "identifier": "358.1",
+                    "scrapingFileURL": "https://www.economia.gob.ar/download/infoeco/apendice5.xlsx"
+                }
+            ]
+        }
+        ],
+  "identifier": "sspm",
+  "spatial": "ARG",
+  "title": "Datos Programación Macroeconómica"
+}
