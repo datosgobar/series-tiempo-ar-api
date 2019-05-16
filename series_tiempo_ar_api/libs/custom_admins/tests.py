@@ -52,3 +52,16 @@ class DeleteMetadataTests(TestCase):
                           ACTION_CHECKBOX_NAME: [str(distribution.pk)]},
                          follow=True)
         fake_delete.assert_not_called()
+
+    def test_delete_called_without_empty_identifier_series(self, fake_delete):
+        distribution: Distribution = Distribution.objects.filter(dataset__catalog__identifier=self.catalog_id).first()
+        one_field = distribution.field_set.first()
+        one_field.identifier = None
+        one_field.save()
+
+        self.client.post(self.distribution_change,
+                         {'action': 'delete_model',
+                          ACTION_CHECKBOX_NAME: [str(distribution.pk)]},
+                         follow=True)
+
+        self.assertNotIn(one_field, set(fake_delete.call_args[0][0]))

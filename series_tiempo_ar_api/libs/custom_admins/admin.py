@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 
 from django_datajsonar.admin.data_json import FieldAdmin, DistributionAdmin
 from django_datajsonar.models import Field, Distribution
@@ -41,7 +42,7 @@ class CustomDistributionAdmin(DistributionAdmin):
         fields = Field.objects.filter(distribution__identifier__in=queryset.values_list('identifier', flat=True))
         if not fields:
             return
-        delete_metadata(list(fields))
+        delete_metadata(list(fields.filter(~Q(identifier=None))))
         queryset.delete()
 
     def reindex(self, _, queryset):
