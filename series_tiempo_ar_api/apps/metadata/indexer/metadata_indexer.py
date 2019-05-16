@@ -60,10 +60,11 @@ class MetadataIndexer:
                 self.elastic.indices.delete(index)
 
 
+# pylint: disable=W0613
 @job('meta_indexing', timeout=10000)
 def run_metadata_indexer(task, node=None):
-    node = [node] if node is not None else Node.objects.filter(indexable=True)
-    MetadataIndexer(task).run(node)
+    nodes = Node.objects.filter(indexable=True)
+    MetadataIndexer(task).run(nodes)
     update_units()
     task.refresh_from_db()
     task.status = task.FINISHED

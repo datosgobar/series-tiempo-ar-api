@@ -1,6 +1,6 @@
 from django.test import TestCase
-from django_datajsonar.models import Node
 from mock import patch
+from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer import run_metadata_indexer
 from series_tiempo_ar_api.apps.metadata.models import IndexMetadataTask
@@ -31,4 +31,4 @@ class RunMetadataIndexerTests(TestCase):
         run_metadata_indexer(self.task, new_node)
 
         self.assertIn(new_node, catalog_indexer.call_args[0])
-        self.assertEqual(catalog_indexer().index.call_count, 1)
+        self.assertEqual(catalog_indexer().index.call_count, Node.objects.count())  # No effect
