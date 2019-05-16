@@ -39,6 +39,8 @@ class CustomDistributionAdmin(DistributionAdmin):
 
     def delete_model(self, _, queryset):
         fields = Field.objects.filter(distribution__identifier__in=queryset.values_list('identifier', flat=True))
+        if not fields:
+            return
         delete_metadata(list(fields))
         queryset.delete()
 
