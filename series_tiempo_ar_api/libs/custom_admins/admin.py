@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 
 from django_datajsonar.admin.data_json import FieldAdmin, DistributionAdmin
 from django_datajsonar.models import Field, Distribution
@@ -22,7 +23,7 @@ class CustomFieldAdmin(FieldAdmin):
         return actions
 
     def delete_model(self, _, queryset):
-        delete_metadata(list(queryset))
+        delete_fields(queryset)
         queryset.delete()
 
 
@@ -39,10 +40,16 @@ class CustomDistributionAdmin(DistributionAdmin):
 
     def delete_model(self, _, queryset):
         fields = Field.objects.filter(distribution__identifier__in=queryset.values_list('identifier', flat=True))
-        delete_metadata(list(fields))
+        if not fields:
+            return
+        delete_fields(fields)
         queryset.delete()
 
     def reindex(self, _, queryset):
         for distribution in queryset:
             reindex_distribution.delay(distribution)
     reindex.short_description = "Refrescar datos"
+
+
+def delete_fields(queryset):
+    delete_metadata(list(queryset.filter(~Q(identifier=None))))
