@@ -61,6 +61,11 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>http://apis.datos.gob.ar/series/publishers/quick_start/</loc>
+     <lastmod>2019-05-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>http://apis.datos.gob.ar/series/developers/arquitectura/</loc>
      <lastmod>2019-05-17</lastmod>
      <changefreq>daily</changefreq>

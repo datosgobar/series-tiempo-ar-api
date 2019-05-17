@@ -19,8 +19,10 @@ nav:
       - OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api/open-api
     - Condiciones de uso: terms.md
   - Aplicaciones: applications.md
-  # - Publicadores:
-    # - Publicar series de tiempo en CSV: publishers/publish-series-csv.md
+  - Publicadores:
+    - Publicar series en la API de Series de Tiempo: publishers/quick_start.md
+    # - Generar ids: publishers/identifiers.md
+    # - Generar buenos ids: publishers/identifiers.md
     # - Convertir series de XLSX a CSV: publishers/publish-series-xlsx.md
     # - Convertir bases de series en TXT a CSV: publish/publish-series-txt.md
     # - Convertir paneles en series de tiempo: publish/index-series.md

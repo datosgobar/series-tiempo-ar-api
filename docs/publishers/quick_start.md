@@ -1,4 +1,4 @@
-# Publicar series de tiempo en CSV
+# Publicar series en la API de Series de Tiempo
 
 Para publicar series en la API de Series de Tiempo, tenés que:
 
@@ -329,7 +329,7 @@ indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exporta
 
 ## 2. Documentar la distribución en Andino
 
-Una vez que creaste el CSV, es hora de cargarlo y documentarlo en Andino.
+Una vez que creaste el CSV, es hora de subirlo a alguna URL pública y documentarlo en el Excel.
 
 ### A. Crear o editar el dataset que contendrá al recurso
 
@@ -337,52 +337,29 @@ Si no creaste el Dataset que contendrá el nuevo recurso/distribución de series
 
 ### B. Agregar un nuevo recurso y documentar sus metadatos usuales
 
-Documentar un recurso de series de tiempo es igual que documentar cualquier otro recurso, hasta que llegues a la sección "**Documentación de los campos del recurso**".
-
-!!! note "Subir archivo, o copiar URL de descarga"
-
-    Recordá que podés **cargar el archivo directamente en Andino** o podés cargarlo en cualquier otro sistema, y **cargar la URL de descarga en Andino**.
-
-    ![](assets/portal-andino-upload-link-file.png)
-
-    Esto puede ser útil si el CSV se genera automáticamente en otro sistema y se publica en línea. También podés [cargar el archivo a Andino por API](https://docs.ckan.org/en/2.7/maintaining/filestore.html).
+Documentar un recurso de series de tiempo es igual que documentar cualquier otro recurso, hasta que llegues a la hoja `field`.
 
 ### C. Documentar el índice de tiempo
 
-Una vez que llegás a la sección "**Documentación de los campos del recurso**", tenés que documentar la primer columna del CSV: el **índice de tiempo**.
+Una vez que llegás a la hoja `field` tenés que documentar la primer columna del CSV: el **índice de tiempo**.
 
-![](assets/portal-andino-time-index.png)
-
-* **Título de la columna**: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *indice_tiempo*.
-* **Tipo de dato**: debe ser *"Fecha ISO-8601 (date)"*. Indica a la aplicación que los valores del campo son fechas estandarizadas.
-* **Tipo de dato especial**: debe elegirse *"Índice de tiempo"* en el selector. Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.
-* **Detalle del tipo de datos especial**: debe seleccionarse la frecuencia del índice de tiempo.
+* **Título de la columna *(field_title)***: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *indice_tiempo*.
+* **Tipo de dato *(field_type)***: debe ser *date*. Indica a la aplicación que los valores del campo son fechas estandarizadas.
+* **Tipo de dato especial *(field_specialType)***: debe ser *time_index*. Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.
+* **Detalle del tipo de datos especial *(field_specialTypeDetail)***: debe declararse la frecuencia del índice de tiempo en ISO 8601 para intervalos repetidos (R/P1Y, R/P6M, R/P3M, R/P1M, R/P1D).
 
 ### D. Documentar las series de tiempo
 
 El resto de las columnas a documentar son las series de tiempo.
 
-![](assets/portal-andino-series.png)
-
-* **Título de la columna**: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *pib_precios_corrientes*. **No puede superar los 60 caracteres** en ningún caso.
+* **Título de la columna *(field_title)***: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *pib_precios_corrientes*. **No puede superar los 60 caracteres** en ningún caso.
 * **Tipo de dato**: puede ser *"Número decimal (number)"* o *"Número entero (integer)"*. Las series sólo pueden tener números enteros o decimales como valores.
-* **Descripción de la columna**: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: *"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*
-* **Unidad**: es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.: *"Millones de pesos de 2004"*, *"Kilogramos"* o *"Millones de USD corrientes"*
-* **Identificador**: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: *"ipc"* es un mal código, mientras que *"ipc_0001"* es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella.
+* **Descripción de la columna *(field_description)***: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: *"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*
+* **Unidad *(field_units)***: es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.: *"Millones de pesos de 2004"*, *"Kilogramos"* o *"Millones de USD corrientes"*
+* **Identificador *(field_id)***: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: *"ipc"* es un mal código, mientras que *"ipc_0001"* es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella.
 
 ## 3. Dar aviso a Datos Argentina
 
 Una vez que documentaste un nuevo recurso de series de tiempo, escribinos a [datos@modernizacion.gob.ar](mailto:datos@modernizacion.gob.ar) para que lo federemos en la API y te ayudemos a resolver cualquier problema!
 
 A partir de que se federa por primera vez, la API revisará automáticamente 4 veces por día el archivo CSV y los metadatos para reflejar cualquier cambio que hagas.
-
-## 4. Activar el explorador de series en tu Andino
-
-Las series federadas en la API también se pueden ver en tu Andino, activando el explorador de series.
-
-![](assets/portal-andino-explorador-series.png)
-
-* Tildar el casillero *¿Querés que esta sección se vea en tu portal?*
-* Elegir series destacadas en *¿Querés destacar algunas series?* escribiendo los identificadores de las series separados por comas ",".
-
-Si sos un organismo de la Administración Pública Nacional de Argentina, el campo *URI de la API de Series* no debe modificarse! Si desplegaste una instancia propia de la [aplicación de la API](https://github.com/datosgobar/series-tiempo-ar-api) podés cambiar la URL a donde apunta Andino.
