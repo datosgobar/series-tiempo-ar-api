@@ -18,7 +18,7 @@ El punto 2 de esta sección te explica cómo documentar una distribución de ser
     - [Usar "," como separador de columnas](#usar-como-separador-de-columnas)
     - [Usar "." como separador decimal](#usar-como-separador-decimal)
     - [No usar separador de miles](#no-usar-separador-de-miles)
-- [2. Documentar la distribución en Andino](#2-documentar-la-distribucion-en-andino)
+- [2. Documentar la distribución en el catálogo](#2-documentar-la-distribucion-en-andino)
     - [A. Crear o editar el dataset que contendrá al recurso](#a-crear-o-editar-el-dataset-que-contendra-al-recurso)
     - [B. Agregar un nuevo recurso y documentar sus metadatos usuales](#b-agregar-un-nuevo-recurso-y-documentar-sus-metadatos-usuales)
     - [C. Documentar el índice de tiempo](#c-documentar-el-indice-de-tiempo)
@@ -327,7 +327,7 @@ indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exporta
     
     Algunas planillas de cálculo (como Excel en algunas versiones) exportan a CSV agregando el separador de miles si el usuario eligió un formato de visualización de número que lo incluye. Para evitarlo, seleccionar las columnas que contienen las series y **elegir un formato de visualización de número sin separador de miles**.
 
-## 2. Documentar la distribución en Andino
+## 2. Documentar la distribución en el catálogo
 
 Una vez que creaste el CSV, es hora de subirlo a alguna URL pública y documentarlo en el Excel.
 
