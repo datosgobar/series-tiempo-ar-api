@@ -13,7 +13,7 @@
         <meta name="description" content="Documentación de la API de Series de Tiempo de la República Argentina">
       
       
-        <link rel="canonical" href="http://apis.datos.gob.ar/series/python-usage/">
+        <link rel="canonical" href="http://apis.datos.gob.ar/series/js-usage/">
       
       
         <meta name="author" content="Datos Argentina">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Usar en python - API de Series de Tiempo</title>
+        <title>Usar en componentes web - API de Series de Tiempo</title>
       
     
     
@@ -133,7 +133,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#usar-en-python" tabindex="1" class="md-skip">
+      <a href="#usar-en-componentes-web" tabindex="1" class="md-skip">
         Saltar a contenido
       </a>
     
@@ -158,7 +158,7 @@
               API de Series de Tiempo
             </span>
             <span class="md-header-nav__topic">
-              Usar en python
+              Usar en componentes web
             </span>
           
         </div>
@@ -366,6 +366,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../python-usage/" title="Usar en python" class="md-nav__link">
+      Usar en python
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -377,11 +389,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Usar en python
+        Usar en componentes web
       </label>
     
-    <a href="./" title="Usar en python" class="md-nav__link md-nav__link--active">
-      Usar en python
+    <a href="./" title="Usar en componentes web" class="md-nav__link md-nav__link--active">
+      Usar en componentes web
     </a>
     
       
@@ -395,16 +407,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#con-requests" title="Con requests" class="md-nav__link">
-    Con requests
+  <a href="#con-tscomponents" title="Con TSComponents" class="md-nav__link">
+    Con TSComponents
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graphic" title="graphic" class="md-nav__link">
+    graphic
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#con-pandas" title="Con pandas" class="md-nav__link">
-    Con pandas
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -416,18 +434,6 @@
   
 </nav>
     
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../js-usage/" title="Usar en componentes web" class="md-nav__link">
-      Usar en componentes web
-    </a>
   </li>
 
         
@@ -630,16 +636,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#con-requests" title="Con requests" class="md-nav__link">
-    Con requests
+  <a href="#con-tscomponents" title="Con TSComponents" class="md-nav__link">
+    Con TSComponents
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#graphic" title="graphic" class="md-nav__link">
+    graphic
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#con-pandas" title="Con pandas" class="md-nav__link">
-    Con pandas
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -659,113 +671,71 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/python-usage.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/js-usage.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="usar-en-python">Usar en python</h1>
+                <h1 id="usar-en-componentes-web">Usar en componentes web</h1>
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 <ul>
-<li><a href="#con-requests">Con <code>requests</code></a></li>
-<li><a href="#con-pandas">Con <code>pandas</code></a></li>
+<li><a href="#con-tscomponents">Con <code>TSComponents</code></a><ul>
+<li><a href="#graphic"><code>graphic</code></a></li>
+</ul>
+</li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<h2 id="con-requests">Con <code>requests</code></h2>
-<p>Armar una función <em>wrapper</em> que facilite construir llamadas a la API.</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<h2 id="con-tscomponents">Con <code>TSComponents</code></h2>
+<p>El objeto TSComponents fue desarrollado por el equipo de Datos Argentina para simplificar el uso de la API de Series de Tiempo en experiencias web.</p>
+<p>Consiste de una librería JS y una hoja de estilos CSS versionadas en un CDN con distintos componentes diseñados para funcionar fácilmente con la API.</p>
+<p>Ver más en la <a href="https://datosgobar.github.io/series-tiempo-ar-explorer/reference/ts-components/">documentación de TSComponents</a>.</p>
+<h3 id="graphic"><code>graphic</code></h3>
+<p>El componente <code>graphic</code> permite embeber gráficos de líneas, áreas o barras en experiencias web. Permite elegir distintos elementos de filtro de fechas, personalizar los textos, etc.</p>
+<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_1.18.2/dist/js/components.js'></script>
 
-<span class="k">def</span> <span class="nf">get_api_call</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">API_BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://apis.datos.gob.ar/series/api/&quot;</span>
-    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;{}{}?{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">API_BASE_URL</span><span class="p">,</span> <span class="s2">&quot;series&quot;</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+<p><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_1.18.2/dist/css/components.css'/></p>
+<div id="tmi"></div>
+
+<script>
+    window.onload = function() {
+        TSComponents.Graphic.render('tmi', {
+            graphicUrl: 'https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg',
+            title: 'Tasa de Mortalidad Infantil de Argentina',
+            source: 'Dirección de Estadística e Información en Salud (DEIS). Secretaría de Gobierno de Salud'
+        })
+    }
+</script>
+
+<p><br>
+<br>
+Este gráfico se genera a partir del siguiente código:
+<br></p>
+<div class="codehilite"><pre><span></span><span class="c">&lt;!-- importa librería JS --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#39;https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_1.18.2/dist/js/components.js&#39;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- importa hoja de estilos CSS --&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#39;stylesheet&#39;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#39;text/css&#39;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#39;https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_1.18.2/dist/css/components.css&#39;</span><span class="p">/&gt;</span>
+
+<span class="c">&lt;!-- código HTML donde ubicar un div con un gráfico --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;tmi&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- JS que genera el gráfico en el div --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">TSComponents</span><span class="p">.</span><span class="nx">Graphic</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">&#39;tmi&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="c1">// Llamada a la API de Series de Tiempo</span>
+            <span class="nx">graphicUrl</span><span class="o">:</span> <span class="s1">&#39;https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg&#39;</span><span class="p">,</span>
+            <span class="nx">title</span><span class="o">:</span> <span class="s1">&#39;Tasa de Mortalidad Infantil de Argentina&#39;</span><span class="p">,</span>
+            <span class="nx">source</span><span class="o">:</span> <span class="s1">&#39;Dirección de Estadística e Información en Salud (DEIS). Secretaría de Gobierno de Salud&#39;</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 
 
-<p>Una llamada válida a la API debe tener por lo menos un id de una serie válida, y luego puede tener parámetros opcionales.</p>
-<div class="codehilite"><pre><span></span><span class="n">api_call</span> <span class="o">=</span> <span class="n">get_api_call</span><span class="p">([</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">],</span> <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2018-08&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span>
-
-<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">apis</span><span class="o">.</span><span class="n">datos</span><span class="o">.</span><span class="n">gob</span><span class="o">.</span><span class="n">ar</span><span class="o">/</span><span class="n">series</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">series</span><span class="err">?</span><span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span><span class="o">-</span><span class="mi">08</span><span class="o">&amp;</span><span class="n">ids</span><span class="o">=</span><span class="mf">168.1</span><span class="n">_T_CAMBIOR_D_0_0_26</span>
-</pre></div>
-
-
-<p>Obtener la respuesta en un diccionario.</p>
-<div class="codehilite"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_call</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-
-<span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;2018-08-01&#39;</span><span class="p">,</span> <span class="mf">27.525</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-02&#39;</span><span class="p">,</span> <span class="mf">27.45</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-03&#39;</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-04&#39;</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-05&#39;</span><span class="p">,</span> <span class="mf">27.29</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-06&#39;</span><span class="p">,</span> <span class="mf">27.33</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-07&#39;</span><span class="p">,</span> <span class="mf">27.395</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-08&#39;</span><span class="p">,</span> <span class="mf">27.65</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-09&#39;</span><span class="p">,</span> <span class="mf">28.11</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-10&#39;</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-11&#39;</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-12&#39;</span><span class="p">,</span> <span class="mf">29.25</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-13&#39;</span><span class="p">,</span> <span class="mf">29.925</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-14&#39;</span><span class="p">,</span> <span class="mf">29.61</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-15&#39;</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>
-  <span class="p">[</span><span class="s1">&#39;2018-08-16&#39;</span><span class="p">,</span> <span class="mf">29.84</span><span class="p">]],</span>
- <span class="s1">&#39;meta&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;end_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-08-16&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-08-01&#39;</span><span class="p">},</span>
-  <span class="p">{</span><span class="s1">&#39;catalog&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Datos Programación Macroeconómica&#39;</span><span class="p">},</span>
-   <span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Datos de tipo de cambio $-USD - futuro dólar . Con respecto al dólar de Estados Unidos. Frecuencia diaria.&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;issued&#39;</span><span class="p">:</span> <span class="s1">&#39;2017-09-28&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;BCRA, MAE, Rofex y Bloomberg&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Tipo de Cambio $-USD - Futuro Dólar&#39;</span><span class="p">},</span>
-   <span class="s1">&#39;distribution&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;downloadURL&#39;</span><span class="p">:</span> <span class="s1">&#39;http://infra.datos.gob.ar/catalog/sspm/dataset/168/distribution/168.1/download/datos-tipo-cambio-usd-futuro-dolar-frecuencia-diaria.csv&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Tipo de cambio $-USD - futuro dólar. Valores diarios&#39;</span><span class="p">},</span>
-   <span class="s1">&#39;field&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Tipo de Cambio BNA (Vendedor)&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1_T_CAMBIOR_D_0_0_26&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;Pesos argentinos por dólar&#39;</span><span class="p">}}],</span>
- <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;identifiers&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="s1">&#39;168&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;distribution&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1_T_CAMBIOR_D_0_0_26&#39;</span><span class="p">}],</span>
-  <span class="s1">&#39;ids&#39;</span><span class="p">:</span> <span class="s1">&#39;168.1_T_CAMBIOR_D_0_0_26&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2018-08&#39;</span><span class="p">}}</span>
-</pre></div>
-
-
-<h2 id="con-pandas">Con <code>pandas</code></h2>
-<p>Las llamadas a la API en CSV se pueden leer directamente a un <code>pandas.DataFrame</code>.</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">get_api_call</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;168.1_T_CAMBIOR_D_0_0_26&quot;</span><span class="p">,</span> <span class="s2">&quot;101.1_I2NG_2016_M_22&quot;</span><span class="p">,</span> 
-    <span class="s2">&quot;116.3_TCRMA_0_M_36&quot;</span><span class="p">,</span> <span class="s2">&quot;143.3_NO_PR_2004_A_21&quot;</span><span class="p">,</span> <span class="s2">&quot;11.3_VMATC_2004_M_12&quot;</span><span class="p">],</span>
-    <span class="n">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="mi">2018</span>
-<span class="p">))</span>
-</pre></div>
-
-
-<div class="codehilite"><pre><span></span>indice_tiempo  tipo_cambio_bna_vendedor  ipc_2016_nivel_general  \
-   2018-01-01                 19.023065                127.0147
-   2018-02-01                 19.835179                130.2913
-   2018-03-01                 20.229355                133.5028
-   2018-04-01                 20.251100                136.9380
-   2018-05-01                 23.600452                139.5800
-   2018-06-01                 26.674333                145.0582
-   2018-07-01                 27.607645                149.1178
- tipo_cambio_real_multilateral_actual  indice_serie_original  construccion
-                            96.628715             144.086686    158.920762
-                            96.121512             138.470530    152.630381
-                            93.062453             155.570021    158.931156
-                            90.715862             152.432629    149.860484
-                           104.302984             160.622476    154.011846
-                           114.546258                    NaN           NaN
-                           107.105698                    NaN           NaN
-</pre></div>
-
-
-<!-- ## Con `plotly` -->
+<p>Ver <a href="https://datosgobar.github.io/series-tiempo-ar-explorer/reference/ts-components/graphic/">referencia completa del componente <code>graphic</code></a>.</p>
                 
                   
                 
@@ -786,7 +756,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../spreadsheet-integration/" title="Integrar la API en planillas de cálculo" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../python-usage/" title="Usar en python" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -795,19 +765,19 @@
                 <span class="md-footer-nav__direction">
                   Anterior
                 </span>
-                Integrar la API en planillas de cálculo
+                Usar en python
               </span>
             </div>
           </a>
         
         
-          <a href="../js-usage/" title="Usar en componentes web" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../dumps/" title="Descargar la base completa de series de tiempo" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Siguiente
                 </span>
-                Usar en componentes web
+                Descargar la base completa de series de tiempo
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
