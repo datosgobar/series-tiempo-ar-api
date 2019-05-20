@@ -668,6 +668,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../identifiers/" title="Generar identificadores" class="md-nav__link">
+      Generar identificadores
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -1027,7 +1039,12 @@
 <p>Por ejemplo: 12/03/2001 no está soportado, debe escribirse 2001-03-12.</p>
 <div class="admonition note">
 <p class="admonition-title">Fechas estandarizadas en planillas de cálculo</p>
-<p>Las planillas de cálculo suelen leer de distintas maneras las fechas y a veces es difícil controlar en qué formato se guardan cuando "exportás a CSV" o "guardás como CSV". El mejor consejo: seleccioná la columna completa que va a ser el índice de tiempo, asignale un formato de "Texto" y escribí las fechas después, como cadenas de texto (así evitás que la planilla de cálculo las lea como fechas).</p>
+<p>Las planillas de cálculo suelen leer de distintas maneras las fechas y a veces es difícil controlar en qué formato se guardan cuando "exportás a CSV" o "guardás como CSV".</p>
+<p>El mejor consejo:</p>
+<ul>
+<li>Seleccioná la columna completa que va a ser el <strong>índice de tiempo</strong>, asignale un formato de "Texto" y escribí las fechas después, como cadenas de texto (así evitás que la planilla de cálculo las lea como fechas).</li>
+<li>Cambiá (ya sea en el sistema o en tu Excel) los caracteres separadores de decimales y miles, por (".") y (",") respectivamente.</li>
+</ul>
 </div>
 <h3 id="fecha-mas-antigua-primero-a-la-mas-reciente-al-final">Fecha más antigua primero a la más reciente al final</h3>
 <p>El indice de tiempo debe comenzar por la fecha más antigua y terminar por la más reciente. Menor a mayor, orden ascendente.</p>
@@ -1219,24 +1236,46 @@
 <p>Una vez que creaste el CSV, es hora de subirlo a alguna URL pública y documentarlo en el Excel.</p>
 <h3 id="a-crear-o-editar-el-dataset-que-contendra-al-recurso">A. Crear o editar el dataset que contendrá al recurso</h3>
 <p>Si no creaste el Dataset que contendrá el nuevo recurso/distribución de series de tiempo, tenés que crear un nuevo Dataset. Si el Dataset ya existe, sólo tenés que agregar un nuevo recurso.</p>
+<p><center><img alt="catalog_xlsx_nuevo_dataset.png" src="../../assets/catalog_xlsx_nuevo_dataset.png" title="catalog_xlsx_nuevo_dataset" /></center></p>
 <h3 id="b-agregar-un-nuevo-recurso-y-documentar-sus-metadatos-usuales">B. Agregar un nuevo recurso y documentar sus metadatos usuales</h3>
 <p>Documentar un recurso de series de tiempo es igual que documentar cualquier otro recurso, hasta que llegues a la hoja <code>field</code>.</p>
 <h3 id="c-documentar-el-indice-de-tiempo">C. Documentar el índice de tiempo</h3>
 <p>Una vez que llegás a la hoja <code>field</code> tenés que documentar la primer columna del CSV: el <strong>índice de tiempo</strong>.</p>
+<p><center><img alt="catalog_xlsx_indice_tiempo.png" src="../../assets/catalog_xlsx_indice_tiempo.png" title="catalog_xlsx_indice_tiempo" /></center></p>
 <ul>
-<li><strong>Título de la columna *(field_title)</strong><em>: debe ser exactamente el mismo título que tiene en el CSV. Ej.: </em>indice_tiempo*.</li>
-<li><strong>Tipo de dato *(field_type)</strong><em>: debe ser </em>date*. Indica a la aplicación que los valores del campo son fechas estandarizadas.</li>
-<li><strong>Tipo de dato especial *(field_specialType)</strong><em>: debe ser </em>time_index*. Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.</li>
-<li><strong>Detalle del tipo de datos especial *(field_specialTypeDetail)</strong>*: debe declararse la frecuencia del índice de tiempo en ISO 8601 para intervalos repetidos (R/P1Y, R/P6M, R/P3M, R/P1M, R/P1D).</li>
+<li><strong>Título de la columna <em>(field_title)</em></strong>: debe ser exactamente el mismo título que tiene en el CSV. Ej.: <em>indice_tiempo</em>.</li>
+<li><strong>Tipo de dato <em>(field_type)</em></strong>: debe ser <em>date</em>. Indica a la aplicación que los valores del campo son fechas estandarizadas.</li>
+<li><strong>Tipo de dato especial <em>(field_specialType)</em></strong>: debe ser <em>time_index</em>. Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.</li>
+<li><strong>Detalle del tipo de datos especial <em>(field_specialTypeDetail)</em></strong>: debe declararse la frecuencia del índice de tiempo en ISO 8601 para intervalos repetidos:<ul>
+<li><code>R/P1Y</code>: anual</li>
+<li><code>R/P6M</code>: semestral</li>
+<li><code>R/P3M</code>: trimestral</li>
+<li><code>R/P1M</code>: mensual</li>
+<li><code>R/P1D</code>: diario</li>
+</ul>
+</li>
 </ul>
 <h3 id="d-documentar-las-series-de-tiempo">D. Documentar las series de tiempo</h3>
 <p>El resto de las columnas a documentar son las series de tiempo.</p>
+<p><center><img alt="catalog_xlsx_series.png" src="../../assets/catalog_xlsx_series.png" title="catalog_xlsx_series" /></center></p>
 <ul>
-<li><strong>Título de la columna *(field_title)<strong><em>: debe ser exactamente el mismo título que tiene en el CSV. Ej.: </em>pib_precios_corrientes*. </strong>No puede superar los 60 caracteres</strong> en ningún caso.</li>
+<li><strong>Título de la columna <em>(field_title)</em></strong>: debe ser exactamente el mismo título que tiene en el CSV. Ej.: <em>pib_precios_corrientes</em>. <strong>No puede superar los 60 caracteres</strong> en ningún caso. </li>
+</ul>
+<!-- Ver cómo [generar buenos títulos](titles.md). -->
+
+<ul>
 <li><strong>Tipo de dato</strong>: puede ser <em>"Número decimal (number)"</em> o <em>"Número entero (integer)"</em>. Las series sólo pueden tener números enteros o decimales como valores.</li>
-<li><strong>Descripción de la columna *(field_description)</strong><em>: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: </em>"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*</li>
-<li><strong>Unidad *(field_units)</strong><em>: es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.: </em>"Millones de pesos de 2004"<em>, </em>"Kilogramos"<em> o </em>"Millones de USD corrientes"*</li>
-<li><strong>Identificador *(field_id)</strong><em>: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: </em>"ipc"<em> es un mal código, mientras que </em>"ipc_0001"* es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella.</li>
+<li><strong>Descripción de la columna <em>(field_description)</em></strong>: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: <em>"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."</em>. </li>
+</ul>
+<!-- Ver cómo [generar buenas descripciones](descriptions.md). -->
+
+<ul>
+<li><strong>Unidad <em>(field_units)</em></strong>: es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.: <em>"Millones de pesos de 2004"</em>, <em>"Kilogramos"</em> o <em>"Millones de USD corrientes"</em>.</li>
+</ul>
+<!-- Ver cómo [elegir buenas unidades de medida](units.md). -->
+
+<ul>
+<li><strong>Identificador <em>(field_id)</em></strong>: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: <em>"ipc"</em> es un mal código, mientras que <em>"ipc_0001"</em> es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella. Ver cómo <a href="../identifiers/">generar buenos identificadores</a>.</li>
 </ul>
 <h2 id="3-dar-aviso-a-datos-argentina">3. Dar aviso a Datos Argentina</h2>
 <p>Una vez que documentaste un nuevo recurso de series de tiempo, escribinos a <a href="mailto:datos@modernizacion.gob.ar">datos@modernizacion.gob.ar</a> para que lo federemos en la API y te ayudemos a resolver cualquier problema!</p>
@@ -1276,13 +1315,13 @@
           </a>
         
         
-          <a href="../../developers/arquitectura/" title="Arquitectura" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../identifiers/" title="Generar identificadores" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Siguiente
                 </span>
-                Arquitectura
+                Generar identificadores
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

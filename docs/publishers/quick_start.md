@@ -124,7 +124,12 @@ Por ejemplo: 12/03/2001 no está soportado, debe escribirse 2001-03-12.
 
 !!! note "Fechas estandarizadas en planillas de cálculo"
 
-    Las planillas de cálculo suelen leer de distintas maneras las fechas y a veces es difícil controlar en qué formato se guardan cuando "exportás a CSV" o "guardás como CSV". El mejor consejo: seleccioná la columna completa que va a ser el índice de tiempo, asignale un formato de "Texto" y escribí las fechas después, como cadenas de texto (así evitás que la planilla de cálculo las lea como fechas).
+    Las planillas de cálculo suelen leer de distintas maneras las fechas y a veces es difícil controlar en qué formato se guardan cuando "exportás a CSV" o "guardás como CSV".
+
+    El mejor consejo:
+
+    + Seleccioná la columna completa que va a ser el **índice de tiempo**, asignale un formato de "Texto" y escribí las fechas después, como cadenas de texto (así evitás que la planilla de cálculo las lea como fechas).
+    + Cambiá (ya sea en el sistema o en tu Excel) los caracteres separadores de decimales y miles, por (".") y (",") respectivamente.
 
 ### Fecha más antigua primero a la más reciente al final
 
@@ -335,6 +340,8 @@ Una vez que creaste el CSV, es hora de subirlo a alguna URL pública y documenta
 
 Si no creaste el Dataset que contendrá el nuevo recurso/distribución de series de tiempo, tenés que crear un nuevo Dataset. Si el Dataset ya existe, sólo tenés que agregar un nuevo recurso.
 
+<center>![catalog_xlsx_nuevo_dataset.png](../assets/catalog_xlsx_nuevo_dataset.png "catalog_xlsx_nuevo_dataset")</center>
+
 ### B. Agregar un nuevo recurso y documentar sus metadatos usuales
 
 Documentar un recurso de series de tiempo es igual que documentar cualquier otro recurso, hasta que llegues a la hoja `field`.
@@ -343,20 +350,38 @@ Documentar un recurso de series de tiempo es igual que documentar cualquier otro
 
 Una vez que llegás a la hoja `field` tenés que documentar la primer columna del CSV: el **índice de tiempo**.
 
-* **Título de la columna *(field_title)***: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *indice_tiempo*.
-* **Tipo de dato *(field_type)***: debe ser *date*. Indica a la aplicación que los valores del campo son fechas estandarizadas.
-* **Tipo de dato especial *(field_specialType)***: debe ser *time_index*. Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.
-* **Detalle del tipo de datos especial *(field_specialTypeDetail)***: debe declararse la frecuencia del índice de tiempo en ISO 8601 para intervalos repetidos (R/P1Y, R/P6M, R/P3M, R/P1M, R/P1D).
+<center>![catalog_xlsx_indice_tiempo.png](../assets/catalog_xlsx_indice_tiempo.png "catalog_xlsx_indice_tiempo")</center>
+
+* **Título de la columna _(field_title)_**: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *indice_tiempo*.
+* **Tipo de dato _(field_type)_**: debe ser _date_. Indica a la aplicación que los valores del campo son fechas estandarizadas.
+* **Tipo de dato especial _(field_specialType)_**: debe ser _time_index_. Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.
+* **Detalle del tipo de datos especial _(field_specialTypeDetail)_**: debe declararse la frecuencia del índice de tiempo en ISO 8601 para intervalos repetidos:
+    - `R/P1Y`: anual
+    - `R/P6M`: semestral
+    - `R/P3M`: trimestral
+    - `R/P1M`: mensual
+    - `R/P1D`: diario
 
 ### D. Documentar las series de tiempo
 
 El resto de las columnas a documentar son las series de tiempo.
 
-* **Título de la columna *(field_title)***: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *pib_precios_corrientes*. **No puede superar los 60 caracteres** en ningún caso.
+<center>![catalog_xlsx_series.png](../assets/catalog_xlsx_series.png "catalog_xlsx_series")</center>
+
+* **Título de la columna _(field_title)_**: debe ser exactamente el mismo título que tiene en el CSV. Ej.: *pib_precios_corrientes*. **No puede superar los 60 caracteres** en ningún caso. 
+
+<!-- Ver cómo [generar buenos títulos](titles.md). -->
+
 * **Tipo de dato**: puede ser *"Número decimal (number)"* o *"Número entero (integer)"*. Las series sólo pueden tener números enteros o decimales como valores.
-* **Descripción de la columna *(field_description)***: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: *"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*
-* **Unidad *(field_units)***: es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.: *"Millones de pesos de 2004"*, *"Kilogramos"* o *"Millones de USD corrientes"*
-* **Identificador *(field_id)***: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: *"ipc"* es un mal código, mientras que *"ipc_0001"* es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella.
+* **Descripción de la columna _(field_description)_**: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: *"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*. 
+
+<!-- Ver cómo [generar buenas descripciones](descriptions.md). -->
+
+* **Unidad _(field_units)_**: es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.: *"Millones de pesos de 2004"*, *"Kilogramos"* o *"Millones de USD corrientes"*.
+
+<!-- Ver cómo [elegir buenas unidades de medida](units.md). -->
+
+* **Identificador _(field_id)_**: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: _"ipc"_ es un mal código, mientras que _"ipc_0001"_ es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella. Ver cómo [generar buenos identificadores](identifiers.md).
 
 ## 3. Dar aviso a Datos Argentina
 
