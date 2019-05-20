@@ -45,12 +45,12 @@ def update_series_popularity_metadata(agg_result, meta_key, series):
     new_metadata = []
     for serie in series:
         serie_hits = get_hits(serie.identifier, agg_result)
-        new_metadata.append(Metadata.objects.create(content_type=field_content_type,
-                                                    object_id=serie.id,
-                                                    key=meta_key,
-                                                    value=serie_hits))
-    with transaction.atomic():
-        metas.delete()
+        new_metadata.append(Metadata(content_type=field_content_type,
+                                     object_id=serie.id,
+                                     key=meta_key,
+                                     value=serie_hits))
+        with transaction.atomic():
+            metas.delete()
         Metadata.objects.bulk_create(new_metadata)
 
 
