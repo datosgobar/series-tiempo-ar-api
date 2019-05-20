@@ -1,5 +1,7 @@
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
 from elasticsearch_dsl import Q, Index, Search
-from django_datajsonar.models import Distribution
+from django_datajsonar.models import Distribution, Metadata, Field
 
 from series_tiempo_ar_api.apps.analytics.elasticsearch.doc import SeriesQuery
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -35,10 +37,21 @@ def update_popularity_metadata(distribution: Distribution):
 
 
 def update_series_popularity_metadata(agg_result, meta_key, series):
+    field_content_type = ContentType.objects.get_for_model(Field)
+    metas = Metadata.objects.filter(content_type=field_content_type,
+                                    object_id=series.values_list('id', flat=True),
+                                    key=meta_key)
+
+    new_metadata = []
     for serie in series:
         serie_hits = get_hits(serie.identifier, agg_result)
-        serie.enhanced_meta.update_or_create(key=meta_key,
-                                             defaults={'value': serie_hits})
+        new_metadata.append(Metadata.objects.create(content_type=field_content_type,
+                                                    object_id=serie.id,
+                                                    key=meta_key,
+                                                    value=serie_hits))
+    with transaction.atomic():
+        metas.delete()
+        Metadata.objects.bulk_create(new_metadata)
 
 
 def get_hits(serie_id, agg_result):
@@ -46,11 +59,10 @@ def get_hits(serie_id, agg_result):
 
 
 def popularity_aggregation(search: Search, buckets):
-
     search.aggs \
         .bucket(name="hits_last_days",
                 agg_type='filters',
-                filters=buckets)\
+                filters=buckets) \
         .metric(name='count',
                 agg_type='value_count',
                 field='serie_id')
