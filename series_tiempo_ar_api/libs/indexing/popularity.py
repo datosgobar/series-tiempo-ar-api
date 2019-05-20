@@ -39,7 +39,7 @@ def update_popularity_metadata(distribution: Distribution):
 def update_series_popularity_metadata(agg_result, meta_key, series):
     field_content_type = ContentType.objects.get_for_model(Field)
     metas = Metadata.objects.filter(content_type=field_content_type,
-                                    object_id=series.values_list('id', flat=True),
+                                    object_id__in=series.values_list('id', flat=True),
                                     key=meta_key)
 
     new_metadata = []

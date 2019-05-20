@@ -1,4 +1,4 @@
-from unittest import TestCase
+from django.test import TestCase
 
 import faker
 import mock
@@ -46,6 +46,14 @@ class PopularityTests(TestCase):
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_90_DAYS))
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_180_DAYS))
         self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_TOTAL))
+
+    def test_update_metadata_for_many_series(self, mock_hits, *_):
+        other_field = self.distribution.field_set.create(identifier='other_field')
+        other_field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
+        self._update_popularity_metadata(mock_hits)
+
+        self.assertTrue(meta_keys.get(self.field, meta_keys.HITS_TOTAL))
+        self.assertTrue(meta_keys.get(other_field, meta_keys.HITS_TOTAL))
 
     def _update_popularity_metadata(self, mock_hits):
         mock_value = self.faker.pyint()
