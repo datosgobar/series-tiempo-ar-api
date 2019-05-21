@@ -20,6 +20,12 @@ Cuando un organismo comienza a publicar series de tiempo, es muy importante dise
 
 ## Sistemas de nomenclatura propuestos
 
+Un identificador puede estar compuesto por:
+
+* Letras mayúsculas o minúsculas de la "a" a la "z" sin caracteres especiales (sin tildes y sin la "ñ")
+* Números 0-9
+* Guiones bajos "_" y puntos "."
+
 ### Autoincremental numérico
 
 Numera las series en orden a medida que se van publicando por primera vez, empieza en el número 1 y se incrementa sucesivamente con cada serie nueva.
