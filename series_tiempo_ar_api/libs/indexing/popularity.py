@@ -49,8 +49,9 @@ def update_series_popularity_metadata(agg_result, meta_key, series):
                                      object_id=serie.id,
                                      key=meta_key,
                                      value=serie_hits))
-        with transaction.atomic():
-            metas.delete()
+
+    with transaction.atomic():
+        metas.delete()
         Metadata.objects.bulk_create(new_metadata)
 
 

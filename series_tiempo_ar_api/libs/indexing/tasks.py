@@ -3,10 +3,11 @@ import logging
 from traceback import format_exc
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django_rq import job
 
-from django_datajsonar.models import Node
+from django_datajsonar.models import Node, Metadata, Field
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -20,14 +21,12 @@ from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_meta
 from .report.report_generator import ReportGenerator
 from .distribution_validator import DistributionValidator
 
-
 logger = logging.getLogger(__name__)
 
 
 @job('api_index', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
                        read_local=False, index=settings.TS_INDEX, force=False):
-
     node = Node.objects.get(id=node_id)
     task = IndexDataTask.objects.get(id=task_id)
     distribution_model = Distribution.objects.get(identifier=distribution_id,
@@ -56,12 +55,23 @@ def update_distribution_metadata(changed, distribution_model):
     df = init_df(distribution_model, time_index)
 
     periodicity = get_distribution_time_index_periodicity(time_index)
+    new_metadata = []
+    metas_to_delete = []
+    field_content_type = ContentType.objects.get_for_model(Field)
     for serie in list(df.columns):
         meta = calculate_enhanced_meta(df[serie], periodicity)
 
         field = distribution_model.field_set.get(identifier=serie, present=True)
         for meta_key, value in meta.items():
-            field.enhanced_meta.update_or_create(key=meta_key, defaults={'value': value})
+            new_metadata.append(Metadata(content_type=field_content_type,
+                                         object_id=field.id,
+                                         key=meta_key,
+                                         value=value))
+
+        metas_to_delete.extend(Metadata.objects.filter(object_id=field.id, key__in=list(meta.keys())).values_list('id', flat=True))
+    with transaction.atomic():
+        Metadata.objects.filter(id__in=metas_to_delete).delete()
+        Metadata.objects.bulk_create(new_metadata)
 
     distribution_model.enhanced_meta.update_or_create(key=meta_keys.LAST_HASH,
                                                       defaults={'value': distribution_model.data_hash})
