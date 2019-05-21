@@ -491,10 +491,12 @@
             
             
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
     
     <label class="md-nav__link" for="nav-4">
       Publicadores
@@ -527,6 +529,83 @@
     <a href="../identifiers/" title="Generar identificadores" class="md-nav__link">
       Generar identificadores
     </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Generar descripciones
+      </label>
+    
+    <a href="./" title="Generar descripciones" class="md-nav__link md-nav__link--active">
+      Generar descripciones
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Contenidos de la sección</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#propiedades-de-una-buena-descripcion" title="Propiedades de una buena descripción" class="md-nav__link">
+    Propiedades de una buena descripción
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#criterios-de-descripcion-propuestos" title="Criterios de descripción propuestos" class="md-nav__link">
+    Criterios de descripción propuestos
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aperturas-de-mayor-a-menor-separadas-por-puntos" title="Aperturas "de mayor a menor" separadas por puntos" class="md-nav__link">
+    Aperturas "de mayor a menor" separadas por puntos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frase-continua" title="Frase continua" class="md-nav__link">
+    Frase continua
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -628,6 +707,49 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Contenidos de la sección</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#propiedades-de-una-buena-descripcion" title="Propiedades de una buena descripción" class="md-nav__link">
+    Propiedades de una buena descripción
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#criterios-de-descripcion-propuestos" title="Criterios de descripción propuestos" class="md-nav__link">
+    Criterios de descripción propuestos
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aperturas-de-mayor-a-menor-separadas-por-puntos" title="Aperturas "de mayor a menor" separadas por puntos" class="md-nav__link">
+    Aperturas "de mayor a menor" separadas por puntos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frase-continua" title="Frase continua" class="md-nav__link">
+    Frase continua
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -642,6 +764,48 @@
                 
                 
                 <h1 id="generar-descripciones">Generar descripciones</h1>
+<p>Las descripciones de las series son el metadato más importante (después del identificador): deben dar al usuario toda la información que necesita para comprender de qué serie en particular se trata, cuando este está buscando las series que quiere.</p>
+<p>La descripción de las series es el principal metadato que usa el buscador del explorador de series para ofrecer respuestas ante el usuario que tipea.</p>
+<p><img alt="Buscador del explorador de series" src="../../assets/explorador-series-buscador.png" /></p>
+<p>Es el nombre principal en los resultados de búsqueda</p>
+<p><img alt="" src="../../assets/resultados-busqueda-1.png" /></p>
+<p>Es el primer metadato en el gráfico, una vez elegida una serie</p>
+<p><img alt="Metadatos del gráfico del explorer" src="../../assets/explorador-metadatos-grafico.png" />
+<br>
+<br>
+Cuando se definen las descripciones de un conjunto de series de tiempo, deben cumplir con las siguientes propiedades:</p>
+<h2 id="propiedades-de-una-buena-descripcion">Propiedades de una buena descripción</h2>
+<ul>
+<li><strong>No se confunde con la descripción de otra serie</strong>. La descripción de una serie la individualiza inequívocamente de cualquier otra serie en la base.</li>
+<li><strong>Es suficiente para el usuario que busca entre miles de series distintas</strong>. Sin necesidad de mirar otros metadatos que no sean la frecuencia temporal y las unidades de medida, el usuario debe poder entender de qué serie se trata.</li>
+<li><strong>Es consistente con descripciones de series similares</strong>. Si existe una serie llamada "IPC Nacional. Región Noroeste. Nivel general", no debería existir "IPC Nacional. Nivel general. Región Cuyo" sino "IPC Nacional. Región Cuyo. Nivel general"</li>
+</ul>
+<h2 id="criterios-de-descripcion-propuestos">Criterios de descripción propuestos</h2>
+<p>Algunos criterios generales:</p>
+<ul>
+<li><strong>Capitalizar todas las palabras significativas</strong>. Todas las que no son artículos o preposiciones. Ej.: "Tasa de Natalidad de la Provincia de Entre Ríos" en lugar de "Tasa de natalidad de la provincia de Entre Ríos"</li>
+<li><strong>Preferir la utilización de palabras completas, en lugar de abreviaturas</strong>. Salvo que la descripción completa esté quedando demasiado larga y sea conveniente recortarla, o que la abreviatura sea de un uso tan difundido en el público general que no pueda prestarse a confusión.</li>
+<li><strong>Escribir descripciones entre 40 y 110 caracteres de largo</strong>. Raras veces es conveniente una descripción más larga (o más corta). En ningún caso la descripción puede superar los 200 caracteres.</li>
+<li><strong>Incluir la unidad de medida, si la misma serie se publica con distintas unidades</strong>. Si sólo se publica una serie bajo una determinada unidad de medida, esto no hace falta (Ej.: "Tasa de Natalidad. Provincia de Entre Ríos") pero debe agregarse si existen variantes ("Fuerza Aérea. Personal Femenino (Porcentaje)" / "Fuerza Aérea. Personal Femenino (Cantidad)")</li>
+</ul>
+<h3 id="aperturas-de-mayor-a-menor-separadas-por-puntos">Aperturas "de mayor a menor" separadas por puntos</h3>
+<p>Se comienza con el nombre de la variable y le siguen los distintos niveles de apertura, separados con ".". La unidad de medida se pone al final y entre paréntesis porque no es un "nivel de apertura" de la variable.</p>
+<ul>
+<li>"Tasa de Natalidad. Provincia de Entre Ríos"</li>
+<li>"Fuerza Aérea. Personal Femenino (Porcentaje)"</li>
+<li>"IPC Nacional. Región Noroeste. Nivel general (Base Diciembre 2016 = 100)"</li>
+<li>"IPC Nacional. Total Nacional. Nivel general (Base Diciembre 2016 = 100)"</li>
+<li>"Transporte de Pasajeros. Servicio Regular de Aeronavegación Internacional (Miles de pasajeros)"</li>
+</ul>
+<h3 id="frase-continua">Frase continua</h3>
+<p>Se compone una oración continua que contiene el nombre de la variable y sus niveles de apertura. La unidad de medida también se pone al final entre paréntesis.</p>
+<ul>
+<li>"Tasa de Natalidad de la Provincia de Entre Ríos"</li>
+<li>"Porcentaje del Personal Femenino de la Fuerza Aérea" o "Personal Femenino de la Fuerza Aérea (Porcentaje)"</li>
+<li>"Nivel General del Índice de Precios al Consumidor Nacional de la Región Noroeste (Base Diciembre 2016 = 100)"</li>
+<li>"Nivel General del Índice de Precios al Consumidor Nacional de Argentina (Base Diciembre 2016 = 100)"</li>
+<li>"Servicio Regular de Aeronavegación Internacional de Transporte de Pasajeros (Miles de Pasajeros)"</li>
+</ul>
                 
                   
                 
@@ -658,6 +822,41 @@
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../identifiers/" title="Generar identificadores" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Anterior
+                </span>
+                Generar identificadores
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../../developers/arquitectura/" title="Arquitectura" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Siguiente
+                </span>
+                Arquitectura
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

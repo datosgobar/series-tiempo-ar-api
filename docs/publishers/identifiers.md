@@ -14,9 +14,9 @@ Cuando un organismo comienza a publicar series de tiempo, es muy importante dise
 ## Propiedades de un buen identificador
 
 * **No cambia en el tiempo, nunca**.
-* **Es único dentro de toda la base**.
+* **Es único dentro de toda la base**. [Chequeá si ya existe](https://apis.datos.gob.ar/series/api/dump/series-tiempo-metadatos.csv).
 * **No se pisa o se confunde con otro**.
-* **Es relativamente corto**.
+* **Es relativamente corto**. Entre 7 y 25 caracteres en la mayoría de los casos. Nunca más de 40.
 
 ## Sistemas de nomenclatura propuestos
 

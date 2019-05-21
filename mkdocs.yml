@@ -23,7 +23,7 @@ nav:
     - Publicar series en la API de Series de Tiempo: publishers/quick_start.md
     # - Generar títulos: publishers/titles.md
     - Generar identificadores: publishers/identifiers.md
-    # - Generar descripciones: publishers/descriptions.md
+    - Generar descripciones: publishers/descriptions.md
     # - Elegir unidades de medida: publishers/units.md
     # - Convertir series de XLSX a CSV: publishers/publish-series-xlsx.md
     # - Convertir bases de series en TXT a CSV: publish/publish-series-txt.md
