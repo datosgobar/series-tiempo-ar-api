@@ -4,7 +4,7 @@
 
 La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
 
-Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secuencia de observaciones o valores, medidos en determinados momentos del tiempo y ordenados cronológicamente.
+Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secuencia de observaciones o valores (mínimo 2), medidos en determinados momentos del tiempo y ordenados cronológicamente.
 
 <table>
     <tr><th>indice_tiempo</th><th>ipc_2016_nivel_general</th></tr>
@@ -28,9 +28,9 @@ Un [servicio web](https://es.wikipedia.org/wiki/Servicio_web), es una tecnologí
 
 Estos indicadores son ejemplos de series de tiempo:
 
-* [Inflación](http://datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&format=csv) ([csv](https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&format=csv) | [json](https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&format=json))
-* [Tipo de cambio](http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&start_date=2018-07&limit=1000) ([csv](https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&start_date=2018-07&limit=1000&format=csv) | [json](https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&start_date=2018-07&limit=1000))
-* [Nivel de actividad](http://datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&limit=1000) ([csv](https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&limit=1000&format=csv) | [json](https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&limit=1000))
+* [Tipo de cambio](http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&start_date=2018-07&limit=5000) ([csv](https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&start_date=2018-07&limit=5000&format=csv) | [json](https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&start_date=2018-07&limit=5000))
+* [Tasa de mortalidad infantil](http://datos.gob.ar/series/api/series/?ids=tmi_arg&format=csv) ([csv](https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg&format=csv) | [json](https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg&format=json))
+* [Porcentaje del personal femenino de la Fuerza Aérea](http://datos.gob.ar/series/api/series/?ids=defensa_FAA_0006&limit=5000) ([csv](https://apis.datos.gob.ar/series/api/series/?ids=defensa_FAA_0006&limit=5000&format=csv) | [json](https://apis.datos.gob.ar/series/api/series/?ids=defensa_FAA_0006&limit=5000))
 
 ---
 

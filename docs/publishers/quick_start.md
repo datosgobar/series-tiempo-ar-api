@@ -2,7 +2,7 @@
 
 Para publicar series en la API de Series de Tiempo, tenés que:
 
-1. Crear una distribución de series de tiempo
+1. Crear una distribución de series de tiempo (puede ser a partir de cambiar el formato de un recurso publicado en un dataset ya existente)
 2. Documentar la distribución en un catálogo
 3. Dar aviso a Datos Argentina
 

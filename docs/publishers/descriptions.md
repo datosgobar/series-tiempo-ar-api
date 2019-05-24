@@ -1,8 +1,8 @@
 # Generar descripciones
 
-Las descripciones de las series son el metadato más importante (después del identificador): deben dar al usuario toda la información que necesita para comprender de qué serie en particular se trata, cuando este está buscando las series que quiere.
+Las descripciones de las series son el metadato más importante (después del identificador): deben dar al usuario toda la información que necesita para comprender de qué serie en particular se trata, cuando este está buscando una.
 
-La descripción de las series es el principal metadato que usa el buscador del explorador de series para ofrecer respuestas ante el usuario que tipea.
+La descripción de las series es el principal metadato que usa el buscador del explorador para ofrecer respuestas ante el usuario que tipea.
 
 ![Buscador del explorador de series](../assets/explorador-series-buscador.png)
 
