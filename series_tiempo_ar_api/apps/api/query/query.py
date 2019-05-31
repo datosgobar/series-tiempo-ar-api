@@ -68,13 +68,16 @@ class Query:
         periodicities = self._series_periodicities()
         max_periodicity = self.get_max_periodicity(periodicities)
         self.update_collapse(collapse=max_periodicity)
+        # Fix a casos en donde collapse agg no es avg pero los valores serían iguales a avg
+        # Estos valores no son indexados! Entonces seteamos la aggregation a avg manualmente
+        if max_periodicity == self._get_series_periodicity(field_model):
+            collapse_agg = constants.AGG_DEFAULT
 
         self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
 
     def _series_periodicities(self):
         periodicities = [
-            get_periodicity_human_format(
-                field.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
+            self._get_series_periodicity(field)
             for field in self.series_models
         ]
         return periodicities
@@ -211,3 +214,7 @@ class Query:
             meta_response['field']['representation_mode_units'] = units
             if rep_mode in (constants.PCT_CHANGE, constants.PCT_CHANGE_YEAR_AGO):
                 meta_response['field']['is_percentage'] = True
+
+    def _get_series_periodicity(self, serie_model):
+        return get_periodicity_human_format(
+            serie_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)

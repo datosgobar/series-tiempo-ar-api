@@ -365,13 +365,11 @@ class QueryTest(TestCase):
         """Esperado: Valores de la serie con y sin agregación son iguales, no
         hay valores que colapsar"""
         year_series = get_series_id('year')
-        self.query.add_series(year_series, self.rep_mode, 'year')
         self.query.add_series(year_series, self.rep_mode, 'year', 'end_of_period')
 
         data = self.query.run()
 
-        for row in data:
-            self.assertEqual(row[1], row[2])
+        self.assertFalse(data)
 
     def test_multiple_sort_desc_delayed(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
