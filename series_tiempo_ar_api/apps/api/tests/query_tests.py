@@ -4,10 +4,10 @@ from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
 
+from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query.query import Query
 from .helpers import get_series_id
 
@@ -257,3 +257,27 @@ class QueryTests(TestCase):
 
         self.assertEqual(field_meta['representation_mode'], rep_mode)
         self.assertEqual(field_meta['representation_mode_units'], constants.VERBOSE_REP_MODES[rep_mode])
+
+    def test_aggregation_on_yearly_series(self):
+        """Esperado: Valores de la serie con y sin agregación son iguales, no
+        hay valores que colapsar"""
+        year_series = get_series_id('year')
+        self.query.add_series(year_series, self.field)
+        self.query.add_series(year_series, self.field, collapse_agg='end_of_period')
+
+        data = self.query.run()['data']
+
+        for row in data:
+            self.assertEqual(row[1], row[2])
+
+    def test_aggregation_on_monthly_series(self):
+        """Esperado: Valores de la serie con y sin agregación son iguales, no
+        hay valores que colapsar"""
+        month_series = get_series_id('month')
+        self.query.add_series(month_series, self.field)
+        self.query.add_series(month_series, self.field, collapse_agg='end_of_period')
+
+        data = self.query.run()['data']
+
+        for row in data:
+            self.assertEqual(row[1], row[2])
