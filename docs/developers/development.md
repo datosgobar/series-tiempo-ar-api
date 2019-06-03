@@ -3,7 +3,7 @@ A continuación se detallan los pasos a seguir para levantar una versión local 
 
 ## Requerimientos
 
-- Python 2.7.6
+- Python 3.6.x
 - Virtualenv
 - Docker
 - Docker compose
@@ -13,7 +13,7 @@ A continuación se detallan los pasos a seguir para levantar una versión local 
 ### Virtualenv (con Pyenv)
 Es recomendable instalar las dependencias de la aplicación en un _entorno virtual_ para evitar conflictos con otras aplicaciones de versionado de las librerías usadas. Este ejemplo instala un entorno virtual de Python 2.7.6 con el nombre `stiempo-api`, y todas las dependencias de la aplicación.
 ```bash
-pyenv virtualenv 2.7.6 stiempo-api
+pyenv virtualenv 3.6.6 stiempo-api
 pyenv activate stiempo-api
 pip install -r requirements/local.txt
 ```
@@ -44,10 +44,24 @@ python manage.py migrate
 ```
 
 ### Worker
-Levanta los workers para ejecutar tareas asincrónicas. Notar que esta tarea bloquea la terminal.
+Por defecto usando la configuración local, todas las tareas asincrónicas se corren de manera sincrónica. Si se desea testear la integración con rq de manera completa, configurar las colas para ser asincrónicas cambiando el código
+
+```python
+for queue in RQ_QUEUES.values():
+    queue['ASYNC'] = False
+```
+
+por 
+
+```
+for queue in RQ_QUEUES.values():
+    queue['ASYNC'] = True
+```
+
+Luego se pueden correr los workers para las colas deseadas con el siguiente comando. Notar que el comando bloqueará la terminal. Los nombres de las colas se encuentran bajo la variable `RQ_QUEUE_NAMES` en el archivo `conf/settings/base.py`
 
 ```bash
-python manage.py rqworker high default low scrapping
+python manage.py rqworker <queues>
 ```
 
 ### Web server
