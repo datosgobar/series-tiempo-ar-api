@@ -1,5 +1,8 @@
 # Historial de versiones
 
+## 1.22.0 - 2019/06/03
+
+- Bugfix a consultas que devolvían datos vacíos cuando se pedía una serie con `collapse_aggregation` definido y sin `collapse`.
 
 ## 1.21.0 - 2019/05/15
 
