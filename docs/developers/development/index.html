@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-4.1.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
@@ -47,7 +47,7 @@
     
     
 	
-      <link rel="stylesheet" href="../../assets/stylesheets/application.982221ab.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
       
       
     
@@ -837,7 +837,7 @@
 <p>A continuación se detallan los pasos a seguir para levantar una versión local de la aplicación, apuntado a futuros desarrolladores de la misma. Este documento asume un entorno Linux para el desarrollo, y fue probado bajo Ubuntu 16.04.</p>
 <h2 id="requerimientos">Requerimientos</h2>
 <ul>
-<li>Python 2.7.6</li>
+<li>Python 3.6.x</li>
 <li>Virtualenv</li>
 <li>Docker</li>
 <li>Docker compose</li>
@@ -845,7 +845,7 @@
 <h2 id="setup">Setup</h2>
 <h3 id="virtualenv-con-pyenv">Virtualenv (con Pyenv)</h3>
 <p>Es recomendable instalar las dependencias de la aplicación en un <em>entorno virtual</em> para evitar conflictos con otras aplicaciones de versionado de las librerías usadas. Este ejemplo instala un entorno virtual de Python 2.7.6 con el nombre <code>stiempo-api</code>, y todas las dependencias de la aplicación.</p>
-<div class="codehilite"><pre><span></span>pyenv virtualenv <span class="m">2</span>.7.6 stiempo-api
+<div class="codehilite"><pre><span></span>pyenv virtualenv <span class="m">3</span>.6.6 stiempo-api
 pyenv activate stiempo-api
 pip install -r requirements/local.txt
 </pre></div>
@@ -877,8 +877,20 @@ docker-compose up -d
 
 
 <h3 id="worker">Worker</h3>
-<p>Levanta los workers para ejecutar tareas asincrónicas. Notar que esta tarea bloquea la terminal.</p>
-<div class="codehilite"><pre><span></span>python manage.py rqworker high default low scrapping
+<p>Por defecto usando la configuración local, todas las tareas asincrónicas se corren de manera sincrónica. Si se desea testear la integración con rq de manera completa, configurar las colas para ser asincrónicas cambiando el código</p>
+<div class="codehilite"><pre><span></span><span class="k">for</span> <span class="n">queue</span> <span class="ow">in</span> <span class="n">RQ_QUEUES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">queue</span><span class="p">[</span><span class="s1">&#39;ASYNC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+
+
+<p>por </p>
+<div class="codehilite"><pre><span></span>for queue in RQ_QUEUES.values():
+    queue[&#39;ASYNC&#39;] = True
+</pre></div>
+
+
+<p>Luego se pueden correr los workers para las colas deseadas con el siguiente comando. Notar que el comando bloqueará la terminal. Los nombres de las colas se encuentran bajo la variable <code>RQ_QUEUE_NAMES</code> en el archivo <code>conf/settings/base.py</code></p>
+<div class="codehilite"><pre><span></span>python manage.py rqworker &lt;queues&gt;
 </pre></div>
 
 
@@ -966,7 +978,7 @@ Quit the server with CONTROL-C.
       
     </div>
     
-      <script src="../../assets/javascripts/application.2ba8dec4.js"></script>
+      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
       
         
         
@@ -983,7 +995,7 @@ Quit the server with CONTROL-C.
           
         
       
-      <script>app.initialize({version:"1.0",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
   </body>
