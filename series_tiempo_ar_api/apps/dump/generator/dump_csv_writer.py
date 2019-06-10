@@ -8,7 +8,8 @@ from django_datajsonar.models import Field, Distribution
 
 from series_tiempo_ar_api.apps.dump.models import GenerateDumpTask
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.libs.utils.csv_reader import read_distribution_csv
+from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
+from series_tiempo_ar_api.libs.utils.distribution_csv_reader import DistributionCsvReader
 
 logger = logging.Logger(__name__)
 
@@ -53,8 +54,8 @@ class CsvDumpWriter:
             fields = distribution.field_set.all()
             fields = {field.title: field.identifier for field in fields}
             periodicity = meta_keys.get(distribution, meta_keys.PERIODICITY)
-
-            df = read_distribution_csv(distribution)
+            index_col = DistributionRepository(distribution).get_time_index_series().title
+            df = DistributionCsvReader(distribution, index_col).read()
             df.apply(self.write_serie, args=(periodicity, fields, writer))
         except Exception as e:
             msg = f'[{self.tag} Error en la distribución {distribution.identifier}: {e.__class__}: {e}'
