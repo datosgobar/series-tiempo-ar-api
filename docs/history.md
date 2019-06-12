@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.23.0 - 2019/06/11
+
+- Bump de versión de django_datajsonar con verificación de SSL a nivel nodo.
+- Refactor menor de código para leer distribuciones desde el file system de la aplicación en vez de descargar desde la fuente original durante la generación de dumps.
+
 ## 1.22.0 - 2019/06/03
 
 - Bugfix a consultas que devolvían datos vacíos cuando se pedía una serie con `collapse_aggregation` definido y sin `collapse`.

@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
+import django_datajsonar.urls
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -23,4 +24,5 @@ urlpatterns = [
     url(r'^api/', include(api_endpoints, namespace="api")),
     url(r'^analytics/', include('series_tiempo_ar_api.apps.analytics.urls', namespace='analytics')),
     url(r'^django-des/', include(des_urls)),
+    url(r'^', include(django_datajsonar.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
