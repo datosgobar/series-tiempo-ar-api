@@ -54,3 +54,5 @@ admin.site.register(IndexDataTask, DataJsonAdmin)
 admin.site.register(IntegrationTestConfig, SingletonAdmin)
 admin.site.unregister(RepeatableJob)
 admin.site.register(RepeatableJob, RepeatableJobAdmin)
+
+admin.site.login_template = 'login.html'

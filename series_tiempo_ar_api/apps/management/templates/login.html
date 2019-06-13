@@ -1,0 +1,38 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'management/css/global.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'management/css/styles.css' %}"/>
+</head>
+
+<header>
+    <img src="{% static 'management/logo-secretaria-header.png' %}"/>
+</header>
+<body>
+<div class="login">
+    <div class="l-wrapper">
+        <div class="head-wrapper">
+            <img src="{% static 'management/series-tiempo.png' %}" alt="">
+            <!-- <h4>Sistema de monitoreo de apertura</h4> -->
+            <!-- <p class="catalog-title">catalog title</p> -->
+        </div>
+        <p>Ingresá a tu cuenta</p>
+        <form action="{{ app_path }}" method="post">
+            {% csrf_token %}
+            <label for="{{ form.username.id_for_label }}">{{form.username.label_tag}}</label><input type="text" required id="{{ form.username.id_for_label }}">
+            <label for="{{ form.password.id_for_label }}">{{form.password.label_tag}}</label><input type="text" required id="{{ form.password.id_for_label }}">
+            <input type="hidden" name="next" value="{{ next }}"/>
+
+            <input type="submit" value="ingresar">
+        </form>
+    </div>
+</div>
+</body>
+
+</html>
