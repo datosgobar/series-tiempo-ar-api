@@ -91,6 +91,7 @@ class AnalyticsImporter:
         ids = self.loaded_api_mgmt_ids
         results = filter(lambda x: x['id'] not in ids, query_results['results'])
         results = filter(lambda x: x['uri'].find('/series/api/') > -1, results)
+        results = filter(lambda x: x['request_method'] != 'OPTIONS', results)
 
         queries = []
         for result in results:
