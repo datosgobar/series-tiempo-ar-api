@@ -9,7 +9,7 @@ from scheduler.models import RepeatableJob
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .tasks.indexation import read_datajson
 from .tasks.integration_test import run_integration
-from .models import IndexDataTask, IntegrationTestTask, IntegrationTestConfig
+from .models import IndexDataTask, IntegrationTestTask, IntegrationTestConfig, APIIndexingConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -54,3 +54,4 @@ admin.site.register(IndexDataTask, DataJsonAdmin)
 admin.site.register(IntegrationTestConfig, SingletonAdmin)
 admin.site.unregister(RepeatableJob)
 admin.site.register(RepeatableJob, RepeatableJobAdmin)
+admin.site.register(APIIndexingConfig, SingletonAdmin)

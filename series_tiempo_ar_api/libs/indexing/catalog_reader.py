@@ -7,6 +7,7 @@ from pydatajson import DataJson
 
 from django_datajsonar.models import Distribution
 from series_tiempo_ar_api.apps.management.models import IndexDataTask
+from series_tiempo_ar_api.libs.indexing.api_index_enqueue import api_index_enqueue
 from series_tiempo_ar_api.libs.indexing.tasks import index_distribution
 from .strings import READ_ERROR
 
@@ -28,4 +29,4 @@ def index_catalog(node, task, read_local=False, force=False):
                                                 dataset__indexable=True,
                                                 dataset__catalog__identifier=node.catalog_id)
     for distribution in distributions:
-        index_distribution.delay(distribution.identifier, node.id, task.id, read_local, force=force)
+        api_index_enqueue(index_distribution, distribution.identifier, node.id, task.id, read_local, force=force)
