@@ -22,7 +22,6 @@
             <!-- <h4>Sistema de monitoreo de apertura</h4> -->
             <!-- <p class="catalog-title">catalog title</p> -->
         </div>
-        <div>
         <p>Ingresá a tu cuenta</p>
         {% if form.errors and not form.non_field_errors %}
         <p class="errornote">
@@ -44,7 +43,6 @@
             <input type="hidden" name="next" value="{{ next }}"/>
             <input type="submit" value="{% trans 'Log in' %}"/>
         </form>
-        </div>
     </div>
 </div>
 </body>
