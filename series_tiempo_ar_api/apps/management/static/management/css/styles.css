@@ -38,11 +38,13 @@
         text-align: center;
         width: 600px; }
       .login .l-wrapper .errornote {
+        width: 100%;
+        max-width: 600px;
         font-size: 14px;
         font-weight: 700;
         display: block;
         padding: 10px 12px;
-        margin: 0 0 10px 0;
+        margin: auto auto 15px auto;
         color: #ba2121;
         border: 1px solid #ba2121;
         border-radius: 4px;
