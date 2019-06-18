@@ -104,8 +104,7 @@ class Query:
         order = constants.COLLAPSE_INTERVALS
 
         for serie in self.series_models:
-            periodicity = serie.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value
-            periodicity = get_periodicity_human_format(periodicity)
+            periodicity = self._get_series_periodicity(serie)
             if order.index(periodicity) > order.index(collapse):
                 raise CollapseError
 
