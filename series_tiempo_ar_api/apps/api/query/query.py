@@ -216,5 +216,6 @@ class Query:
                 meta_response['field']['is_percentage'] = True
 
     def _get_series_periodicity(self, serie_model):
-        return get_periodicity_human_format(
-            serie_model.distribution.enhanced_meta.get(key=meta_keys.PERIODICITY).value)
+        serie_periodicity = meta_keys.get(serie_model, meta_keys.PERIODICITY)
+        distribution_periodicity = meta_keys.get(serie_model.distribution, meta_keys.PERIODICITY)
+        return get_periodicity_human_format(serie_periodicity or distribution_periodicity)
