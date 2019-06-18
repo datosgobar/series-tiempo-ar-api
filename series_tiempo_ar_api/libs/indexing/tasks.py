@@ -24,7 +24,6 @@ from .distribution_validator import DistributionValidator
 logger = logging.getLogger(__name__)
 
 
-@job('api_index', timeout=settings.DISTRIBUTION_INDEX_JOB_TIMEOUT)
 def index_distribution(distribution_id, node_id, task_id,
                        read_local=False, index=settings.TS_INDEX, force=False):
     node = Node.objects.get(id=node_id)

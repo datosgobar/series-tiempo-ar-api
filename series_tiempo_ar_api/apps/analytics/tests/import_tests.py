@@ -2,9 +2,9 @@
 from decimal import Decimal
 
 from django.core.exceptions import FieldError
-from faker import Faker
 from django.test import TestCase
 from nose.tools import raises
+from faker import Faker
 
 from series_tiempo_ar_api.apps.analytics.tasks import enqueue_new_import_analytics_task
 from series_tiempo_ar_api.apps.analytics.models import ImportConfig, Query, AnalyticsImportTask
@@ -68,6 +68,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
                         'uri': '/series/api/series/',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -86,6 +87,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
                         'uri': '/series/api/series/',
+                        'request_method': 'GET',
                     },
                     {
                         'ip_address': '127.0.0.1',
@@ -93,6 +95,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:01-03:00',
                         'id': 2,
                         'uri': '/series/api/series/',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -115,6 +118,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
                         'uri': '/series/api/series/',
+                        'request_method': 'GET',
                     },
                     {
                         'ip_address': '127.0.0.1',
@@ -122,6 +126,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-08T05:00:01-03:00',
                         'id': 2,
                         'uri': '/series/api/series/',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -155,6 +160,7 @@ class ImportTests(TestCase):
                     'start_time': '2018-06-07T05:00:00-03:00',
                     'id': 2,
                     'uri': '/series/api/series/',
+                    'request_method': 'GET',
                 }
             ]
         }, {
@@ -167,6 +173,7 @@ class ImportTests(TestCase):
                     'start_time': '2018-06-07T05:00:00-03:00',
                     'id': 3,
                     'uri': '/series/api/series/',
+                    'request_method': 'GET',
                 }
             ]
         }]
@@ -186,6 +193,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
                         'uri': '/series/api/series/',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -207,6 +215,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
                         'uri': '/series/not_series_endpoint/',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -226,6 +235,7 @@ class ImportTests(TestCase):
                         'start_time': '2018-06-07T05:00:00-03:00',
                         'id': 1,
                         'uri': uri,
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -247,6 +257,7 @@ class ImportTests(TestCase):
                         'id': 1,
                         'status_code': status_code,
                         'uri': '/series/api/series',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -268,6 +279,7 @@ class ImportTests(TestCase):
                         'id': 1,
                         'user_agent': agent,
                         'uri': '/series/api/series',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -289,6 +301,7 @@ class ImportTests(TestCase):
                         'id': 1,
                         'request_time': request_time,
                         'uri': '/series/api/series',
+                        'request_method': 'GET',
                     }
                 ]
             }
@@ -307,6 +320,7 @@ class ImportTests(TestCase):
                     'start_time': '2018-06-07T05:00:00-03:00',
                     'id': 2,
                     'uri': '/series/api/series/',
+                    'request_method': 'GET',
                 }
             ]
         }, {
@@ -319,9 +333,54 @@ class ImportTests(TestCase):
                     'start_time': '2018-06-07T05:00:00-03:00',
                     'id': 3,
                     'uri': '/series/api/series/',
+                    'request_method': 'GET',
                 }
             ]
         }]
         enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests(responses=return_value))
 
         self.assertIsNotNone(ImportConfig.get_solo().last_cursor)
+
+    def test_filter_options_queries(self):
+        request_time = str(fake.pyfloat(left_digits=1, right_digits=10, positive=True))
+        enqueue_new_import_analytics_task(index_to_es=False, requests_lib=FakeRequests([
+            {
+                'next': None,
+                'count': 4,
+                'results': [
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 1,
+                        'uri': '/series/api/series/',
+                        'request_method': 'GET',
+                    },
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 2,
+                        'uri': '/series/api/series/',
+                        'request_method': 'OPTIONS',
+                    },
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 3,
+                        'uri': '/series/api/series/',
+                        'request_method': 'HEAD',
+                    },
+                    {
+                        'ip_address': '127.0.0.1',
+                        'querystring': '',
+                        'start_time': '2018-06-07T05:00:00-03:00',
+                        'id': 4,
+                        'uri': '/series/api/series/',
+                        'request_method': 'OPTIONS',
+                    }
+                ]
+            }
+        ]))
+        self.assertEqual(Query.objects.count(), 2)

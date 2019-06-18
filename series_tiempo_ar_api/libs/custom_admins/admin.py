@@ -4,6 +4,7 @@ from django.db.models import Q
 from django_datajsonar.admin.data_json import FieldAdmin, DistributionAdmin
 from django_datajsonar.models import Field, Distribution
 
+from series_tiempo_ar_api.libs.indexing.api_index_enqueue import api_index_enqueue
 from .utils import delete_metadata
 from .tasks import reindex_distribution
 
@@ -47,7 +48,7 @@ class CustomDistributionAdmin(DistributionAdmin):
 
     def reindex(self, _, queryset):
         for distribution in queryset:
-            reindex_distribution.delay(distribution)
+            api_index_enqueue(reindex_distribution, distribution)
     reindex.short_description = "Refrescar datos"
 
 
