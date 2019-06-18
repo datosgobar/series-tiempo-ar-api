@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.23.1 - 2019/06/18
+
+- Filtra queries por método, descartando las de método `OPTIONS`.
+- Estilos institucionales del login page.
+
 ## 1.23.0 - 2019/06/11
 
 - Bump de versión de django_datajsonar con verificación de SSL a nivel nodo.
