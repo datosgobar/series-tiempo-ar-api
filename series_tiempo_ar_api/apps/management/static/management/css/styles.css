@@ -37,6 +37,17 @@
         color: #3994f9;
         text-align: center;
         width: 600px; }
+      .login .l-wrapper .errornote {
+        font-size: 14px;
+        font-weight: 700;
+        display: block;
+        padding: 10px 12px;
+        margin: 0 0 10px 0;
+        color: #ba2121;
+        border: 1px solid #ba2121;
+        border-radius: 4px;
+        background-color: #fff;
+        background-position: 5px 12px; }
       .login .l-wrapper .head-wrapper p {
         position: absolute;
         bottom: -30px;
@@ -137,6 +148,7 @@
         outline: none;
         border: none;
         border-radius: 2px;
+        width: auto;
         background: #3994f9; }
         .login .l-wrapper form input[type="submit"]:hover {
           background: #0879f8; }

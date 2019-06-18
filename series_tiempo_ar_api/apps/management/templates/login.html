@@ -22,15 +22,29 @@
             <!-- <h4>Sistema de monitoreo de apertura</h4> -->
             <!-- <p class="catalog-title">catalog title</p> -->
         </div>
+        <div>
         <p>Ingresá a tu cuenta</p>
-        <form action="{{ app_path }}" method="post">
-            {% csrf_token %}
-            <label for="{{ form.username.id_for_label }}">{{form.username.label_tag}}</label><input type="text" required id="{{ form.username.id_for_label }}">
-            <label for="{{ form.password.id_for_label }}">{{form.password.label_tag}}</label><input type="text" required id="{{ form.password.id_for_label }}">
-            <input type="hidden" name="next" value="{{ next }}"/>
+        {% if form.errors and not form.non_field_errors %}
+        <p class="errornote">
+        {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        </p>
+        {% endif %}
 
-            <input type="submit" value="ingresar">
+        {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <p class="errornote">
+            {{ error }}
+        </p>
+        {% endfor %}
+        {% endif %}
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            <label for="{{ form.username.id_for_label }}">{{form.username.label_tag}}{{ form.username }}
+            <label for="{{ form.password.id_for_label }}">{{form.password.label_tag}}{{ form.password }}
+            <input type="hidden" name="next" value="{{ next }}"/>
+            <input type="submit" value="{% trans 'Log in' %}"/>
         </form>
+        </div>
     </div>
 </div>
 </body>
