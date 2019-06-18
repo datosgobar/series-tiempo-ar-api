@@ -55,3 +55,5 @@ admin.site.register(IntegrationTestConfig, SingletonAdmin)
 admin.site.unregister(RepeatableJob)
 admin.site.register(RepeatableJob, RepeatableJobAdmin)
 admin.site.register(APIIndexingConfig, SingletonAdmin)
+
+admin.site.login_template = 'login.html'

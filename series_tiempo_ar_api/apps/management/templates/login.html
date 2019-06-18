@@ -1,0 +1,50 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'management/css/global.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'management/css/styles.css' %}"/>
+</head>
+
+<header>
+    <img src="{% static 'management/logo-secretaria-header.png' %}"/>
+</header>
+<body>
+<div class="login">
+    <div class="l-wrapper">
+        <div class="head-wrapper">
+            <img src="{% static 'management/series-tiempo.png' %}" alt="">
+            <!-- <h4>Sistema de monitoreo de apertura</h4> -->
+            <!-- <p class="catalog-title">catalog title</p> -->
+        </div>
+        <p>Ingresá a tu cuenta</p>
+        {% if form.errors and not form.non_field_errors %}
+        <p class="errornote">
+        {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        </p>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <p class="errornote">
+            {{ error }}
+        </p>
+        {% endfor %}
+        {% endif %}
+        <form action="{{ app_path }}" method="post" id="login-form">
+            {% csrf_token %}
+            <label for="{{ form.username.id_for_label }}">{{form.username.label_tag}}{{ form.username }}
+            <label for="{{ form.password.id_for_label }}">{{form.password.label_tag}}{{ form.password }}
+            <input type="hidden" name="next" value="{{ next }}"/>
+            <input type="submit" value="{% trans 'Log in' %}"/>
+        </form>
+    </div>
+</div>
+</body>
+
+</html>
