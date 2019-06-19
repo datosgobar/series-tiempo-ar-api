@@ -7,6 +7,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from des import urls as des_urls
+from django.contrib.auth import views as auth_views
 
 
 admin.autodiscover()

@@ -16,6 +16,7 @@ nav:
     - Referencia API:
       - /series: 'reference/api-reference.md'
       - /search: 'reference/search-reference.md'
+      - /dump: dumps.md
       - OpenAPI: https://datosgobar.github.io/series-tiempo-ar-api/open-api
     - Condiciones de uso: terms.md
   - Aplicaciones: applications.md
