@@ -652,6 +652,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rutina-de-indexacion-de-datos" title="Rutina de indexación de datos" class="md-nav__link">
+    Rutina de indexación de datos
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#analytics" title="Analytics" class="md-nav__link">
     Analytics
   </a>
@@ -752,6 +759,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rutina-de-indexacion-de-datos" title="Rutina de indexación de datos" class="md-nav__link">
+    Rutina de indexación de datos
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#analytics" title="Analytics" class="md-nav__link">
     Analytics
   </a>
@@ -824,6 +838,8 @@
 </ul>
 <p>Esta programación de tareas se puede realizar creando o editando desde el admin los modelos <code>Synchronizer</code>.</p>
 <p>Adicionalmente, se pueden programar corridas individuales utilizando el botón <code>Schedule Task</code> en las vistas individuales de los modelos de tipo "Corrida" mencionados anteriormente, pero es fuertemente recomendado utilizar Synchronizers por su funcionalidad más extensiva.</p>
+<h2 id="rutina-de-indexacion-de-datos">Rutina de indexación de datos</h2>
+<p>Dentro de la vista "Configuración de rutina de indexación" se puede configurar el timeout global dado para cada distribución (en segundos). Luego de este tiempo, la indexación de esa distribución será considerada como fallida. Esto es para evitar el bloqueo de recursos de procesamiento frente a tareas que están bloqueadas por alguna falla externa a la aplicación. Por defecto, este valor es <strong>1000 segundos</strong>.</p>
 <h2 id="analytics">Analytics</h2>
 <p>Existe un módulo de la aplicación que se dedica a importar datos de uso de la aplicación desde una instanacia de <a href="https://github.com/datosgobar/api-gateway">api-gateway</a>. Se puede configurar a través de la vista "Configuración de importación de analytics" en el admin, a llenar con los campos relevantes de la instancia de API Gateway que querramos consultar, incluyendo ID de la API de series de tiempo en ese proyecto, y una api key. El campo <code>Last Cursor</code> es de uso interno y <strong>no debería ser modificado</strong>.</p>
 <h2 id="test-de-integracion">Test de integración</h2>

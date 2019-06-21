@@ -24,6 +24,11 @@ Esta programación de tareas se puede realizar creando o editando desde el admin
 
 Adicionalmente, se pueden programar corridas individuales utilizando el botón `Schedule Task` en las vistas individuales de los modelos de tipo "Corrida" mencionados anteriormente, pero es fuertemente recomendado utilizar Synchronizers por su funcionalidad más extensiva.
 
+## Rutina de indexación de datos 
+
+Dentro de la vista "Configuración de rutina de indexación" se puede configurar el timeout global dado para cada distribución (en segundos). Luego de este tiempo, la indexación de esa distribución será considerada como fallida. Esto es para evitar el bloqueo de recursos de procesamiento frente a tareas que están bloqueadas por alguna falla externa a la aplicación. Por defecto, este valor es **1000 segundos**.
+
+
 ## Analytics
 
 Existe un módulo de la aplicación que se dedica a importar datos de uso de la aplicación desde una instanacia de [api-gateway](https://github.com/datosgobar/api-gateway). Se puede configurar a través de la vista "Configuración de importación de analytics" en el admin, a llenar con los campos relevantes de la instancia de API Gateway que querramos consultar, incluyendo ID de la API de series de tiempo en ese proyecto, y una api key. El campo `Last Cursor` es de uso interno y **no debería ser modificado**.
