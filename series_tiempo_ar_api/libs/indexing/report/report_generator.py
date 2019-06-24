@@ -85,7 +85,7 @@ class ReportGenerator:
             mail_sender.add_csv_attachment(file_name, body)
 
         # No se manda si task.logs está vacío
-        mail_sender.add_plaintext_attachment('errors.log', self.task.logs)
+        mail_sender.add_plaintext_attachment('errors.log', self.error_log(node))
 
     def _format_date(self, date):
         return timezone.localtime(date).strftime(self.DATE_FORMAT)
@@ -115,3 +115,11 @@ class ReportGenerator:
                                      timestamp__year=yesterday.year).count()
 
         return count
+
+    def error_log(self, node=None):
+        errored_distributions = DistributionRepository.get_all_errored()
+        if node:
+            errored_distributions = errored_distributions.filter(
+                dataset__catalog__identifier=node.catalog_id)
+        errors = errored_distributions.values_list('error_msg', flat=True)
+        return "\n".join(errors)
