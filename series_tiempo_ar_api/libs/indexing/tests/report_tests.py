@@ -90,3 +90,13 @@ class ReportMailSenderTests(TestCase):
         second_error_id = sorted_error_ids[1]
         body = mail.outbox[0].body
         self.assertGreater(body.index(second_error_id), body.index(first_error_id))
+
+    def test_error_logs_attachment(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        error_id = Distribution.objects.filter(dataset__catalog__identifier='test_catalog',
+                                               error=True).first().identifier
+        self.task.logs = f"Error en distribución {error_id}"
+        self.task.save()
+        ReportGenerator(self.task).generate()
+        log_body = mail.outbox[0].attachments[-1][1]
+        self.assertIn(error_id, log_body)
