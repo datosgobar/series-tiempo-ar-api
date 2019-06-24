@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.23.2 - 2019/06/24
+
+- Fixes a pantalla del login
+
 ## 1.23.1 - 2019/06/18
 
 - Filtra queries por método, descartando las de método `OPTIONS`.
