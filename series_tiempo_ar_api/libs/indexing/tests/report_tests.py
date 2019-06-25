@@ -90,3 +90,34 @@ class ReportMailSenderTests(TestCase):
         second_error_id = sorted_error_ids[1]
         body = mail.outbox[0].body
         self.assertGreater(body.index(second_error_id), body.index(first_error_id))
+
+    def test_error_logs_attachment(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        error_id = Distribution.objects.filter(dataset__catalog__identifier='test_catalog',
+                                               error=True).first().identifier
+        self.task.logs = f"Error en distribución {error_id}"
+        self.task.save()
+        ReportGenerator(self.task).generate()
+        log_body = mail.outbox[0].attachments[-1][1]
+        self.assertIn(error_id, log_body)
+
+    def test_error_logs_for_single_node(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        Node.objects.get(catalog_id='test_catalog').admins.add(User.objects.first())
+        parse_catalog('other_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        ReportGenerator(self.task).generate()
+        error_id = Distribution.objects.filter(dataset__catalog__identifier='test_catalog',
+                                               error=True).first().identifier
+        log_body = mail.outbox[1].attachments[-1][1]
+        self.assertIn(error_id, log_body)
+
+    def test_error_logs_for_single_node_does_not_have_other_catalog_errors(self):
+        parse_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        Node.objects.get(catalog_id='test_catalog').admins.add(User.objects.first())
+        parse_catalog('other_catalog', os.path.join(SAMPLES_DIR, 'broken_catalog.json'))
+        ReportGenerator(self.task).generate()
+        other_id = Distribution.objects.filter(
+            dataset__catalog__identifier='other_catalog',
+            error=True).first().identifier
+        log_body = mail.outbox[1].attachments[-1][1]
+        self.assertNotIn(other_id, log_body)
