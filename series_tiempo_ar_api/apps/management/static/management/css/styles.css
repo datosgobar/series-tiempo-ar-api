@@ -103,8 +103,6 @@ header {
         margin-bottom: 15px;
         border: 1px solid #b2b3b2;
         border-radius: 6px; }
-      .login .l-wrapper form label * {
-        display: block; }
       .login .l-wrapper form table {
         width: 100%;
         border: 0;

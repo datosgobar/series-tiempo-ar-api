@@ -20,10 +20,21 @@ api_endpoints = [
 ]
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+
     url(r'^django-rq/', include('django_rq.urls')),
     url(r'^api/', include(api_endpoints, namespace="api")),
     url(r'^analytics/', include('series_tiempo_ar_api.apps.analytics.urls', namespace='analytics')),
     url(r'^django-des/', include(des_urls)),
-    url(r'^', include(django_datajsonar.urls))
+    url(r'^', include(django_datajsonar.urls)),
+    url(r'^admin/password_reset/$', auth_views.PasswordResetView.as_view(),
+        name='admin_password_reset',),
+    url(r'^admin/password_reset/done/$',
+        auth_views.PasswordResetDoneView.as_view(),
+        name='password_reset_done',),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
+        auth_views.PasswordResetConfirmView.as_view(),
+        name='password_reset_confirm',),
+    url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(),
+        name='password_reset_complete',),
+    url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
