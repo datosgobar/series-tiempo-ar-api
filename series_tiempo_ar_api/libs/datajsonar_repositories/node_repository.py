@@ -1,4 +1,4 @@
-from pydatajson import DataJson
+from series_tiempo_ar import TimeSeriesDataJson
 
 
 class NodeRepository:
@@ -7,4 +7,4 @@ class NodeRepository:
         self.node = node
 
     def read_catalog(self):
-        return DataJson(self.node.catalog_url)
+        return TimeSeriesDataJson(self.node.catalog_url)

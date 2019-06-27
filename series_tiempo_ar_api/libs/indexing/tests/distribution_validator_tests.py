@@ -3,16 +3,17 @@ import os
 from mock import Mock, create_autospec
 
 from django.test import TestCase
-from pydatajson import DataJson
+from series_tiempo_ar import TimeSeriesDataJson
 from django_datajsonar.models import Distribution, Dataset
 
 from series_tiempo_ar_api.libs.indexing.distribution_validator import DistributionValidator
+from series_tiempo_ar_api.libs.indexing.errors.distribution_validator import DistributionValidationError
 from series_tiempo_ar_api.libs.indexing.tests.reader_tests import SAMPLES_DIR
 
 
 class DistributionValidatorTests(TestCase):
     def test_validator_valid_distribution_no_exceptions(self):
-        catalog = DataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
+        catalog = TimeSeriesDataJson(os.path.join(SAMPLES_DIR, 'full_ts_data.json'))
         repository = self.create_mock_distribution_repository(catalog)
         validator = self.create_validator(repository)
         distribution = self.create_mock_distribution_from_first_catalog_entry(catalog)
@@ -20,12 +21,27 @@ class DistributionValidatorTests(TestCase):
         validator.run(distribution)
 
     def test_validate_distribution_without_dataset_identifier(self):
-        catalog = DataJson(os.path.join(SAMPLES_DIR, 'distribution_missing_dataset_identifier.json'))
+        catalog = TimeSeriesDataJson(os.path.join(SAMPLES_DIR, 'distribution_missing_dataset_identifier.json'))
         repository = self.create_mock_distribution_repository(catalog)
         validator = self.create_validator(repository)
         distribution = self.create_mock_distribution_from_first_catalog_entry(catalog)
 
         validator.run(distribution)
+
+    def test_validate_distribution_multiple_errors(self):
+        catalog = TimeSeriesDataJson(os.path.join(SAMPLES_DIR, 'repeated_field_id_and_description.json'))
+        repository = self.create_mock_distribution_repository(catalog)
+
+        distribution = self.create_mock_distribution_from_first_catalog_entry(catalog)
+        validator = DistributionValidator(read_local=True,
+                                          distribution_repository=repository)
+
+        try:
+            validator.run(distribution)
+            msg = ''
+        except DistributionValidationError as e:
+            msg = str(e)
+        self.assertIn('\n', msg)
 
     def create_mock_distribution_repository(self, distribution_catalog):
         repository = Mock()
@@ -45,6 +61,7 @@ class DistributionValidatorTests(TestCase):
 
     def create_validator(self, repository):
         data_validator = Mock()
+        data_validator.return_value = []
         validator = DistributionValidator(read_local=True,
                                           distribution_repository=repository,
                                           data_validator=data_validator)

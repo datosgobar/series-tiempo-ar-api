@@ -1,0 +1,90 @@
+{
+  "dataset": [
+    {
+      "publisher": {
+        "mbox": "ausolari@mecon.gob.ar",
+        "name": "Ministerio de Hacienda. Secretaría de Política Económica. Subsecretaría de Programación Macroeconómica."
+      },
+      "landingPage": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+      "description": "Índice de Precios Internos Básicos al por Mayor (IPIB) desagregado hasta cuatro dígitos (base 1993)",
+      "superTheme": [
+        "ECON"
+      ],
+      "title": "Índice de Precios Internos Básicos al por Mayor (IPIB) hasta cuatro dígitos",
+      "language": [
+        "SPA"
+      ],
+      "issued": "2017-09-28T00:00:00",
+      "temporal": "1993-01-01/2015-10-31",
+      "modified": "2017-09-28T00:00:00",
+      "source": "Instituto Nacional de Estadística y Censos (INDEC)",
+      "theme": [
+        "Índice de Precios Interno al por mayor"
+      ],
+      "keyword": [
+        "Información económica al día",
+        "precio"
+      ],
+      "accrualPeriodicity": "R/P1M",
+      "spatial": "ARG",
+      "identifier": "125",
+      "contactPoint": {
+        "fn": "Ministerio de Hacienda. Secretaría de Política Económica. Subsecretaría de Programación Macroeconómica. Dirección de Información y Coyuntura"
+      },
+      "accessLevel": "ABIERTO",
+      "distribution": [
+        {
+          "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+          "scrapingFileSheet": "4.12",
+          "description": "Distribución de ejemplo para testing",
+          "format": "CSV",
+          "dataset_identifier": "125",
+          "issued": "2017-09-28T00:00:00",
+          "title": "Distribución ejemplo",
+          "modified": "2017-09-28T00:00:00",
+          "fileName": "indice-precios-internos-basicos-al-por-mayor-desagregado-base-1993-anual.csv",
+          "downloadURL": "http://localhost:3456/series_tiempo_ar_api/libs/indexing/tests/samples/repeated_field_id_and_description_data.csv",
+          "field": [
+            {
+              "distribution_identifier": "125.1",
+              "title": "indice_tiempo",
+              "dataset_identifier": "125",
+              "scrapingIdentifierCell": "A8",
+              "specialTypeDetail": "R/P1M",
+              "specialType": "time_index",
+              "type": "date",
+              "id": "time_index",
+              "scrapingDataStartCell": "A9"
+            },
+            {
+              "distribution_identifier": "125.1",
+              "description": "Descripción de la serie 1",
+              "title": "title1",
+              "dataset_identifier": "125",
+              "scrapingIdentifierCell": "DS8",
+              "units": "Índice 1993=100",
+              "type": "number",
+              "id": "id_serie_1",
+              "scrapingDataStartCell": "DS9"
+            },
+            {
+              "distribution_identifier": "125.1",
+              "description": "Descripción de la serie 1",
+              "title": "title2",
+              "dataset_identifier": "125",
+              "scrapingIdentifierCell": "DS8",
+              "units": "Índice 1993=100",
+              "type": "number",
+              "id": "id_serie_1",
+              "scrapingDataStartCell": "DS9"
+            }
+          ],
+          "draft": false,
+          "units": "Índice",
+          "identifier": "125.1",
+          "scrapingFileURL": "https://www.economia.gob.ar/download/infoeco/apendice4.xlsx"
+        }
+      ]
+    }
+  ]
+}
