@@ -19,7 +19,7 @@ def index_catalog(catalog_id, catalog_path, index, node=None):
 
     index_task = mgmt.IndexDataTask.objects.create()
     for distribution in Distribution.objects.filter(dataset__catalog__identifier=catalog_id):
-        index_distribution(distribution.identifier, node.id, index_task.id, index=index, read_local=True, force=True)
+        index_distribution(distribution.identifier, node.id, index_task.id, index=index, force=True)
 
         for field in distribution.field_set.all():
             for key in meta_keys.HITS_KEYS:
@@ -40,7 +40,7 @@ def parse_catalog(catalog_id, catalog_path, node=None):
     node.save()
     task = ReadDataJsonTask()
     task.save()
-    read_datajson(task, read_local=True, whitelist=True)
+    read_datajson(task, whitelist=True)
     return node
 
 

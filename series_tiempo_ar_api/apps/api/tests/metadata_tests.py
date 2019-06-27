@@ -5,7 +5,7 @@ import faker
 from django.test import TestCase
 from django_datajsonar.models import Field
 
-from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id
+from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id, setup_database
 from series_tiempo_ar_api.apps.api.query.metadata_response import MetadataResponse
 from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
@@ -15,6 +15,8 @@ class MetadataResponseTests(TestCase):
     faker = faker.Faker()
 
     def setUp(self):
+        if not Field.objects.filter(identifier=self.single_series):
+            setup_database()
         self.units = self.faker.pystr()
         self.field = Field.objects.get(identifier=self.single_series)
         self.field.metadata = json.dumps({'units': self.units})

@@ -96,7 +96,7 @@
           "issued": "2017-09-28",
           "title": "Índice de Precios al Consumidor. Bienes y servicios. Base abril 2016. Valores mensuales",
           "fileName": "indice-precios-al-consumidor-bienes-servicios-base-abril-2016-mensual.csv",
-          "downloadURL": "series_tiempo_ar_api/libs/indexing/tests/samples/series_metadata_no_identifier.csv",
+          "downloadURL": "http://localhost:3456/series_tiempo_ar_api/libs/indexing/tests/samples/series_metadata_no_identifier.csv",
           "field": [
             {
               "distribution_identifier": "102.1",

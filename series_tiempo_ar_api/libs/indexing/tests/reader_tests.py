@@ -2,7 +2,6 @@
 import os
 import mock
 
-from django.db.models import Q
 from django.test import TestCase
 
 from django_datajsonar.tasks import read_datajson
@@ -31,20 +30,20 @@ class ReaderTests(TestCase):
         self.node.save()
 
     def test_index_same_series_different_catalogs(self, *_):
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True)
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True)
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
 
         count = Field.objects.filter(identifier='212.1_PSCIOS_ERN_0_0_25').count()
 
         self.assertEqual(count, 1)
 
     def test_dont_index_same_distribution_twice(self, *_):
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True)
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True)
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -52,21 +51,21 @@ class ReaderTests(TestCase):
         self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'False')
 
     def test_first_time_distribution_indexable(self, *_):
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, )
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task,)
 
         distribution = Distribution.objects.get(identifier='212.1')
 
         self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
 
     def test_index_same_distribution_if_data_changed(self, *_):
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, )
+        read_datajson(self.task, whitelist=True)
+        index_catalog(self.node, self.mgmt_task)
         new_catalog = os.path.join(SAMPLES_DIR, 'full_ts_data_changed.json')
         self.node.catalog_url = new_catalog
         self.node.save()
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True)
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
 
         distribution = Distribution.objects.get(identifier='212.1')
 
@@ -77,8 +76,8 @@ class ReaderTests(TestCase):
         catalog = os.path.join(SAMPLES_DIR, 'distribution_missing_downloadurl.json')
         self.node.catalog_url = catalog
         self.node.save()
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True)
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
 
         self.assertGreater(len(ReadDataJsonTask.objects.get(id=self.task.id).logs), 10)
 
@@ -87,8 +86,8 @@ class ReaderTests(TestCase):
         self.node.catalog_url = catalog
         self.node.save()
 
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, )
+        read_datajson(self.task, whitelist=True, )
+        index_catalog(self.node, self.mgmt_task, )
 
         distribution = Distribution.objects.get(identifier='102.1')
 
@@ -99,8 +98,8 @@ class ReaderTests(TestCase):
         self.node.catalog_url = catalog
         self.node.save()
 
-        read_datajson(self.task, whitelist=True, read_local=True)
-        index_catalog(self.node, self.mgmt_task, read_local=True, )
+        read_datajson(self.task, whitelist=True)
+        index_catalog(self.node, self.mgmt_task)
 
         distribution = Distribution.objects.get(identifier='102.1')
 

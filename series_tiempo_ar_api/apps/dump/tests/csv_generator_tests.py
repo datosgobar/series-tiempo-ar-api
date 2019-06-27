@@ -8,10 +8,10 @@ import zipfile
 from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
-from django_datajsonar.models import Field, Node, Catalog
 from elasticsearch_dsl.connections import connections
-
 from faker import Faker
+from django_datajsonar.models import Field, Node, Catalog
+
 
 from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -253,8 +253,7 @@ class CSVTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         super(CSVTest, cls).tearDownClass()
-        elastic = connections.get_connection()
-        elastic.indices.delete(cls.index)
+        delete_if_exists(cls.index)
         Node.objects.all().delete()
 
 
@@ -300,8 +299,13 @@ class CSVDumpCommandTests(TestCase):
                                              node__catalog_id='catalog_two').zipdumpfile_set.first())
 
     def tearDown(self):
-        elastic = connections.get_connection()
-        elastic.indices.delete(self.index)
+        delete_if_exists(self.index)
         Catalog.objects.all().delete()
         DumpFile.objects.all().delete()
         Node.objects.all().delete()
+
+
+def delete_if_exists(index):
+    elastic = connections.get_connection()
+    if elastic.indices.exists(index):
+        elastic.indices.delete(index)

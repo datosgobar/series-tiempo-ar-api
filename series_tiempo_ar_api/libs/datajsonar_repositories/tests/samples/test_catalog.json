@@ -59,7 +59,7 @@
           "format": "CSV",
           "modified": "2018-01-03T07:00:02.849550-03:00",
           "fileName": "principales-tasas-interes-diarias.csv",
-          "downloadURL": "series_tiempo_ar_api/apps/dump/tests/samples/daily_periodicity.csv",
+          "downloadURL": "http://localhost:3456/series_tiempo_ar_api/apps/dump/tests/samples/daily_periodicity.csv",
           "field": [
             {
               "distribution_identifier": "89.2",
