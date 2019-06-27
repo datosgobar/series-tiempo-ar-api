@@ -1,0 +1,2 @@
+class DistributionValidationError(ValueError):
+    pass
