@@ -393,3 +393,6 @@ ADMIN_REORDER = (
     'scheduler',
     'sites',
 )
+
+LOGIN_URL = 'admin:login'
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')

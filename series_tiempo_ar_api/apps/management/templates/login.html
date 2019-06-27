@@ -41,6 +41,18 @@
             <label for="{{ form.username.id_for_label }}">{{form.username.label_tag}}{{ form.username }}
             <label for="{{ form.password.id_for_label }}">{{form.password.label_tag}}{{ form.password }}
             <input type="hidden" name="next" value="{{ next }}"/>
+            {% url 'admin_password_reset' as password_reset_url %}
+            <table>
+              <tr>
+                <td><!-- Espacio para el tilde de recordarme -->
+                </td>
+                <td>
+                  <div class="password-reset-link">
+                    <a href="{{ password_reset_url }}">Olvidé mi contraseña</a>
+                  </div>
+                </td>
+              </tr>
+            </table>
             <input type="submit" value="{% trans 'Log in' %}"/>
         </form>
     </div>

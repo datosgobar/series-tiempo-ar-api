@@ -43,3 +43,5 @@ DUMP_LOG_EXCEPTIONS = False
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
 TS_INDEX = 'indicators_test'
+
+DEFAULT_FROM_EMAIL = 'webmaster@localhost'
