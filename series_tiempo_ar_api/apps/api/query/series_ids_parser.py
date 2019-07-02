@@ -5,8 +5,8 @@ from series_tiempo_ar_api.apps.api.query import constants
 
 class SeriesIdsParser:
 
-    def __init__(self, query, series_ids):
-        self.series_rep_modes = query.series_rep_modes
+    def __init__(self, series_rep_modes, series_ids):
+        self.series_rep_modes = series_rep_modes
         self.series_ids = series_ids
 
     def parse(self, header):

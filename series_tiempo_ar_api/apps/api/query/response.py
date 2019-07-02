@@ -49,7 +49,7 @@ class CSVFormatter(BaseFormatter):
         header = query_args.get(constants.PARAM_HEADER,
                                 constants.API_DEFAULT_VALUES[constants.PARAM_HEADER])
 
-        ids_parser = SeriesIdsParser(query, query.get_series_ids(how=header))
+        ids_parser = SeriesIdsParser(query.series_rep_modes, query.get_series_ids(how=header))
         series_ids = ids_parser.parse(header)
         data = query.run()['data']
 
