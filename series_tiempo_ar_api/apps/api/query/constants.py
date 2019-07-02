@@ -153,3 +153,31 @@ DATE_KEYS = (
     PARAM_END_DATE,
     PARAM_START_DATE,
 )
+
+REP_MODES_FOR_TITLES = {
+    VALUE: None,
+    CHANGE: 'var',
+    CHANGE_YEAR_AGO: 'var_ia',
+    PCT_CHANGE: 'var_pct',
+    PCT_CHANGE_YEAR_AGO: 'var_pct_ia',
+}
+
+REP_MODES_FOR_DESC = {
+    VALUE: None,
+    CHANGE: '(var.)',
+    CHANGE_YEAR_AGO: '(var. interanual)',
+    PCT_CHANGE: '(var. %)',
+    PCT_CHANGE_YEAR_AGO: '(var. % interanual)',
+}
+
+REP_MODE_SELECTOR = {
+    HEADER_PARAM_IDS: None,
+    HEADER_PARAM_NAMES: REP_MODES_FOR_TITLES,
+    HEADER_PARAM_DESCRIPTIONS: REP_MODES_FOR_DESC
+}
+
+REP_MODE_JOINERS = {
+    HEADER_PARAM_IDS: ':',
+    HEADER_PARAM_NAMES: '_',
+    HEADER_PARAM_DESCRIPTIONS: ' ',
+}
