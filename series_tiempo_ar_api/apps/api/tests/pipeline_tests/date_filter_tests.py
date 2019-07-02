@@ -4,10 +4,10 @@ from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
 
-from django_datajsonar.models import Field
+from django_datajsonar.models import Field, Catalog
 from series_tiempo_ar_api.apps.api.query.pipeline import DateFilter
 from series_tiempo_ar_api.apps.api.query.query import Query
-from ..helpers import get_series_id
+from ..helpers import get_series_id, setup_database
 
 SERIES_NAME = get_series_id('month')
 
@@ -23,9 +23,11 @@ class DateFilterTests(TestCase):
         self.cmd = DateFilter()
 
     @classmethod
-    def setUpClass(cls):
+    def setUpTestData(cls):
+        if not Catalog.objects.count():
+            setup_database()
+
         cls.field = Field.objects.get(identifier=cls.single_series)
-        super(cls, DateFilterTests).setUpClass()
 
     def test_start_date(self):
         self.query.add_series(self.single_series, self.field, 'value')
