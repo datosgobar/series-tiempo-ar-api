@@ -9,6 +9,7 @@ from django.http.response import JsonResponse, HttpResponse
 
 from series_tiempo_ar_api.apps.api.exceptions import InvalidFormatError
 from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.api.query.series_ids_parser import SeriesIdsParser
 
 
 class BaseFormatter:
@@ -47,7 +48,9 @@ class CSVFormatter(BaseFormatter):
 
         header = query_args.get(constants.PARAM_HEADER,
                                 constants.API_DEFAULT_VALUES[constants.PARAM_HEADER])
-        series_ids = query.get_series_ids(how=header)
+
+        ids_parser = SeriesIdsParser(query, query.get_series_ids(how=header))
+        series_ids = ids_parser.parse(header)
         data = query.run()['data']
 
         response = HttpResponse(content_type='text/csv')

@@ -54,7 +54,7 @@ class ResponseTests(TestCase):
     def test_csv_name(self):
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(self.query, {})
-        self.assertEquals(
+        self.assertEqual(
             response.get('Content-Disposition'),
             'attachment; filename="{}"'.format(constants.CSV_RESPONSE_FILENAME)
         )
@@ -77,3 +77,40 @@ class ResponseTests(TestCase):
         response = generator.run(query, {'decimal': ','})
 
         self.assertFalse("None" in str(response.content))
+
+    def setupQueryWithSeriesWithDifferentRepresentationModes(self):
+        query = Query(index=settings.TEST_INDEX)
+        field = Field.objects.get(identifier=self.single_series)
+        query.add_series(self.single_series, field, rep_mode='change')
+        query.add_series(self.single_series, field, rep_mode='percent_change')
+        query.add_series(self.single_series, field, rep_mode='change_a_year_ago')
+        query.add_series(self.single_series, field, rep_mode='percent_change_a_year_ago')
+
+        return query
+
+    def setupHeader(self, query, header):
+        generator = ResponseFormatterGenerator('csv').get_formatter()
+        response = generator.run(query, {'header': header})
+        line_end = str(response.content).find('\n')
+        return response.content[:line_end]
+
+    def test_csv_response_header_ids_with_different_rep_modes(self):
+        query = self.setupQueryWithSeriesWithDifferentRepresentationModes()
+        header = self.setupHeader(query, 'ids')
+
+        for rep_mode in query.series_rep_modes:
+            self.assertIn(rep_mode, str(header))
+
+    def test_csv_response_header_titles_with_different_rep_modes(self):
+        query = self.setupQueryWithSeriesWithDifferentRepresentationModes()
+        header = self.setupHeader(query, 'titles')
+
+        for rep_mode in query.series_rep_modes:
+            self.assertIn(constants.REP_MODES_FOR_TITLES[rep_mode], str(header))
+
+    def test_csv_response_header_description_woth_different_rep_modes(self):
+        query = self.setupQueryWithSeriesWithDifferentRepresentationModes()
+        header = self.setupHeader(query, 'descriptions')
+
+        for rep_mode in query.series_rep_modes:
+            self.assertIn(constants.REP_MODES_FOR_DESC[rep_mode], str(header))
