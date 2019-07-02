@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.24.0 - 2019/07/02
+
+- Recuperación de contraseña
+- Mejora de descripción de títulos en consultas con formato CSV.
+- Muestra de todos los errores de una distribución cuando falla
+
 ## 1.23.2 - 2019/06/24
 
 - Fixes a pantalla del login
