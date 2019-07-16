@@ -98,3 +98,14 @@ class ValidatorViewTests(TestCase):
                                     json.dumps(self.request_data),
                                     content_type='application/json')
         self.assertEqual(400, response.status_code)
+
+    def test_http_request_not_allowed(self):
+        not_allowed_methods = [
+            self.client.get,
+            self.client.head,
+            self.client.patch,
+            self.client.put,
+        ]
+        for method in not_allowed_methods:
+            response = method(self.endpoint)
+            self.assertEqual(405, response.status_code)
