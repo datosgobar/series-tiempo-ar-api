@@ -25,7 +25,7 @@ class ValidatorViewTests(TestCase):
         response = self.client.post(self.endpoint,
                                     json.dumps(self.request_data),
                                     content_type='application/json')
-        self.assertIsInstance(response, JsonResponse)
+        self.assertEqual(200, response.status_code)
 
     def test_valid_series(self):
         response = self.client.post(self.endpoint,
@@ -90,11 +90,11 @@ class ValidatorViewTests(TestCase):
         response = self.client.post(self.endpoint,
                                     json.dumps(self.request_data),
                                     content_type='application/json')
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertEqual(400, response.status_code)
 
     def test_missing_distribution_request(self):
         del self.request_data['distribution_id']
         response = self.client.post(self.endpoint,
                                     json.dumps(self.request_data),
                                     content_type='application/json')
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertEqual(400, response.status_code)
