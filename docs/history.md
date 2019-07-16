@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.25.0 - 2019/07/16
+
+- Bump de django_datajsonar a 0.4.2
+- Nuevo endpoint: /validate. Permite validar distribuciones de un catálogo de series de tiempo a partir de una URL y un identifier.
+
 ## 1.24.0 - 2019/07/02
 
 - Recuperación de contraseña
