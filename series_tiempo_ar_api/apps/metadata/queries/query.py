@@ -120,7 +120,8 @@ class FieldSearchQuery:
         for arg, field in constants.FILTER_ARGS.items():
             search = self.add_filters(search, arg, field)
 
-        search = search.extra(min_score=MetadataConfig.get_solo().min_score)
+        if self.args.get(constants.PARAM_QUERYSTRING):
+            search = search.extra(min_score=MetadataConfig.get_solo().min_score)
         return search
 
     def add_terms_aggregations(self, multi_search):
