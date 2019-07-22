@@ -9,7 +9,7 @@ from django.test import TestCase
 from elasticsearch_dsl import Search, MultiSearch
 
 from series_tiempo_ar_api.apps.metadata import constants
-from series_tiempo_ar_api.apps.metadata.models import CatalogAlias
+from series_tiempo_ar_api.apps.metadata.models import CatalogAlias, MetadataConfig
 from series_tiempo_ar_api.apps.metadata.queries.query import FieldSearchQuery
 from .utils import get_mock_search
 
@@ -108,3 +108,10 @@ class QueryTests(TestCase):
         resp = FieldSearchQuery(args={}).execute()
 
         self.assertNotIn('aggregations', resp)
+
+    def test_min_score(self):
+        query = FieldSearchQuery(args={'limit': 0, 'start': 0})
+
+        search = query.get_search()
+        min_score = search.to_dict()['min_score']
+        self.assertEqual(min_score, MetadataConfig.get_solo().min_score)

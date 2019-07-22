@@ -20,3 +20,5 @@ FILTER_ARGS = {
 
 ANALYZER = 'spanish_asciifold'
 SYNONYM_FILTER = 'synonyms_filter'
+
+DEFAULT_MIN_SCORE = 5
