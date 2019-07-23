@@ -1,4 +1,4 @@
-# Referencia API: search
+# Referencia API: validate
 
 Recurso: `/validate`
 
@@ -36,3 +36,6 @@ Acepta dos parámetros, ambos obligatorios:
 - `distribution_id`: `identifier` de la distribución a validar.
 
 Ante cualquier error de parámetros faltantes o inválidos, devuelve una respuesta con código 400.
+
+Adicionalmente acepta un tercer parámetro: `catalog_format`. Este parámetro permite forzar la el tipo para la lectura
+de un catálogo. Puede ser `json` o `xlsx`, por default deja la inferencia al módulo `series_tiempo_ar`.
