@@ -45,16 +45,18 @@ class ValidatorView(View):
     def generate_error_report(self, request_body):
         catalog_url = request_body.get('catalog_url')
         distribution_id = request_body.get('distribution_id')
+        catalog_format = request_body.get('catalog_format')
         report = {'catalog_url': catalog_url,
                   'distribution_id': distribution_id, }
         try:
-            datajson = TimeSeriesDataJson(catalog_url)
+            datajson = TimeSeriesDataJson(
+                catalog_url, catalog_format=catalog_format)
             error_list = get_distribution_errors(datajson, distribution_id)
             found_issues = len(error_list)
             detail = [err.args[0] for err in error_list]
         except Exception as e:
             found_issues = 1
-            detail = str(e)
+            detail = [str(e)]
         report['found_issues'] = found_issues
         report['detail'] = detail
         return report

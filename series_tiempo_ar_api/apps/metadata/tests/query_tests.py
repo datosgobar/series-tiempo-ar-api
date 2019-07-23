@@ -117,8 +117,7 @@ class QueryTests(TestCase):
         self.assertEqual(min_score, MetadataConfig.get_solo().min_score)
 
     def test_min_score_not_added_without_querystring(self):
-        query = FieldSearchQuery(args={'limit': 0, 'start': 0, 'q': 'hola'})
+        query = FieldSearchQuery(args={'limit': 0, 'start': 0})
 
         search = query.get_search()
-        min_score = search.to_dict()['min_score']
-        self.assertIsNone(min_score)
+        self.assertNotIn('min_score', search.to_dict())
