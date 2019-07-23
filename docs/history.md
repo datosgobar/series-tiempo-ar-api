@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.26.0 - 2019/07/16
+
+- Bump de series-tiempo-ar a 0.3.1
+- Agrega parametro opcional `catalog_format` al endpoint de validaciones
+
 ## 1.25.0 - 2019/07/16
 
 - Bump de django_datajsonar a 0.4.2

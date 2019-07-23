@@ -973,30 +973,23 @@
 <p>Ver uso del parámetro <a href="../reference/api-reference/#decimal"><code>decimal</code></a> en la referencia.</p>
 <h4 id="modificar-la-configuracion-regional">Modificar la configuración regional</h4>
 <p>Para que Google Spreadsheet lea correctamente el archivo CSV por defecto, puede elegirse “Estados Unidos” o cualquier otra región compatible como configuración regional.</p>
-<p><center><img alt="excel" src="../assets/google_drive_letra_1.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_2.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_3.png" title="google_drive" /></center></p>
+<p><img alt="excel" src="../assets/google_drive_letra_1.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_2.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_3.png" title="google_drive" /></p>
 <h3 id="2-importar-los-datos-a-la-planilla">2. Importar los datos a la planilla</h3>
 <p>La función IMPORTDATA() toma la URL de la consulta a la API y trae los datos a la planilla.</p>
-<p><center><img alt="excel" src="../assets/google_drive_letra_4.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_5.png" title="google_drive" /></center></p>
+<p><img alt="excel" src="../assets/google_drive_letra_4.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_5.png" title="google_drive" /></p>
 <h3 id="3-elegir-el-formato-de-fecha">3. Elegir el formato de fecha</h3>
 <p>El índice de tiempo puede verse como un número la primera vez que se importan los datos. Lo más conveniente es seleccionar toda la columna y elegir el formato en el que se desea visualizar la fecha.</p>
-<p><center><img alt="excel" src="../assets/google_drive_letra_6.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_7.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_8.png" title="google_drive" /></center></p>
+<p><img alt="excel" src="../assets/google_drive_letra_6.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_7.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_8.png" title="google_drive" /></p>
 <h3 id="4-modificar-la-url-de-consulta-a-la-api">4. Modificar la URL de consulta a la API</h3>
 <p>Una vez importada la tabla por primera vez, se pueden modificar los distintos parámetros de la consulta según lo que se necesite. La tabla se actualizará con cada cambio.</p>
-<p><center><img alt="excel" src="../assets/google_drive_letra_9.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_10.png" title="google_drive" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/google_drive_letra_11.png" title="google_drive" /></center></p>
+<p><img alt="excel" src="../assets/google_drive_letra_9.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_10.png" title="google_drive" />
+<img alt="excel" src="../assets/google_drive_letra_11.png" title="google_drive" /></p>
 <h2 id="excel">Excel</h2>
 <h3 id="0-chequear-que-tenes-instalado-lo-que-necesitas">0. Chequear que tenés instalado lo que necesitás</h3>
 <ul>
@@ -1006,35 +999,29 @@
 </ul>
 <h3 id="1-generar-una-nueva-consulta-desde-una-url">1. Generar una nueva consulta desde una URL</h3>
 <p>“Datos” &gt; “Nueva consulta” &gt; “Desde otras fuentes” &gt; “Desde una web”</p>
-<p><strong>Nota:</strong> si Excel está configurado para Argentina / latinoamérica agregar a la URL de la API <code>&amp;decimal=,</code> para que los números decimales usen "," en lugar de "." y Excel los lea correctamente. Ver uso del parámetro <a href="../reference/api-reference/#decimal"><code>decimal</code></a> en la referencia.</p>
+<p><strong>Nota:</strong> si Excel está configurado para Argentina / Latinoamérica agregar a la URL de la API <code>&amp;decimal=,</code> para que los números decimales usen "," en lugar de "." y Excel los lea correctamente. Ver uso del parámetro <a href="../reference/api-reference/#decimal"><code>decimal</code></a> en la referencia.</p>
 <div class="admonition note">
 <p><a href="https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;metadata=full&amp;start=0&amp;ids=143.3_NO_PR_2004_A_21&amp;format=csv&amp;decimal=,">https://apis.datos.gob.ar/series/api/series/?limit=1000&amp;metadata=full&amp;start=0&amp;ids=143.3_NO_PR_2004_A_21&amp;format=csv&amp;decimal=,</a></p>
 </div>
-<p><center><img alt="excel" src="../assets/excel_letra_1.png" title="excel" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/excel_letra_2.png" title="excel" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/excel_letra_3.png" title="excel" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/excel_letra_4.png" title="excel" /></center></p>
+<p><img alt="excel" src="../assets/excel_letra_1.png" title="excel" />
+<img alt="excel" src="../assets/excel_letra_2.png" title="excel" />
+<img alt="excel" src="../assets/excel_letra_3.png" title="excel" />
+<img alt="excel" src="../assets/excel_letra_4.png" title="excel" /></p>
 <h3 id="2-editar-codificacion-del-archivo-origen">2. Editar codificación del archivo origen</h3>
 <p>Esto <strong>sólo es necesario si se pide a la API usar las descripciones como nombres de las columnas</strong> (<code>&amp;header=descriptions</code>) en lugar del texto corto que viene por defecto, formado con carateres compatibles con cualquier codificación.</p>
 <p>La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es el valor por defecto de Excel y puede generar errores en los caracteres con tildes o la "ñ".</p>
-<p>Click en la rueda de “Origen” &gt; “Origen de archivo” &gt; Elegir “Unicode UTF-8”</p>
-<p><center><img alt="excel" src="../assets/excel_letra_5.png" title="excel" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/excel_letra_6.png" title="excel" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/excel_letra_7.png" title="excel" /></center></p>
+<p>Clic en la rueda de “Origen” &gt; “Origen de archivo” &gt; Elegir “Unicode UTF-8”</p>
+<p><img alt="excel" src="../assets/excel_letra_5.png" title="excel" />
+<img alt="excel" src="../assets/excel_letra_6.png" title="excel" />
+<img alt="excel" src="../assets/excel_letra_7.png" title="excel" /></p>
 <h3 id="3-editar-los-tipos-de-las-columnas">3. Editar los tipos de las columnas</h3>
-<p>Excel puede no interpretar correctamente las fechas cuando Excel está configurado para Argentina / latinoamérica.</p>
-<p>Si este es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.</p>
-<p><center><img alt="excel" src="../assets/excel_letra_8.png" title="excel" /></center>
-<br><br>
-<center><img alt="excel" src="../assets/excel_letra_9.png" title="excel" /></center></p>
+<p>Excel puede no interpretar correctamente las fechas cuando Excel está configurado para Argentina / Latinoamérica.</p>
+<p>Si éste es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.</p>
+<p><img alt="excel" src="../assets/excel_letra_8.png" title="excel" />
+<img alt="excel" src="../assets/excel_letra_9.png" title="excel" /></p>
 <h3 id="4-guardar-las-modificaciones-y-cargar-la-consulta">4. Guardar las modificaciones y cargar la consulta</h3>
-<p>Por último, haciendo click en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.</p>
-<p><center><img alt="excel" src="../assets/excel_letra_14.png" title="excel" /></center></p>
+<p>Por último, haciendo clic en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.</p>
+<p><img alt="excel" src="../assets/excel_letra_14.png" title="excel" /></p>
                 
                   
                 
