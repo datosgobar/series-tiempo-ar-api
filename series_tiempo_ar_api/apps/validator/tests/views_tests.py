@@ -1,7 +1,6 @@
 #! coding: utf-8
 import json
 
-from django.http import JsonResponse, HttpResponseBadRequest
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
@@ -109,3 +108,22 @@ class ValidatorViewTests(TestCase):
         for method in not_allowed_methods:
             response = method(self.endpoint)
             self.assertEqual(405, response.status_code)
+
+    def test_xlsx_catalog(self):
+        self.request_data.update(
+            {'catalog_url': BASE_URL + "catalog.xlsx",
+             'distribution_id': '221859a8-c51e-47c2-95ab-a8525bb2b55d',
+             'catalog_format': 'xlsx'}
+        )
+        response = self.client.post(self.endpoint,
+                                    json.dumps(self.request_data),
+                                    content_type='application/json')
+        response_body = json.loads(response.content.decode('utf8'))
+        self.assertEqual(BASE_URL + "catalog.xlsx",
+                         response_body['catalog_url'])
+        self.assertEqual('221859a8-c51e-47c2-95ab-a8525bb2b55d',
+                         response_body['distribution_id'])
+        self.assertEqual(1, response_body['found_issues'])
+        self.assertListEqual(
+            ['superficie_ha_santa_fe tiene 1 valores, deberia tener 2 o mas'],
+            response_body['detail'])
