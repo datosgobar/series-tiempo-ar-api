@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.26.1 - 2019/07/25
+
+- Modificaciones de Headers en responses para permitir usos de APIs en cualquier sitio (CORS)
+
+
 ## 1.26.0 - 2019/07/16
 
 - Bump de series-tiempo-ar a 0.3.1
