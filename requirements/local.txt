@@ -1,3 +1,4 @@
 -r testing.txt
 
 psycopg2==2.7.3.2
+django-cors-headers==3.0.2
