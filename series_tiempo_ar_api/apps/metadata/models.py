@@ -9,6 +9,8 @@ from django.contrib.postgres.fields import JSONField
 from solo.models import SingletonModel
 from django_datajsonar.models import AbstractTask, Node
 
+from series_tiempo_ar_api.apps.metadata import constants
+
 
 class IndexMetadataTask(AbstractTask):
     class Meta:
@@ -55,6 +57,8 @@ class MetadataConfig(SingletonModel):
                                       'dataset_source': {'boost': 1},
                                       'dataset_title': {'boost': 1},
                                       'description': {'boost': 1.5}})
+
+    min_score = models.FloatField(default=constants.DEFAULT_MIN_SCORE)
 
 
 class SeriesUnits(models.Model):

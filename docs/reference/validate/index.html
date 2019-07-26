@@ -133,7 +133,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#referencia-api-search" tabindex="1" class="md-skip">
+      <a href="#referencia-api-validate" tabindex="1" class="md-skip">
         Saltar a contenido
       </a>
     
@@ -690,7 +690,7 @@
                   <a href="https://github.com/datosgobar/series-tiempo-ar-api/edit/master/docs/reference/validate.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="referencia-api-search">Referencia API: search</h1>
+                <h1 id="referencia-api-validate">Referencia API: validate</h1>
 <p>Recurso: <code>/validate</code></p>
 <p>El recurso <code>/validate</code> permite validar distribuciones de series de tiempo para determinar si están listas a ser cargadas en el servicio. Es una herramienta de utilidad para publicadores, es una manera de asegurarse que los datos están en el formato esperado por la API.</p>
 <p>Se utiliza a través de una llamada de tipo POST (por ejemplo con <code>curl</code>):</p>
@@ -721,6 +721,8 @@
 <li><code>distribution_id</code>: <code>identifier</code> de la distribución a validar.</li>
 </ul>
 <p>Ante cualquier error de parámetros faltantes o inválidos, devuelve una respuesta con código 400.</p>
+<p>Adicionalmente acepta un tercer parámetro: <code>catalog_format</code>. Este parámetro permite forzar la el tipo para la lectura
+de un catálogo. Puede ser <code>json</code> o <code>xlsx</code>, por default deja la inferencia al módulo <code>series_tiempo_ar</code>.</p>
                 
                   
                 

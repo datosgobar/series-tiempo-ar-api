@@ -37,39 +37,32 @@ Ver uso del parámetro [`decimal`](reference/api-reference.md#decimal) en la ref
 
 Para que Google Spreadsheet lea correctamente el archivo CSV por defecto, puede elegirse “Estados Unidos” o cualquier otra región compatible como configuración regional.
 
-<center>![excel](assets/google_drive_letra_1.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_2.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_3.png "google_drive")</center>
+![excel](assets/google_drive_letra_1.png "google_drive")
+![excel](assets/google_drive_letra_2.png "google_drive")
+![excel](assets/google_drive_letra_3.png "google_drive")
 
 ### 2. Importar los datos a la planilla
 
 La función IMPORTDATA() toma la URL de la consulta a la API y trae los datos a la planilla.
 
-<center>![excel](assets/google_drive_letra_4.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_5.png "google_drive")</center>
+![excel](assets/google_drive_letra_4.png "google_drive")
+![excel](assets/google_drive_letra_5.png "google_drive")
 
 ### 3. Elegir el formato de fecha
 
 El índice de tiempo puede verse como un número la primera vez que se importan los datos. Lo más conveniente es seleccionar toda la columna y elegir el formato en el que se desea visualizar la fecha.
 
-<center>![excel](assets/google_drive_letra_6.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_7.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_8.png "google_drive")</center>
+![excel](assets/google_drive_letra_6.png "google_drive")
+![excel](assets/google_drive_letra_7.png "google_drive")
+![excel](assets/google_drive_letra_8.png "google_drive")
 
 ### 4. Modificar la URL de consulta a la API
 
 Una vez importada la tabla por primera vez, se pueden modificar los distintos parámetros de la consulta según lo que se necesite. La tabla se actualizará con cada cambio.
 
-<center>![excel](assets/google_drive_letra_9.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_10.png "google_drive")</center>
-<br><br>
-<center>![excel](assets/google_drive_letra_11.png "google_drive")</center>
+![excel](assets/google_drive_letra_9.png "google_drive")
+![excel](assets/google_drive_letra_10.png "google_drive")
+![excel](assets/google_drive_letra_11.png "google_drive")
 
 ## Excel
 
@@ -83,18 +76,15 @@ Una vez importada la tabla por primera vez, se pueden modificar los distintos pa
 
 “Datos” > “Nueva consulta” > “Desde otras fuentes” > “Desde una web”
 
-**Nota:** si Excel está configurado para Argentina / latinoamérica agregar a la URL de la API `&decimal=,` para que los números decimales usen "," en lugar de "." y Excel los lea correctamente. Ver uso del parámetro [`decimal`](reference/api-reference.md#decimal) en la referencia.
+**Nota:** si Excel está configurado para Argentina / Latinoamérica agregar a la URL de la API `&decimal=,` para que los números decimales usen "," en lugar de "." y Excel los lea correctamente. Ver uso del parámetro [`decimal`](reference/api-reference.md#decimal) en la referencia.
 
 !!! note ""
     [https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,](https://apis.datos.gob.ar/series/api/series/?limit=1000&metadata=full&start=0&ids=143.3_NO_PR_2004_A_21&format=csv&decimal=,)
 
-<center>![excel](assets/excel_letra_1.png "excel")</center>
-<br><br>
-<center>![excel](assets/excel_letra_2.png "excel")</center>
-<br><br>
-<center>![excel](assets/excel_letra_3.png "excel")</center>
-<br><br>
-<center>![excel](assets/excel_letra_4.png "excel")</center>
+![excel](assets/excel_letra_1.png "excel")
+![excel](assets/excel_letra_2.png "excel")
+![excel](assets/excel_letra_3.png "excel")
+![excel](assets/excel_letra_4.png "excel")
 
 ### 2. Editar codificación del archivo origen
 
@@ -102,26 +92,23 @@ Esto **sólo es necesario si se pide a la API usar las descripciones como nombre
 
 La API genera los archivos CSV con codificación “Unicode UTF-8”, que no es el valor por defecto de Excel y puede generar errores en los caracteres con tildes o la "ñ".
 
-Click en la rueda de “Origen” > “Origen de archivo” > Elegir “Unicode UTF-8”
+Clic en la rueda de “Origen” > “Origen de archivo” > Elegir “Unicode UTF-8”
 
-<center>![excel](assets/excel_letra_5.png "excel")</center>
-<br><br>
-<center>![excel](assets/excel_letra_6.png "excel")</center>
-<br><br>
-<center>![excel](assets/excel_letra_7.png "excel")</center>
+![excel](assets/excel_letra_5.png "excel")
+![excel](assets/excel_letra_6.png "excel")
+![excel](assets/excel_letra_7.png "excel")
 
 ### 3. Editar los tipos de las columnas
 
-Excel puede no interpretar correctamente las fechas cuando Excel está configurado para Argentina / latinoamérica.
+Excel puede no interpretar correctamente las fechas cuando Excel está configurado para Argentina / Latinoamérica.
 
-Si este es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.
+Si éste es el caso, se debe utilizar el “Editor avanzado” para corregir el tipo de la columna "indice_tiempo" que debe ser “type date”.
 
-<center>![excel](assets/excel_letra_8.png "excel")</center>
-<br><br>
-<center>![excel](assets/excel_letra_9.png "excel")</center>
+![excel](assets/excel_letra_8.png "excel")
+![excel](assets/excel_letra_9.png "excel")
 
 ### 4. Guardar las modificaciones y cargar la consulta
 
-Por último, haciendo click en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.
+Por último, haciendo clic en “Cerrar y cargar” la consulta queda configurada en una tabla de Excel que se puede actualizar.
 
-<center>![excel](assets/excel_letra_14.png "excel")</center>
+![excel](assets/excel_letra_14.png "excel")
