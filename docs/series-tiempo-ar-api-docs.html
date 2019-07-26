@@ -7,7 +7,7 @@
  <strong>
   Versión
  </strong>
- : 1.10.0
+ : 1.21.2
 </p>
 <p>
  La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
@@ -17,7 +17,7 @@
  <a href="https://es.wikipedia.org/wiki/Serie_temporal">
   serie de tiempo
  </a>
- es una secuencia de observaciones o valores, medidos en determinados momentos del tiempo y ordenados cronológicamente.
+ es una secuencia de observaciones o valores (mínimo 2), medidos en determinados momentos del tiempo y ordenados cronológicamente.
 </p>
 <table>
  <tr>
@@ -144,43 +144,43 @@
 </p>
 <ul>
  <li>
-  <a href="http://datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=csv">
-   Inflación
-  </a>
-  (
-  <a href="https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=csv">
-   csv
-  </a>
-  |
-  <a href="https://apis.datos.gob.ar/series/api/series/?ids=101.1_I2NG_2016_M_22:percent_change_a_year_ago&amp;format=json">
-   json
-  </a>
-  )
- </li>
- <li>
-  <a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=1000">
+  <a href="http://datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=5000">
    Tipo de cambio
   </a>
   (
-  <a href="https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=1000&amp;format=csv">
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=5000&amp;format=csv">
    csv
   </a>
   |
-  <a href="https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=1000">
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=168.1_T_CAMBIOR_D_0_0_26&amp;start_date=2018-07&amp;limit=5000">
    json
   </a>
   )
  </li>
  <li>
-  <a href="http://datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&amp;limit=1000">
-   Nivel de actividad
+  <a href="http://datos.gob.ar/series/api/series/?ids=tmi_arg&amp;format=csv">
+   Tasa de mortalidad infantil
   </a>
   (
-  <a href="https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&amp;limit=1000&amp;format=csv">
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg&amp;format=csv">
    csv
   </a>
   |
-  <a href="https://apis.datos.gob.ar/series/api/series/?ids=143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_28&amp;limit=1000">
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg&amp;format=json">
+   json
+  </a>
+  )
+ </li>
+ <li>
+  <a href="http://datos.gob.ar/series/api/series/?ids=defensa_FAA_0006&amp;limit=5000">
+   Porcentaje del personal femenino de la Fuerza Aérea
+  </a>
+  (
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=defensa_FAA_0006&amp;limit=5000&amp;format=csv">
+   csv
+  </a>
+  |
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=defensa_FAA_0006&amp;limit=5000">
    json
   </a>
   )
@@ -219,56 +219,62 @@
   <a href="#1-buscar-series">
    1. Buscar series
   </a>
- </li>
- <li>
-  <a href="#en-un-archivo">
-   En un archivo
-  </a>
- </li>
- <li>
-  <a href="#en-el-explorador-de-series">
-   En el explorador de series
-  </a>
+  <ul>
+   <li>
+    <a href="#en-un-archivo">
+     En un archivo
+    </a>
+   </li>
+   <li>
+    <a href="#en-el-explorador-de-series">
+     En el explorador de series
+    </a>
+   </li>
+  </ul>
  </li>
  <li>
   <a href="#2-armar-consulta">
    2. Armar consulta
   </a>
- </li>
- <li>
-  <a href="#manualmente">
-   Manualmente
-  </a>
- </li>
- <li>
-  <a href="#en-el-generador-de-consultas">
-   En el generador de consultas
-  </a>
+  <ul>
+   <li>
+    <a href="#manualmente">
+     Manualmente
+    </a>
+   </li>
+   <li>
+    <a href="#en-el-generador-de-consultas">
+     En el generador de consultas
+    </a>
+   </li>
+  </ul>
  </li>
  <li>
   <a href="#3-realizar-consulta">
    3. Realizar consulta
   </a>
- </li>
- <li>
-  <a href="#consultar-o-integrar-json">
-   Consultar o integrar JSON
-  </a>
- </li>
- <li>
-  <a href="#descargar-csv">
-   Descargar CSV
-  </a>
- </li>
- <li>
-  <a href="#integrar-en-planilla-de-calculo">
-   Integrar en planilla de cálculo
-  </a>
- </li>
- <li>
-  <a href="#consultar-en-el-explorador-de-series">
-   Consultar en el explorador de series
-  </a>
+  <ul>
+   <li>
+    <a href="#consultar-o-integrar-json">
+     Consultar o integrar JSON
+    </a>
+   </li>
+   <li>
+    <a href="#descargar-csv">
+     Descargar CSV
+    </a>
+   </li>
+   <li>
+    <a href="#integrar-en-planilla-de-calculo">
+     Integrar en planilla de cálculo
+    </a>
+   </li>
+   <li>
+    <a href="#consultar-en-el-explorador-de-series">
+     Consultar en el explorador de series
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -1239,6 +1245,225 @@
 </pre>
 </div>
 <!-- ## Con `plotly` -->
+<h1 id="usar-en-componentes-web">
+ Usar en componentes web
+</h1>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+ <li>
+  <a href="#con-tscomponents">
+   Con
+   <code>
+    TSComponents
+   </code>
+  </a>
+  <ul>
+   <li>
+    <a href="#card">
+     <code>
+      card
+     </code>
+    </a>
+   </li>
+   <li>
+    <a href="#graphic">
+     <code>
+      graphic
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<p>
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" media="all" rel="stylesheet" type="text/css"/>
+ <link href="https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_2.0.0/dist/css/components.css" rel="stylesheet" type="text/css"/>
+ <script src="https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_2.0.0/dist/js/components.js" type="text/javascript">
+ </script>
+</p>
+<style>
+ .row {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+}
+</style>
+<h2 id="con-tscomponents">
+ Con
+ <code>
+  TSComponents
+ </code>
+</h2>
+<p>
+ El objeto TSComponents fue desarrollado por el equipo de Datos Argentina para simplificar el uso de la API de Series de Tiempo en experiencias web.
+</p>
+<p>
+ Consiste de una librería JS y una hoja de estilos CSS versionadas en un CDN con distintos componentes diseñados para funcionar fácilmente con la API.
+</p>
+<p>
+ Ver más en la
+ <a href="https://datosgobar.github.io/series-tiempo-ar-explorer/reference/ts-components/">
+  documentación de TSComponents
+ </a>
+ .
+</p>
+<h3 id="card">
+ <code>
+  card
+ </code>
+</h3>
+<p>
+ El componente
+ <code>
+  card
+ </code>
+ permite embeber el último valor de un indicador en experiencias web para armar tableros o indicadores testigo. El objeto es altamente personalizable y tiene muchas variantes.
+</p>
+<div class="row">
+ <div id="ipc">
+ </div>
+ <div id="exportaciones">
+ </div>
+</div>
+<p>
+ Estas tarjetas se generan a partir del siguiente código:
+ <br/>
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="c">&lt;!-- importa librería JS --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">'text/javascript'</span> <span class="na">src</span><span class="o">=</span><span class="s">'https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_2.0.0/dist/js/components.js'</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- importa hoja de estilos CSS --&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_2.0.0/dist/css/components.css"</span> <span class="na">type</span><span class="o">=</span><span class="s">"text/css"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">type</span><span class="o">=</span><span class="s">"text/css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"</span> <span class="na">media</span><span class="o">=</span><span class="s">"all"</span> <span class="p">/&gt;</span>
+
+<span class="c">&lt;!-- estilo para ordenar las tarjetas en filas --&gt;</span>
+<span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">.</span><span class="nc">row</span> <span class="p">{</span>
+    <span class="k">width</span><span class="p">:</span> <span class="mi">90</span><span class="kt">%</span><span class="p">;</span>
+    <span class="k">margin</span><span class="p">:</span> <span class="kc">auto</span><span class="p">;</span>
+    <span class="k">display</span><span class="p">:</span> <span class="kc">flex</span><span class="p">;</span>
+    <span class="k">justify-content</span><span class="p">:</span> <span class="kc">space-around</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- código HTML donde ubicar divs con cards, en rows --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"row"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"ipc"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"exportaciones"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- JS que genera el gráfico en el div --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">TSComponents</span><span class="p">.</span><span class="nx">Card</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'ipc'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="nx">serieId</span><span class="o">:</span> <span class="s1">'148.3_INIVELNAL_DICI_M_26:percent_change'</span><span class="p">,</span>
+            <span class="nx">color</span><span class="o">:</span> <span class="s1">'#F9A822'</span><span class="p">,</span>
+            <span class="nx">title</span><span class="o">:</span> <span class="s2">"Indice de Precios al Consumidor Nacional"</span><span class="p">,</span>
+            <span class="nx">links</span><span class="o">:</span> <span class="s2">"none"</span>
+        <span class="p">})</span>
+
+        <span class="nx">TSComponents</span><span class="p">.</span><span class="nx">Card</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'exportaciones'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="nx">serieId</span><span class="o">:</span> <span class="s1">'74.3_IET_0_M_16:percent_change_a_year_ago'</span><span class="p">,</span>
+            <span class="nx">explicitSign</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nx">title</span><span class="o">:</span> <span class="s2">"Exportaciones"</span><span class="p">,</span>
+            <span class="nx">links</span><span class="o">:</span> <span class="s2">"none"</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre>
+</div>
+<p>
+ Ver
+ <a href="https://datosgobar.github.io/series-tiempo-ar-explorer/reference/ts-components/card/">
+  referencia completa del componente
+  <code>
+   card
+  </code>
+ </a>
+ .
+</p>
+<h3 id="graphic">
+ <code>
+  graphic
+ </code>
+</h3>
+<p>
+ El componente
+ <code>
+  graphic
+ </code>
+ permite embeber gráficos de líneas, áreas o barras en experiencias web. Permite elegir distintos elementos de filtro de fechas, personalizar los textos, etc.
+</p>
+<div id="tmi">
+</div>
+<p>
+ <br/>
+ <br/>
+ Este gráfico se genera a partir del siguiente código:
+ <br/>
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="c">&lt;!-- importa librería JS --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">'text/javascript'</span> <span class="na">src</span><span class="o">=</span><span class="s">'https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_2.0.0/dist/js/components.js'</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- importa hoja de estilos CSS --&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/gh/datosgobar/series-tiempo-ar-explorer@ts_components_2.0.0/dist/css/components.css"</span> <span class="na">type</span><span class="o">=</span><span class="s">"text/css"</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- código HTML donde ubicar un div con un gráfico --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"tmi"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- JS que genera las tarjetas en sus divs --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">TSComponents</span><span class="p">.</span><span class="nx">Graphic</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'tmi'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="c1">// Llamada a la API de Series de Tiempo</span>
+            <span class="nx">graphicUrl</span><span class="o">:</span> <span class="s1">'https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg'</span><span class="p">,</span>
+            <span class="nx">title</span><span class="o">:</span> <span class="s1">'Tasa de Mortalidad Infantil de Argentina'</span><span class="p">,</span>
+            <span class="nx">source</span><span class="o">:</span> <span class="s1">'Dirección de Estadística e Información en Salud (DEIS). Secretaría de Gobierno de Salud'</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre>
+</div>
+<p>
+ Ver
+ <a href="https://datosgobar.github.io/series-tiempo-ar-explorer/reference/ts-components/graphic/">
+  referencia completa del componente
+  <code>
+   graphic
+  </code>
+ </a>
+ .
+</p>
+<script>
+ window.onload = function() {
+        TSComponents.Graphic.render('tmi', {
+            graphicUrl: 'https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg',
+            title: 'Tasa de Mortalidad Infantil de Argentina',
+            source: 'Dirección de Estadística e Información en Salud (DEIS). Secretaría de Gobierno de Salud'
+        })
+
+        TSComponents.Card.render('ipc', {
+            serieId: '148.3_INIVELNAL_DICI_M_26:percent_change',
+            color: '#F9A822',
+            hasChart: 'small',
+            title: "Indice de Precios al Consumidor Nacional",
+            links: "none"
+        })
+
+        TSComponents.Card.render('exportaciones', {
+            serieId: '74.3_IET_0_M_16:percent_change_a_year_ago',
+            explicitSign: true,
+            hasChart: 'small',
+            title: "Exportaciones",
+            links: "none"
+        })
+    }
+</script>
 <p>
  Se encuentran disponibles varios archivos con los mismos datos de la base de series de tiempo disponibles a través de la API.
 </p>
@@ -2926,6 +3151,23 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 <td>
  start=100
 </td>
+<tr>
+ <td>
+  aggregations
+ </td>
+</tr>
+<td>
+ No
+</td>
+<td>
+ N/A
+</td>
+<td class="s4" dir="ltr">
+ N/A
+</td>
+<td>
+ N/A
+</td>
 <h3 id="q">
  <code>
   q
@@ -2990,6 +3232,17 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
  </code>
  . Cualquier otra opción devolverá una lista vacía de resultados (al no haber coincidencias). Consultar la tabla de parámetros para ver los endpoints auxiliares.
 </p>
+<p>
+ Se pueden armar consultas que filtren por más de un valor, separando los valores deseados por
+ <code>
+  ||
+ </code>
+ . Por ejemplo:
+ <code>
+  units=Pesos||Millones de pesos
+ </code>
+ .
+</p>
 <h3 id="limit">
  <code>
   limit
@@ -3026,6 +3279,342 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
   </code>
  </a>
  indica el "número de resultados después del inicio" que se saltea el buscador para el armado de la respuesta.
+</p>
+<h3 id="aggregations">
+ <code>
+  aggregations
+ </code>
+</h3>
+<p>
+ La presencia de este parámetro agrega un objeto nuevo a la respuesta de la API bajo la clave
+ <code>
+  aggregations
+ </code>
+ , que contiene la cantidad de ocurrencias totales de la búsqueda discriminando por los distintos filtros posibles. Si el parámetro no está presente, no se calculan las agregaciones.
+</p>
+<p>
+ Un ejemplo posible de la respuesta:
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="p">{</span>
+  <span class="nt">"aggregations"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">"dataset_theme"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Finanzas Públicas"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">904</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Precios"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">522</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Sector Externo"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">21</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">"units"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Millones de pesos"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">904</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Índice"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">509</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Millones de dólares"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">21</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Variación Porcentual"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">12</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Variación intermensual"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">1</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">"dataset_publisher_name"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Subsecretaría de Programación Macroeconómica."</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">1447</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">"dataset_source"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Ministerio de Hacienda"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">925</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"Instituto Nacional de Estadística y Censos (INDEC)"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">522</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">"catalog_id"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nt">"label"</span><span class="p">:</span> <span class="s2">"sspm"</span><span class="p">,</span>
+        <span class="nt">"series_count"</span><span class="p">:</span> <span class="mi">1447</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+</div>
+<p>
+ Se encuentran disponibles varios archivos con los mismos datos de la base de series de tiempo disponibles a través de la API.
+</p>
+<p>
+ Los datos están para descargar en cuatro formatos:
+</p>
+<ul>
+ <li>
+  CSV
+ </li>
+ <li>
+  XLSX
+ </li>
+ <li>
+  SQL (Una base de datos SQLITE)
+ </li>
+ <li>
+  DTA
+ </li>
+</ul>
+<p>
+ Existen varios paquetes de datos por cada formato:
+</p>
+<ul>
+ <li>
+  Valores y metadatos desagregados: Contiene a la base entera de datos, junto con los metadatos de las series en cada indicador
+ </li>
+ <li>
+  Sólo valores: Contiene a la base entera de datos, con una cantidad de metadatos de las series reducida respecto al paquete anterior
+ </li>
+ <li>
+  Metadatos: Contiene a todos los metadatos de cada serie de tiempo en la base. No contiene datos (indicadores) de las series.
+ </li>
+ <li>
+  Fuentes: Indicadores sobre las fuentes de datos disponibles en la base. Puede resultar útil como punto de partida para buscar series.
+ </li>
+</ul>
+<h2 id="links-de-descarga">
+ Links de descarga
+</h2>
+<p>
+ Los
+ <em>
+  dumps
+ </em>
+ de la base de datos entera están disponibles bajo la siguiente ruta:
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/:dump
+ </code>
+</p>
+<p>
+ Donde
+ <code>
+  :dump
+ </code>
+ puede ser uno de los siguientes archivos:
+</p>
+<p>
+ Formato CSV:
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo-csv.zip
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-valores-csv.zip
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-metadatos.csv
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-fuentes.csv
+  </code>
+ </li>
+</ul>
+<p>
+ Formato XLSX:
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo.xlsx
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-valores.xlsx
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-metadatos.xlsx
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-fuentes.xlsx
+  </code>
+ </li>
+</ul>
+<p>
+ Formato SQL:
+</p>
+<p>
+ La base de datos en SQL contiene a estos paquetes como tablas, todas en un único archivo.
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo-sqlite.zip
+  </code>
+ </li>
+</ul>
+<p>
+ Formato DTA:
+</p>
+<ul>
+ <li>
+  <code>
+   series-tiempo-valores-dta.zip
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-metadatos.dta
+  </code>
+ </li>
+ <li>
+  <code>
+   series-tiempo-fuentes.dta
+  </code>
+ </li>
+</ul>
+<p>
+ Notar que para el formato DTA no se disponibiliza la distribución con valores y metadatos desagregados.
+</p>
+<p>
+ Por ejemplo, la base de series de tiempo entera, junto con varios metadatos de las series, en formato XLSX, se encuentra disponible bajo
+</p>
+<p>
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/series-tiempo.xlsx
+ </code>
+</p>
+<h2 id="dumps-por-catalogo">
+ Dumps por catálogo
+</h2>
+<p>
+ A su vez, también existen versiones de los datos desagregados según el
+ <em>
+  catálogo
+ </em>
+ de origen. Se encuentran en la siguiente URL de descarga:
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/:catalog/:dump
+ </code>
+</p>
+<p>
+ Los catálogos se pueden consultar bajo el siguiente
+ <em>
+  endpoint
+ </em>
+ de la API de búsqueda:
+ <code>
+  https://apis.datos.gob.ar/series/api/search/catalog_id/
+ </code>
+</p>
+<p>
+ Por ejemplo, para consultar las fuentes del catálogo
+ <code>
+  sspm
+ </code>
+ (de la Subsecretaría de Programación Macroeconómica del Ministerio de Hacienda de la Nación), en formato XLSX, se puede acceder en la siguiente URL:
+</p>
+<p>
+ <code>
+  https://apis.datos.gob.ar/series/api/dump/sspm/series-tiempo-fuentes.xlsx
+ </code>
+</p>
+<h1 id="referencia-api-search">
+ Referencia API: search
+</h1>
+<p>
+ Recurso:
+ <code>
+  /validate
+ </code>
+</p>
+<p>
+ El recurso
+ <code>
+  /validate
+ </code>
+ permite validar distribuciones de series de tiempo para determinar si están listas a ser cargadas en el servicio. Es una herramienta de utilidad para publicadores, es una manera de asegurarse que los datos están en el formato esperado por la API.
+</p>
+<p>
+ Se utiliza a través de una llamada de tipo POST (por ejemplo con
+ <code>
+  curl
+ </code>
+ ):
+</p>
+<div class="codehilite">
+ <pre><span></span>curl POST <span class="nv">$API_URL</span>/series/api/validate -H <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'</span>
+<span class="s1">{</span>
+<span class="s1">"catalog_url": "http://infra.datos.gob.ar/catalog/sspm/data.json",</span>
+<span class="s1">"distribution_id": "192.1" </span>
+<span class="s1">}'</span>
+</pre>
+</div>
+<p>
+ Respuesta ejemplo:
+</p>
+<div class="codehilite">
+ <pre><span></span><span class="o">{</span>
+    <span class="s2">"catalog_url"</span>: <span class="s2">"http://infra.datos.gob.ar/catalog/sspm/data.json"</span>,
+    <span class="s2">"distribution_id"</span>: <span class="s2">"192.1"</span>,
+    <span class="s2">"found_issues"</span>: <span class="m">2</span>,
+    <span class="s2">"detail"</span>: <span class="o">[</span>
+        <span class="s2">"Datos inconsistentes en la distribución 192.1: Comienzo '1881-01-01 00:00:00' / Fin '2009-01-01 00:00:00' / Frecuencia 'R/P3M' / Fechas '513' / Valores '129'"</span>,
+        <span class="s2">"Campo subtotal_agricola_60 faltante en la distribución 192.1"</span>
+    <span class="o">]</span>
+<span class="o">}</span>
+</pre>
+</div>
+<p>
+ Acepta dos parámetros, ambos obligatorios:
+</p>
+<ul>
+ <li>
+  <code>
+   catalog_url
+  </code>
+  : URL del catálogo en donde se encuentra la distribución a validar
+ </li>
+ <li>
+  <code>
+   distribution_id
+  </code>
+  :
+  <code>
+   identifier
+  </code>
+  de la distribución a validar.
+ </li>
+</ul>
+<p>
+ Ante cualquier error de parámetros faltantes o inválidos, devuelve una respuesta con código 400.
 </p>
 <h1 id="condiciones-de-uso">
  Condiciones de uso
@@ -3250,6 +3839,1377 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
  </a>
  .
 </p>
+<h1 id="publicar-series-en-la-api-de-series-de-tiempo">
+ Publicar series en la API de Series de Tiempo
+</h1>
+<p>
+ Para publicar series en la API de Series de Tiempo, tenés que:
+</p>
+<ol>
+ <li>
+  Crear una distribución de series de tiempo (puede ser a partir de cambiar el formato de un recurso publicado en un dataset ya existente)
+ </li>
+ <li>
+  Documentar la distribución en un catálogo
+ </li>
+ <li>
+  Dar aviso a Datos Argentina
+ </li>
+</ol>
+<p>
+ El punto 2 de esta sección te explica cómo documentar una distribución de series de tiempo
+ <strong>
+  armando un catálogo de datos abiertos en Excel
+ </strong>
+ . Si tenés  un Portal Andino, lee
+ <a href="https://datosgobar.github.io/portal-andino/time-series/">
+  cómo documentar series de tiempo en un Portal Andino
+ </a>
+ .
+</p>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<h2 id="indice">
+ Indice
+</h2>
+<ul>
+ <li>
+  <a href="#1-crear-una-distribucion-de-series-de-tiempo">
+   1. Crear una distribución de series de tiempo
+  </a>
+  <ul>
+   <li>
+    <a href="#fechas-en-formato-yyyy-mm-dd">
+     Fechas en formato
+     <code>
+      YYYY-MM-DD
+     </code>
+    </a>
+   </li>
+   <li>
+    <a href="#fecha-mas-antigua-primero-a-la-m%C3%A1s-reciente-al-final">
+     Fecha más antigua primero a la más reciente al final
+    </a>
+   </li>
+   <li>
+    <a href="#usar-como-separador-de-columnas">
+     Usar "," como separador de columnas
+    </a>
+   </li>
+   <li>
+    <a href="#usar-como-separador-decimal">
+     Usar "." como separador decimal
+    </a>
+   </li>
+   <li>
+    <a href="#no-usar-separador-de-miles">
+     No usar separador de miles
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li>
+  <a href="#2-documentar-la-distribucion-en-andino">
+   2. Documentar la distribución en el catálogo
+  </a>
+  <ul>
+   <li>
+    <a href="#a-crear-o-editar-el-dataset-que-contendra-al-recurso">
+     A. Crear o editar el dataset que contendrá al recurso
+    </a>
+   </li>
+   <li>
+    <a href="#b-agregar-un-nuevo-recurso-y-documentar-sus-metadatos-usuales">
+     B. Agregar un nuevo recurso y documentar sus metadatos usuales
+    </a>
+   </li>
+   <li>
+    <a href="#c-documentar-el-indice-de-tiempo">
+     C. Documentar el índice de tiempo
+    </a>
+   </li>
+   <li>
+    <a href="#d-documentar-las-series-de-tiempo">
+     D. Documentar las series de tiempo
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li>
+  <a href="#3-dar-aviso-a-datos-argentina">
+   3. Dar aviso a Datos Argentina
+  </a>
+ </li>
+ <li>
+  <a href="#4-activar-el-explorador-de-series-en-tu-andino">
+   4. Activar el explorador de series en tu Andino
+  </a>
+ </li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<h2 id="1-crear-una-distribucion-de-series-de-tiempo">
+ 1. Crear una distribución de series de tiempo
+</h2>
+<p>
+ Una distribución de series de tiempo es un archivo CSV donde la primer columna contiene las fechas y cada una de las otras columnas es una serie de tiempo.
+</p>
+<p>
+ Así se ve una tabla de series de tiempo en una planilla de cálculo como Excel, Libre Office o Google Spreadsheet:
+</p>
+<table>
+ <tr>
+  <th>
+   indice_tiempo
+  </th>
+  <th>
+   oferta_global_pib
+  </th>
+  <th>
+   oferta_global_importacion
+  </th>
+  <th>
+   demanda_global_exportacion
+  </th>
+  <th>
+   demanda_global_ibif
+  </th>
+  <th>
+   demanda_global_consumo_priv
+  </th>
+ </tr>
+ <tr>
+  <td>
+   1993-01-01
+  </td>
+  <td>
+   236520.0336
+  </td>
+  <td>
+   22027.59999
+  </td>
+  <td>
+   16340.95975
+  </td>
+  <td>
+   45069.41348
+  </td>
+  <td>
+   31952.717
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1994-01-01
+  </td>
+  <td>
+   250307.886
+  </td>
+  <td>
+   26682.25975
+  </td>
+  <td>
+   18840.403
+  </td>
+  <td>
+   51231.4255
+  </td>
+  <td>
+   32094.804
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1995-01-01
+  </td>
+  <td>
+   243186.1018
+  </td>
+  <td>
+   24065.62925
+  </td>
+  <td>
+   23084.79625
+  </td>
+  <td>
+   44528.27725
+  </td>
+  <td>
+   32338.89925
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1996-01-01
+  </td>
+  <td>
+   256626.244
+  </td>
+  <td>
+   28284.11475
+  </td>
+  <td>
+   24850.043
+  </td>
+  <td>
+   48483.8615
+  </td>
+  <td>
+   33040.55475
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1997-01-01
+  </td>
+  <td>
+   277441.3173
+  </td>
+  <td>
+   35884.496
+  </td>
+  <td>
+   27876.14225
+  </td>
+  <td>
+   57047.5
+  </td>
+  <td>
+   34104.32325
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1998-01-01
+  </td>
+  <td>
+   288123.3068
+  </td>
+  <td>
+   38903.79175
+  </td>
+  <td>
+   30837.53425
+  </td>
+  <td>
+   60780.6695
+  </td>
+  <td>
+   35249.1645
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1999-01-01
+  </td>
+  <td>
+   278369.0138
+  </td>
+  <td>
+   34520.59125
+  </td>
+  <td>
+   30448.89575
+  </td>
+  <td>
+   53116.3155
+  </td>
+  <td>
+   36173.34075
+  </td>
+ </tr>
+</table>
+<p>
+ La tabla puede ser generada con un software de planilla de cálculo, una rutina programada o incluso a mano con un editor de texto! Pero en cualquier caso tenés que guardarla como un archivo CSV:
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exportacion,demanda_global_ibif,demanda_global_consumo_priv
+1993-01-01,236520.033577,22027.5999938,16340.9597519,45069.4134803,31952.717001
+1994-01-01,250307.886,26682.25975,18840.403,51231.4255,32094.804
+1995-01-01,243186.10175,24065.62925,23084.79625,44528.27725,32338.89925
+1996-01-01,256626.244,28284.11475,24850.043,48483.8615,33040.55475
+1997-01-01,277441.31725,35884.496,27876.14225,57047.5,34104.32325
+1998-01-01,288123.30675,38903.79175,30837.53425,60780.6695,35249.1645
+1999-01-01,278369.01375,34520.59125,30448.89575,53116.3155,36173.34075
+</pre>
+</div>
+<p>
+ <strong>
+  Es muy importante que el archivo CSV cumpla con estas condiciones:
+ </strong>
+</p>
+<h3 id="fechas-en-formato-yyyy-mm-dd">
+ Fechas en formato
+ <code>
+  YYYY-MM-DD
+ </code>
+</h3>
+<p>
+ El índice de tiempo debe tener las fechas en formato
+ <code>
+  YYYY-MM-DD
+ </code>
+ . Este es el estándar ISO 8601.
+</p>
+<p>
+ Por ejemplo: 12/03/2001 no está soportado, debe escribirse 2001-03-12.
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  Fechas estandarizadas en planillas de cálculo
+ </p>
+ <p>
+  Las planillas de cálculo suelen leer de distintas maneras las fechas y a veces es difícil controlar en qué formato se guardan cuando "exportás a CSV" o "guardás como CSV".
+ </p>
+ <p>
+  El mejor consejo:
+ </p>
+ <ul>
+  <li>
+   Seleccioná la columna completa que va a ser el
+   <strong>
+    índice de tiempo
+   </strong>
+   , asignale un formato de "Texto" y escribí las fechas después, como cadenas de texto (así evitás que la planilla de cálculo las lea como fechas).
+  </li>
+  <li>
+   Cambiá (ya sea en el sistema o en tu Excel) los caracteres separadores de decimales y miles, por (".") y (",") respectivamente.
+  </li>
+ </ul>
+</div>
+<h3 id="fecha-mas-antigua-primero-a-la-mas-reciente-al-final">
+ Fecha más antigua primero a la más reciente al final
+</h3>
+<p>
+ El indice de tiempo debe comenzar por la fecha más antigua y terminar por la más reciente. Menor a mayor, orden ascendente.
+</p>
+<table>
+ <tr>
+  <th style="background-color: green">
+   indice_tiempo_correcto
+  </th>
+  <th style="background-color: red">
+   indice_tiempo_incorrecto
+  </th>
+ </tr>
+ <tr>
+  <td>
+   1993-01-01
+  </td>
+  <td>
+   1999-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1994-01-01
+  </td>
+  <td>
+   1998-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1995-01-01
+  </td>
+  <td>
+   1997-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1996-01-01
+  </td>
+  <td>
+   1996-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1997-01-01
+  </td>
+  <td>
+   1995-01-01
+  </td>
+ </tr>
+</table>
+<h3 id="fechas-continuas">
+ Fechas continuas
+</h3>
+<p>
+ Al índice de tiempo no le pueden faltar valores intermedios. Si no hay datos de una serie para determinado período, debe estar la celda en blanco.
+</p>
+<table>
+ <tr>
+  <th style="background-color: green">
+   indice_tiempo_correcto
+  </th>
+  <th style="background-color: red">
+   indice_tiempo_incorrecto
+  </th>
+ </tr>
+ <tr>
+  <td>
+   1993-01-01
+  </td>
+  <td>
+   1993-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1994-01-01
+  </td>
+  <td>
+   1994-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1995-01-01
+  </td>
+  <td>
+   1997-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1996-01-01
+  </td>
+  <td>
+   1998-01-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1997-01-01
+  </td>
+  <td>
+   1999-01-01
+  </td>
+ </tr>
+</table>
+<h3 id="fecha-inicial-del-periodo">
+ Fecha inicial del período
+</h3>
+<p>
+ Para representar períodos más largos que una fecha (el caso de todas las frecuencias de tiempo más bajas que la diaria) debe usarse siempre la
+ <strong>
+  fecha completa del comienzo del período
+ </strong>
+ .
+</p>
+<p>
+ <strong>
+  Mensual
+ </strong>
+</p>
+<table>
+ <tr>
+  <th style="background-color: green">
+   indice_tiempo_correcto
+  </th>
+  <th style="background-color: red">
+   indice_tiempo_incorrecto
+  </th>
+ </tr>
+ <tr>
+  <td>
+   1980-01-01
+  </td>
+  <td>
+   1980-01-31
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1980-02-01
+  </td>
+  <td>
+   1980-02-28
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1980-03-01
+  </td>
+  <td>
+   1980-03-31
+  </td>
+ </tr>
+</table>
+<p>
+ <strong>
+  Trimestral
+ </strong>
+</p>
+<table>
+ <tr>
+  <th style="background-color: green">
+   indice_tiempo_correcto
+  </th>
+  <th style="background-color: red">
+   indice_tiempo_incorrecto
+  </th>
+ </tr>
+ <tr>
+  <td>
+   1980-01-01
+  </td>
+  <td>
+   1980-02-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1980-04-01
+  </td>
+  <td>
+   1980-05-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1980-07-01
+  </td>
+  <td>
+   1980-08-01
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1980-10-01
+  </td>
+  <td>
+   1980-11-01
+  </td>
+ </tr>
+</table>
+<p>
+ <strong>
+  Semestral
+ </strong>
+</p>
+<table>
+ <tr>
+  <th style="background-color: green">
+   indice_tiempo_correcto
+  </th>
+  <th style="background-color: red">
+   indice_tiempo_incorrecto
+  </th>
+  <th style="background-color: red">
+   indice_tiempo_incorrecto
+  </th>
+ </tr>
+ <tr>
+  <td>
+   1980-01-01
+  </td>
+  <td>
+   1980-01-01
+  </td>
+  <td>
+   1980-01-31
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1980-07-01
+  </td>
+  <td>
+   1980-08-01
+  </td>
+  <td>
+   1980-07-31
+  </td>
+ </tr>
+ <tr>
+  <td>
+   1981-01-01
+  </td>
+  <td>
+   1981-01-01
+  </td>
+  <td>
+   1981-01-31
+  </td>
+ </tr>
+</table>
+<h3 id="usar-como-separador-de-columnas">
+ Usar "," como separador de columnas
+</h3>
+<p>
+ Las columnas del CSV deben estar separadas con ",". No con ";", "|" ni ningún otro caracter.
+</p>
+<p>
+ <span class="recomendado">
+  <strong>
+   Correcto
+  </strong>
+ </span>
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exportacion,demanda_global_ibif,demanda_global_consumo_priv
+1993-01-01,236520.033577,22027.5999938,16340.9597519,45069.4134803,31952.717001
+1994-01-01,250307.886,26682.25975,18840.403,51231.4255,32094.804
+1995-01-01,243186.10175,24065.62925,23084.79625,44528.27725,32338.89925
+</pre>
+</div>
+<p>
+ <span class="no-recomendado">
+  <strong>
+   Incorrecto
+  </strong>
+ </span>
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo;oferta_global_pib;oferta_global_importacion;demanda_global_exportacion;demanda_global_ibif;demanda_global_consumo_priv
+1993-01-01;236520.033577;22027.5999938;16340.9597519;45069.4134803;31952.717001
+1994-01-01;250307.886;26682.25975;18840.403;51231.4255;32094.804
+1995-01-01;243186.10175;24065.62925;23084.79625;44528.27725;32338.89925
+</pre>
+</div>
+<h3 id="usar-como-separador-decimal">
+ Usar "." como separador decimal
+</h3>
+<p>
+ Los números decimales deben usar "." como separador decimal. No usar ",".
+</p>
+<p>
+ <span class="recomendado">
+  <strong>
+   Correcto
+  </strong>
+ </span>
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exportacion,demanda_global_ibif,demanda_global_consumo_priv
+1993-01-01,236520.033577,22027.5999938,16340.9597519,45069.4134803,31952.717001
+1994-01-01,250307.886,26682.25975,18840.403,51231.4255,32094.804
+1995-01-01,243186.10175,24065.62925,23084.79625,44528.27725,32338.89925
+</pre>
+</div>
+<p>
+ <span class="no-recomendado">
+  <strong>
+   Incorrecto
+  </strong>
+ </span>
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exportacion,demanda_global_ibif,demanda_global_consumo_priv
+1993-01-01,"236520,033577","22027,5999938","16340,9597519","45069,4134803","31952,717001"
+1994-01-01,"250307,886","26682,25975","18840,403","51231,4255","32094,804"
+1995-01-01,"243186,10175","24065,62925","23084,79625","44528,27725","32338,89925"
+</pre>
+</div>
+<h3 id="no-usar-separador-de-miles">
+ No usar separador de miles
+</h3>
+<p>
+ Los números decimales no deben usar separador de miles.
+</p>
+<p>
+ <span class="recomendado">
+  <strong>
+   Correcto
+  </strong>
+ </span>
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exportacion,demanda_global_ibif,demanda_global_consumo_priv
+1993-01-01,236520.033577,22027.5999938,16340.9597519,45069.4134803,31952.717001
+1994-01-01,250307.886,26682.25975,18840.403,51231.4255,32094.804
+1995-01-01,243186.10175,24065.62925,23084.79625,44528.27725,32338.89925
+</pre>
+</div>
+<p>
+ <span class="no-recomendado">
+  <strong>
+   Incorrecto
+  </strong>
+ </span>
+</p>
+<div class="codehilite">
+ <pre><span></span>indice_tiempo,oferta_global_pib,oferta_global_importacion,demanda_global_exportacion,demanda_global_ibif,demanda_global_consumo_priv
+1993-01-01,"236,520.033577","22,027.5999938","16,340.9597519","45,069.4134803","31,952.717001"
+1994-01-01,"250,307.886","26,682.25975","18,840.403","51,231.4255","32,094.804"
+1995-01-01,"243,186.10175","24,065.62925","23,084.79625","44,528.27725","32,338.89925"
+</pre>
+</div>
+<div class="admonition note">
+ <p class="admonition-title">
+  Separador de miles al exportar planilla de cálculo a CSV
+ </p>
+ <p>
+  Algunas planillas de cálculo (como Excel en algunas versiones) exportan a CSV agregando el separador de miles si el usuario eligió un formato de visualización de número que lo incluye. Para evitarlo, seleccionar las columnas que contienen las series y
+  <strong>
+   elegir un formato de visualización de número sin separador de miles
+  </strong>
+  .
+ </p>
+</div>
+<h2 id="2-documentar-la-distribucion-en-el-catalogo">
+ 2. Documentar la distribución en el catálogo
+</h2>
+<p>
+ Una vez que creaste el CSV, es hora de subirlo a alguna URL pública y documentarlo en el Excel.
+</p>
+<h3 id="a-crear-o-editar-el-dataset-que-contendra-al-recurso">
+ A. Crear o editar el dataset que contendrá al recurso
+</h3>
+<p>
+ Si no creaste el Dataset que contendrá el nuevo recurso/distribución de series de tiempo, tenés que crear un nuevo Dataset. Si el Dataset ya existe, sólo tenés que agregar un nuevo recurso.
+</p>
+<p>
+ <center>
+  <img alt="catalog_xlsx_nuevo_dataset.png" src="../assets/catalog_xlsx_nuevo_dataset.png" title="catalog_xlsx_nuevo_dataset"/>
+ </center>
+</p>
+<h3 id="b-agregar-un-nuevo-recurso-y-documentar-sus-metadatos-usuales">
+ B. Agregar un nuevo recurso y documentar sus metadatos usuales
+</h3>
+<p>
+ Documentar un recurso de series de tiempo es igual que documentar cualquier otro recurso, hasta que llegues a la hoja
+ <code>
+  field
+ </code>
+ .
+</p>
+<h3 id="c-documentar-el-indice-de-tiempo">
+ C. Documentar el índice de tiempo
+</h3>
+<p>
+ Una vez que llegás a la hoja
+ <code>
+  field
+ </code>
+ tenés que documentar la primer columna del CSV: el
+ <strong>
+  índice de tiempo
+ </strong>
+ .
+</p>
+<p>
+ <center>
+  <img alt="catalog_xlsx_indice_tiempo.png" src="../assets/catalog_xlsx_indice_tiempo.png" title="catalog_xlsx_indice_tiempo"/>
+ </center>
+</p>
+<ul>
+ <li>
+  <strong>
+   Título de la columna
+   <em>
+    (field_title)
+   </em>
+  </strong>
+  : debe ser exactamente el mismo título que tiene en el CSV. Ej.:
+  <em>
+   indice_tiempo
+  </em>
+  .
+ </li>
+ <li>
+  <strong>
+   Tipo de dato
+   <em>
+    (field_type)
+   </em>
+  </strong>
+  : debe ser
+  <em>
+   date
+  </em>
+  . Indica a la aplicación que los valores del campo son fechas estandarizadas.
+ </li>
+ <li>
+  <strong>
+   Tipo de dato especial
+   <em>
+    (field_specialType)
+   </em>
+  </strong>
+  : debe ser
+  <em>
+   time_index
+  </em>
+  . Indica a la aplicación que el campo cumple con todas las propiedades de un índice de tiempo, tal como se explicó en la sección anterior.
+ </li>
+ <li>
+  <strong>
+   Detalle del tipo de datos especial
+   <em>
+    (field_specialTypeDetail)
+   </em>
+  </strong>
+  : debe declararse la frecuencia del índice de tiempo en ISO 8601 para intervalos repetidos:
+  <ul>
+   <li>
+    <code>
+     R/P1Y
+    </code>
+    : anual
+   </li>
+   <li>
+    <code>
+     R/P6M
+    </code>
+    : semestral
+   </li>
+   <li>
+    <code>
+     R/P3M
+    </code>
+    : trimestral
+   </li>
+   <li>
+    <code>
+     R/P1M
+    </code>
+    : mensual
+   </li>
+   <li>
+    <code>
+     R/P1D
+    </code>
+    : diario
+   </li>
+  </ul>
+ </li>
+</ul>
+<h3 id="d-documentar-las-series-de-tiempo">
+ D. Documentar las series de tiempo
+</h3>
+<p>
+ El resto de las columnas a documentar son las series de tiempo.
+</p>
+<p>
+ <center>
+  <img alt="catalog_xlsx_series.png" src="../assets/catalog_xlsx_series.png" title="catalog_xlsx_series"/>
+ </center>
+</p>
+<ul>
+ <li>
+  <strong>
+   Título de la columna
+   <em>
+    (field_title)
+   </em>
+  </strong>
+  : debe ser exactamente el mismo título que tiene en el CSV. Ej.:
+  <em>
+   pib_precios_corrientes
+  </em>
+  .
+  <strong>
+   No puede superar los 60 caracteres
+  </strong>
+  en ningún caso.
+ </li>
+</ul>
+<!-- Ver cómo [generar buenos títulos](titles.md). -->
+<ul>
+ <li>
+  <strong>
+   Tipo de dato
+  </strong>
+  : puede ser
+  <em>
+   "Número decimal (number)"
+  </em>
+  o
+  <em>
+   "Número entero (integer)"
+  </em>
+  . Las series sólo pueden tener números enteros o decimales como valores.
+ </li>
+ <li>
+  <strong>
+   Descripción de la columna
+   <em>
+    (field_description)
+   </em>
+  </strong>
+  : es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.:
+  <em>
+   "Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."
+  </em>
+  .
+ </li>
+</ul>
+<!-- Ver cómo [generar buenas descripciones](descriptions.md). -->
+<ul>
+ <li>
+  <strong>
+   Unidad
+   <em>
+    (field_units)
+   </em>
+  </strong>
+  : es la unidad de medida en que están expresados los valores numéricos de la serie. Ej.:
+  <em>
+   "Millones de pesos de 2004"
+  </em>
+  ,
+  <em>
+   "Kilogramos"
+  </em>
+  o
+  <em>
+   "Millones de USD corrientes"
+  </em>
+  .
+ </li>
+</ul>
+<!-- Ver cómo [elegir buenas unidades de medida](units.md). -->
+<ul>
+ <li>
+  <strong>
+   Identificador
+   <em>
+    (field_id)
+   </em>
+  </strong>
+  : es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series:
+  <em>
+   "ipc"
+  </em>
+  es un mal código, mientras que
+  <em>
+   "ipc_0001"
+  </em>
+  es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella. Ver cómo
+  <a href="identifiers.md">
+   generar buenos identificadores
+  </a>
+  .
+ </li>
+</ul>
+<h2 id="3-dar-aviso-a-datos-argentina">
+ 3. Dar aviso a Datos Argentina
+</h2>
+<p>
+ Una vez que documentaste un nuevo recurso de series de tiempo, escribinos a
+ <a href="mailto:datos@modernizacion.gob.ar">
+  datos@modernizacion.gob.ar
+ </a>
+ para que lo federemos en la API y te ayudemos a resolver cualquier problema!
+</p>
+<p>
+ A partir de que se federa por primera vez, la API revisará automáticamente 4 veces por día el archivo CSV y los metadatos para reflejar cualquier cambio que hagas.
+</p>
+<h1 id="generar-identificadores">
+ Generar identificadores
+</h1>
+<p>
+ Los identificadores de las series son códigos únicos en la Administración Pública Nacional que identifican a una serie individual. Se usan en la API para solicitar los datos de una serie.
+</p>
+<div class="admonition note">
+ <p class="admonition-title">
+  Identificadores de series
+ </p>
+ <p>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=tmi_arg">
+   https://apis.datos.gob.ar/series/api/series/?ids=
+   <strong>
+    tmi_arg
+   </strong>
+  </a>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=AGRO_0001">
+   https://apis.datos.gob.ar/series/api/series/?ids=
+   <strong>
+    AGRO_0001
+   </strong>
+  </a>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=tcrse_IBMDNk">
+   https://apis.datos.gob.ar/series/api/series/?ids=
+   <strong>
+    tcrse_IBMDNk
+   </strong>
+  </a>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=defensa_FAA_0006">
+   https://apis.datos.gob.ar/series/api/series/?ids=
+   <strong>
+    defensa_FAA_0006
+   </strong>
+  </a>
+  <a href="https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26">
+   https://apis.datos.gob.ar/series/api/series/?ids=
+   <strong>
+    148.3_INIVELNAL_DICI_M_26
+   </strong>
+  </a>
+ </p>
+</div>
+<p>
+ Cuando un organismo comienza a publicar series de tiempo, es muy importante diseñar o elegir una convención o sistema de nomenclatura para generar los identificadores de las series del organismo, que cumpla con las siguientes propiedades:
+</p>
+<h2 id="propiedades-de-un-buen-identificador">
+ Propiedades de un buen identificador
+</h2>
+<ul>
+ <li>
+  <strong>
+   No cambia en el tiempo, nunca
+  </strong>
+  .
+ </li>
+ <li>
+  <strong>
+   Es único dentro de toda la base
+  </strong>
+  .
+  <a href="https://apis.datos.gob.ar/series/api/dump/series-tiempo-metadatos.csv">
+   Chequeá si ya existe
+  </a>
+  .
+ </li>
+ <li>
+  <strong>
+   No se pisa o se confunde con otro
+  </strong>
+  .
+ </li>
+ <li>
+  <strong>
+   Es relativamente corto
+  </strong>
+  . Entre 7 y 25 caracteres en la mayoría de los casos. Nunca más de 40.
+ </li>
+</ul>
+<h2 id="sistemas-de-nomenclatura-propuestos">
+ Sistemas de nomenclatura propuestos
+</h2>
+<p>
+ Un identificador puede estar compuesto por:
+</p>
+<ul>
+ <li>
+  Letras mayúsculas o minúsculas de la "a" a la "z" sin caracteres especiales (sin tildes y sin la "ñ")
+ </li>
+ <li>
+  Números 0-9
+ </li>
+ <li>
+  Guiones bajos "_" y puntos "."
+ </li>
+</ul>
+<h3 id="autoincremental-numerico">
+ Autoincremental numérico
+</h3>
+<p>
+ Numera las series en orden a medida que se van publicando por primera vez, empieza en el número 1 y se incrementa sucesivamente con cada serie nueva.
+</p>
+<p>
+ Debe agregarse un prefijo con el identificador del catálogo (o similar) para evitar la duplicidad de códigos con otro organismo. Conviene comenzar en 0001 en lugar de 1 para que el largo del identificador sea el mismo (o al menos hasta que se superen las 10 mil series publicadas).
+</p>
+<ul>
+ <li>
+  AGRO_0001
+ </li>
+ <li>
+  AGRO_0002
+ </li>
+ <li>
+  AGRO_0003
+ </li>
+</ul>
+<p>
+ También se puede combinar con algún código, generando una clasificación intermedia.
+</p>
+<ul>
+ <li>
+  defensa_ARA_0001
+ </li>
+ <li>
+  defensa_FAA_0001
+ </li>
+ <li>
+  defensa_EA_0001
+ </li>
+ <li>
+  defensa_ARA_0002
+ </li>
+ <li>
+  defensa_FAA_0002
+ </li>
+ <li>
+  defensa_EA_0002
+ </li>
+</ul>
+<h3 id="aleatorio">
+ Aleatorio
+</h3>
+<p>
+ Elige una cadena de texto aleatoria de X cantidad de dígitos para cada serie nueva.
+</p>
+<p>
+ Se puede usar un
+ <a href="https://passwordsgenerator.net/">
+  generador aleatorio de textos
+ </a>
+ usando 8 dígitos, números, letras minúsculas y letras mayúsculas. Se recomienda excluir caracteres especiales para facilitar la legibilidad del identificador y, si bien 8 dígitos suelen garantizar que no habrá duplicidad, debe chequearse que el id no exista ya en la base.
+</p>
+<ul>
+ <li>
+  QlB4ZASI
+ </li>
+ <li>
+  2tbCLAVM
+ </li>
+ <li>
+  lYhCfv8r
+ </li>
+</ul>
+<p>
+ También se puede combinar con el identificador de catálogo o un código diferente como prefijo, y usar menos caracteres aleatorios (6 o 4).
+</p>
+<ul>
+ <li>
+  tcrse_IBMDNk
+ </li>
+ <li>
+  tcrse_k22ckW
+ </li>
+ <li>
+  tcrse_GBz3WO
+ </li>
+</ul>
+<h3 id="codificado">
+ Codificado
+</h3>
+<p>
+ Codifica características de las series según un criterio predefinido y/o utiliza siglas o acrónimos para abreviar su nombre.
+</p>
+<p>
+ Este sistema suele buscar aumentar la legibilidad del identificador, para el usuario avanzado que puede entender el sistema de nomenclatura utilizado y ahorrar tiempo en la búsqueda de series del mismo dataset o temática.
+</p>
+<ul>
+ <li>
+  tmi_arg (Tasa de Mortalidad Infantil de Argentina)
+ </li>
+ <li>
+  tmi_02 (Tasa de Mortalidad Infantil de Ciudad Autónoma de Buenos Aires)
+ </li>
+ <li>
+  tmi_06 (Tasa de Mortalidad Infantil de la Provincia de Buenos Aires)
+ </li>
+</ul>
+<p>
+ Debe tenerse
+ <strong>
+  especial cuidado en no generar identificadores fácilmente duplicables
+ </strong>
+ en el contexto de la Administración Pública Nacional o que puedan prestar a confusión con otras series diferentes.
+</p>
+<p>
+ En caso de optar por este sistema, algunas características o dimensiones de apertura de los valores de las series deben codificarse según los siguientes criterios:
+</p>
+<h4 id="unidades-territoriales">
+ Unidades territoriales
+</h4>
+<ul>
+ <li>
+  Usar
+  <code>
+   arg
+  </code>
+  para señalar series de alcance nacional o el
+  <a href="http://www.indec.gov.ar/ftp/cuadros/territorio/codigo_paises.xls">
+   código ISO alpha-3
+  </a>
+  para series de alcance nacional de otros países (
+  <code>
+   bra
+  </code>
+  ,
+  <code>
+   usa
+  </code>
+  , etc)
+ </li>
+ <li>
+  Usar el código numérico de INDEC para señalar series de alcance
+  <a href="https://apis.datos.gob.ar/georef/api/provincias?campos=basico">
+   provincial
+  </a>
+  o
+  <a href="https://apis.datos.gob.ar/georef/api/departamentos?campos=basico">
+   departamental
+  </a>
+  .
+ </li>
+</ul>
+<h4 id="siglas-o-acronimos">
+ Siglas o acrónimos
+</h4>
+<ul>
+ <li>
+  <p>
+   Usar siglas o acrónimos que definen la variable
+   <strong>
+    al comienzo del identificador
+   </strong>
+   de la serie. Por ejemplo: TCRSE significa Tipo de Cambio Real Sectorial Efectivo, y se utiliza como prefijo de las distintas series derivadas disponibles.
+  </p>
+  <ul>
+   <li>
+    tcrse_IBMDNk
+   </li>
+   <li>
+    tcrse_k22ckW
+   </li>
+   <li>
+    tcrse_GBz3WO
+   </li>
+  </ul>
+ </li>
+</ul>
+<h2 id="ejemplos-a-evitar">
+ Ejemplos a evitar
+</h2>
+<p>
+ Los identificadores son códigos, no son nombres o descripciones. Buscan ser breves y, por sobre todo, ser permanentes en el tiempo.
+</p>
+<p>
+ Los nombres o descripciones orientados al usuario final suelen generar URLs de llamada a la API demasiado largas (y poco prácticas) y corren el riesgo de perder vigencia en el tiempo, a medida que el área cambia o mejora las descripciones de sus series o modifica sus criterios o convenciones.
+</p>
+<ul>
+ <li>
+  "indice_precios_nivel_general" (se puede duplicar fácilmente con otras series, es relativamente largo y puede cambiar, es un texto más adecuado para ser el título o encabezado de columna de una serie).
+ </li>
+ <li>
+  "Indice de Precios Nivel General" (contiene espacios -lo que complica el uso de URLs-, se puede duplicar fácilmente, puede cambiar y es demasiado largo, es un texto más adecuado para ser la descripción de una serie).
+ </li>
+</ul>
+<h1 id="generar-descripciones">
+ Generar descripciones
+</h1>
+<p>
+ Las descripciones de las series son el metadato más importante (después del identificador): deben dar al usuario toda la información que necesita para comprender de qué serie en particular se trata, cuando este está buscando una.
+</p>
+<p>
+ La descripción de las series es el principal metadato que usa el buscador del explorador para ofrecer respuestas ante el usuario que tipea.
+</p>
+<p>
+ <img alt="Buscador del explorador de series" src="../assets/explorador-series-buscador.png"/>
+</p>
+<p>
+ Es el nombre principal en los resultados de búsqueda
+</p>
+<p>
+ <img alt="" src="../assets/resultados-busqueda-1.png"/>
+</p>
+<p>
+ Es el primer metadato en el gráfico, una vez elegida una serie
+</p>
+<p>
+ <img alt="Metadatos del gráfico del explorer" src="../assets/explorador-metadatos-grafico.png"/>
+ <br/>
+ <br/>
+ Cuando se definen las descripciones de un conjunto de series de tiempo, deben cumplir con las siguientes propiedades:
+</p>
+<h2 id="propiedades-de-una-buena-descripcion">
+ Propiedades de una buena descripción
+</h2>
+<ul>
+ <li>
+  <strong>
+   No se confunde con la descripción de otra serie
+  </strong>
+  . La descripción de una serie la individualiza inequívocamente de cualquier otra serie en la base.
+ </li>
+ <li>
+  <strong>
+   Es suficiente para el usuario que busca entre miles de series distintas
+  </strong>
+  . Sin necesidad de mirar otros metadatos que no sean la frecuencia temporal y las unidades de medida, el usuario debe poder entender de qué serie se trata.
+ </li>
+ <li>
+  <strong>
+   Es consistente con descripciones de series similares
+  </strong>
+  . Si existe una serie llamada "IPC Nacional. Región Noroeste. Nivel general", no debería existir "IPC Nacional. Nivel general. Región Cuyo" sino "IPC Nacional. Región Cuyo. Nivel general"
+ </li>
+</ul>
+<h2 id="criterios-de-descripcion-propuestos">
+ Criterios de descripción propuestos
+</h2>
+<p>
+ Algunos criterios generales:
+</p>
+<ul>
+ <li>
+  <strong>
+   Capitalizar todas las palabras significativas
+  </strong>
+  . Todas las que no son artículos o preposiciones. Ej.: "Tasa de Natalidad de la Provincia de Entre Ríos" en lugar de "Tasa de natalidad de la provincia de Entre Ríos"
+ </li>
+ <li>
+  <strong>
+   Preferir la utilización de palabras completas, en lugar de abreviaturas
+  </strong>
+  . Salvo que la descripción completa esté quedando demasiado larga y sea conveniente recortarla, o que la abreviatura sea de un uso tan difundido en el público general que no pueda prestarse a confusión.
+ </li>
+ <li>
+  <strong>
+   Escribir descripciones entre 40 y 110 caracteres de largo
+  </strong>
+  . Raras veces es conveniente una descripción más larga (o más corta). En ningún caso la descripción puede superar los 200 caracteres.
+ </li>
+ <li>
+  <strong>
+   Incluir la unidad de medida, si la misma serie se publica con distintas unidades
+  </strong>
+  . Si sólo se publica una serie bajo una determinada unidad de medida, esto no hace falta (Ej.: "Tasa de Natalidad. Provincia de Entre Ríos") pero debe agregarse si existen variantes ("Fuerza Aérea. Personal Femenino (Porcentaje)" / "Fuerza Aérea. Personal Femenino (Cantidad)")
+ </li>
+</ul>
+<h3 id="aperturas-de-mayor-a-menor-separadas-por-puntos">
+ Aperturas "de mayor a menor" separadas por puntos
+</h3>
+<p>
+ Se comienza con el nombre de la variable y le siguen los distintos niveles de apertura, separados con ".". La unidad de medida se pone al final y entre paréntesis porque no es un "nivel de apertura" de la variable.
+</p>
+<ul>
+ <li>
+  "Tasa de Natalidad. Provincia de Entre Ríos"
+ </li>
+ <li>
+  "Fuerza Aérea. Personal Femenino (Porcentaje)"
+ </li>
+ <li>
+  "IPC Nacional. Región Noroeste. Nivel general (Base Diciembre 2016 = 100)"
+ </li>
+ <li>
+  "IPC Nacional. Total Nacional. Nivel general (Base Diciembre 2016 = 100)"
+ </li>
+ <li>
+  "Transporte de Pasajeros. Servicio Regular de Aeronavegación Internacional (Miles de pasajeros)"
+ </li>
+</ul>
+<h3 id="frase-continua">
+ Frase continua
+</h3>
+<p>
+ Se compone una oración continua que contiene el nombre de la variable y sus niveles de apertura. La unidad de medida también se pone al final entre paréntesis.
+</p>
+<ul>
+ <li>
+  "Tasa de Natalidad de la Provincia de Entre Ríos"
+ </li>
+ <li>
+  "Porcentaje del Personal Femenino de la Fuerza Aérea" o "Personal Femenino de la Fuerza Aérea (Porcentaje)"
+ </li>
+ <li>
+  "Nivel General del Índice de Precios al Consumidor Nacional de la Región Noroeste (Base Diciembre 2016 = 100)"
+ </li>
+ <li>
+  "Nivel General del Índice de Precios al Consumidor Nacional de Argentina (Base Diciembre 2016 = 100)"
+ </li>
+ <li>
+  "Servicio Regular de Aeronavegación Internacional de Transporte de Pasajeros (Miles de Pasajeros)"
+ </li>
+</ul>
 <h1 id="arquitectura-de-la-api-de-series-de-tiempo">
  Arquitectura de la API de series de tiempo
 </h1>
@@ -3406,7 +5366,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
 </h2>
 <ul>
  <li>
-  Python 2.7.6
+  Python 3.6.x
  </li>
  <li>
   Virtualenv
@@ -3436,7 +5396,7 @@ ids=2.4_DGI_1993_T_19:end_of_period:percent_change,134.2_B_0_0_6:sum:change
  , y todas las dependencias de la aplicación.
 </p>
 <div class="codehilite">
- <pre><span></span>pyenv virtualenv <span class="m">2</span>.7.6 stiempo-api
+ <pre><span></span>pyenv virtualenv <span class="m">3</span>.6.6 stiempo-api
 pyenv activate stiempo-api
 pip install -r requirements/local.txt
 </pre>
@@ -3500,10 +5460,33 @@ docker-compose up -d
  Worker
 </h3>
 <p>
- Levanta los workers para ejecutar tareas asincrónicas. Notar que esta tarea bloquea la terminal.
+ Por defecto usando la configuración local, todas las tareas asincrónicas se corren de manera sincrónica. Si se desea testear la integración con rq de manera completa, configurar las colas para ser asincrónicas cambiando el código
 </p>
 <div class="codehilite">
- <pre><span></span>python manage.py rqworker high default low scrapping
+ <pre><span></span><span class="k">for</span> <span class="n">queue</span> <span class="ow">in</span> <span class="n">RQ_QUEUES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="n">queue</span><span class="p">[</span><span class="s1">'ASYNC'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+</pre>
+</div>
+<p>
+ por
+</p>
+<div class="codehilite">
+ <pre><span></span>for queue in RQ_QUEUES.values():
+    queue['ASYNC'] = True
+</pre>
+</div>
+<p>
+ Luego se pueden correr los workers para las colas deseadas con el siguiente comando. Notar que el comando bloqueará la terminal. Los nombres de las colas se encuentran bajo la variable
+ <code>
+  RQ_QUEUE_NAMES
+ </code>
+ en el archivo
+ <code>
+  conf/settings/base.py
+ </code>
+</p>
+<div class="codehilite">
+ <pre><span></span>python manage.py rqworker &lt;queues&gt;
 </pre>
 </div>
 <h3 id="web-server">
@@ -3648,6 +5631,16 @@ Quit the server with CONTROL-C.
  </code>
  en las vistas individuales de los modelos de tipo "Corrida" mencionados anteriormente, pero es fuertemente recomendado utilizar Synchronizers por su funcionalidad más extensiva.
 </p>
+<h2 id="rutina-de-indexacion-de-datos">
+ Rutina de indexación de datos
+</h2>
+<p>
+ Dentro de la vista "Configuración de rutina de indexación" se puede configurar el timeout global dado para cada distribución (en segundos). Luego de este tiempo, la indexación de esa distribución será considerada como fallida. Esto es para evitar el bloqueo de recursos de procesamiento frente a tareas que están bloqueadas por alguna falla externa a la aplicación. Por defecto, este valor es
+ <strong>
+  1000 segundos
+ </strong>
+ .
+</p>
 <h2 id="analytics">
  Analytics
 </h2>
@@ -3728,9 +5721,287 @@ Quit the server with CONTROL-C.
  </strong>
  , Los dumps en SQLite un archivo único por catálogo con varias tablas, y los dumps en DTA 3 archivos, todos disponibles en un endpoint accesible al público. Los dumps generados tendrán los datos de todas las series disponibles por la API, es decir las series cuyos datos fueron indexados exitosamente.
 </p>
+<h2 id="unidades-porcentuales-y-no-porcentuales">
+ Unidades porcentuales y no porcentuales
+</h2>
+<p>
+ Una vez cargadas e indexadas las series, en la vista de
+ <code>
+  Unidades de series
+ </code>
+ en el admin se pueden indicar cuales de las unidades se deberían interpretar como porcentuales. Por defecto todas las unidades existentes son tratadas como valores absolutos. Cuando una unidad se marque como porcentual, en la respuesta de metadatos de las series, el campo
+ <code>
+  ìs_percentage
+ </code>
+ pasará a valer
+ <code>
+  true
+ </code>
+ en todos los casos de consulta de series que estén representadas bajo esa unidad. El propósito de esta funcionalidad es para indicarle a los usuarios de manera más sencilla si los valores de una serie deberían ser tratados como porcentajes o no.
+</p>
 <h1 id="historial-de-versiones">
  Historial de versiones
 </h1>
+<h2 id="1250---20190716">
+ 1.25.0 - 2019/07/16
+</h2>
+<ul>
+ <li>
+  Bump de django_datajsonar a 0.4.2
+ </li>
+ <li>
+  Nuevo endpoint: /validate. Permite validar distribuciones de un catálogo de series de tiempo a partir de una URL y un identifier.
+ </li>
+</ul>
+<h2 id="1240---20190702">
+ 1.24.0 - 2019/07/02
+</h2>
+<ul>
+ <li>
+  Recuperación de contraseña
+ </li>
+ <li>
+  Mejora de descripción de títulos en consultas con formato CSV.
+ </li>
+ <li>
+  Muestra de todos los errores de una distribución cuando falla
+ </li>
+</ul>
+<h2 id="1232---20190624">
+ 1.23.2 - 2019/06/24
+</h2>
+<ul>
+ <li>
+  Fixes a pantalla del login
+ </li>
+</ul>
+<h2 id="1231---20190618">
+ 1.23.1 - 2019/06/18
+</h2>
+<ul>
+ <li>
+  Filtra queries por método, descartando las de método
+  <code>
+   OPTIONS
+  </code>
+  .
+ </li>
+ <li>
+  Estilos institucionales del login page.
+ </li>
+</ul>
+<h2 id="1230---20190611">
+ 1.23.0 - 2019/06/11
+</h2>
+<ul>
+ <li>
+  Bump de versión de django_datajsonar con verificación de SSL a nivel nodo.
+ </li>
+ <li>
+  Refactor menor de código para leer distribuciones desde el file system de la aplicación en vez de descargar desde la fuente original durante la generación de dumps.
+ </li>
+</ul>
+<h2 id="1220---20190603">
+ 1.22.0 - 2019/06/03
+</h2>
+<ul>
+ <li>
+  Bugfix a consultas que devolvían datos vacíos cuando se pedía una serie con
+  <code>
+   collapse_aggregation
+  </code>
+  definido y sin
+  <code>
+   collapse
+  </code>
+  .
+ </li>
+</ul>
+<h2 id="1210---20190515">
+ 1.21.0 - 2019/05/15
+</h2>
+<ul>
+ <li>
+  Cambios en la rutina de indexación de metadatos para hacer ciertos campos no obligatorios (
+  <code>
+   themeTaxonomy
+  </code>
+  de un catálogo fuente)
+ </li>
+ <li>
+  La tabla de errores del reporte de indexación ahora viene ordenada según el ID del catálogo, y luego el ID de la distribución errónea
+ </li>
+</ul>
+<h2 id="1200---20190513">
+ 1.20.0 - 2019/05/13
+</h2>
+<ul>
+ <li>
+  Validaciones adicionales en indexación de datos relacionadas con encoding de archivos en latin1
+ </li>
+ <li>
+  Tabla de errores de distribuciones en reporte de indexación
+ </li>
+</ul>
+<h2 id="1190">
+ 1.19.0
+</h2>
+<ul>
+ <li>
+  Fix de regresión de lectura de dataset identifiers durante la indexación de datos a Elasticsearch
+ </li>
+</ul>
+<h2 id="1180">
+ 1.18.0
+</h2>
+<ul>
+ <li>
+  Fixes en indexación de distribuciones, no se verifica el certificado de SSL (necesario para obtener datos de algunos publicadores)
+ </li>
+ <li>
+  Fix a lectura de series marcadas como no presentes
+ </li>
+</ul>
+<h2 id="1170">
+ 1.17.0
+</h2>
+<ul>
+ <li>
+  Cambio caracter separador en /search: de ',' -&gt; '||' (dos caracteres)
+ </li>
+</ul>
+<h2 id="1160">
+ 1.16.0
+</h2>
+<ul>
+ <li>
+  Muestro ID de catalogos en reportes individuales
+ </li>
+ <li>
+  Mejoras de manejo de errores de tareas asincronicas
+ </li>
+</ul>
+<h2 id="1150">
+ 1.15.0
+</h2>
+<ul>
+ <li>
+  Bump de versión de django_datajsonar a 0.2.0, y adaptando la base de código para ser compatible con dicha versión
+ </li>
+ <li>
+  Bugfix de indexación de metadatos: ahora se indexan todas las series
+  <em>
+   disponibles
+  </em>
+  en vez de las
+  <em>
+   disponibles sin error
+  </em>
+ </li>
+</ul>
+<h2 id="1140">
+ 1.14.0
+</h2>
+<ul>
+ <li>
+  Bump de versión de django_datjasonar a 0.1.22
+ </li>
+ <li>
+  Bugfix en cálculo de metadatos enriquecidos: ahora se calculan en todas las indexaciones, y no sólo cuando una distribución es actualizada
+ </li>
+</ul>
+<h2 id="1132">
+ 1.13.2
+</h2>
+<ul>
+ <li>
+  Fix a mails no utilizando el campo from_email de la configuración dinámica.
+ </li>
+</ul>
+<h2 id="1131">
+ 1.13.1
+</h2>
+<ul>
+ <li>
+  Fix a mails de test de integración mandandose múltiplies veces, y ocasionalmente con un attachment vacío
+ </li>
+ <li>
+  Bump de versión micro de django_datajsonar
+ </li>
+ <li>
+  Fix al callable_str de RunIntegrationTaskAdmin incorrecto
+ </li>
+</ul>
+<h2 id="1130">
+ 1.13.0
+</h2>
+<ul>
+ <li>
+  Parametrización del índice de tiempo: no es más necesario utilizar un índice de tiempo con nombre
+  <code>
+   indice_tiempo
+  </code>
+  para indexar distribuciones
+ </li>
+ <li>
+  Cambios de respuesta: percent_change cambia su nombre
+  <em>
+   verbose
+  </em>
+  a
+  <code>
+   Variación porcentual período anterior
+  </code>
+ </li>
+ <li>
+  Validaciones adicionales en generación de dumps CSV y SQL
+ </li>
+</ul>
+<h2 id="1121">
+ 1.12.1
+</h2>
+<ul>
+ <li>
+  Revert al uso de metadatos de consultas en el endpoint de búsqueda
+ </li>
+ <li>
+  Revert al conteo de series en cada filtro de metadatos.
+ </li>
+ <li>
+  Nuevo parámetro para
+  <code>
+   /search
+  </code>
+  :
+  <code>
+   aggregations
+  </code>
+  muestra el conteo de series relevantes para la búsqueda dada, desagregadas según los varios filtros posibles
+ </li>
+</ul>
+<h2 id="1120">
+ 1.12.0
+</h2>
+<ul>
+ <li>
+  Bugfixes en indexación y respuesta de API series (#471, #473, #474)
+ </li>
+ <li>
+  Administración de unidades de series, con atributo de si son porcentuales
+ </li>
+ <li>
+  Conteo de series en cada filtro de metadatos
+ </li>
+ <li>
+  Actualización de validaciones de series durante la indexación
+ </li>
+</ul>
+<h2 id="1110">
+ 1.11.0
+</h2>
+<p>
+ Metadatos de consultas de las series: rutina de cálculo diaria, uso en dumps y en resultados de búsqueda de series
+</p>
 <h2 id="1100">
  1.10.0
 </h2>

@@ -373,7 +373,7 @@ El resto de las columnas a documentar son las series de tiempo.
 <!-- Ver cómo [generar buenos títulos](titles.md). -->
 
 * **Tipo de dato**: puede ser *"Número decimal (number)"* o *"Número entero (integer)"*. Las series sólo pueden tener números enteros o decimales como valores.
-* **Descripción de la columna _(field_description)_**: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: *"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*. 
+* **Descripción de la columna _(field_description)_**: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: *"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."*.
 
 <!-- Ver cómo [generar buenas descripciones](descriptions.md). -->
 
@@ -382,6 +382,9 @@ El resto de las columnas a documentar son las series de tiempo.
 <!-- Ver cómo [elegir buenas unidades de medida](units.md). -->
 
 * **Identificador _(field_id)_**: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: _"ipc"_ es un mal código, mientras que _"ipc_0001"_ es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella. Ver cómo [generar buenos identificadores](identifiers.md).
+
+!!! note "Validador de distribuciones de series de tiempo"
+    Una vez publicada la distribución en el catálogo chequeá que no tenga errores en [https://datosgobar.github.io/series-tiempo-ar-validation/](https://datosgobar.github.io/series-tiempo-ar-validation/)
 
 ## 3. Dar aviso a Datos Argentina
 

@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-4.1.1">
     
     
       
@@ -1301,7 +1301,7 @@
 
 <ul>
 <li><strong>Tipo de dato</strong>: puede ser <em>"Número decimal (number)"</em> o <em>"Número entero (integer)"</em>. Las series sólo pueden tener números enteros o decimales como valores.</li>
-<li><strong>Descripción de la columna <em>(field_description)</em></strong>: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: <em>"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."</em>. </li>
+<li><strong>Descripción de la columna <em>(field_description)</em></strong>: es el metadato más importante por el cual los usuarios van a buscar esa serie. La descripción no debe dejar lugar a dudas de qué serie se trata y conviene que siga una estructura común. Ej.: <em>"Indice de Precios al Consumidor. Nivel General Nacional. Base diciembre 2016."</em>.</li>
 </ul>
 <!-- Ver cómo [generar buenas descripciones](descriptions.md). -->
 
@@ -1313,6 +1313,10 @@
 <ul>
 <li><strong>Identificador <em>(field_id)</em></strong>: es el código que identifica unívocamente a la serie dentro de toda la base de series de tiempo de la Administración Pública Nacional. Debe pensarse de forma que no sea muy largo pero no pueda pisarse con otras series: <em>"ipc"</em> es un mal código, mientras que <em>"ipc_0001"</em> es mejor. Conviene decidir una estructura o convención para generar los códigos de las series del organismo y ceñirse a ella. Ver cómo <a href="../identifiers/">generar buenos identificadores</a>.</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Validador de distribuciones de series de tiempo</p>
+<p>Una vez publicada la distribución en el catálogo chequeá que no tenga errores en <a href="https://datosgobar.github.io/series-tiempo-ar-validation/">https://datosgobar.github.io/series-tiempo-ar-validation/</a></p>
+</div>
 <h2 id="3-dar-aviso-a-datos-argentina">3. Dar aviso a Datos Argentina</h2>
 <p>Una vez que documentaste un nuevo recurso de series de tiempo, escribinos a <a href="mailto:datos@modernizacion.gob.ar">datos@modernizacion.gob.ar</a> para que lo federemos en la API y te ayudemos a resolver cualquier problema!</p>
 <p>A partir de que se federa por primera vez, la API revisará automáticamente 4 veces por día el archivo CSV y los metadatos para reflejar cualquier cambio que hagas.</p>
@@ -1402,7 +1406,7 @@
           
         
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0",url:{base:"../.."}})</script>
       
     
   </body>
