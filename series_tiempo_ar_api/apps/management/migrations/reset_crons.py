@@ -29,5 +29,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_files, reverse_code=lambda x, y: None)
+        migrations.RunPython(migrate_files)
     ]
