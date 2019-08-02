@@ -11,6 +11,7 @@ from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.metadata_response import MetadataResponse
+from series_tiempo_ar_api.apps.api.query.series_query import SeriesQuery
 from series_tiempo_ar_api.apps.management import meta_keys
 from .es_query.es_query import ESQuery
 
@@ -32,6 +33,7 @@ class Query:
         self.es_query = ESQuery(index)
         self.series_models = []
         self.series_rep_modes = []
+        self.series = []
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
         self.metadata_flatten = False
 
@@ -65,6 +67,7 @@ class Query:
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         self.series_models.append(field_model)
         self.series_rep_modes.append(rep_mode)
+        self.series.append(SeriesQuery(field_model, rep_mode))
         periodicities = self._series_periodicities()
         max_periodicity = self.get_max_periodicity(periodicities)
         self.update_collapse(collapse=max_periodicity)
@@ -76,11 +79,9 @@ class Query:
         self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
 
     def _series_periodicities(self):
-        periodicities = [
-            self._get_series_periodicity(field)
-            for field in self.series_models
+        return [
+            serie.periodicity() for serie in self.series
         ]
-        return periodicities
 
     @staticmethod
     def get_max_periodicity(periodicities):
@@ -103,8 +104,8 @@ class Query:
     def _validate_collapse(self, collapse):
         order = constants.COLLAPSE_INTERVALS
 
-        for serie in self.series_models:
-            periodicity = self._get_series_periodicity(serie)
+        for serie in self.series:
+            periodicity = serie.periodicity()
             if order.index(periodicity) > order.index(collapse):
                 raise CollapseError
 
@@ -137,12 +138,12 @@ class Query:
             index_meta.update(self.es_query.get_data_start_end_dates())
 
         meta.append(index_meta)
-        for serie_model in self.series_models:
-            meta.append(self._get_series_metadata(serie_model))
+        for serie in self.series:
+            meta.append(self._get_series_metadata(serie))
 
         return meta
 
-    def _get_series_metadata(self, serie_model):
+    def _get_series_metadata(self, serie: SeriesQuery):
         """Devuelve un diccionario (data.json-like) de los metadatos
         de la serie:
 
@@ -163,9 +164,10 @@ class Query:
         }
         """
         simple_meta = self.metadata_config == constants.METADATA_SIMPLE
-        meta_response = MetadataResponse(serie_model, simple=simple_meta, flat=self.metadata_flatten).get_response()
+        meta_response = serie.get_metadata(flat=self.metadata_flatten,
+                                           simple=simple_meta)
 
-        self.append_rep_mode_metadata(serie_model, meta_response)
+        self.append_rep_mode_metadata(serie, meta_response)
         return meta_response
 
     def _calculate_data_frequency(self):
@@ -197,8 +199,8 @@ class Query:
     def reverse(self):
         self.es_query.reverse()
 
-    def append_rep_mode_metadata(self, serie_model: Field, meta_response: dict):
-        rep_mode = self.series_rep_modes[self.series_models.index(serie_model)]
+    def append_rep_mode_metadata(self, serie: SeriesQuery, meta_response: dict):
+        rep_mode = serie.rep_mode
 
         if self.metadata_flatten:
             units = rep_mode_units(rep_mode) or meta_response.get('field_units')
