@@ -1,5 +1,4 @@
 #! coding: utf-8
-import json
 from collections import OrderedDict
 from typing import Union
 
@@ -7,17 +6,11 @@ from django.conf import settings
 from django_datajsonar.models import Catalog, Dataset, Distribution, Field
 
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
-from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.series_query import SeriesQuery
-from series_tiempo_ar_api.apps.management import meta_keys
 from .es_query.es_query import ESQuery
 
 datajson_entity = Union[Catalog, Dataset, Distribution, Field]
-
-
-def rep_mode_units(rep_mode: str) -> str:
-    return constants.VERBOSE_REP_MODES[rep_mode]
 
 
 class Query:
@@ -66,7 +59,7 @@ class Query:
         self.update_collapse(collapse=max_periodicity)
         # Fix a casos en donde collapse agg no es avg pero los valores serían iguales a avg
         # Estos valores no son indexados! Entonces seteamos la aggregation a avg manualmente
-        if max_periodicity == self._get_series_periodicity(field_model):
+        if max_periodicity == self.series[-1].periodicity():
             collapse_agg = constants.AGG_DEFAULT
 
         self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
@@ -160,7 +153,6 @@ class Query:
         meta_response = serie.get_metadata(flat=self.metadata_flatten,
                                            simple=simple_meta)
 
-        self.append_rep_mode_metadata(serie, meta_response)
         return meta_response
 
     def _calculate_data_frequency(self):
@@ -184,28 +176,6 @@ class Query:
 
     def reverse(self):
         self.es_query.reverse()
-
-    def append_rep_mode_metadata(self, serie: SeriesQuery, meta_response: dict):
-        rep_mode = serie.rep_mode
-
-        if self.metadata_flatten:
-            units = rep_mode_units(rep_mode) or meta_response.get('field_units')
-            meta_response['field_representation_mode'] = rep_mode
-            meta_response['field_representation_mode_units'] = units
-            if rep_mode in (constants.PCT_CHANGE, constants.PCT_CHANGE_YEAR_AGO):
-                meta_response['field_is_percentage'] = True
-
-        else:
-            units = rep_mode_units(rep_mode) or meta_response['field'].get('units')
-            meta_response['field']['representation_mode'] = rep_mode
-            meta_response['field']['representation_mode_units'] = units
-            if rep_mode in (constants.PCT_CHANGE, constants.PCT_CHANGE_YEAR_AGO):
-                meta_response['field']['is_percentage'] = True
-
-    def _get_series_periodicity(self, serie_model):
-        serie_periodicity = meta_keys.get(serie_model, meta_keys.PERIODICITY)
-        distribution_periodicity = meta_keys.get(serie_model.distribution, meta_keys.PERIODICITY)
-        return get_periodicity_human_format(serie_periodicity or distribution_periodicity)
 
     @property
     def series_rep_modes(self):
