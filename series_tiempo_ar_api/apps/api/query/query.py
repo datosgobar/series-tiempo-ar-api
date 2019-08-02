@@ -31,8 +31,6 @@ class Query:
     def __init__(self, index=settings.TS_INDEX):
         self.es_index = index
         self.es_query = ESQuery(index)
-        self.series_models = []
-        self.series_rep_modes = []
         self.series = []
         self.metadata_config = constants.API_DEFAULT_VALUES[constants.PARAM_METADATA]
         self.metadata_flatten = False
@@ -55,8 +53,7 @@ class Query:
         return self.es_query.get_series_ids()
 
     def add_pagination(self, start, limit):
-        start_dates = {serie.identifier: meta_keys.get(serie, meta_keys.INDEX_START) for serie in self.series_models}
-        start_dates = {k: iso8601.parse_date(v) if v is not None else None for k, v in start_dates.items()}
+        start_dates = {serie.get_identifiers()['id']: serie.start_date() for serie in self.series}
         return self.es_query.add_pagination(start, limit, start_dates=start_dates)
 
     def add_filter(self, start_date, end_date):
@@ -65,8 +62,6 @@ class Query:
     def add_series(self, name, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
-        self.series_models.append(field_model)
-        self.series_rep_modes.append(rep_mode)
         self.series.append(SeriesQuery(field_model, rep_mode))
         periodicities = self._series_periodicities()
         max_periodicity = self.get_max_periodicity(periodicities)
@@ -213,3 +208,7 @@ class Query:
         serie_periodicity = meta_keys.get(serie_model, meta_keys.PERIODICITY)
         distribution_periodicity = meta_keys.get(serie_model.distribution, meta_keys.PERIODICITY)
         return get_periodicity_human_format(serie_periodicity or distribution_periodicity)
+
+    @property
+    def series_rep_modes(self):
+        return [serie.rep_mode for serie in self.series]

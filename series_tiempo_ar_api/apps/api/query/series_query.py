@@ -1,5 +1,7 @@
 import json
 
+from iso8601 import iso8601
+
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query.metadata_response import MetadataResponse
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -31,3 +33,9 @@ class SeriesQuery:
 
     def description(self):
         return json.loads(self.field_model.metadata).get('description', '')
+
+    def start_date(self):
+        date_string = meta_keys.get(self.field_model, meta_keys.INDEX_START)
+        if date_string is None:
+            return None
+        return iso8601.parse_date(date_string).date()

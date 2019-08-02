@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.test import TestCase
 
@@ -63,3 +64,10 @@ class SeriesQueryTests(TestCase):
         self.field.metadata = json.dumps({})
         description = self.serie.description()
         self.assertEqual(description, '')
+
+    def test_get_start_date(self):
+        self.assertEqual(self.serie.start_date(), datetime(1910, 1, 1).date())
+
+    def test_get_start_date_none_if_not_set(self):
+        self.field.enhanced_meta.all().delete()
+        self.assertEqual(self.serie.start_date(), None)
