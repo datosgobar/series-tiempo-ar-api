@@ -7,8 +7,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [('metadata', '0001_auto_20180810_1220'), ('metadata', '0002_auto_20180810_1229')]
-
     dependencies = [
         ('metadata', 'enhanced_meta_name_change'),
     ]
