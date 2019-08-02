@@ -184,14 +184,7 @@ class Query:
         y field de cada una de las series cargadas en la query
         """
 
-        result = []
-        for field in self.series_models:
-            result.append({
-                'id': field.identifier,
-                'distribution': field.distribution.identifier,
-                'dataset': field.distribution.dataset.identifier
-            })
-        return result
+        return [serie.get_identifiers() for serie in self.series]
 
     def flatten_metadata_response(self):
         self.metadata_flatten = True

@@ -16,3 +16,10 @@ class SeriesQuery:
 
     def get_metadata(self, flat=False, simple=True):
         return MetadataResponse(self.field_model, flat=flat, simple=simple).get_response()
+
+    def get_identifiers(self):
+        return {
+            'id': self.field_model.identifier,
+            'distribution': self.field_model.distribution.identifier,
+            'dataset': self.field_model.distribution.dataset.identifier
+        }

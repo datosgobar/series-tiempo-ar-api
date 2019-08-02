@@ -39,3 +39,11 @@ class SeriesQueryTests(TestCase):
         meta = SeriesQuery(self.field, constants.VALUE).get_metadata(simple=True)
 
         self.assertNotIn('available', meta['field'])
+
+    def test_get_identifiers(self):
+        serie = SeriesQuery(self.field, constants.VALUE)
+        ids = serie.get_identifiers()
+
+        self.assertEqual(ids['id'], self.field.identifier)
+        self.assertEqual(ids['distribution'], self.field.distribution.identifier)
+        self.assertEqual(ids['dataset'], self.field.distribution.dataset.identifier)
