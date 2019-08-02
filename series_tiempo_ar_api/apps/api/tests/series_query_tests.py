@@ -15,9 +15,10 @@ class SeriesQueryTests(TestCase):
         self.field = Field.objects.get(identifier=self.single_series)
         self.field_description = "Mi descripción"
         self.field.metadata = json.dumps({'description': self.field_description})
+        self.serie = SeriesQuery(self.field, constants.VALUE)
 
     def test_get_periodicity(self):
-        periodicity = SeriesQuery(self.field, constants.VALUE).periodicity()
+        periodicity = self.serie.periodicity()
         self.assertEqual(periodicity, 'month')
 
     def test_get_periodicity_reads_from_distribution_if_serie_has_none(self):
@@ -26,7 +27,7 @@ class SeriesQueryTests(TestCase):
         self.assertEqual(periodicity, 'month')
 
     def test_get_metadata_has_values_for_all_levels(self):
-        meta = SeriesQuery(self.field, constants.VALUE).get_metadata()
+        meta = self.serie.get_metadata()
 
         self.assertIn('catalog', meta)
         self.assertIn('dataset', meta)
@@ -34,32 +35,31 @@ class SeriesQueryTests(TestCase):
         self.assertIn('field', meta)
 
     def test_get_metadata_flatten_has_description_in_first_level(self):
-        meta = SeriesQuery(self.field, constants.VALUE).get_metadata(flat=True)
+        meta = self.serie.get_metadata(flat=True)
         self.assertIn('field_description', meta)
         self.assertNotIn('field', meta)
 
     def test_enhanced_meta_not_in_metadata_if_query_is_simple(self):
-        meta = SeriesQuery(self.field, constants.VALUE).get_metadata(simple=True)
+        meta = self.serie.get_metadata(simple=True)
 
         self.assertNotIn('available', meta['field'])
 
     def test_get_identifiers(self):
-        serie = SeriesQuery(self.field, constants.VALUE)
-        ids = serie.get_identifiers()
+        ids = self.serie.get_identifiers()
 
         self.assertEqual(ids['id'], self.field.identifier)
         self.assertEqual(ids['distribution'], self.field.distribution.identifier)
         self.assertEqual(ids['dataset'], self.field.distribution.dataset.identifier)
 
     def test_get_title(self):
-        title = SeriesQuery(self.field, constants.VALUE).title()
+        title = self.serie.title()
         self.assertEqual(title, self.field.title)
 
     def test_get_description(self):
-        description = SeriesQuery(self.field, constants.VALUE).description()
+        description = self.serie.description()
         self.assertEqual(description, self.field_description)
 
     def test_get_description_no_description_set(self):
         self.field.metadata = json.dumps({})
-        description = SeriesQuery(self.field, constants.VALUE).description()
+        description = self.serie.description()
         self.assertEqual(description, '')
