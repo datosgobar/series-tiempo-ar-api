@@ -6,6 +6,6 @@ cd ${DIR}/..
 
 
 echo "Running pycodestyle"
-pycodestyle series_tiempo_ar_api -v
+pycodestyle series_tiempo_ar_api
 
 echo "pycodestyle OK :)"

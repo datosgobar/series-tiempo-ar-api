@@ -50,7 +50,7 @@ class Query:
             return [serie.title() for serie in self.series]
 
         if how == constants.HEADER_PARAM_DESCRIPTIONS:
-            return [serie.description() for serie  in self.series]
+            return [serie.description() for serie in self.series]
 
         return self.es_query.get_series_ids()
 
