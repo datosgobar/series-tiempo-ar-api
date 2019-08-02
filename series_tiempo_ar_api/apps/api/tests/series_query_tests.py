@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 
 from django_datajsonar.models import Field
@@ -9,9 +11,10 @@ from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id
 class SeriesQueryTests(TestCase):
     single_series = get_series_id('month')
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.field = Field.objects.get(identifier=cls.single_series)
+    def setUp(self):
+        self.field = Field.objects.get(identifier=self.single_series)
+        self.field_description = "Mi descripción"
+        self.field.metadata = json.dumps({'description': self.field_description})
 
     def test_get_periodicity(self):
         periodicity = SeriesQuery(self.field, constants.VALUE).periodicity()
@@ -47,3 +50,16 @@ class SeriesQueryTests(TestCase):
         self.assertEqual(ids['id'], self.field.identifier)
         self.assertEqual(ids['distribution'], self.field.distribution.identifier)
         self.assertEqual(ids['dataset'], self.field.distribution.dataset.identifier)
+
+    def test_get_title(self):
+        title = SeriesQuery(self.field, constants.VALUE).title()
+        self.assertEqual(title, self.field.title)
+
+    def test_get_description(self):
+        description = SeriesQuery(self.field, constants.VALUE).description()
+        self.assertEqual(description, self.field_description)
+
+    def test_get_description_no_description_set(self):
+        self.field.metadata = json.dumps({})
+        description = SeriesQuery(self.field, constants.VALUE).description()
+        self.assertEqual(description, '')

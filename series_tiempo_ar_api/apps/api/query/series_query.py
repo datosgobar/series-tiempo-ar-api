@@ -1,3 +1,5 @@
+import json
+
 from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query.metadata_response import MetadataResponse
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -23,3 +25,9 @@ class SeriesQuery:
             'distribution': self.field_model.distribution.identifier,
             'dataset': self.field_model.distribution.dataset.identifier
         }
+
+    def title(self):
+        return self.field_model.title
+
+    def description(self):
+        return json.loads(self.field_model.metadata).get('description', '')

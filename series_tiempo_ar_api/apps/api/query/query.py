@@ -47,10 +47,10 @@ class Query:
             raise ValueError
 
         if how == constants.HEADER_PARAM_NAMES:
-            return [model.title for model in self.series_models]
+            return [serie.title() for serie in self.series]
 
         if how == constants.HEADER_PARAM_DESCRIPTIONS:
-            return [json.loads(model.metadata).get('description', '') for model in self.series_models]
+            return [serie.description() for serie  in self.series]
 
         return self.es_query.get_series_ids()
 
