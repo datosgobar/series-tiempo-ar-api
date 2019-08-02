@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('file', models.FileField(upload_to='dump')),
                 ('file_name', models.CharField(choices=[('series-tiempo.csv', 'Valores y metadatos (CSV)'), ('series-tiempo-valores.csv', 'Valores (CSV)'), ('series-tiempo-metadata.csv', 'Metadatos enriquecidos de las series (CSV)'), ('series-tiempo-fuentes.csv', 'Fuentes (CSV)'), ('series-tiempo-csv.zip', 'Valores y metadatos (CSV, zipped)')], max_length=64)),
-                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dump.CSVDumpTask')),
+                ('task', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dump.GenerateDumpTask')),
             ],
         ),
     ]

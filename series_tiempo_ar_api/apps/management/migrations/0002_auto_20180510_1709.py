@@ -10,14 +10,7 @@ from series_tiempo_ar_api.apps.management import models as mgmt_models
 
 
 def migrate_nodes(apps, schema_editor):
-    Node = apps.get_model('management', 'Node')
-    db_alias = schema_editor.connection.alias
-    nodes = Node.objects.using(db_alias).all()
-
-    for node in nodes:
-        Node(catalog_id=node.catalog_id,
-             catalog_url=node.catalog_url,
-             indexable=node.indexable).save()
+    """noop"""
 
 
 class Migration(migrations.Migration):

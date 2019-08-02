@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='indicator',
             name='node',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='management.Node'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='django_datajsonar.Node'),
             preserve_default=False,
         ),
         migrations.AlterField(

@@ -7,8 +7,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [('analytics', '0008_auto_20180725_1114'), ('analytics', '0009_query_uri')]
-
     dependencies = [
         ('analytics', '0007_query_api_mgmt_id'),
     ]

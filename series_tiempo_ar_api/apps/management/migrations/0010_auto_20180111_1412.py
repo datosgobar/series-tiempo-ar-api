@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='readdatajsontask',
             name='catalogs',
-            field=models.ManyToManyField(blank=True, to='management.Node'),
+            field=models.ManyToManyField(blank=True, to='django_datajsonar.Node'),
         ),
     ]
