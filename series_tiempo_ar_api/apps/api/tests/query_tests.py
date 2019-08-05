@@ -91,11 +91,6 @@ class QueryTests(TestCase):
         delta = second_date - first_date
         self.assertEqual(delta.days, 7)
 
-    def add_series_with_aggregation(self):
-        # Aggregation sin haber definido collapse NO HACE NADA!
-        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
-        self.assertTrue(self.query.series_models)
-
     def test_simple_metadata_remove_catalog(self):
         catalog = self.field.distribution.dataset.catalog
         catalog.metadata = '{"title": "test_title", "extra_field": "extra"}'
@@ -281,3 +276,13 @@ class QueryTests(TestCase):
 
         for row in data:
             self.assertEqual(row[1], row[2])
+
+    def test_same_series_multiple_times_different_rep_mode(self):
+        month_series = get_series_id('month')
+        self.query.add_series(month_series, self.field)
+        self.query.add_series(month_series, self.field, rep_mode='percent_change')
+        self.query.set_metadata_config(how=constants.METADATA_ONLY)
+        meta = self.query.run()['meta']
+
+        self.assertEqual(meta[1]['field']['representation_mode'], 'value')
+        self.assertEqual(meta[2]['field']['representation_mode'], 'percent_change')

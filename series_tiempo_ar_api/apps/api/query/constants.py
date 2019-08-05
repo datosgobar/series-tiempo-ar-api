@@ -141,6 +141,8 @@ IN_MEMORY_AGGS = [
 
 PARAM_LAST = 'last'
 
+PERCENT_REP_MODES = (PCT_CHANGE, PCT_CHANGE_YEAR_AGO)
+
 VERBOSE_REP_MODES = {
     VALUE: None,
     CHANGE: "Variación respecto del período anterior",
