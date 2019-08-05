@@ -53,13 +53,16 @@ class Query:
     def add_series(self, name, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
-        self.series.append(SeriesQuery(field_model, rep_mode))
+        serie_query = SeriesQuery(field_model, rep_mode)
+        self.series.append(serie_query)
+
         periodicities = self._series_periodicities()
         max_periodicity = self.get_max_periodicity(periodicities)
         self.update_collapse(collapse=max_periodicity)
+
         # Fix a casos en donde collapse agg no es avg pero los valores serían iguales a avg
         # Estos valores no son indexados! Entonces seteamos la aggregation a avg manualmente
-        if max_periodicity == self.series[-1].periodicity():
+        if max_periodicity == serie_query.periodicity():
             collapse_agg = constants.AGG_DEFAULT
 
         self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
