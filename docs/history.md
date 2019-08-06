@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.26.3 - 2019/08/06
+
+- Bump de django-datajsonar a 0.4.3
+
 ## 1.26.2 - 2019/08/05
 
 - Bugfix a metadatos de modos de representación de las series repetidos cuando se pedía una misma serie con distintos modos de representación
