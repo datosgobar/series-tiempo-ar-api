@@ -7,7 +7,7 @@ from series_tiempo_ar_api.apps.metadata.indexer.units import update_units
 from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
 
-class SeriesUnitsTests(TestCase):
+class UpdateUnitsTests(TestCase):
     faker = Faker()
 
     def setUp(self):
