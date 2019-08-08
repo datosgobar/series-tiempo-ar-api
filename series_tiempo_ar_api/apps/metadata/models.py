@@ -1,5 +1,4 @@
 #! coding: utf-8
-import datetime
 from typing import Sequence
 
 from django.conf import settings
@@ -68,3 +67,10 @@ class SeriesUnits(models.Model):
 
     name = models.CharField(max_length=64, unique=True)
     percentage = models.BooleanField(default=False)
+
+    @classmethod
+    def is_percentage(cls, name):
+        try:
+            return cls.objects.get(name=name).percentage
+        except cls.DoesNotExist:
+            return False

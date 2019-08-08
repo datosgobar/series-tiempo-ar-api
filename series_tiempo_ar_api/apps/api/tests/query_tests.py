@@ -1,4 +1,6 @@
 #! coding: utf-8
+import json
+
 import iso8601
 from django.conf import settings
 from django.test import TestCase
@@ -9,6 +11,7 @@ from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.api.exceptions import CollapseError
 from series_tiempo_ar_api.apps.api.query.query import Query
+from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 from .helpers import get_series_id
 
 SERIES_NAME = get_series_id('month')
@@ -17,12 +20,8 @@ SERIES_NAME = get_series_id('month')
 class QueryTests(TestCase):
     single_series = SERIES_NAME
 
-    @classmethod
-    def setUpClass(cls):
-        cls.field = Field.objects.get(identifier=cls.single_series)
-        super(cls, QueryTests).setUpClass()
-
     def setUp(self):
+        self.field = Field.objects.get(identifier=self.single_series)
         self.query = Query(index=settings.TEST_INDEX)
 
     def test_index_metadata_frequency(self):
@@ -126,7 +125,6 @@ class QueryTests(TestCase):
 
     def test_simple_metadata_remove_field(self):
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
-        self.field.save()
 
         self.query.add_series(self.single_series, self.field)
         self.query.run()
@@ -148,7 +146,6 @@ class QueryTests(TestCase):
         dist.save()
 
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
-        self.field.save()
 
         self.query.add_series(self.single_series, self.field)
         self.query.flatten_metadata_response()
@@ -179,7 +176,6 @@ class QueryTests(TestCase):
         dist.save()
 
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
-        self.field.save()
 
         self.query.add_series(self.single_series, self.field)
         self.query.set_metadata_config('full')
@@ -286,3 +282,36 @@ class QueryTests(TestCase):
 
         self.assertEqual(meta[1]['field']['representation_mode'], 'value')
         self.assertEqual(meta[2]['field']['representation_mode'], 'percent_change')
+
+    def test_is_percentage(self):
+        SeriesUnits.objects.create(name=json.loads(self.field.metadata)['units'],
+                                   percentage=True)
+        self.query.add_series(self.single_series, self.field)
+        self.query.set_metadata_config(how=constants.METADATA_ONLY)
+        meta = self.query.run()['meta']
+
+        self.assertTrue(meta[1]['field']['is_percentage'])
+
+    def test_is_percentage_units_false(self):
+        SeriesUnits.objects.create(name=json.loads(self.field.metadata)['units'],
+                                   percentage=False)
+        self.query.add_series(self.single_series, self.field)
+        self.query.set_metadata_config(how=constants.METADATA_ONLY)
+        meta = self.query.run()['meta']
+
+        self.assertFalse(meta[1]['field']['is_percentage'])
+
+    def test_is_percentage_with_percentage_rep_mode(self):
+        self.query.add_series(self.single_series, self.field, rep_mode=constants.PCT_CHANGE)
+        self.query.set_metadata_config(how=constants.METADATA_ONLY)
+        meta = self.query.run()['meta']
+
+        self.assertTrue(meta[1]['field']['is_percentage'])
+
+    def test_is_percentage_with_non_percentage_rep_mode(self):
+
+        self.query.add_series(self.single_series, self.field, rep_mode=constants.CHANGE)
+        self.query.set_metadata_config(how=constants.METADATA_ONLY)
+        meta = self.query.run()['meta']
+
+        self.assertFalse(meta[1]['field']['is_percentage'])

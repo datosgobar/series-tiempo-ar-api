@@ -33,29 +33,3 @@ class MetadataResponseTests(TestCase):
 
         self.assertTrue(isinstance(full_meta['dataset']['theme'], list))
         self.assertEqual(full_meta['dataset']['theme'][0]['label'], 'test_label')
-
-    def test_percentage_metadata_not_available_if_simple(self):
-        simple_meta = MetadataResponse(self.field, simple=True, flat=False).get_response()
-        self.assertNotIn('is_percentage', simple_meta['field'])
-
-    def test_percentage_metadata_is_false_if_no_series_units_model(self):
-        meta = MetadataResponse(self.field, simple=False, flat=False).get_response()
-        self.assertFalse(meta['field']['is_percentage'])
-
-    def test_percentage_metadata_false_if_no_units_field(self):
-        self.field.metadata = '{}'
-        self.field.save()
-        meta = MetadataResponse(self.field, simple=False, flat=False).get_response()
-        self.assertFalse(meta['field']['is_percentage'])
-
-    def test_percentage_metadata_false_if_units_arent_percentage(self):
-        SeriesUnits.objects.create(name=self.units, percentage=False)
-
-        meta = MetadataResponse(self.field, simple=False, flat=False).get_response()
-        self.assertFalse(meta['field']['is_percentage'])
-
-    def test_percent_metadata_true_if_units_are_percentage(self):
-        SeriesUnits.objects.create(name=self.units, percentage=True)
-
-        meta = MetadataResponse(self.field, simple=False, flat=False).get_response()
-        self.assertTrue(meta['field']['is_percentage'])
