@@ -42,27 +42,8 @@ class MetadataResponse:
             'catalog': self._get_full_metadata_for_model(catalog),
             'dataset': dataset_meta,
             'distribution': self._get_full_metadata_for_model(distribution),
-            'field': self._field_metadata(self.field),
+            'field': self._get_full_metadata_for_model(self.field),
         }
-
-    def _field_metadata(self, field: Field):
-        metadata = self._get_full_metadata_for_model(field)
-        if self.simple:
-            return metadata
-
-        metadata.update({'is_percentage': False})
-        units = metadata.get('units')
-
-        if not units:
-            return metadata
-
-        try:
-            series_units = SeriesUnits.objects.get(name=units)
-        except SeriesUnits.DoesNotExist:
-            return metadata
-
-        metadata['is_percentage'] = series_units.percentage
-        return metadata
 
     def _get_full_metadata_for_model(self, model: datajson_entity):
         metadata = {}

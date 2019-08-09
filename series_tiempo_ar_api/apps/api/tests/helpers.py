@@ -63,7 +63,7 @@ def init_month_series(dataset):
     distrib.enhanced_meta.create(key=meta_keys.PERIODICITY, value='R/P1M')
     field = Field.objects.create(
         identifier=settings.TEST_SERIES_NAME.format('month'),
-        metadata='{"description": "test_series_description"}',
+        metadata='{"description": "test_series_description", "units": "percentage"}',
         distribution=distrib,
         title='random_month_0_title'
     )

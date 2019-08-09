@@ -6,6 +6,7 @@ from series_tiempo_ar_api.apps.api.helpers import get_periodicity_human_format
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.metadata_response import MetadataResponse
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
 
 class SeriesQuery:
@@ -24,12 +25,14 @@ class SeriesQuery:
     def get_metadata(self, flat=False, simple=True):
         response = MetadataResponse(self.field_model, flat=flat, simple=simple).get_response()
 
-        self._add_is_percentage(response, flat)
+        if not simple:
+            self._add_is_percentage(response, flat)
         self._add_rep_mode(response, flat)
         return response
 
     def _add_is_percentage(self, response, flat):
-        is_percentage = self.rep_mode in constants.PERCENT_REP_MODES
+        units_is_percentage = SeriesUnits.is_percentage(self.metadata.get('units'))
+        is_percentage = self.rep_mode in constants.PERCENT_REP_MODES or units_is_percentage
         if not flat:
             response['field']['is_percentage'] = is_percentage
         else:

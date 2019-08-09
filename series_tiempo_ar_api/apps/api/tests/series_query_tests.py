@@ -7,6 +7,7 @@ from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.series_query import SeriesQuery
 from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id
+from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
 
 class SeriesQueryTests(TestCase):
@@ -15,8 +16,9 @@ class SeriesQueryTests(TestCase):
     def setUp(self):
         self.field = Field.objects.get(identifier=self.single_series)
         self.field_description = "Mi descripción"
+        self.units = 'my_units'
         self.field.metadata = json.dumps({'description': self.field_description,
-                                          'units': 'my_units'})
+                                          'units': self.units})
         self.serie = SeriesQuery(self.field, constants.VALUE)
 
     def test_get_periodicity(self):
@@ -74,19 +76,19 @@ class SeriesQueryTests(TestCase):
         self.assertEqual(self.serie.start_date(), None)
 
     def test_metadata_is_percentage_default_rep_mode(self):
-        meta = self.serie.get_metadata()
+        meta = self.serie.get_metadata(simple=False)
         self.assertFalse(meta['field']['is_percentage'])
 
     def test_metadata_is_percentage_with_percentage_rep_mode(self):
-        meta = SeriesQuery(self.field, constants.PCT_CHANGE).get_metadata()
+        meta = SeriesQuery(self.field, constants.PCT_CHANGE).get_metadata(simple=False)
         self.assertTrue(meta['field']['is_percentage'])
 
     def test_metadata_is_percentage_with_flat_metadata(self):
-        meta = SeriesQuery(self.field, constants.PCT_CHANGE).get_metadata(flat=True)
+        meta = SeriesQuery(self.field, constants.PCT_CHANGE).get_metadata(simple=False, flat=True)
         self.assertTrue(meta['field_is_percentage'])
 
     def test_metadata_is_not_percentage_with_flat_metadata(self):
-        meta = self.serie.get_metadata(flat=True)
+        meta = self.serie.get_metadata(simple=False, flat=True)
         self.assertFalse(meta['field_is_percentage'])
 
     def test_metadata_rep_mode(self):
@@ -114,3 +116,38 @@ class SeriesQueryTests(TestCase):
         meta = SeriesQuery(self.field, constants.PCT_CHANGE).get_metadata()
         self.assertEqual(constants.VERBOSE_REP_MODES[constants.PCT_CHANGE],
                          meta['field']['representation_mode_units'])
+
+    def test_percentage_metadata_not_available_if_simple(self):
+        simple_meta = self.serie.get_metadata()
+        self.assertNotIn('is_percentage', simple_meta['field'])
+
+    def test_percentage_metadata_not_available_if_simple_and_flat(self):
+        simple_meta = self.serie.get_metadata(flat=True)
+        self.assertNotIn('field_is_percentage', simple_meta)
+
+    def test_percentage_metadata_is_false_if_no_series_units_model(self):
+        meta = self.serie.get_metadata(simple=False, flat=False)
+        self.assertFalse(meta['field']['is_percentage'])
+
+    def test_percentage_metadata_false_if_no_units_field(self):
+        self.field.metadata = '{}'
+        self.field.save()
+        meta = self.serie.get_metadata(simple=False, flat=False)
+        self.assertFalse(meta['field']['is_percentage'])
+
+    def test_percentage_metadata_false_if_units_arent_percentage(self):
+        SeriesUnits.objects.create(name=self.units, percentage=False)
+
+        meta = self.serie.get_metadata(simple=False, flat=False)
+        self.assertFalse(meta['field']['is_percentage'])
+
+    def test_percent_metadata_true_if_units_are_percentage(self):
+        SeriesUnits.objects.create(name=self.units, percentage=True)
+
+        meta = self.serie.get_metadata(simple=False, flat=False)
+        self.assertTrue(meta['field']['is_percentage'])
+
+    def test_percentage_metadata_if_units_are_percentage_and_rep_mode_is_percentage(self):
+        SeriesUnits.objects.create(name=self.units, percentage=True)
+        meta = SeriesQuery(self.field, constants.PCT_CHANGE).get_metadata(simple=False)
+        self.assertTrue(meta['field']['is_percentage'])
