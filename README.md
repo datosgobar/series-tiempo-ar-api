@@ -2,7 +2,6 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/datosgobar/series-tiempo-ar-api/badge.svg?branch=master)](https://coveralls.io/github/datosgobar/series-tiempo-ar-api?branch=master)
 [![Build Status](https://travis-ci.org/datosgobar/series-tiempo-ar-api.svg?branch=master)](https://travis-ci.org/datosgobar/series-tiempo-ar-api)
-[![Stories in Ready](https://badge.waffle.io/datosgobar/series-tiempo-ar-api.png?label=ready&title=Ready)](https://waffle.io/datosgobar/series-tiempo-ar-api)
 [![GitHub tag](https://img.shields.io/github/tag/datosgobar/series-tiempo-ar-api.svg)]()
 
 Aplicación distribuible de la API de Series de Tiempo del [Paquete de Apertura de Datos de la República Argentina](http://paquete-apertura-datos.readthedocs.io/es/stable/).
@@ -14,7 +13,7 @@ Aplicación distribuible de la API de Series de Tiempo del [Paquete de Apertura 
 
 ## Instalación
 
-Ver documentación de [instalación de la aplicación](docs/development.md).
+Ver documentación de [instalación de la aplicación](docs/developers/development.md).
 
 ## Uso rápido
 
