@@ -104,3 +104,11 @@ class ReaderTests(TestCase):
         distribution = Distribution.objects.get(identifier='102.1')
 
         self.assertEqual(distribution.enhanced_meta.get(key=meta_keys.CHANGED).value, 'True')
+
+    @mock.patch('series_tiempo_ar_api.libs.indexing.catalog_reader.DataJson')
+    def test_format_is_passed_to_data_json(self, data_json, *_):
+        read_datajson(self.task, whitelist=True)
+        self.node.catalog_format = 'xlsx'
+        index_catalog(self.node, self.mgmt_task)
+
+        self.assertEqual(data_json.call_args[1]['catalog_format'], self.node.catalog_format)
