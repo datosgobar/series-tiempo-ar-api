@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.26.5 - 2019/08/20
+
+- Indexación: Bugfixes y cambios en pydatajson para permitir lecturas concurrentes de catálogos en XLSX
+
+
 ## 1.26.4  - 2019/08/13
 
 - Bugfix de `is_percentage` devolviendo valores incorrectos
