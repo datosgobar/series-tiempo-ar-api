@@ -45,7 +45,7 @@ Queries del día anterior: {{ queries }}
     <tr>
         <td>{{ distribution.dataset.catalog.identifier}}</td>
         <td>{{ distribution.identifier }}</td>
-        <td>{{ distribution.error_msg }}</td>
+        <td>{{ distribution.error_msg|linebreaks }}</td>
     </tr>
     {% endfor %}
 </table>
