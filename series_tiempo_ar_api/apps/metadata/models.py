@@ -65,7 +65,7 @@ class SeriesUnits(models.Model):
         verbose_name = 'Unidades de serie'
         verbose_name_plural = 'Unidades de series'
 
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=300, unique=True)
     percentage = models.BooleanField(default=False)
 
     @classmethod

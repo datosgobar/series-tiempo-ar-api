@@ -19,3 +19,7 @@ class SeriesUnitsTests(TestCase):
     def test_default_is_not_percentage(self):
         SeriesUnits.objects.create(name='non_pct_units')
         self.assertFalse(SeriesUnits.is_percentage('non_pct_units'))
+
+    def test_units_length(self):
+        long_name = 'Niños menores de un año de edad fallecidos por cada mil nacidos vivos'
+        SeriesUnits.objects.create(name=long_name)
