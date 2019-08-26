@@ -12,6 +12,7 @@ from django_rq import job
 from scripts.integration_test import IntegrationTest
 from series_tiempo_ar_api.apps.dump.models import DumpFile
 from series_tiempo_ar_api.apps.management.models import IntegrationTestTask, IntegrationTestConfig
+from series_tiempo_ar_api.libs.indexing.api_index_enqueue import enqueue_job_with_timeout
 
 
 class DjangoSeriesFetcher:
@@ -58,7 +59,7 @@ def run_integration(task: IntegrationTestTask = None):
 
     task.log(str(result))
 
-    if len(result):
+    if result:
         send_email(result, task)
 
     task.refresh_from_db()
@@ -93,4 +94,5 @@ def generate_errors_csv(result: list):
 
 @job("integration_test")
 def enqueue_new_integration_test(*_):
-    run_integration()
+    timeout = IntegrationTestConfig.get_solo().timeout
+    enqueue_job_with_timeout('integration_test', run_integration, timeout)

@@ -55,6 +55,7 @@ class IntegrationTestConfig(SingletonModel):
     recipients = models.ManyToManyField(User, blank=True, verbose_name="Destinatarios")
     api_endpoint = models.URLField(help_text="URL completa de la API de series a usar como referencia "
                                              "en los mail de error")
+    timeout = models.IntegerField(default=1000)
 
 
 class APIIndexingConfig(SingletonModel):
