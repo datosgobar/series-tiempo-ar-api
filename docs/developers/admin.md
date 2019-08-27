@@ -37,6 +37,8 @@ Existe un módulo de la aplicación que se dedica a importar datos de uso de la 
 
 Existe un módulo que, idealmente justo después de una indexación de datos, se encargue de testear la consistencia de los datos cargados en el índice de Elasticsearch con los datos originales. Para la generación del reporte en casos de errores, se pueden configurar usuarios destinatarios del email de error. en la vista "Configuración del test de integración", así como el endpoint de la misma API a utilizar en los repotes (la API no conoce su propio host name, y por lo tanto debe ser configurado manualmente).
 
+Adicionalmente, en la vista anterior, también se puede configurar un _Timeout_ para la rutina del test, en el caso de que, por el volumen de los datos indexados, se requiera más tiempo para finalizar. Por defecto se le asignan **1000 segundos** de tiempo de ejecución a la rutina. Luego de ese tiempo, el test fallará. 
+
 ## Metadatos
 
 Otra tarea programada es la indexación de metadatos de las series disponibles, para ser consultadas en el endpoint `/search`. La tarea debe ser corrida siempre después de la indexación de datos, para asegurar que ambos índices contengan datos consistentes entre ellos.
