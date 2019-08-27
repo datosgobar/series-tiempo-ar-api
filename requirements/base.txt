@@ -23,3 +23,4 @@ peewee==3.7.1
 chardet==3.0.4
 django-modeladmin-reorder==0.3.1
 django-cors-headers==3.0.2
+django-admin-shortcuts
