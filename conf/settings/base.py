@@ -153,6 +153,7 @@ DJANGO_BASE_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'admin_shortcuts',
     'django.contrib.admin',
 )
 
@@ -398,3 +399,65 @@ ADMIN_REORDER = (
 
 LOGIN_URL = 'admin:login'
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+
+ADMIN_SHORTCUTS = [
+    {
+        'shortcuts': [
+            {
+                'title': 'Home',
+                'url_name': 'admin:index',
+            },
+            {
+                'title': 'Nodos',
+                'url_name': 'admin:django_datajsonar_node_changelist',
+                'icon': 'university',
+            },
+            {
+                'title': 'Usuarios',
+                'url_name': 'admin:auth_user_changelist',
+            },
+            {
+                'title': 'Datasets',
+                'url_name': 'admin:django_datajsonar_dataset_changelist',
+                'icon': 'database',
+            },
+            {
+                'title': 'Distribuciones',
+                'url_name': 'admin:django_datajsonar_distribution_changelist',
+                'icon': 'file-alt',
+            },
+            {
+                'title': 'Series',
+                'url_name': 'admin:django_datajsonar_field_changelist',
+                'icon': 'list'
+            }
+        ]
+    },
+    {
+        'title': 'Rutinas',
+        'shortcuts': [
+            {
+                'title': 'Lectura de nodos',
+                'url_name': 'admin:django_datajsonar_readdatajsontask_changelist',
+                'icon': 'search',
+            },
+            {
+                'title': 'Indexación de datos',
+                'url_name': 'admin:management_indexdatatask_changelist',
+                'icon': 'lightbulb',
+            },
+            {
+                'title': 'Synchronizers',
+                'url_name': 'admin:django_datajsonar_synchronizer_changelist',
+                'icon': 'cogs',
+            },
+        ]
+    },
+]
+
+ADMIN_SHORTCUTS_SETTINGS = {
+    'show_on_all_pages': True,
+    'hide_app_list': False,
+    'open_new_window': False,
+}
