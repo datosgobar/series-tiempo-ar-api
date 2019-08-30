@@ -41,6 +41,13 @@ class QueryTests(TestCase):
 
         self.assertTrue(result['errors'])
 
+    def test_bad_sort_by(self):
+        query = FieldSearchQuery(args={'sort_by': 'invalid'})
+
+        result = query.execute()
+
+        self.assertTrue(result['errors'])
+
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
 
@@ -121,3 +128,19 @@ class QueryTests(TestCase):
 
         search = query.get_search()
         self.assertNotIn('min_score', search.to_dict())
+
+    def test_sort_not_added_if_relevance_specified(self):
+        query = FieldSearchQuery(args={'sort_by': 'relevance'})
+
+        search = query.get_search()
+        with self.assertRaises(KeyError):
+            sort = search.to_dict()['sort']  # pylint: disable=unused-variable
+
+    def test_descending_sort_with_specified_field(self):
+        query = FieldSearchQuery(args={'sort_by': 'hits_90_days'})
+
+        search = query.get_search()
+        sort_field = search.to_dict()['sort'][0]
+
+        expected_sort_dict = {'hits': {'order': 'desc'}}
+        self.assertDictEqual(expected_sort_dict, sort_field)
