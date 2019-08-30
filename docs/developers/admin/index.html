@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-4.0.2">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-4.1.1">
     
     
       
@@ -47,7 +47,7 @@
     
     
 	
-      <link rel="stylesheet" href="../../assets/stylesheets/application.982221ab.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
       
       
     
@@ -55,7 +55,7 @@
 
     
     
-      <script src="../../assets/javascripts/modernizr.1f0bcf2b.js"></script>
+      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
     
     <script src="../../js/extra.js"></script>
 
@@ -856,6 +856,7 @@
 <p>Existe un módulo de la aplicación que se dedica a importar datos de uso de la aplicación desde una instanacia de <a href="https://github.com/datosgobar/api-gateway">api-gateway</a>. Se puede configurar a través de la vista "Configuración de importación de analytics" en el admin, a llenar con los campos relevantes de la instancia de API Gateway que querramos consultar, incluyendo ID de la API de series de tiempo en ese proyecto, y una api key. El campo <code>Last Cursor</code> es de uso interno y <strong>no debería ser modificado</strong>.</p>
 <h2 id="test-de-integracion">Test de integración</h2>
 <p>Existe un módulo que, idealmente justo después de una indexación de datos, se encargue de testear la consistencia de los datos cargados en el índice de Elasticsearch con los datos originales. Para la generación del reporte en casos de errores, se pueden configurar usuarios destinatarios del email de error. en la vista "Configuración del test de integración", así como el endpoint de la misma API a utilizar en los repotes (la API no conoce su propio host name, y por lo tanto debe ser configurado manualmente).</p>
+<p>Adicionalmente, en la vista anterior, también se puede configurar un <em>Timeout</em> para la rutina del test, en el caso de que, por el volumen de los datos indexados, se requiera más tiempo para finalizar. Por defecto se le asignan <strong>1000 segundos</strong> de tiempo de ejecución a la rutina. Luego de ese tiempo, el test fallará. </p>
 <h2 id="metadatos">Metadatos</h2>
 <p>Otra tarea programada es la indexación de metadatos de las series disponibles, para ser consultadas en el endpoint <code>/search</code>. La tarea debe ser corrida siempre después de la indexación de datos, para asegurar que ambos índices contengan datos consistentes entre ellos.</p>
 <p>Dentro de la vista "Configuración de búsqueda de series por metadatos", se pueden configurar parámetros de <em>boosting</em> sobre ciertos campos de metadatos, para ir ajustando los resultados de búsqueda. El formato JSON de los parámetros debe ser siempre respetado. A continuación se muestra el valor por defecto:</p>
@@ -937,7 +938,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.d9aa80ab.js"></script>
+      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
       
         
         
