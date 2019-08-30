@@ -9,6 +9,8 @@ CHANGE = 'change'
 PCT_CHANGE = 'percent_change'
 CHANGE_YEAR_AGO = 'change_a_year_ago'
 PCT_CHANGE_YEAR_AGO = 'percent_change_a_year_ago'
+CHANGE_BEG_YEAR = 'change_since_beginning_of_year'
+PCT_CHANGE_BEG_YEAR = 'percent_change_since_beginning_of_year'
 
 # Pandas freqs
 PANDAS_YEAR = YearBegin()
@@ -44,6 +46,8 @@ MAPPING = {
         PCT_CHANGE: {"type": "scaled_float", "scaling_factor": 10000000},
         CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
         PCT_CHANGE_YEAR_AGO: {"type": "scaled_float", "scaling_factor": 10000000},
+        CHANGE_BEG_YEAR: {"type": "scaled_float", "scaling_factor": 10000000},
+        PCT_CHANGE_BEG_YEAR: {"type": "scaled_float", "scaling_factor": 10000000},
         "series_id": {"type": "keyword"},
         "aggregation": {"type": "keyword"},
         "interval": {"type": "keyword"},
