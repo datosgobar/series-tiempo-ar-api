@@ -149,10 +149,10 @@ VERBOSE_REP_MODES = {
     VALUE: None,
     CHANGE: "Variación respecto del período anterior",
     CHANGE_YEAR_AGO: "Variación interanual",
-    CHANGE_BEG_YEAR: "Variación acumulada anual absoluta",
+    CHANGE_BEG_YEAR: "Variación acumulada anual",
     PCT_CHANGE: "Variación porcentual período anterior",
     PCT_CHANGE_YEAR_AGO: "Variación porcentual interanual",
-    PCT_CHANGE_BEG_YEAR: "Variación porcentual acumulada anual absoluta",
+    PCT_CHANGE_BEG_YEAR: "Variación porcentual acumulada anual",
 }
 
 DATE_KEYS = (
