@@ -19,17 +19,22 @@ class FieldSearchQuery:
 
     def validate(self):
         """Valida los parámetros de la query, actualizando la lista de errores de ser necesario"""
-        limit = self.args.get(constants.PARAM_LIMIT, 10)
+        limit = self.args.get(constants.PARAM_LIMIT, constants.PARAM_DEFAULT_VALUES[constants.PARAM_LIMIT])
         try:
             self.args[constants.PARAM_LIMIT] = int(limit)
         except ValueError:
             self.append_error(strings.INVALID_PARAMETER.format(constants.PARAM_LIMIT, limit))
 
-        offset = self.args.get(constants.PARAM_OFFSET, 0)
+        offset = self.args.get(constants.PARAM_OFFSET, constants.PARAM_DEFAULT_VALUES[constants.PARAM_OFFSET])
         try:
             self.args[constants.PARAM_OFFSET] = int(offset)
         except ValueError:
             self.append_error(strings.INVALID_PARAMETER.format(constants.PARAM_OFFSET, offset))
+
+        sort_by = self.args.get(constants.PARAM_SORT_BY, constants.PARAM_DEFAULT_VALUES[constants.PARAM_SORT_BY])
+        if sort_by not in constants.VALID_SORT_BY_VALUES:
+            self.append_error(strings.INVALID_PARAMETER.format(constants.PARAM_SORT_BY, sort_by))
+        self.args[constants.PARAM_SORT_BY] = sort_by
 
     def execute(self):
         """Ejecuta la query. Devuelve un diccionario con el siguiente formato
@@ -112,10 +117,13 @@ class FieldSearchQuery:
 
     def get_search(self):
         search = Metadata.search(index=constants.METADATA_ALIAS)
-        # search = search.sort('-hits')
+        sort_by = self.args.get(constants.PARAM_SORT_BY, constants.PARAM_DEFAULT_VALUES[constants.PARAM_SORT_BY])
+        if sort_by != constants.SORT_BY_RELEVANCE:
+            query_sort_by = constants.SORT_BY_MAPPING[sort_by]
+            search = search.sort(f'-{query_sort_by}')
         search = self.setup_query(search)
-        offset = self.args[constants.PARAM_OFFSET]
-        limit = self.args[constants.PARAM_LIMIT]
+        offset = self.args.get(constants.PARAM_OFFSET, constants.PARAM_DEFAULT_VALUES[constants.PARAM_OFFSET])
+        limit = self.args.get(constants.PARAM_LIMIT, constants.PARAM_DEFAULT_VALUES[constants.PARAM_LIMIT])
         search = search[offset:limit + offset]
         for arg, field in constants.FILTER_ARGS.items():
             search = self.add_filters(search, arg, field)
