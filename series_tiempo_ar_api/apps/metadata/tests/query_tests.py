@@ -133,8 +133,7 @@ class QueryTests(TestCase):
         query = FieldSearchQuery(args={'sort_by': 'relevance'})
 
         search = query.get_search()
-        with self.assertRaises(KeyError):
-            sort = search.to_dict()['sort']  # pylint: disable=unused-variable
+        self.assertNotIn('sort', search.to_dict().keys())
 
     def test_descending_sort_with_specified_field(self):
         query = FieldSearchQuery(args={'sort_by': 'hits_90_days'})
