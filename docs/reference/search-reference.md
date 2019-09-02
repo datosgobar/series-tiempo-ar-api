@@ -35,60 +35,67 @@ El recurso `/search` permite buscar series a partir de un texto, proporcionando 
         <td>q=ipc</td>
     </tr>
     <tr>
-        <td>dataset_theme</a></td>
+        <td>dataset_theme</td>
         <td>No</td>
-        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_theme">/search/dataset_theme</a></em></td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_theme">/search/dataset_theme</a></td>
         <td>N/A</td>
         <td>dataset_theme="Finanzas Públicas"</td>
     </tr>
     <tr>
-        <td>units</a></td>
+        <td>units</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/field_units">/search/field_units</a></td>
         <td>N/A</td>
         <td>units="Millones de pesos"</td>
     </tr>
     <tr>
-        <td>dataset_publisher_name</a></td>
+        <td>dataset_publisher_name</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_publisher_name">/search/dataset_publisher_name</a></td>
         <td>N/A</td>
         <td>dataset_publisher_name="Subsecretaría de Programación Macroeconómica."</td>
     </tr>
     <tr>
-        <td>dataset_source</a></td>
+        <td>dataset_source</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_source">/search/dataset_source</a></td>
         <td>N/A</td>
         <td>dataset_source="Ministerio de Hacienda"</td>
     </tr>
     <tr>
-        <td>catalog_id</a></td>
+        <td>catalog_id</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/catalog_id">/search/catalog_id</a></td>
         <td>N/A</td>
         <td>catalog_id="sspm"</td>
     </tr>
     <tr>
-        <td>limit</a></td>
+        <td>limit</td>
         <td>No</td>
         <td>Número entero positivo, no mayor que 1000.</td>
         <td class="s4" dir="ltr">10</td>
         <td>limit=50</td>
     </tr>
     <tr>
-        <td>start</a></td>
+        <td>start/td>
         <td>No</td>
         <td>Número entero positivo o 0.</td>
         <td class="s4" dir="ltr">0</td>
         <td>start=100</td>
     </tr>
     <tr>
-        <td>aggregations</a></td>
+        <td>aggregations</td>
         <td>No</td>
         <td>N/A</td>
         <td class="s4" dir="ltr">N/A</td>
         <td>N/A</td>
+    </tr>
+    <tr>
+        <td>sort_by</td>
+        <td>No</td>
+        <td>Texto, uno de los listados en la sección del parámetro</td>
+        <td class="s4" dir="ltr">'relevance'</td>
+        <td>sort_by=hits_90_days</td>
     </tr>
 </table>
 
@@ -188,3 +195,12 @@ La presencia de este parámetro agrega un objeto nuevo a la respuesta de la API 
   }
 }
 ```
+
+### `sort_by`
+
+Este parámetro permite ordenar los resultados obtenidos según el valor que cada uno posee para cierto campo, de manera descendente (es decir, de mayor a menor según dicho valor)
+
+Los valores que puede adoptar el mismo son:
+
+- `relevance`: Valor por defecto, para que los resultados se ordenen por relevancia en base a los demás filtros y parámetros
+- `hits_90:days`: Ordena los resultados según cuántos accesos tuvieron las series en los últimos 90 días (el campo `hits` de la response)

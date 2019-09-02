@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
     
     
       
@@ -47,7 +47,7 @@
     
     
 	
-      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
       
       
     
@@ -55,14 +55,14 @@
 
     
     
-      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
     
     <script src="../../js/extra.js"></script>
 
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
@@ -158,7 +158,9 @@
               API de Series de Tiempo
             </span>
             <span class="md-header-nav__topic">
-              /search
+              
+                /search
+              
             </span>
           
         </div>
@@ -223,7 +225,7 @@
         
       
       
-      <main class="md-main">
+      <main class="md-main" role="main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -464,7 +466,7 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tabla-de-parametros" title="Tabla de parámetros" class="md-nav__link">
+  <a href="#tabla-de-parametros" class="md-nav__link">
     Tabla de parámetros
   </a>
   
@@ -472,36 +474,43 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#q" title="q" class="md-nav__link">
+  <a href="#q" class="md-nav__link">
     q
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#dataset_theme-units-dataset_publisher_name-dataset_source-catalog_id" title="dataset_theme, units, dataset_publisher_name, dataset_source, catalog_id" class="md-nav__link">
+  <a href="#dataset_theme-units-dataset_publisher_name-dataset_source-catalog_id" class="md-nav__link">
     dataset_theme, units, dataset_publisher_name, dataset_source, catalog_id
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#limit" title="limit" class="md-nav__link">
+  <a href="#limit" class="md-nav__link">
     limit
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#start" title="start" class="md-nav__link">
+  <a href="#start" class="md-nav__link">
     start
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#aggregations" title="aggregations" class="md-nav__link">
+  <a href="#aggregations" class="md-nav__link">
     aggregations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sort_by" class="md-nav__link">
+    sort_by
   </a>
   
 </li>
@@ -751,7 +760,7 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tabla-de-parametros" title="Tabla de parámetros" class="md-nav__link">
+  <a href="#tabla-de-parametros" class="md-nav__link">
     Tabla de parámetros
   </a>
   
@@ -759,36 +768,43 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#q" title="q" class="md-nav__link">
+  <a href="#q" class="md-nav__link">
     q
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#dataset_theme-units-dataset_publisher_name-dataset_source-catalog_id" title="dataset_theme, units, dataset_publisher_name, dataset_source, catalog_id" class="md-nav__link">
+  <a href="#dataset_theme-units-dataset_publisher_name-dataset_source-catalog_id" class="md-nav__link">
     dataset_theme, units, dataset_publisher_name, dataset_source, catalog_id
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#limit" title="limit" class="md-nav__link">
+  <a href="#limit" class="md-nav__link">
     limit
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#start" title="start" class="md-nav__link">
+  <a href="#start" class="md-nav__link">
     start
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#aggregations" title="aggregations" class="md-nav__link">
+  <a href="#aggregations" class="md-nav__link">
     aggregations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sort_by" class="md-nav__link">
+    sort_by
   </a>
   
 </li>
@@ -853,60 +869,67 @@
         <td>q=ipc</td>
     </tr>
     <tr>
-        <td>dataset_theme</a></td>
+        <td>dataset_theme</td>
         <td>No</td>
-        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_theme">/search/dataset_theme</a></em></td>
+        <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_theme">/search/dataset_theme</a></td>
         <td>N/A</td>
         <td>dataset_theme="Finanzas Públicas"</td>
     </tr>
     <tr>
-        <td>units</a></td>
+        <td>units</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/field_units">/search/field_units</a></td>
         <td>N/A</td>
         <td>units="Millones de pesos"</td>
     </tr>
     <tr>
-        <td>dataset_publisher_name</a></td>
+        <td>dataset_publisher_name</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_publisher_name">/search/dataset_publisher_name</a></td>
         <td>N/A</td>
         <td>dataset_publisher_name="Subsecretaría de Programación Macroeconómica."</td>
     </tr>
     <tr>
-        <td>dataset_source</a></td>
+        <td>dataset_source</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/dataset_source">/search/dataset_source</a></td>
         <td>N/A</td>
         <td>dataset_source="Ministerio de Hacienda"</td>
     </tr>
     <tr>
-        <td>catalog_id</a></td>
+        <td>catalog_id</td>
         <td>No</td>
         <td>Uno de los valores listados en <a href="https://apis.datos.gob.ar/series/api/search/catalog_id">/search/catalog_id</a></td>
         <td>N/A</td>
         <td>catalog_id="sspm"</td>
     </tr>
     <tr>
-        <td>limit</a></td>
+        <td>limit</td>
         <td>No</td>
         <td>Número entero positivo, no mayor que 1000.</td>
         <td class="s4" dir="ltr">10</td>
         <td>limit=50</td>
     </tr>
     <tr>
-        <td>start</a></td>
+        <td>start/td>
         <td>No</td>
         <td>Número entero positivo o 0.</td>
         <td class="s4" dir="ltr">0</td>
         <td>start=100</td>
     </tr>
     <tr>
-        <td>aggregations</a></td>
+        <td>aggregations</td>
         <td>No</td>
         <td>N/A</td>
         <td class="s4" dir="ltr">N/A</td>
         <td>N/A</td>
+    </tr>
+    <tr>
+        <td>sort_by</td>
+        <td>No</td>
+        <td>Texto, uno de los listados en la sección del parámetro</td>
+        <td class="s4" dir="ltr">'relevance'</td>
+        <td>sort_by=hits_90_days</td>
     </tr>
 </table>
 
@@ -989,6 +1012,15 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
+
+
+<h3 id="sort_by"><code>sort_by</code></h3>
+<p>Este parámetro permite ordenar los resultados obtenidos según el valor que cada uno posee para cierto campo, de manera descendente (es decir, de mayor a menor según dicho valor)</p>
+<p>Los valores que puede adoptar el mismo son:</p>
+<ul>
+<li><code>relevance</code>: Valor por defecto, para que los resultados se ordenen por relevancia en base a los demás filtros y parámetros</li>
+<li><code>hits_90:days</code>: Ordena los resultados según cuántos accesos tuvieron las series en los últimos 90 días (el campo <code>hits</code> de la response)</li>
+</ul>
                 
                   
                 
@@ -1058,7 +1090,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
+      <script src="../../assets/javascripts/application.c648116f.js"></script>
       
         
         
