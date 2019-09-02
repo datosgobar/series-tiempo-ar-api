@@ -84,8 +84,7 @@ def get_value_a_year_ago(idx, col, validate=False):
 def get_value_beginning_of_year(idx, col, validate=False):
     """
     Devuelve el valor de la serie determinada por df[col] del
-    primer día del año del índice de tiempo 'idx'. Hace validación de si
-    existe el índice o no según 'validate' (operación costosa)
+    primer día del año del índice de tiempo 'idx'.
     """
     beggining_of_year_idx = date(year=idx.date().year, month=1, day=1)
     return get_value(beggining_of_year_idx, col, validate)
