@@ -21,6 +21,7 @@ class Metadata(DocType):
     dataset_source_keyword = Keyword()
 
     periodicity = Keyword()
+    periodicity_index = Integer()
     start_date = Date()
     end_date = Date()
 

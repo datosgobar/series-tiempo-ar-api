@@ -69,6 +69,7 @@ class CatalogMetadataIndexer:
             doc = self.generate_es_doc(
                 field.identifier,
                 periodicity=periodicity,
+                periodicity_index=constants.PERIODICITY_KEYWORDS.index(periodicity),
                 start_date=start_date,
                 end_date=end_date,
                 title=field_meta.get('title'),

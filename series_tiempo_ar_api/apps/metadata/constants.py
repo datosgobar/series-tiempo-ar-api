@@ -20,6 +20,7 @@ FILTER_ARGS = {
 
 SORT_BY_RELEVANCE = 'relevance'
 SORT_BY_HITS_90_DAYS = 'hits_90_days'
+SORT_BY_FREQUENCY = 'frequency'
 
 PARAM_DEFAULT_VALUES = {
     PARAM_LIMIT: 10,
@@ -30,9 +31,18 @@ PARAM_DEFAULT_VALUES = {
 VALID_SORT_BY_VALUES = [SORT_BY_RELEVANCE, SORT_BY_HITS_90_DAYS]
 
 SORT_BY_MAPPING = {
-    SORT_BY_HITS_90_DAYS: 'hits'
+    SORT_BY_HITS_90_DAYS: 'hits',
+    SORT_BY_FREQUENCY: 'periodicity_index'
 }
 
+PERIODICITY_KEYWORDS = [  # EN ORDEN DE MENOR A MAYOR FRECUENCIA
+    'R/P1Y',
+    'R/P6M',
+    'R/P3M',
+    'R/P1M',
+    'R/P1W',
+    'R/P1D'
+]
 
 ANALYZER = 'spanish_asciifold'
 SYNONYM_FILTER = 'synonyms_filter'
