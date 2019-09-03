@@ -48,6 +48,13 @@ class QueryTests(TestCase):
 
         self.assertTrue(result['errors'])
 
+    def test_bad_sort(self):
+        query = FieldSearchQuery(args={'sort': 'invalid'})
+
+        result = query.execute()
+
+        self.assertTrue(result['errors'])
+
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
 
@@ -129,13 +136,13 @@ class QueryTests(TestCase):
         search = query.get_search()
         self.assertNotIn('min_score', search.to_dict())
 
-    def test_sort_not_added_if_relevance_specified(self):
+    def test_sort_by_not_added_if_relevance_specified(self):
         query = FieldSearchQuery(args={'sort_by': 'relevance'})
 
         search = query.get_search()
         self.assertNotIn('sort', search.to_dict().keys())
 
-    def test_descending_sort_with_specified_field(self):
+    def test_descending_sort_with_specified_field_and_default_order(self):
         query = FieldSearchQuery(args={'sort_by': 'hits_90_days'})
 
         search = query.get_search()
@@ -143,3 +150,13 @@ class QueryTests(TestCase):
 
         expected_sort_dict = {'hits': {'order': 'desc'}}
         self.assertDictEqual(expected_sort_dict, sort_field)
+
+    def test_ascending_sort_with_specified_field_and_specified_order(self):
+        query = FieldSearchQuery(args={'sort_by': 'hits_90_days', 'sort': 'asc'})
+
+        search = query.get_search()
+        sort_list = search.to_dict()['sort']
+        # Como no es el campo _score, no hace falta especificarle un "order" y puede ser un string
+
+        expected_sort_list = ['hits']
+        self.assertListEqual(expected_sort_list, sort_list)
