@@ -55,13 +55,6 @@ class QueryTests(TestCase):
 
         self.assertTrue(result['errors'])
 
-    def test_default_sorting_can_not_be_ascending(self):
-        query = FieldSearchQuery(args={'sort': 'asc'})
-
-        result = query.execute()
-
-        self.assertTrue(result['errors'])
-
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
 
