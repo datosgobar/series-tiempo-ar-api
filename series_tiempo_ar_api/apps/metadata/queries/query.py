@@ -36,6 +36,17 @@ class FieldSearchQuery:
             self.append_error(strings.INVALID_PARAMETER.format(constants.PARAM_SORT_BY, sort_by))
         self.args[constants.PARAM_SORT_BY] = sort_by
 
+        sort = self.args.get(constants.PARAM_SORT, constants.PARAM_DEFAULT_VALUES[constants.PARAM_SORT])
+        if sort not in constants.VALID_SORT_VALUES:
+            self.append_error(strings.INVALID_PARAMETER.format(constants.PARAM_SORT, sort))
+        self.args[constants.PARAM_SORT] = sort
+
+        if sort == constants.SORT_ASCENDING and sort_by == constants.SORT_BY_RELEVANCE:
+            self.append_error(strings.WRONG_RELATED_PARAMETERS.format(constants.PARAM_SORT_BY,
+                                                                      constants.SORT_BY_RELEVANCE,
+                                                                      constants.PARAM_SORT,
+                                                                      constants.SORT_DESCENDING))
+
     def execute(self):
         """Ejecuta la query. Devuelve un diccionario con el siguiente formato
         {
@@ -118,9 +129,12 @@ class FieldSearchQuery:
     def get_search(self):
         search = Metadata.search(index=constants.METADATA_ALIAS)
         sort_by = self.args.get(constants.PARAM_SORT_BY, constants.PARAM_DEFAULT_VALUES[constants.PARAM_SORT_BY])
+        sort = self.args.get(constants.PARAM_SORT, constants.PARAM_DEFAULT_VALUES[constants.PARAM_SORT])
         if sort_by != constants.SORT_BY_RELEVANCE:
-            query_sort_by = constants.SORT_BY_MAPPING[sort_by]
-            search = search.sort(f'-{query_sort_by}')
+            sort_by_mapping = constants.SORT_BY_MAPPING[sort_by]
+            sort_mapping = constants.SORT_MAPPING[sort]
+            sort_query = f'{sort_mapping}{sort_by_mapping}'
+            search = search.sort(sort_query)
         search = self.setup_query(search)
         offset = self.args.get(constants.PARAM_OFFSET, constants.PARAM_DEFAULT_VALUES[constants.PARAM_OFFSET])
         limit = self.args.get(constants.PARAM_LIMIT, constants.PARAM_DEFAULT_VALUES[constants.PARAM_LIMIT])

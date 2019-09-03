@@ -97,6 +97,13 @@ El recurso `/search` permite buscar series a partir de un texto, proporcionando 
         <td class="s4" dir="ltr">'relevance'</td>
         <td>sort_by=hits_90_days</td>
     </tr>
+    <tr>
+        <td>sort</td>
+        <td>No</td>
+        <td>Texto, puede ser 'asc' o 'desc'</td>
+        <td class="s4" dir="ltr">'desc'</td>
+        <td>sort=asc</td>
+    </tr>    
 </table>
 
 ### `q`
@@ -204,3 +211,9 @@ Los valores que puede adoptar el mismo son:
 
 - `relevance`: Valor por defecto, para que los resultados se ordenen por relevancia en base a los demás filtros y parámetros
 - `hits_90:days`: Ordena los resultados según cuántos accesos tuvieron las series en los últimos 90 días (el campo `hits` de la response)
+
+### `sort`
+
+Este parámetro permite determinar el sentido del ordenamiento de los resultados, es decir, ascendente (`asc`, de menor a mayor) o descendente (`desc`, de mayor a menor). 
+
+Debe tenerse en cuenta que, si se ordena por relevancia, el orden tan sólo puede ser descendente; si se eligiese otro criterio de ordenamiento en el parámetro `sort`, cualquier sentido es válido
