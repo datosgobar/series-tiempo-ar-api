@@ -11,15 +11,21 @@ from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
 class SeriesQuery:
     """Encapsula metadatos de la consulta de una serie con un modo de representación determinado"""
+    START_DATE = 'start_date'
+    DISTRIBUTION_PERIODICITY = 'distribution_periodicity'
+    SERIE_PERIODICITY = 'serie_periodicity'
 
     def __init__(self, field_model, rep_mode):
         self.field_model = field_model
+        self.cache = {}
         self.rep_mode = rep_mode
         self.metadata = json.loads(self.field_model.metadata)
 
     def periodicity(self):
-        serie_periodicity = meta_keys.get(self.field_model, meta_keys.PERIODICITY)
-        distribution_periodicity = meta_keys.get(self.field_model.distribution, meta_keys.PERIODICITY)
+        serie_periodicity = self._read_from_cache(self.SERIE_PERIODICITY, self.field_model, meta_keys.PERIODICITY)
+        distribution_periodicity = self._read_from_cache(self.DISTRIBUTION_PERIODICITY,
+                                                         self.field_model.distribution,
+                                                         meta_keys.PERIODICITY)
         return get_periodicity_human_format(serie_periodicity or distribution_periodicity)
 
     def get_metadata(self, flat=False, simple=True):
@@ -61,7 +67,13 @@ class SeriesQuery:
         return self.metadata.get('description', '')
 
     def start_date(self):
-        date_string = meta_keys.get(self.field_model, meta_keys.INDEX_START)
+        date_string = self._read_from_cache(self.START_DATE, self.field_model, meta_keys.INDEX_START)
         if date_string is None:
             return None
         return iso8601.parse_date(date_string).date()
+
+    def _read_from_cache(self, key, model, meta_key):
+        if key not in self.cache:
+            self.cache[key] = meta_keys.get(model, meta_key)
+
+        return self.cache[key]
