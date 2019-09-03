@@ -48,6 +48,13 @@ class QueryTests(TestCase):
 
         self.assertTrue(result['errors'])
 
+    def test_bad_sort(self):
+        query = FieldSearchQuery(args={'sort': 'invalid'})
+
+        result = query.execute()
+
+        self.assertTrue(result['errors'])
+
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
 
@@ -129,13 +136,20 @@ class QueryTests(TestCase):
         search = query.get_search()
         self.assertNotIn('min_score', search.to_dict())
 
-    def test_sort_not_added_if_relevance_specified(self):
+    def test_sort_by_not_added_if_relevance_specified(self):
         query = FieldSearchQuery(args={'sort_by': 'relevance'})
 
         search = query.get_search()
         self.assertNotIn('sort', search.to_dict().keys())
 
-    def test_descending_sort_with_specified_field(self):
+    def test_default_sorting_can_not_be_ascending(self):
+        query = FieldSearchQuery(args={'sort': 'asc'})
+
+        result = query.execute()
+
+        self.assertTrue(result['errors'])
+
+    def test_descending_sort_by_hits_90_days_with_default_order(self):
         query = FieldSearchQuery(args={'sort_by': 'hits_90_days'})
 
         search = query.get_search()
@@ -143,3 +157,32 @@ class QueryTests(TestCase):
 
         expected_sort_dict = {'hits': {'order': 'desc'}}
         self.assertDictEqual(expected_sort_dict, sort_field)
+
+    def test_ascending_sort_by_hits_90_days_with_specified_order(self):
+        query = FieldSearchQuery(args={'sort_by': 'hits_90_days', 'sort': 'asc'})
+
+        search = query.get_search()
+        sort_list = search.to_dict()['sort']
+        # Como no es el campo _score, no hace falta especificarle un "order" y puede ser un string
+
+        expected_sort_list = ['hits']
+        self.assertListEqual(expected_sort_list, sort_list)
+
+    def test_descending_sort_by_frequency_with_default_order(self):
+        query = FieldSearchQuery(args={'sort_by': 'frequency'})
+
+        search = query.get_search()
+        sort_field = search.to_dict()['sort'][0]
+
+        expected_sort_dict = {'periodicity_index': {'order': 'desc'}}
+        self.assertDictEqual(expected_sort_dict, sort_field)
+
+    def test_ascending_sort_by_frequency_with_specified_order(self):
+        query = FieldSearchQuery(args={'sort_by': 'frequency', 'sort': 'asc'})
+
+        search = query.get_search()
+        sort_list = search.to_dict()['sort']
+        # Como no es el campo _score, no hace falta especificarle un "order" y puede ser un string
+
+        expected_sort_list = ['periodicity_index']
+        self.assertListEqual(expected_sort_list, sort_list)
