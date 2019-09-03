@@ -211,6 +211,7 @@ Los valores que puede adoptar el mismo son:
 
 - `relevance`: Valor por defecto, para que los resultados se ordenen por relevancia en base a los demás filtros y parámetros
 - `hits_90:days`: Ordena los resultados según cuántos accesos tuvieron las series en los últimos 90 días (el campo `hits` de la response)
+- `frequency`: Ordena los resultados según la periodicidad de la serie (de menor a mayor granularidad: anual, semestral, trimestral, mensual, semanal y diaria). Un orden descendente implica de mayor a menor granularidad
 
 ### `sort`
 
