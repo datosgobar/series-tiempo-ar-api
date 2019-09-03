@@ -55,6 +55,13 @@ class QueryTests(TestCase):
 
         self.assertTrue(result['errors'])
 
+    def test_default_sorting_can_not_be_ascending(self):
+        query = FieldSearchQuery(args={'sort': 'asc'})
+
+        result = query.execute()
+
+        self.assertTrue(result['errors'])
+
     def test_query_response_size(self):
         query = FieldSearchQuery(args={'q': 'aceite'})
 
@@ -141,6 +148,13 @@ class QueryTests(TestCase):
 
         search = query.get_search()
         self.assertNotIn('sort', search.to_dict().keys())
+
+    def test_default_sorting_can_not_be_ascending(self):
+        query = FieldSearchQuery(args={'sort': 'asc'})
+
+        result = query.execute()
+
+        self.assertTrue(result['errors'])
 
     def test_descending_sort_with_specified_field_and_default_order(self):
         query = FieldSearchQuery(args={'sort_by': 'hits_90_days'})
