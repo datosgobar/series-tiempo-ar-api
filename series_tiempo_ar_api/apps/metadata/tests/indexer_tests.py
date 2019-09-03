@@ -145,6 +145,15 @@ class IndexerTests(TestCase):
         ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=5)
         self.assertTrue(search.execute())
 
+    def test_index_with_invalid_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='day_periodicity_distribution.json',
+                    periodicity='invalid')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=None)
+        self.assertTrue(search.execute())
+
     def _index(self, catalog_id, catalog_url, periodicity='R/P1D', set_availables=True, set_error=False, set_present=True):
         node = Node.objects.create(
             catalog_id=catalog_id,
