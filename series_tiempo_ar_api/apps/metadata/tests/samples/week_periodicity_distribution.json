@@ -1,0 +1,199 @@
+{
+    "publisher": {
+        "mbox": "datoseconomicos@mecon.gov.ar",
+        "name": "Subsecretaría de Programación Macroeconómica."
+    },
+    "license": "Open Database License (ODbL) v1.0",
+    "description": "Catálogo de datos abiertos de la Subsecretaría de Programación Macroeconómica.",
+    "language": [
+        "SPA"
+    ],
+    "superThemeTaxonomy": "http://datos.gob.ar/superThemeTaxonomy.json",
+    "issued": "2017-09-28",
+    "rights": "2017-09-28",
+    "modified": "2017-09-28",
+    "dataset": [
+        {
+            "publisher": {
+                "mbox": "datoseconomicos@mecon.gov.ar",
+                "name": "Subsecretaría de Programación Macroeconómica."
+            },
+            "landingPage": "http://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+            "keyword": [
+                "Información Económica Histórica",
+                "Actividad"
+            ],
+            "superTheme": [
+                "ECON"
+            ],
+            "title": "Datos históricos de la industria siderúrgica",
+            "language": [
+                "SPA"
+            ],
+            "issued": "2017-12-12",
+            "temporal": "1960-01-01/2016-12-01",
+            "source": "Cámara Argentina del Acero y Boletín Informativo de Techint",
+            "theme": [
+                "actividad"
+            ],
+            "accrualPeriodicity": "R/P1M",
+            "spatial": "ARG",
+            "identifier": "359",
+            "license": "Creative Commons Attribution 4.0",
+            "contactPoint": {
+                "fn": "Subsecretaría de Programación Macroeconómica."
+            },
+            "accessLevel": "ABIERTO",
+            "distribution": [
+                {
+                    "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+                    "scrapingFileSheet": "1.23 Historicos Siderurgia",
+                    "description": "Datos históricos del volumen de producción de la industria siderúrgica. Datos Anuales",
+                    "format": "CSV",
+                    "dataset_identifier": "359",
+                    "issued": "2017-12-12",
+                    "title": "Datos históricos de la industria siderúrgica. Datos Anuales",
+                    "fileName": "datos-historicos-de-la-industria-siderurgica-datos-anuales.csv",
+                    "downloadURL": "http://infra.datos.gob.ar/catalog/sspm/dataset/359/distribution/359.1/download/datos-historicos-de-la-industria-siderurgica-datos-anuales.csv",
+                    "field": [
+                        {
+                            "distribution_identifier": "359.1",
+                            "title": "indice_tiempo",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "A9",
+                            "specialTypeDetail": "R/P1W",
+                            "specialType": "time_index",
+                            "type": "date",
+                            "id": "359.1_INDICE_TIEMPO__13",
+                            "scrapingDataStartCell": "A10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de hierro primario arrabio",
+                            "title": "hierro_primario_arrabio",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "B9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_HIERRO_PRIBIO__23",
+                            "scrapingDataStartCell": "B10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de hierro primario hierro esponja",
+                            "title": "hierro_primario_hierro_esponja",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "C9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_HIERRO_PRINJA__30",
+                            "scrapingDataStartCell": "C10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de hierro primario total",
+                            "title": "hierro_primario_total",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "D9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_HIERRO_PRITAL__21",
+                            "scrapingDataStartCell": "D10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de acero crudo",
+                            "title": "acero_crudo",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "F9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_ACERO_CRUDUDO__11",
+                            "scrapingDataStartCell": "F10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de laminados no planos en caliente",
+                            "title": "laminados_no_planos_en_caliente",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "H9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_LAMINADOS_NTE__31",
+                            "scrapingDataStartCell": "H10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de laminados planos en caliente",
+                            "title": "laminados_planos_en_caliente",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "I9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_LAMINADOS_NTE__28",
+                            "scrapingDataStartCell": "I10"
+                        },
+                        {
+                            "distribution_identifier": "359.1",
+                            "description": "Volúmen de produción de laminados planos en frio",
+                            "title": "laminados_planos_en_frio",
+                            "dataset_identifier": "359",
+                            "scrapingIdentifierCell": "J9",
+                            "units": "Unidades",
+                            "type": "number",
+                            "id": "359.1_LAMINADOS_RIO__24",
+                            "scrapingDataStartCell": "J10"
+                        }
+                    ],
+                    "identifier": "359.1",
+                    "scrapingFileURL": "https://www.economia.gob.ar/download/infoeco/actividad_ied.xlsx"
+                }
+            ]
+        }
+    ],
+  "identifier": "sspm",
+  "spatial": "ARG",
+  "title": "Datos Programación Macroeconómica",
+        "themeTaxonomy": [
+        {
+            "label": "Actividad",
+            "id": "actividad",
+            "description": "Series de actividad: cuentas nacionales, consumo, producción, etc."
+        },
+        {
+            "label": "Empleo e Ingresos",
+            "id": "empleo",
+            "description": "Series de empleo e ingresos: mercado laboral, salarios, etc."
+        },
+        {
+            "label": "Sector Externo",
+            "id": "externo",
+            "description": "Series externas: Balance de Pagos, Intercambio Comercial, etc."
+        },
+        {
+            "label": "Dinero y Bancos",
+            "id": "moneda",
+            "description": "Series monetarias y bancarias"
+        },
+        {
+            "label": "Precios",
+            "id": "precios",
+            "description": "Series de precios"
+        },
+        {
+            "label": "Economía Internacional",
+            "id": "internacional",
+            "description": "Series económicas mundiales"
+        },
+        {
+            "label": "Finanzas Públicas",
+            "id": "fiscal",
+            "description": "Series de recaudación, ingresos, gastos, etc."
+        },
+        {
+            "label": "Mercados Financieros",
+            "id": "finanzas",
+            "description": "Series financieras y de mercado de capitales"
+        }
+    ]
+}

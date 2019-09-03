@@ -149,7 +149,7 @@ class QueryTests(TestCase):
 
         self.assertTrue(result['errors'])
 
-    def test_descending_sort_with_specified_field_and_default_order(self):
+    def test_descending_sort_by_hits_90_days_with_default_order(self):
         query = FieldSearchQuery(args={'sort_by': 'hits_90_days'})
 
         search = query.get_search()
@@ -158,7 +158,7 @@ class QueryTests(TestCase):
         expected_sort_dict = {'hits': {'order': 'desc'}}
         self.assertDictEqual(expected_sort_dict, sort_field)
 
-    def test_ascending_sort_with_specified_field_and_specified_order(self):
+    def test_ascending_sort_by_hits_90_days_with_specified_order(self):
         query = FieldSearchQuery(args={'sort_by': 'hits_90_days', 'sort': 'asc'})
 
         search = query.get_search()
@@ -166,4 +166,23 @@ class QueryTests(TestCase):
         # Como no es el campo _score, no hace falta especificarle un "order" y puede ser un string
 
         expected_sort_list = ['hits']
+        self.assertListEqual(expected_sort_list, sort_list)
+
+    def test_descending_sort_by_frequency_with_default_order(self):
+        query = FieldSearchQuery(args={'sort_by': 'frequency'})
+
+        search = query.get_search()
+        sort_field = search.to_dict()['sort'][0]
+
+        expected_sort_dict = {'periodicity_index': {'order': 'desc'}}
+        self.assertDictEqual(expected_sort_dict, sort_field)
+
+    def test_ascending_sort_by_frequency_with_specified_order(self):
+        query = FieldSearchQuery(args={'sort_by': 'frequency', 'sort': 'asc'})
+
+        search = query.get_search()
+        sort_list = search.to_dict()['sort']
+        # Como no es el campo _score, no hace falta especificarle un "order" y puede ser un string
+
+        expected_sort_list = ['periodicity_index']
         self.assertListEqual(expected_sort_list, sort_list)

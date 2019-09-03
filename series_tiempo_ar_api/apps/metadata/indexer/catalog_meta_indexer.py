@@ -66,8 +66,7 @@ class CatalogMetadataIndexer:
 
             field_meta = json.loads(field.metadata)
             dataset = json.loads(field.distribution.dataset.metadata)
-            doc = self.generate_es_doc(
-                field.identifier,
+            doc_kwargs = dict(
                 periodicity=periodicity,
                 start_date=start_date,
                 end_date=end_date,
@@ -82,8 +81,12 @@ class CatalogMetadataIndexer:
                 dataset_publisher_name=dataset.get('publisher', {}).get('name'),
                 dataset_theme=self.themes.get(dataset.get('theme', [None])[0]),
                 catalog_id=self.node.catalog_id,
-                hits=hits,
+                hits=hits
             )
+            if periodicity in constants.PERIODICITY_KEYWORDS:
+                doc_kwargs['periodicity_index'] = constants.PERIODICITY_KEYWORDS.index(periodicity)
+
+            doc = self.generate_es_doc(field.identifier, **doc_kwargs)
 
             yield doc
 

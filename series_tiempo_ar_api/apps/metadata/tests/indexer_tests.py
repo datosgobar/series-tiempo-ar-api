@@ -92,7 +92,69 @@ class IndexerTests(TestCase):
                  catalog_id='test_catalog')
         self.assertTrue(search.execute())
 
-    def _index(self, catalog_id, catalog_url, set_availables=True, set_error=False, set_present=True):
+    def test_index_year_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='single_distribution.json',
+                    periodicity='R/P1Y')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=0)
+        self.assertTrue(search.execute())
+
+    def test_index_semester_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='semester_periodicity_distribution.json',
+                    periodicity='R/P6M')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=1)
+        self.assertTrue(search.execute())
+
+    def test_index_quarter_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='quarter_periodicity_distribution.json',
+                    periodicity='R/P3M')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=2)
+        self.assertTrue(search.execute())
+
+    def test_index_month_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='month_periodicity_distribution.json',
+                    periodicity='R/P1M')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=3)
+        self.assertTrue(search.execute())
+
+    def test_index_week_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='week_periodicity_distribution.json',
+                    periodicity='R/P1W')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=4)
+        self.assertTrue(search.execute())
+
+    def test_index_day_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='day_periodicity_distribution.json')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=5)
+        self.assertTrue(search.execute())
+
+    def test_index_with_invalid_periodicity(self):
+        self._index(catalog_id='test_catalog',
+                    catalog_url='day_periodicity_distribution.json',
+                    periodicity='invalid')
+        search = Search(
+            index=self.fake_index._name,
+        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=None)
+        self.assertTrue(search.execute())
+
+    def _index(self, catalog_id, catalog_url, periodicity='R/P1D', set_availables=True, set_error=False, set_present=True):
         node = Node.objects.create(
             catalog_id=catalog_id,
             catalog_url=os.path.join(SAMPLES_DIR, catalog_url),
@@ -104,6 +166,7 @@ class IndexerTests(TestCase):
             for field in datajsonar_Field.objects.all():
                 field.enhanced_meta.create(key=meta_keys.AVAILABLE, value='true')
                 field.enhanced_meta.create(key=meta_keys.HITS_90_DAYS, value='0')
+                field.enhanced_meta.create(key=meta_keys.PERIODICITY, value=periodicity)
 
         datajsonar_Field.objects.update(error=set_error, present=set_present)
 
