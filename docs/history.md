@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.27.0 - 2019/09/03
+
+- Parámetros nuevos para `/search`: `sort` y `sort_by`
+- Botones de acceso directo a acciones comunes en el admin de django
+
 ## 1.26.5 - 2019/08/20
 
 - Indexación: Bugfixes y cambios en pydatajson para permitir lecturas concurrentes de catálogos en XLSX
