@@ -60,9 +60,6 @@ class Query:
         max_periodicity = self.get_max_periodicity(periodicities)
         self.update_collapse(collapse=max_periodicity)
 
-        if max_periodicity == serie_query.periodicity():
-            collapse_agg = constants.AGG_DEFAULT
-
         self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
 
     def _series_periodicities(self):

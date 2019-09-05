@@ -52,7 +52,7 @@ class ESQuery:
     def add_collapse(self, interval):
         self.args[constants.PARAM_PERIODICITY] = interval
         for serie in self.series:
-            serie.periodicity = interval
+            serie.add_collapse(interval)
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
         self.series.append(Series(series_id=series_id,
