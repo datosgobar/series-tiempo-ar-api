@@ -23,13 +23,7 @@ class Series:
         search = Search(index=self.index)
 
         search = search.sort(settings.TS_TIME_INDEX_FIELD)  # Default: ascending sort
-        # Filtra los resultados por la serie pedida. Si se hace en memoria filtramos
-        # por la agg default, y calculamos la agg pedida en runtime
-        agg = self.collapse_agg if self.collapse_agg not in constants.IN_MEMORY_AGGS else constants.AGG_DEFAULT
-        search = search.filter('bool',
-                               must=[Q('match', series_id=self.series_id),
-                                     Q('match', aggregation=agg)])
-
+        search = search.filter('bool', must=[Q('match', series_id=self.series_id)])
         return search
 
     def add_range_filter(self, start, end):
@@ -103,4 +97,29 @@ class Series:
 
     @property
     def search(self):
+        self._add_collapse()
+        self._add_collapse_agg()
         return self._search
+
+    def _add_collapse(self):
+        if self.collapse_agg not in constants.IN_MEMORY_AGGS:
+            self._search = self._search.filter('bool', must=[Q('match', interval=self.periodicity)])
+
+        elif self.periodicity != self.original_periodicity:
+            # Agregamos la aggregation (?) para que se ejecute en ES en runtime
+            self._search.aggs.bucket('test',
+                                     A('date_histogram',
+                                       field='timestamp',
+                                       interval=self.periodicity,
+                                       format='yyyy-MM-dd').
+                                     metric('test', self.collapse_agg, field=self.rep_mode))
+        else:  # Ignoramos la in memory ag
+            self.collapse_agg = constants.AGG_DEFAULT
+            self._search = self._search.filter('bool', must=[Q('match', interval=self.periodicity)])
+
+    def _add_collapse_agg(self):
+        # Filtra los resultados por la serie pedida. Si se hace en memoria filtramos
+        # por la agg default, y calculamos la agg pedida en runtime
+        agg = self.collapse_agg if self.collapse_agg not in constants.IN_MEMORY_AGGS else constants.AGG_DEFAULT
+        self._search = self._search.filter('bool',
+                                           must=[Q('match', aggregation=agg)])
