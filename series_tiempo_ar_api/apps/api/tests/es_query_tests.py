@@ -288,9 +288,11 @@ class QueryTest(TestCase):
     def test_add_query_aggregation(self):
         avg_query = ESQuery(index=settings.TEST_INDEX)
         avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
+        avg_query.add_collapse('year')
         data = avg_query.run()
 
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
+        self.query.add_collapse('year')
         sum_data = self.query.run()
 
         for i, row in enumerate(sum_data):
@@ -365,11 +367,13 @@ class QueryTest(TestCase):
         """Esperado: Valores de la serie con y sin agregación son iguales, no
         hay valores que colapsar"""
         year_series = get_series_id('year')
+        self.query.add_series(year_series, self.rep_mode, 'year')
         self.query.add_series(year_series, self.rep_mode, 'year', 'end_of_period')
 
         data = self.query.run()
 
-        self.assertFalse(data)
+        for row in data:
+            self.assertEqual(row[1], row[2])
 
     def test_multiple_sort_desc_delayed(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)

@@ -34,21 +34,6 @@ class Series:
         self._search = self._search.filter('range', timestamp=_filter)
 
     def add_collapse(self, periodicity):
-        if self.collapse_agg not in constants.IN_MEMORY_AGGS:
-            self._search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
-
-        elif periodicity != self.original_periodicity:
-            # Agregamos la aggregation (?) para que se ejecute en ES en runtime
-            self.search.aggs.bucket('test',
-                                    A('date_histogram',
-                                      field='timestamp',
-                                      interval=periodicity,
-                                      format='yyyy-MM-dd').
-                                    metric('test', self.collapse_agg, field=self.rep_mode))
-        else:  # Ignoramos la in memory ag
-            self.collapse_agg = constants.AGG_DEFAULT
-            self._search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
-
         self.periodicity = periodicity
 
     def add_pagination(self, start, limit, request_start_dates=None):
@@ -105,7 +90,7 @@ class Series:
         if self.collapse_agg not in constants.IN_MEMORY_AGGS:
             self._search = self._search.filter('bool', must=[Q('match', interval=self.periodicity)])
 
-        elif self.periodicity != self.original_periodicity:
+        elif self._has_collapse():
             # Agregamos la aggregation (?) para que se ejecute en ES en runtime
             self._search.aggs.bucket('test',
                                      A('date_histogram',
@@ -118,8 +103,20 @@ class Series:
             self._search = self._search.filter('bool', must=[Q('match', interval=self.periodicity)])
 
     def _add_collapse_agg(self):
-        # Filtra los resultados por la serie pedida. Si se hace en memoria filtramos
-        # por la agg default, y calculamos la agg pedida en runtime
-        agg = self.collapse_agg if self.collapse_agg not in constants.IN_MEMORY_AGGS else constants.AGG_DEFAULT
+        # Si no hay agrupado (collapse), la agregación es sobre un solo valor
+        # Sólo tenemos indexado avg en ese caso
+        if not self._has_collapse():
+            agg = constants.AGG_DEFAULT
+
+        # Si se hace en memoria filtramos por la agg default, y calculamos la agg pedida en runtime
+        elif self.collapse_agg in constants.IN_MEMORY_AGGS:
+            agg = constants.AGG_DEFAULT
+
+        else:
+            agg = self.collapse_agg
+
         self._search = self._search.filter('bool',
                                            must=[Q('match', aggregation=agg)])
+
+    def _has_collapse(self):
+        return self.periodicity != self.original_periodicity
