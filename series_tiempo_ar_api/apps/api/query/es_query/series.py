@@ -5,7 +5,7 @@ from django.conf import settings
 from elasticsearch_dsl import Search, Q, A
 
 from series_tiempo_ar_api.apps.api.helpers import extra_offset
-from series_tiempo_ar_api.apps.api.query import constants
+from series_tiempo_ar_api.apps.api.query import constants, strings
 from series_tiempo_ar_api.apps.api.query.es_query.periods_between import periods_between
 
 
@@ -17,9 +17,9 @@ class Series:
         self.original_periodicity = periodicity
         self.periodicity = periodicity
         self.collapse_agg = collapse_agg or constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
-        self.search = self.init_search()
+        self._search = self._init_search()
 
-    def init_search(self):
+    def _init_search(self):
         search = Search(index=self.index)
 
         search = search.sort(settings.TS_TIME_INDEX_FIELD)  # Default: ascending sort
@@ -37,11 +37,11 @@ class Series:
             'lte': end,
             'gte': start
         }
-        self.search = self.search.filter('range', timestamp=_filter)
+        self._search = self._search.filter('range', timestamp=_filter)
 
     def add_collapse(self, periodicity):
         if self.collapse_agg not in constants.IN_MEMORY_AGGS:
-            self.search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
+            self._search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
 
         elif periodicity != self.original_periodicity:
             # Agregamos la aggregation (?) para que se ejecute en ES en runtime
@@ -53,7 +53,7 @@ class Series:
                                     metric('test', self.collapse_agg, field=self.rep_mode))
         else:  # Ignoramos la in memory ag
             self.collapse_agg = constants.AGG_DEFAULT
-            self.search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
+            self._search = self.search.filter('bool', must=[Q('match', interval=periodicity)])
 
         self.periodicity = periodicity
 
@@ -65,7 +65,7 @@ class Series:
         if self.rep_mode != constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]:
             es_offset += extra_offset(self.periodicity)
 
-        self.search = self.search[es_start:es_offset]
+        self._search = self._search[es_start:es_offset]
 
     def get_es_start(self, request_start_dates, start):
         """Calcula el comienzo de la query para esta serie particular. El parámetro
@@ -88,3 +88,19 @@ class Series:
             return 0
 
         return periods_between(series_start_date, min_start_date, self.periodicity)
+
+    def sort(self, how):
+        if how == constants.SORT_ASCENDING:
+            order = settings.TS_TIME_INDEX_FIELD
+
+        elif how == constants.SORT_DESCENDING:
+            order = '-' + settings.TS_TIME_INDEX_FIELD
+        else:
+            msg = strings.INVALID_SORT_PARAMETER.format(how)
+            raise ValueError(msg)
+
+        self._search = self._search.sort(order)
+
+    @property
+    def search(self):
+        return self._search
