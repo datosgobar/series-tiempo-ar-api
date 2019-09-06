@@ -1,7 +1,7 @@
 #! coding: utf-8
 
 from series_tiempo_ar_api.libs.indexing.constants import \
-    VALUE, CHANGE, PCT_CHANGE, CHANGE_YEAR_AGO, PCT_CHANGE_YEAR_AGO
+    VALUE, CHANGE, PCT_CHANGE, CHANGE_YEAR_AGO, PCT_CHANGE_YEAR_AGO, CHANGE_BEG_YEAR, PCT_CHANGE_BEG_YEAR
 
 # Modos de representación de las series, calculados y guardados
 # en el proceso de indexación
@@ -10,7 +10,9 @@ REP_MODES = [
     CHANGE,
     PCT_CHANGE,
     CHANGE_YEAR_AGO,
-    PCT_CHANGE_YEAR_AGO
+    PCT_CHANGE_YEAR_AGO,
+    CHANGE_BEG_YEAR,
+    PCT_CHANGE_BEG_YEAR,
 ]
 
 AGG_DEFAULT = 'avg'
@@ -147,8 +149,10 @@ VERBOSE_REP_MODES = {
     VALUE: None,
     CHANGE: "Variación respecto del período anterior",
     CHANGE_YEAR_AGO: "Variación interanual",
+    CHANGE_BEG_YEAR: "Variación acumulada anual",
     PCT_CHANGE: "Variación porcentual período anterior",
     PCT_CHANGE_YEAR_AGO: "Variación porcentual interanual",
+    PCT_CHANGE_BEG_YEAR: "Variación porcentual acumulada anual",
 }
 
 DATE_KEYS = (

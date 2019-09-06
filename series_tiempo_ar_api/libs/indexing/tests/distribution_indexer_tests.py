@@ -2,7 +2,7 @@ import os
 from unittest import mock
 
 from django.test import TestCase
-from django_datajsonar.models import Distribution, Node, ReadDataJsonTask, Catalog
+from django_datajsonar.models import Distribution, Catalog, Node, ReadDataJsonTask
 from django_datajsonar.tasks import read_datajson
 
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
@@ -27,12 +27,15 @@ class DistributionIndexerTests(TestCase):
         self.assertFalse(actions)
 
     def _index_catalog(self, catalog_path):
-        Node.objects.create(catalog_id='test_catalog', catalog_url=catalog_path, indexable=True)
-        task = ReadDataJsonTask.objects.create()
-
-        read_datajson(task, whitelist=True)
+        self.read_data(catalog_path)
         with mock.patch('series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer.parallel_bulk'):
             distributions = Distribution.objects.all()
 
             for distribution in distributions:
                 DistributionIndexer('some_index').reindex(distribution)
+
+    def read_data(self, catalog_path):
+        Node.objects.create(catalog_id='test_catalog', catalog_url=catalog_path, indexable=True)
+        task = ReadDataJsonTask.objects.create()
+
+        read_datajson(task, whitelist=True)

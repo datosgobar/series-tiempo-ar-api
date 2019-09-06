@@ -1,7 +1,7 @@
 #! coding: utf-8
 
 """Operaciones de cálculos de variaciones absolutas y porcentuales anuales"""
-
+from datetime import date
 
 import pandas as pd
 import numpy as np
@@ -17,12 +17,9 @@ from .incomplete_periods import handle_missing_values
 np.seterr(divide='ignore', invalid='ignore')
 
 
-def year_ago_column(col, freq, operation):
-    """Aplica operación entre los datos de una columna y su valor
-    un año antes. Devuelve una nueva serie de pandas.
-    """
-    array = []
+def apply_operation_year_ago(col, freq, operation):
     offset = freq_pandas_to_index_offset(freq.freqstr)
+    array = []
 
     if offset:
         values = col.values
@@ -38,39 +35,74 @@ def year_ago_column(col, freq, operation):
     return pd.Series(array, index=col.index[offset:])
 
 
-def get_value_a_year_ago(idx, col, validate=False):
-    """Devuelve el valor de la serie determinada por df[col] un
-    año antes del índice de tiempo 'idx'. Hace validación de si
-    existe el índice o no según 'validate' (operación costosa)
+def apply_operation_beginning_of_the_year(col, _freq, operation):
+
+    array = []
+    year = 0
+    beginning_of_year_value = 0
+
+    for idx, val in col.iteritems():
+        actual_year = idx.date().year
+        if year != actual_year:
+            year = actual_year
+            beginning_of_year_value = get_value_beginning_of_year(idx, col, validate=True)
+
+        if beginning_of_year_value != 0:
+            array.append(operation(val, beginning_of_year_value))
+        else:
+            array.append(None)
+
+    return pd.Series(array, index=col.index)
+
+
+def get_value(date_idx, col, validate=False):
     """
-
+    Hace validación de si existe el índice o
+    no según 'validate' (operación costosa)
+    """
     value = 0
-    year_ago_idx = idx.date() - relativedelta(years=1)
-    if not validate:
-        if year_ago_idx not in col.index:
-            return 0
-
-        value = col[year_ago_idx]
+    if validate:
+        if date_idx in col:
+            value = col[date_idx]
     else:
-        if year_ago_idx in col:
-            value = col[year_ago_idx]
+        if date_idx not in col.index:
+            return 0
+        value = col[date_idx]
 
     return value
 
 
-def change_a_year_ago(col, freq):
-    def change(x, y):
+def get_value_a_year_ago(idx, col, validate=False):
+    """
+    Devuelve el valor de la serie determinada por df[col] un
+    año antes del índice de tiempo 'idx'.
+    """
+    year_ago_idx = idx.date() - relativedelta(years=1)
+    return get_value(year_ago_idx, col, validate)
+
+
+def get_value_beginning_of_year(idx, col, validate=False):
+    """
+    Devuelve el valor de la serie determinada por df[col] del
+    primer día del año del índice de tiempo 'idx'.
+    """
+    beggining_of_year_idx = date(year=idx.date().year, month=1, day=1)
+    return get_value(beggining_of_year_idx, col, validate)
+
+
+def apply_change(col, freq, apply_function):
+    def _change(x, y):
         return x - y
-    return year_ago_column(col, freq, change)
+    return apply_function(col, freq, _change)
 
 
-def pct_change_a_year_ago(col, freq):
+def apply_pct_change(col, freq, apply_function):
     def _pct_change(x, y):
         if isinstance(y, int) and y == 0:
             return 0
         return (x - y) / y
 
-    return year_ago_column(col, freq, _pct_change)
+    return apply_function(col, freq, _pct_change)
 
 
 def process_column(col, index):
@@ -170,8 +202,10 @@ def generate_interval_transformations_df(col, freq):
     df[constants.VALUE] = col
     df[constants.CHANGE] = col.diff(1)
     df[constants.PCT_CHANGE] = col.pct_change(1, fill_method=None)
-    df[constants.CHANGE_YEAR_AGO] = change_a_year_ago(col, freq)
-    df[constants.PCT_CHANGE_YEAR_AGO] = pct_change_a_year_ago(col, freq)
+    df[constants.CHANGE_YEAR_AGO] = apply_change(col, freq, apply_operation_year_ago)
+    df[constants.PCT_CHANGE_YEAR_AGO] = apply_pct_change(col, freq, apply_operation_year_ago)
+    df[constants.CHANGE_BEG_YEAR] = apply_change(col, freq, apply_operation_beginning_of_the_year)
+    df[constants.PCT_CHANGE_BEG_YEAR] = apply_pct_change(col, freq, apply_operation_beginning_of_the_year)
     return df
 
 
