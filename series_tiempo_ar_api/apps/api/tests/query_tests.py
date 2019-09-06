@@ -315,3 +315,14 @@ class QueryTests(TestCase):
         meta = self.query.run()['meta']
 
         self.assertFalse(meta[1]['field']['is_percentage'])
+
+    def test_add_query_aggregation(self):
+        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
+
+        self.query.update_collapse('year')
+
+        data = self.query.run()['data']
+        for _, avg_value, sum_value in data:
+            # Suma debe ser siempre mayor que el promedio
+            self.assertGreater(sum_value, avg_value)

@@ -43,17 +43,8 @@ class ESQuery:
 
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
-        if how == constants.SORT_ASCENDING:
-            order = settings.TS_TIME_INDEX_FIELD
-
-        elif how == constants.SORT_DESCENDING:
-            order = '-' + settings.TS_TIME_INDEX_FIELD
-        else:
-            msg = strings.INVALID_SORT_PARAMETER.format(how)
-            raise ValueError(msg)
-
         for serie in self.series:
-            serie.search = serie.search.sort(order)
+            serie.sort(how)
 
         # Guardo el parámetro, necesario en el evento de hacer un collapse
         self.args[constants.PARAM_SORT] = how
@@ -61,7 +52,7 @@ class ESQuery:
     def add_collapse(self, interval):
         self.args[constants.PARAM_PERIODICITY] = interval
         for serie in self.series:
-            serie.periodicity = interval
+            serie.add_collapse(interval)
 
     def _init_series(self, series_id, rep_mode, collapse_agg):
         self.series.append(Series(series_id=series_id,
