@@ -35,7 +35,7 @@ def apply_operation_year_ago(col, freq, operation):
     return pd.Series(array, index=col.index[offset:])
 
 
-def apply_operation_beginning_of_the_year(col, freq, operation):
+def apply_operation_beginning_of_the_year(col, _freq, operation):
 
     array = []
     year = 0
