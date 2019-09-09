@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.27.1 - 2019/09/09
+
+- Bugfix a agregaciones de collapse siendo ignoradas
+
 ## 1.27.0 - 2019/09/03
 
 - Parámetros nuevos para `/search`: `sort` y `sort_by`
