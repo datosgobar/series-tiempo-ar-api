@@ -34,6 +34,14 @@ NEW_MAPPING='
         "type" : "scaled_float",
         "scaling_factor" : 1.0E7
       },
+      "change_since_beginning_of_year": {
+        "type" : "scaled_float",
+        "scaling_factor" : 1.0E7
+      },
+      "percent_change_since_beginning_of_year": {
+        "type" : "scaled_float",
+        "scaling_factor" : 1.0E7
+      },
       "raw_value" : {
         "type" : "boolean"
       },
