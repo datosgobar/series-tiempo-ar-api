@@ -103,12 +103,10 @@ Los datos de la API de Series de Tiempo bajo las licencias aplicadas por sus pub
 
 ## Técnicas
 
-La API de series de tiempo se encuentra en estado *beta* de desarrollo y las cuotas de uso pueden cambiar significativamente en el futuro, dependiendo de la evolución del desarrollo y uso del servicio.
-
 Actualmente se aplican las siguientes cuotas de uso por IP:
 
-* Por segundo: 30 consultas
-* Por minuto: 1000 consultas
-* Por hora: 10000 consultas
-* Por día: 50000 consultas
+* Por segundo: 60 consultas
+* Por minuto: 2000 consultas
+* Por hora: 40000 consultas
+* Por día: 200000 consultas
 
