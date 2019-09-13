@@ -1,3 +1,4 @@
+import numpy as np
 from django.test import SimpleTestCase
 
 from series_tiempo_ar_api.libs.utils.significant_figures import significant_figures
@@ -22,3 +23,6 @@ class SignificantFiguresTests(SimpleTestCase):
 
     def test_figures_integer_and_decimals(self):
         self.assertEqual(significant_figures([1, 1.24, 20, 5.3123]), 4)
+
+    def test_figures_nan_ignored(self):
+        self.assertEqual(significant_figures([1, np.nan, 1.24, 20, 5.3123]), 4)
