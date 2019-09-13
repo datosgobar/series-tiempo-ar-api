@@ -70,3 +70,7 @@ class FieldEnhancedMetaTests(TestCase):
 
     def test_average(self):
         self.assertAlmostEqual(self.meta.get(meta_keys.AVERAGE), self.df[self.df.columns[0]].mean())
+
+    def test_significant_figures(self):
+        serie_figures = 4  # primera serie tiene a lo sumo 4 decimales
+        self.assertAlmostEqual(self.meta.get(meta_keys.SIGNIFICANT_FIGURES), serie_figures)

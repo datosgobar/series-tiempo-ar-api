@@ -27,6 +27,8 @@ HITS_180_DAYS = 'hits_180_days'
 
 HITS_KEYS = (HITS_180_DAYS, HITS_90_DAYS, HITS_30_DAYS, HITS_TOTAL)
 
+SIGNIFICANT_FIGURES = 'significant_figures'
+
 
 def get(model, key) -> Optional[str]:
     values = model.enhanced_meta.filter(key=key).values_list('value', flat=True)
