@@ -4,6 +4,7 @@ import pandas as pd
 from pydatajson.helpers import parse_repeating_time_interval_to_days
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.management import meta_keys
+from series_tiempo_ar_api.libs.utils.significant_figures import significant_figures
 
 
 def calculate_enhanced_meta(serie: pd.Series, periodicity: str) -> dict:
@@ -30,6 +31,7 @@ def calculate_enhanced_meta(serie: pd.Series, periodicity: str) -> dict:
         meta_keys.MAX: serie.max(),
         meta_keys.MIN: serie.min(),
         meta_keys.AVERAGE: serie.mean(),
+        meta_keys.SIGNIFICANT_FIGURES: significant_figures(serie.values)
     }
 
     return meta
