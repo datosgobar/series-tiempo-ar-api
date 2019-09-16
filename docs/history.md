@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.28.0 - 2019/09/16
+
+- Nuevo metadato enriquecido de series: `significant_figures`
+
 ## 1.27.1 - 2019/09/09
 
 - Bugfix a agregaciones de collapse siendo ignoradas
