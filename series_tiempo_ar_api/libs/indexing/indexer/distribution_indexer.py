@@ -78,5 +78,7 @@ class DistributionIndexer:
             .exclude(identifier=None)
             .values_list('identifier', flat=True)
         )
-        series_data = Search(using=self.elastic, index=self.index._name).filter('terms', series_id=fields_to_delete)
-        series_data.delete()
+        for field in fields_to_delete:
+            series_data = Search(using=self.elastic,
+                                 index=self.index._name).filter('term', series_id=field)
+            series_data.delete()
