@@ -14,7 +14,7 @@ def significant_figures(serie):
     figures = 0
     serie = [x for x in serie if not np.isnan(x)]
     for value in serie:
-        figure = decimal.Decimal(str(value)).as_tuple().exponent
+        figure = decimal.Decimal(str(value)).normalize().as_tuple().exponent
         figures = max(figures, -figure)
 
     return figures
