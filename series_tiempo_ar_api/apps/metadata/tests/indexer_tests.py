@@ -151,7 +151,7 @@ class IndexerTests(TestCase):
                     periodicity='invalid')
         search = Search(
             index=self.fake_index._name,
-        ).filter('term', catalog_id='test_catalog').filter('term', periodicity_index=None)
+        ).filter('term', catalog_id='test_catalog')
         self.assertTrue(search.execute())
 
     def _index(self, catalog_id, catalog_url, periodicity='R/P1D', set_availables=True, set_error=False, set_present=True):

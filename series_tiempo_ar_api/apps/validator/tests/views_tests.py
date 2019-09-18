@@ -4,7 +4,6 @@ import json
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
-
 BASE_URL = \
     "http://localhost:3456/series_tiempo_ar_api/apps/validator/tests/samples/"
 
@@ -125,5 +124,5 @@ class ValidatorViewTests(TestCase):
                          response_body['distribution_id'])
         self.assertEqual(1, response_body['found_issues'])
         self.assertListEqual(
-            ['superficie_ha_santa_fe tiene 1 valores, deberia tener 2 o mas'],
+            ['Campo superficie_ha_santa_fe faltante en la distribución 221859a8-c51e-47c2-95ab-a8525bb2b55d'],
             response_body['detail'])
