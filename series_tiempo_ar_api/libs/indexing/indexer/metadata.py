@@ -2,7 +2,6 @@
 from datetime import datetime
 import pandas as pd
 from pydatajson.helpers import parse_repeating_time_interval_to_days
-from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.libs.utils.significant_figures import significant_figures
 
