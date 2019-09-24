@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.28.1 - 2019-09-24
+
+- Bugfixes a metadato `significant_figures` que calculaba mal casos series de números enteros
+- Bugfix en timeouts de indexación
+
 ## 1.28.0 - 2019/09/16
 
 - Nuevo metadato enriquecido de series: `significant_figures`
