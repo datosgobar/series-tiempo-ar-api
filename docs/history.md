@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.28.2 - 2019-10-01
+
+- Bump de django-datajsonar a 0.4.8
+- Bugfix a tarea de indexación de datos corriendo para un único nodo
+
 ## 1.28.1 - 2019-09-24
 
 - Bugfixes a metadato `significant_figures` que calculaba mal casos series de números enteros
