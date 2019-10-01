@@ -20,9 +20,10 @@ def schedule_api_indexing(node=None, force=False):
 
     indexing_mode = IndexDataTask.ALL if force else IndexDataTask.UPDATED_ONLY
     task = IndexDataTask(indexing_mode=indexing_mode)
+    task.node = node
     task.save()
 
-    read_datajson(task, node, force=force)
+    read_datajson(task, force=force)
 
     # Si se corre el comando sincrónicamete (local/testing), generar el reporte
     if not settings.RQ_QUEUES['indexing'].get('ASYNC', True):
@@ -36,12 +37,12 @@ def schedule_force_api_indexing(node=None):
 
 
 @job('api_index')
-def read_datajson(task, node=None, read_local=False, force=False):
+def read_datajson(task, read_local=False, force=False):
     """Tarea raíz de indexación. Itera sobre todos los nodos indexables (federados) e
     inicia la tarea de indexación sobre cada uno de ellos
     """
+    node = task.node
     nodes = Node.objects.filter(indexable=True) if node is None else [node]
     task.status = task.RUNNING
-
     for node in nodes:
         index_catalog(node, task, read_local, force)
