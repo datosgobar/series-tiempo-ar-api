@@ -11,9 +11,9 @@ def calculate_enhanced_meta(serie: pd.Series, periodicity: str) -> dict:
     la misma DEBE ser el ID de la serie en la base de datos"""
 
     days_since_update = (datetime.now() - _get_last_day_of_period(serie, periodicity)).days
-
-    last = serie[-1]
-    second_to_last = serie[-2] if serie.index.size > 1 else None
+    last_index = serie.index.get_loc(serie.last_valid_index())
+    last = serie[last_index]
+    second_to_last = serie[last_index - 1] if serie.index.size > 1 else None
     last_pct_change = last / second_to_last - 1
 
     # Cálculos
