@@ -156,7 +156,7 @@ class Query:
         """Devuelve la periodicidad de la o las series pedidas. Si son
         muchas devuelve el intervalo de tiempo colapsadoaa
         """
-        return self.es_query.args[constants.PARAM_PERIODICITY]  # aca-.
+        return self.es_query.args[constants.PARAM_PERIODICITY]
 
     def sort(self, how):
         return self.es_query.sort(how)
