@@ -27,7 +27,8 @@ def init_df(distribution: Distribution, time_index: Field):
 def read_distribution_csv_as_df(distribution: Distribution, time_index: Field) -> pd.DataFrame:
     df = pd.read_csv(distribution.data_file,
                      parse_dates=[time_index.title],
-                     index_col=time_index.title)
+                     index_col=time_index.title,
+                     float_precision='high')
     return df
 
 
