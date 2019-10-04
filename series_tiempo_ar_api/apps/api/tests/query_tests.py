@@ -326,3 +326,21 @@ class QueryTests(TestCase):
         for _, avg_value, sum_value in data:
             # Suma debe ser siempre mayor que el promedio
             self.assertGreater(sum_value, avg_value)
+
+    def test_collapse_aggregation_series_order_different_periodicity(self):
+        year_series = get_series_id('day')
+        year_field = Field.objects.get(identifier=year_series)
+
+        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
+        self.query.add_series(year_series, year_field)
+        data = self.query.run()['data']
+
+        other_query = Query(index=settings.TEST_INDEX)
+        other_query.add_series(year_series, year_field)
+        other_query.add_series(self.single_series, self.field, collapse_agg='sum')
+        other_data = other_query.run()['data']
+
+        for row1, row2 in zip(data, other_data):
+            self.assertEqual(row1[0], row2[0])
+            self.assertEqual(row1[1], row2[2])
+            self.assertEqual(row1[2], row2[1])

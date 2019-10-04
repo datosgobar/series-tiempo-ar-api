@@ -56,11 +56,10 @@ class Query:
         serie_query = SeriesQuery(field_model, rep_mode)
         self.series.append(serie_query)
 
+        self.es_query.add_series(name, rep_mode, serie_query.periodicity(), collapse_agg)
         periodicities = self._series_periodicities()
         max_periodicity = self.get_max_periodicity(periodicities)
         self.update_collapse(collapse=max_periodicity)
-
-        self.es_query.add_series(name, rep_mode, max_periodicity, collapse_agg)
 
     def _series_periodicities(self):
         return [
@@ -157,7 +156,7 @@ class Query:
         """Devuelve la periodicidad de la o las series pedidas. Si son
         muchas devuelve el intervalo de tiempo colapsadoaa
         """
-        return self.es_query.args[constants.PARAM_PERIODICITY]
+        return self.es_query.args[constants.PARAM_PERIODICITY]  # aca-.
 
     def sort(self, how):
         return self.es_query.sort(how)
