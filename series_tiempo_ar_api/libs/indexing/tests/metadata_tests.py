@@ -74,3 +74,15 @@ class FieldEnhancedMetaTests(TestCase):
     def test_significant_figures(self):
         serie_figures = 4  # primera serie tiene a lo sumo 4 decimales
         self.assertAlmostEqual(self.meta.get(meta_keys.SIGNIFICANT_FIGURES), serie_figures)
+
+    def test_last_value_takes_last_non_nan_value(self):
+        path = os.path.join(SAMPLES_DIR, 'daily_periodicity_missing_last_value.csv')
+        df = pd.read_csv(path, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
+        meta = calculate_enhanced_meta(df[df.columns[0]], self.periodicity)
+        self.assertEqual(5.0931, meta.get(meta_keys.LAST_VALUE))
+
+    def test_second_to_last_value_uses_last_valid_index(self):
+        path = os.path.join(SAMPLES_DIR, 'daily_periodicity_missing_last_value.csv')
+        df = pd.read_csv(path, parse_dates=['indice_tiempo'], index_col='indice_tiempo')
+        meta = calculate_enhanced_meta(df[df.columns[0]], self.periodicity)
+        self.assertEqual(5.3504, meta.get(meta_keys.SECOND_TO_LAST_VALUE))
