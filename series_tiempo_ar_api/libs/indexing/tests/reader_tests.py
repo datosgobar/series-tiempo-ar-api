@@ -112,3 +112,15 @@ class ReaderTests(TestCase):
         index_catalog(self.node, self.mgmt_task)
 
         self.assertEqual(data_json.call_args[1]['catalog_format'], self.node.catalog_format)
+
+    def test_significant_figures(self, *_):
+        Catalog.objects.all().delete()
+        catalog = os.path.join(SAMPLES_DIR, 'ipc_data.json')
+        self.node.catalog_url = catalog
+        self.node.save()
+
+        read_datajson(self.task, whitelist=True)
+        index_catalog(self.node, self.mgmt_task)
+
+        field = Field.objects.get(identifier='serie_inflacion')  # Sacado del data.json
+        self.assertEqual(field.enhanced_meta.get(key='significant_figures').value, '4')

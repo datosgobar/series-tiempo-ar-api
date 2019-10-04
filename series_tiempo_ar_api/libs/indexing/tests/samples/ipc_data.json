@@ -1,0 +1,134 @@
+{
+  "publisher": {
+    "mbox": "datoseconomicos@mecon.gov.ar",
+    "name": "Subsecretar\u00eda de Programaci\u00f3n Macroecon\u00f3mica."
+  },
+  "license": "Creative Commons Attribution 4.0",
+  "description": "Cat\u00e1logo de datos abiertos de la Subsecretar\u00eda de Programaci\u00f3n Macroecon\u00f3mica.",
+  "language": [
+    "SPA"
+  ],
+  "superThemeTaxonomy": "http://datos.gob.ar/superThemeTaxonomy.json",
+  "issued": "2017-09-28",
+  "themeTaxonomy": [
+    {
+      "label": "Actividad",
+      "id": "actividad",
+      "description": "Series de actividad: cuentas nacionales, consumo, producci\u00f3n, etc."
+    },
+    {
+      "label": "Empleo e Ingresos",
+      "id": "empleo",
+      "description": "Series de empleo e ingresos: mercado laboral, salarios, etc."
+    },
+    {
+      "label": "Sector Externo",
+      "id": "externo",
+      "description": "Series externas: Balance de Pagos, Intercambio Comercial, etc."
+    },
+    {
+      "label": "Dinero y Bancos",
+      "id": "moneda",
+      "description": "Series monetarias y bancarias"
+    },
+    {
+      "label": "Precios",
+      "id": "precios",
+      "description": "Series de precios"
+    },
+    {
+      "label": "Econom\u00eda Internacional",
+      "id": "internacional",
+      "description": "Series econ\u00f3micas mundiales"
+    },
+    {
+      "label": "Finanzas P\u00fablicas",
+      "id": "fiscal",
+      "description": "Series de recaudaci\u00f3n, ingresos, gastos, etc."
+    },
+    {
+      "label": "Mercados Financieros",
+      "id": "finanzas",
+      "description": "Series financieras y de mercado de capitales"
+    }
+  ],
+  "rights": "2017-09-28",
+  "modified": "2017-09-28",
+  "spatial": "ARG",
+  "title": "Datos Programaci\u00f3n Macroecon\u00f3mica",
+  "identifier": "sspm",
+  "dataset": [
+    {
+      "identifier": "15",
+      "title": "Índice de Volumen Físico (IVF)",
+      "description": "Índice de Volumen Físico (IVF) en la industria manufacturera.  Encuesta Industrial Base 1997",
+      "superTheme": [
+        "ECON"
+      ],
+      "theme": [
+        "actividad"
+      ],
+      "keyword": [
+        "Información Económica al Día",
+        "Actividad"
+      ],
+      "accrualPeriodicity": "R/P3M",
+      "issued": "2017-09-28",
+      "language": [
+        "SPA"
+      ],
+      "spatial": "ARG",
+      "temporal": "1990-01-01/2014-12-01",
+      "landingPage": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+      "license": "Creative Commons Attribution 4.0",
+      "source": "Instituto Nacional de Estadística y Censos (INDEC)",
+      "accessLevel": "ABIERTO",
+      "distribution": [
+        {
+          "identifier": "145.9",
+          "title": "Índice de Precios al Consumidor, por categorías y regiones. Base diciembre de 2016. Valores mensuales",
+          "description": "Índice de Precios al Consumidor. Apertura por categorías y Regiones. Base diciembre de 2016. Valores mensuales",
+          "fileName": "indice-precios-al-consumidor-apertura-por-categorias-base-diciembre-2016-mensual.csv",
+          "format": "CSV",
+          "accessURL": "https://www.minhacienda.gob.ar/secretarias/politica-economica/programacion-macroeconomica/",
+          "issued": "2017-09-28",
+          "scrapingFileURL": "https://www.economia.gob.ar/download/infoeco/apendice4.xlsx",
+          "scrapingFileSheet": "4.1.6 IPC Categorias",
+          "field": [
+            {
+              "title": "indice_tiempo",
+              "type": "date",
+              "specialType": "time_index",
+              "specialTypeDetail": "R/P1M",
+              "id": "148.3_ICETIEMPO_DICI_M_13",
+              "scrapingIdentifierCell": "A22",
+              "scrapingDataStartCell": "A23",
+              "dataset_identifier": "145",
+              "distribution_identifier": "145.9"
+            },
+            {
+              "title": "ipc_nucleo_nacional",
+              "type": "number",
+              "description": "Índice de Precios al Consumidor. Núcleo. Nacional. Base diciembre 2016. Valores mensuales.",
+              "id": "serie_inflacion",
+              "scrapingIdentifierCell": "D22",
+              "scrapingDataStartCell": "D23",
+              "units": "Índice",
+              "dataset_identifier": "145",
+              "distribution_identifier": "145.9"
+            }
+          ],
+          "dataset_identifier": "15",
+          "downloadURL": "http://localhost:3456/series_tiempo_ar_api/libs/indexing/tests/samples/ipc_datos.csv"
+        }
+      ],
+      "publisher": {
+        "name": "Subsecretaría de Programación Macroeconómica",
+        "mbox": "datoseconomicos@mecon.gov.ar"
+      },
+      "contactPoint": {
+        "fn": "Subsecretaría de Programación Macroeconómica."
+      }
+    }
+  ]
+}
