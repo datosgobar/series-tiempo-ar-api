@@ -34,8 +34,9 @@ class ESQuery:
 
     def add_series(self, series_id, rep_mode, periodicity,
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
-        self.args[constants.PARAM_PERIODICITY] = periodicity
-        self._init_series(series_id, rep_mode, collapse_agg)
+        self._init_series(series_id, rep_mode, collapse_agg, periodicity)
+        if constants.PARAM_PERIODICITY not in self.args:
+            self.add_collapse(periodicity)
 
     def get_series_ids(self):
         """Devuelve una lista de series cargadas"""
@@ -54,11 +55,11 @@ class ESQuery:
         for serie in self.series:
             serie.add_collapse(interval)
 
-    def _init_series(self, series_id, rep_mode, collapse_agg):
+    def _init_series(self, series_id, rep_mode, collapse_agg, periodicity):
         self.series.append(Series(series_id=series_id,
                                   index=self.index,
                                   rep_mode=rep_mode,
-                                  periodicity=self.args[constants.PARAM_PERIODICITY],
+                                  periodicity=periodicity,
                                   collapse_agg=collapse_agg))
 
     def add_pagination(self, start, limit, start_dates=None):
@@ -103,7 +104,6 @@ class ESQuery:
                                    doc_type=settings.TS_DOC_TYPE)
 
         for serie in self.series:
-            serie.add_collapse(self.args[constants.PARAM_PERIODICITY])
             self.setup_series_pagination()
             multi_search = multi_search.add(serie.search)
 
