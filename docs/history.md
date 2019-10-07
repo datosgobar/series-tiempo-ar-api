@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.28.3 - 2019-10-07
+
+- Bugfix en collapse_aggregation no funcionando en casos de múltiples series con frecuencias diferentes
+- Bugfix en precisión decimal de los datos indexados
+
 ## 1.28.2 - 2019-10-01
 
 - Bump de django-datajsonar a 0.4.8
