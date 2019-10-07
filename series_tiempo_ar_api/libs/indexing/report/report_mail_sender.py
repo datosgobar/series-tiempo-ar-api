@@ -14,7 +14,9 @@ class ReportMailSender:
         emails = self.admins.get_emails()
 
         config = DynamicEmailConfiguration.get_solo()
-        mail = EmailMultiAlternatives(self.subject, self.body, from_email=config.from_email, to=emails)
+        sender_email = config.from_email
+        mail = EmailMultiAlternatives(self.subject, self.body, from_email=sender_email, to=emails,
+                                      bcc=[sender_email])
         mail.attach_alternative(self.body, 'text/html')
 
         for attachment_args in self.attachments:

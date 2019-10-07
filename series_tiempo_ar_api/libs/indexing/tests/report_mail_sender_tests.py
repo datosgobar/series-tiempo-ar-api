@@ -78,3 +78,11 @@ class ReportMailSenderTests(TestCase):
 
         self.assertEqual(file_name, attachment_file_name)
         self.assertEqual(body, attachment_body)
+
+    def test_sender_is_in_bcc(self):
+        email = 'new_from_email@test_mail.com'
+        config = DynamicEmailConfiguration.get_solo()
+        config.from_email = email
+        config.save()
+        self.sender.send()
+        self.assertIn(config.from_email, mail.outbox[0].bcc)
