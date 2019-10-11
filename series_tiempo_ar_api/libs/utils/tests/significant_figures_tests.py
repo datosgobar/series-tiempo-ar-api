@@ -29,3 +29,7 @@ class SignificantFiguresTests(SimpleTestCase):
 
     def test_point_zero_floats(self):
         self.assertEqual(significant_figures([1.0, np.nan, 10.00, 20, 2.0]), 0)
+
+    def test_float_error(self):
+        zero_point_three = 0.1 + 0.2  # https://0.30000000000000004.com/
+        self.assertEqual(significant_figures([zero_point_three]), 1)
