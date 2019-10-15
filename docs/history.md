@@ -1,5 +1,11 @@
 # Historial de versiones
 
+
+## 1.28.4 - 2019-10-15 
+
+- Todo mail ahora es enviado con CCO al remitente
+- Aplicación de heurística en el cálculo de cifras significativas de series, para corregir casos de errores de la representación decimal de los datos debido a la pérdida de precisión del punto flotante
+
 ## 1.28.3 - 2019-10-07
 
 - Bugfix en collapse_aggregation no funcionando en casos de múltiples series con frecuencias diferentes
