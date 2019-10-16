@@ -10,8 +10,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from elasticsearch_dsl.connections import connections
 from faker import Faker
-from django_datajsonar.models import Field, Node, Catalog
-
+from django_datajsonar.models import Field, Node, Catalog, Distribution
 
 from series_tiempo_ar_api.apps.dump.constants import VALUES_HEADER
 from series_tiempo_ar_api.apps.management import meta_keys
@@ -249,6 +248,16 @@ class CSVTest(TestCase):
         reader = read_file_as_csv(file)
         for row in reader:
             self.assertNotEqual(row[5], field.title)
+
+    def test_dump_distribution_no_periodicity(self):
+        task = GenerateDumpTask()
+        task.save()
+        Distribution.objects.first().enhanced_meta.get(key=meta_keys.PERIODICITY).delete()
+        gen = DumpGenerator(task)
+        gen.generate()
+        task.refresh_from_db()
+
+        self.assertTrue(DumpFile.objects.filter(file_type=DumpFile.TYPE_CSV, task=task))
 
     @classmethod
     def tearDownClass(cls):
