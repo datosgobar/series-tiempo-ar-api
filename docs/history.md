@@ -1,6 +1,6 @@
 # Historial de versiones
 
-## 1.28-5 - 2019-10-16
+## 1.28.5 - 2019-10-16
 
 - Bugfix a dumps CSV no generándose si no existía metadato enriquecido de frecuencia de alguna de las series en la base
 
