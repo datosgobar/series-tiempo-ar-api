@@ -50,6 +50,7 @@ def run_integration(task: IntegrationTestTask = None):
         task.refresh_from_db()
         task.status = IntegrationTestTask.FINISHED
         task.save()
+        return
 
     series_metadata = pd.read_csv(BytesIO(metadata.file.read()), index_col='serie_id')
     setattr(settings, "ALLOWED_HOSTS", ["*"])

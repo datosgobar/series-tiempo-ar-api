@@ -48,7 +48,7 @@ class IntegrationTestTaskAdmin(AbstractTaskAdmin):
 
     task = run_integration
 
-    callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.run_integration'
+    callable_str = 'series_tiempo_ar_api.apps.management.tasks.integration_test.enqueue_new_integration_test'
 
 
 admin.site.register(IndexDataTask, DataJsonAdmin)
