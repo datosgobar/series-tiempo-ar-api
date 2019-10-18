@@ -42,6 +42,7 @@ class DataJsonAdmin(AbstractTaskAdmin):
     callable_str = 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing'
 
 
+@admin.register(IntegrationTestTask)
 class IntegrationTestTaskAdmin(AbstractTaskAdmin):
     model = IntegrationTestTask
 
