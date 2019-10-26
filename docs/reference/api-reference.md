@@ -185,8 +185,10 @@ Los modos de representación disponibles son:
 
 * *value*: Es el modo de representación por defecto. Devuelve el valor medido en la serie.
 * *change*: Devuelve la diferencia absoluta entre el valor del período t y el de t-1.
+* *change_since_beginning_of_year*: Devuelve la diferencia absoluta entre el valor del período t y el valor del 1 de enero del año al que pertenece t.
 * *percent_change*: Devuelve la variación porcentual entre el valor del período t y el de t-1.
 * *percent_change_a_year_ago*: Devuelve la variación porcentual entre el valor del período t y el del período t equivalente de hace un año atrás.
+* *percent_change_since_beginning_of_year*: Devuelve la variación porcentual entre el valor del período t y el valor del 1 de enero del año al que pertenece t.
 
 Las funciones de transformación disponibles en [`representation_mode`](#representation_mode) también pueden especificarse para **series individuales** usando la notación `:percent_change` junto al id de la serie:
 
@@ -205,6 +207,7 @@ El parámetro [`collapse`](#collapse) modifica la frecuencia de muestreo de los 
 Las opciones disponibles son:
 
 * *year*: Muestra datos agregados anualmente.
+* *semester*: Muestra datos agregados semestralmente.
 * *quarter*: Muestra datos agregados trimestralmente.
 * *month*: Muestra datos agregados mensualmente.
 * *week*: Muestra datos agregados semanalmente.
