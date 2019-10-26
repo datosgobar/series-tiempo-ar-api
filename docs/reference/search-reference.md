@@ -210,11 +210,11 @@ Este parámetro permite ordenar los resultados obtenidos según el valor que cad
 Los valores que puede adoptar el mismo son:
 
 - `relevance`: Valor por defecto, para que los resultados se ordenen por relevancia en base a los demás filtros y parámetros
-- `hits_90:days`: Ordena los resultados según cuántos accesos tuvieron las series en los últimos 90 días (el campo `hits` de la response)
+- `hits_90_days`: Ordena los resultados según cuántos accesos tuvieron las series en los últimos 90 días (el campo `hits` de la response)
 - `frequency`: Ordena los resultados según la periodicidad de la serie (de menor a mayor granularidad: anual, semestral, trimestral, mensual, semanal y diaria). Un orden descendente implica de mayor a menor granularidad
 
 ### `sort`
 
-Este parámetro permite determinar el sentido del ordenamiento de los resultados, es decir, ascendente (`asc`, de menor a mayor) o descendente (`desc`, de mayor a menor). 
+Este parámetro permite determinar el sentido del ordenamiento de los resultados, es decir, ascendente (`asc`, de menor a mayor) o descendente (`desc`, de mayor a menor).
 
-Debe tenerse en cuenta que, si se ordena por relevancia, el orden tan sólo puede ser descendente; si se eligiese otro criterio de ordenamiento en el parámetro `sort`, cualquier sentido es válido
+Debe tenerse en cuenta que, si se ordena por relevancia, el orden tan sólo puede ser descendente; si se eligiese otro criterio de ordenamiento en el parámetro `sort_by`, cualquier sentido es válido.
