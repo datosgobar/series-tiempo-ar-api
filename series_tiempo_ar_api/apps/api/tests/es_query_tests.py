@@ -34,7 +34,7 @@ class QueryTest(TestCase):
         super(QueryTest, cls).setUpClass()
 
     def setUp(self):
-        self.query = ESQuery(settings.TEST_INDEX)
+        self.query = ESQuery(settings.TS_INDEX)
 
     def test_initially_no_series(self):
         self.assertFalse(self.query.series)
@@ -107,7 +107,7 @@ class QueryTest(TestCase):
                               self.rep_mode,
                               self.series_periodicity)
 
-        query = ESQuery(index=settings.TEST_INDEX)
+        query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.sort('asc')
         first_date = query.run()[0][0]
@@ -121,7 +121,7 @@ class QueryTest(TestCase):
                               self.rep_mode,
                               self.series_periodicity)
 
-        query = ESQuery(index=settings.TEST_INDEX)
+        query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.sort('asc')
         delayed_first_date = iso8601.parse_date(query.run()[0][0])
@@ -142,7 +142,7 @@ class QueryTest(TestCase):
                               self.series_periodicity)
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
 
-        query = ESQuery(index=settings.TEST_INDEX)
+        query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.sort('asc')
         delayed_first_date = iso8601.parse_date(query.run()[0][0])
@@ -165,7 +165,7 @@ class QueryTest(TestCase):
         self.query.add_filter(start="1910", end="1920")
         self.query.sort('asc')
 
-        query = ESQuery(index=settings.TEST_INDEX)
+        query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.add_filter(start="1921")  # Garantiza datos vacíos entre 1920-1921
         query.add_pagination(start=0, limit=1000)
@@ -179,7 +179,7 @@ class QueryTest(TestCase):
             current_date = row_date
 
     def test_query_add_aggregation(self):
-        avg_query = ESQuery(index=settings.TEST_INDEX)
+        avg_query = ESQuery(index=settings.TS_INDEX)
         avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
         data = avg_query.run()
 
@@ -286,7 +286,7 @@ class QueryTest(TestCase):
             current_date = row_date
 
     def test_add_query_aggregation(self):
-        avg_query = ESQuery(index=settings.TEST_INDEX)
+        avg_query = ESQuery(index=settings.TS_INDEX)
         avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
         avg_query.add_collapse('year')
         data = avg_query.run()
@@ -302,7 +302,7 @@ class QueryTest(TestCase):
             self.assertGreater(sum_value, avg_value)
 
     def test_end_of_period(self):
-        query = ESQuery(index=settings.TEST_INDEX)
+        query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.add_pagination(start=0, limit=1000)
         query.sort('asc')
@@ -335,7 +335,7 @@ class QueryTest(TestCase):
         self.query.sort('asc')
         data = self.query.run()
 
-        orig_eop = ESQuery(index=settings.TEST_INDEX)
+        orig_eop = ESQuery(index=settings.TS_INDEX)
         orig_eop.add_series(self.single_series,
                             self.rep_mode,
                             self.series_periodicity,
@@ -393,7 +393,7 @@ class QueryTest(TestCase):
 
         data = self.query.run()
 
-        other_query = ESQuery(settings.TEST_INDEX)
+        other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
 
@@ -411,7 +411,7 @@ class QueryTest(TestCase):
         self.query.add_pagination(start=0, limit=12)
         data = self.query.run()
 
-        other_query = ESQuery(settings.TEST_INDEX)
+        other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='min')
         other_query.add_pagination(start=0, limit=1)
         other_query.add_collapse('year')
@@ -427,7 +427,7 @@ class QueryTest(TestCase):
         self.query.add_pagination(start=0, limit=12)
         data = self.query.run()
 
-        other_query = ESQuery(settings.TEST_INDEX)
+        other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
         other_query.add_pagination(start=0, limit=1)
         other_query.add_collapse('year')
@@ -442,7 +442,7 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         data = self.query.run()
 
-        other_query = ESQuery(settings.TEST_INDEX)
+        other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
         other_data = other_query.run()
 
@@ -454,7 +454,7 @@ class QueryTest(TestCase):
         self.query.add_pagination(start=1, limit=12)
         data = self.query.run()
 
-        other_query = ESQuery(settings.TEST_INDEX)
+        other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, 'percent_change', self.series_periodicity, collapse_agg='max')
         other_query.add_pagination(start=0, limit=1)
         other_query.add_collapse('year')

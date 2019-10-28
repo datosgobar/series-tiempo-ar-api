@@ -2,8 +2,6 @@
 import os
 import mock
 
-from django.test import TestCase
-
 from django_datajsonar.tasks import read_datajson
 from django_datajsonar.models import Distribution, Field, Catalog
 from django_datajsonar.models import ReadDataJsonTask, Node
@@ -11,13 +9,14 @@ from django_datajsonar.models import ReadDataJsonTask, Node
 from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.management.models import IndexDataTask as ManagementTask
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
+from series_tiempo_ar_api.libs.indexing.tests.indexing_test_case import IndexingTestCase
 
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 CATALOG_ID = 'test_catalog'
 
 
 @mock.patch("series_tiempo_ar_api.libs.indexing.tasks.DistributionIndexer.reindex")
-class ReaderTests(TestCase):
+class ReaderTests(IndexingTestCase):
     catalog = os.path.join(SAMPLES_DIR, 'full_ts_data.json')
     catalog_id = 'catalog_id'
 

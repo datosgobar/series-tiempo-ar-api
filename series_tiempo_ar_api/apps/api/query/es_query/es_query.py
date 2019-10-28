@@ -6,7 +6,7 @@ from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query.es_query.response_formatter import ResponseFormatter
-from series_tiempo_ar_api.apps.api.query.es_query.series import Series
+from series_tiempo_ar_api.apps.api.query.es_query.series import Serie
 
 
 class ESQuery:
@@ -56,11 +56,11 @@ class ESQuery:
             serie.add_collapse(interval)
 
     def _init_series(self, series_id, rep_mode, collapse_agg, periodicity):
-        self.series.append(Series(series_id=series_id,
-                                  index=self.index,
-                                  rep_mode=rep_mode,
-                                  periodicity=periodicity,
-                                  collapse_agg=collapse_agg))
+        self.series.append(Serie(series_id=series_id,
+                                 index=self.index,
+                                 rep_mode=rep_mode,
+                                 periodicity=periodicity,
+                                 collapse_agg=collapse_agg))
 
     def add_pagination(self, start, limit, start_dates=None):
         if not self.series:

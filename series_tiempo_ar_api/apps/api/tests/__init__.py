@@ -9,11 +9,7 @@ elastic = connections.get_connection()
 
 
 def setup():
-    if not elastic.indices.exists(settings.TEST_INDEX):
+    setup_database()
+    if not elastic.indices.exists(settings.TS_INDEX):
         generator = get_generator()
         generator.run()
-        setup_database()
-
-
-def teardown():
-    elastic.indices.delete(settings.TEST_INDEX)

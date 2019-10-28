@@ -30,7 +30,7 @@ class IdsTest(TestCase):
 
     def setUp(self):
         self.cmd = IdsField()
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
 
     def test_invalid_series(self):
         invalid_series = 'invalid'
@@ -52,7 +52,7 @@ class IdsTest(TestCase):
         self.query.sort('asc')
         data = self.query.run()['data']
 
-        change_query = Query(index=settings.TEST_INDEX)
+        change_query = Query()
         self.cmd.run(change_query, {'ids': self.single_series,
                                     'representation_mode': 'change'})
 

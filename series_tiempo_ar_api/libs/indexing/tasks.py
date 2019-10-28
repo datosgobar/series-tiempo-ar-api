@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 
 
 def index_distribution(distribution_id, node_id, task_id,
-                       read_local=False, index=settings.TS_INDEX, force=False):
+                       read_local=False, index=None, force=False):
+    if index is None:  # Lazy loading
+        index = settings.TS_INDEX
     node = Node.objects.get(id=node_id)
     task = IndexDataTask.objects.get(id=task_id)
     distribution_model = Distribution.objects.get(identifier=distribution_id,

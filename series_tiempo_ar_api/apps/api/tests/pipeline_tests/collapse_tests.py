@@ -18,7 +18,7 @@ class CollapseTest(TestCase):
         super(cls, CollapseTest).setUpClass()
 
     def setUp(self):
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
         self.cmd = Collapse()
 
     def test_valid_aggregation(self):

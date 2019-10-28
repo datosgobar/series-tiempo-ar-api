@@ -17,7 +17,7 @@ class DelimiterTests(TestCase):
         super(cls, DelimiterTests).setUpClass()
 
     def setUp(self):
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
         self.cmd = Delimiter()
 
     def test_delimiter(self):
@@ -42,7 +42,7 @@ class DecimalCharTests(TestCase):
         super(cls, DecimalCharTests).setUpClass()
 
     def setUp(self):
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
         self.cmd = DecimalChar()
 
     def test_decimal_char(self):

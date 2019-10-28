@@ -18,7 +18,7 @@ class ResponseTests(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.query = Query(index=settings.TEST_INDEX)
+        cls.query = Query()
         field = Field.objects.get(identifier=cls.single_series)
         cls.query.add_series(cls.single_series, field)
         cls.series_name = field.title
@@ -67,7 +67,7 @@ class ResponseTests(TestCase):
         self.assertIn(self.series_desc, str(header))
 
     def test_csv_different_decimal_empty_rows(self):
-        query = Query(index=settings.TEST_INDEX)
+        query = Query()
 
         field = Field.objects.get(identifier=self.single_series)
         query.add_series(self.single_series, field)
@@ -79,7 +79,7 @@ class ResponseTests(TestCase):
         self.assertFalse("None" in str(response.content))
 
     def setupQueryWithSeriesWithDifferentRepresentationModes(self):
-        query = Query(index=settings.TEST_INDEX)
+        query = Query()
         field = Field.objects.get(identifier=self.single_series)
         query.add_series(self.single_series, field, rep_mode='change')
         query.add_series(self.single_series, field, rep_mode='percent_change')
