@@ -15,7 +15,7 @@ class LastTests(TestCase):
     single_series = SERIES_NAME
 
     def setUp(self):
-        self.query = Query(index=settings.TS_INDEX)
+        self.query = Query()
         self.cmd = Last()
 
     @classmethod
@@ -27,7 +27,7 @@ class LastTests(TestCase):
         self.query.add_series(self.single_series, self.field)
         self.cmd.run(self.query, {'last': '10'})
 
-        orig_query = Query(index=settings.TS_INDEX)
+        orig_query = Query()
         orig_query.add_series(self.single_series, self.field)
         orig_query.sort('desc')
         data = orig_query.run()['data']
@@ -42,7 +42,7 @@ class LastTests(TestCase):
         self.query.add_series(self.single_series, self.field)
         self.cmd.run(self.query, {'last': str(rows)})
 
-        orig_query = Query(index=settings.TS_INDEX)
+        orig_query = Query()
         orig_query.add_series(self.single_series, self.field)
         orig_query.sort('desc')
         data = orig_query.run()['data']
