@@ -21,7 +21,7 @@ class SortTests(TestCase):
         super(cls, SortTests).setUpClass()
 
     def setUp(self):
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
         self.cmd = Sort()
 
     def test_add_asc_sort(self):

@@ -2,10 +2,10 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.test import TestCase
+from faker import Faker
 
 from series_tiempo_ar_api.apps.api.query import constants
-from series_tiempo_ar_api.apps.api.query.es_query.series import Series
-from faker import Faker
+from series_tiempo_ar_api.apps.api.query.es_query.series import Serie
 
 
 class SeriesStartOffsetTests(TestCase):
@@ -17,10 +17,10 @@ class SeriesStartOffsetTests(TestCase):
         fake_index = self.faker.pystr().lower()
         series_id = self.faker.pystr()
         rep_mode = rep_mode or constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]
-        return Series(index=fake_index,
-                      series_id=series_id,
-                      rep_mode=rep_mode,
-                      periodicity=periodicity)
+        return Serie(index=fake_index,
+                     series_id=series_id,
+                     rep_mode=rep_mode,
+                     periodicity=periodicity)
 
     def test_series_id_same_start(self):
         one_series = self.get_series('month')

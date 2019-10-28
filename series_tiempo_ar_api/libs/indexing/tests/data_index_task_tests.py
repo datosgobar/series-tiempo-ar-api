@@ -1,14 +1,13 @@
 import mock
-from django.test import TestCase
 from django_datajsonar.models import Node
 
 from series_tiempo_ar_api.apps.management.models import IndexDataTask
 from series_tiempo_ar_api.apps.management.tasks.indexation import read_datajson
-from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
+from series_tiempo_ar_api.libs.indexing.tests.indexing_test_case import IndexingTestCase
 
 
 @mock.patch('series_tiempo_ar_api.apps.management.tasks.indexation.index_catalog')
-class DataIndexTaskTests(TestCase):
+class DataIndexTaskTests(IndexingTestCase):
     def setUp(self):
         self.node_one = Node.objects.create(indexable=True,
                                             catalog_url="http://test_catalog.com",
@@ -27,4 +26,4 @@ class DataIndexTaskTests(TestCase):
         task = IndexDataTask.objects.create()
         read_datajson(task)
         calls = indexation.call_count
-        self.assertEquals(calls, 2)
+        self.assertEqual(calls, 2)

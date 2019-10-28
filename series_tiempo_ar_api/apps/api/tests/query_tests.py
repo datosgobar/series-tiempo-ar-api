@@ -22,7 +22,7 @@ class QueryTests(TestCase):
 
     def setUp(self):
         self.field = Field.objects.get(identifier=self.single_series)
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
 
     def test_index_metadata_frequency(self):
         self.query.add_series(self.single_series, self.field)
@@ -153,7 +153,7 @@ class QueryTests(TestCase):
 
         flat_meta = self.query.get_metadata()[1]
 
-        other_query = Query(index=settings.TEST_INDEX)
+        other_query = Query()
         other_query.add_series(self.single_series, self.field)
         other_query.run()
         meta = other_query.get_metadata()[1]
@@ -184,7 +184,7 @@ class QueryTests(TestCase):
 
         flat_meta = self.query.get_metadata()[1]
 
-        other_query = Query(index=settings.TEST_INDEX)
+        other_query = Query()
         other_query.add_series(self.single_series, self.field)
         other_query.set_metadata_config('full')
         other_query.run()
@@ -335,7 +335,7 @@ class QueryTests(TestCase):
         self.query.add_series(year_series, year_field)
         data = self.query.run()['data']
 
-        other_query = Query(index=settings.TEST_INDEX)
+        other_query = Query()
         other_query.add_series(year_series, year_field)
         other_query.add_series(self.single_series, self.field, collapse_agg='sum')
         other_data = other_query.run()['data']

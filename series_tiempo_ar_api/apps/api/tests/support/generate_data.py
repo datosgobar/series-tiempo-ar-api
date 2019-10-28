@@ -23,7 +23,7 @@ DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), DATA_FILE_NAME)
 class TestDataGenerator(object):
     date_format = '%Y-%m-%d'
     start_date = datetime(1910, 1, 1)
-    max_data = settings.MAX_ALLOWED_VALUES['limit']
+    max_data = 1000
 
     def __init__(self):
         self.prev_values = []
@@ -40,7 +40,7 @@ class TestDataGenerator(object):
     def index_data(self):
         """Indexa la data leía desde el archivo de datos"""
         with open(DATA_FILE_PATH) as f:
-            self.elastic.indices.create(settings.TEST_INDEX,
+            self.elastic.indices.create(settings.TS_INDEX,
                                         body=INDEX_CREATION_BODY)
 
             actions = [json.loads(row) for row in f.readlines()]
@@ -49,7 +49,7 @@ class TestDataGenerator(object):
                     print("ERROR:", info)
 
             segments = FORCE_MERGE_SEGMENTS
-            self.elastic.indices.forcemerge(index=settings.TEST_INDEX,
+            self.elastic.indices.forcemerge(index=settings.TS_INDEX,
                                             max_num_segments=segments)
 
     def init_data(self):
@@ -69,7 +69,7 @@ class TestDataGenerator(object):
         """Crea varias series con periodicidad del intervalo dado"""
 
         freq = interval_to_freq_pandas(interval)
-        if interval == 'year' or interval == 'semester':
+        if interval in ['quarter', 'year', 'semester']:
             index = pd.date_range(start=str(start_date), end="2260", freq=freq)
         else:
             index = pd.date_range(start=str(start_date), periods=self.max_data, freq=freq)
@@ -78,7 +78,7 @@ class TestDataGenerator(object):
                         name=name,
                         data=[100000 + random() * 10000 for _ in range(len(index))])
 
-        return operations.process_column(col, settings.TEST_INDEX)
+        return operations.process_column(col, settings.TS_INDEX)
 
 
 def get_generator():

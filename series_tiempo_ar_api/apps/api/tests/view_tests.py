@@ -21,7 +21,7 @@ class ViewTests(TestCase):
 
     def test_series_default_type(self):
         response = self.client.get(self.endpoint, data={'ids': SERIES_NAME})
-        self.assertTrue(type(response) == JsonResponse)
+        self.assertTrue(response.json())
 
     def test_series_empty_args(self):
         response = json.loads(self.client.get(self.endpoint).content)
@@ -117,9 +117,9 @@ class ViewTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-    def test_start_over_10000_returns_200(self):
+    def test_start_of_9999_returns_200(self):
         response = self.client.get(self.endpoint,
                                    data={'ids': SERIES_NAME,
-                                         'start': '10001'})
+                                         'start': '9899'})
 
         self.assertEqual(response.status_code, 200)

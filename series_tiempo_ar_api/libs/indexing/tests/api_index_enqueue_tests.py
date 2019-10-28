@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from series_tiempo_ar_api.apps.management.models import APIIndexingConfig
 from series_tiempo_ar_api.libs.indexing.api_index_enqueue import api_index_enqueue
+from series_tiempo_ar_api.libs.indexing.tests.indexing_test_case import IndexingTestCase
 
 
 def test_function():
@@ -10,7 +11,7 @@ def test_function():
 
 
 @mock.patch('series_tiempo_ar_api.libs.indexing.api_index_enqueue.get_queue')
-class APIIndexEnqueueTests(TestCase):
+class APIIndexEnqueueTests(IndexingTestCase):
     def setUp(self) -> None:
         self.timeout = APIIndexingConfig.get_solo().indexing_timeout
         self.function = test_function

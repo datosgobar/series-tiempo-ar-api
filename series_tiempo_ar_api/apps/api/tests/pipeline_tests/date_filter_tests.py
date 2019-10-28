@@ -19,7 +19,7 @@ class DateFilterTests(TestCase):
     end_date = '1985-01-01'
 
     def setUp(self):
-        self.query = Query(index=settings.TEST_INDEX)
+        self.query = Query()
         self.cmd = DateFilter()
 
     @classmethod
@@ -74,7 +74,7 @@ class DateFilterTests(TestCase):
 
     def test_partial_end_date_is_inclusive(self):
         field = Field.objects.get(identifier=self.single_series)
-        query = Query(index=settings.TEST_INDEX)
+        query = Query()
         query.add_series(self.single_series, self.field, 'value')
         query.sort('asc')
         first_date = query.run()['data'][0][0]

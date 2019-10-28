@@ -19,7 +19,9 @@ class Query:
     Elasticsearch, y los metadatos guardados en la base de datos
     relacional
     """
-    def __init__(self, index=settings.TS_INDEX):
+    def __init__(self, index=None):
+        if index is None:
+            index = settings.TS_INDEX
         self.es_index = index
         self.es_query = ESQuery(index)
         self.series = []
