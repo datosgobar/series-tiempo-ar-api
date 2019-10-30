@@ -56,6 +56,10 @@ class ResponseFormatter:
 
         return final_data
 
+    def filter_nones(self, rep_mode, response):
+        response = filter(lambda hit, mode=rep_mode: mode in hit, response)
+        return response
+
     @staticmethod
     def _data_dict_series_key(series):
         """Key única para identificar la serie pedida en el data_dict armado. Evita
