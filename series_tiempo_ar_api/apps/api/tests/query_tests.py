@@ -219,7 +219,7 @@ class QueryTests(TestCase):
         resp = self.query.run()
 
         # Longitud de la serie pedida. Ver support/generate_data.py
-        self.assertEqual(resp['count'], 1000)
+        self.assertEqual(resp['count'], 12 * 10)
 
     def test_day_series_length_with_limit_and_rep_mode(self):
         day_series_name = settings.TEST_SERIES_NAME.format('day')

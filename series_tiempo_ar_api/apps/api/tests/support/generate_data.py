@@ -21,8 +21,7 @@ DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), DATA_FILE_NAME)
 
 class TestDataGenerator:
     date_format = '%Y-%m-%d'
-    start_date = datetime(1910, 1, 1)
-    max_data = 1000
+    start_date = datetime(1999, 1, 1)
 
     def __init__(self):
         self.prev_values = []
@@ -58,7 +57,7 @@ class TestDataGenerator:
             name = settings.TEST_SERIES_NAME.format(interval)
             result.extend(self.init_series(name, interval, self.start_date))
             delayed_name = settings.TEST_SERIES_NAME_DELAYED.format(interval)
-            delayed_date = self.start_date + relativedelta(years=50)
+            delayed_date = self.start_date + relativedelta(years=10)
             result.extend(self.init_series(delayed_name, interval, delayed_date))
 
         with open(DATA_FILE_PATH, 'w') as f:
@@ -68,10 +67,8 @@ class TestDataGenerator:
         """Crea varias series con periodicidad del intervalo dado"""
 
         freq = interval_to_freq_pandas(interval)
-        if interval in ['quarter', 'year', 'semester']:
-            index = pd.date_range(start=str(start_date), end="2260", freq=freq)
-        else:
-            index = pd.date_range(start=str(start_date), periods=self.max_data, freq=freq)
+        end_date = start_date + relativedelta(years=10)
+        index = pd.date_range(start=str(start_date), end=str(end_date), freq=freq, closed='left')
 
         col = pd.Series(index=index,
                         name=name,

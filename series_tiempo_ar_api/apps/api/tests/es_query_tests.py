@@ -48,10 +48,10 @@ class QueryTest(TestCase):
 
     def test_pagination_limit(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_pagination(self.start, self.max_limit)
+        self.query.add_pagination(self.start, 15)
         self.query.sort(how='asc')
         data = self.query.run()
-        self.assertEqual(len(data), self.max_limit - self.start)
+        self.assertEqual(len(data), 15)
 
     def test_time_filter(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
@@ -162,12 +162,11 @@ class QueryTest(TestCase):
                               self.rep_mode,
                               self.series_periodicity)
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_filter(start="1910", end="1920")
         self.query.sort('asc')
 
         query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        query.add_filter(start="1921")  # Garantiza datos vacíos entre 1920-1921
+        query.add_filter(start="2000")  # Garantiza datos vacíos entre 1999-2001
         query.add_pagination(start=0, limit=1000)
         query.sort('asc')
 
@@ -482,4 +481,4 @@ class QueryTest(TestCase):
         self.query.run()
 
         # Todas las series generadas tienen max_limit como longitud. Ver support/generate_data.py
-        self.assertEqual(self.query.get_results_count(), self.max_limit)
+        self.assertEqual(self.query.get_results_count(), 12 * 10)

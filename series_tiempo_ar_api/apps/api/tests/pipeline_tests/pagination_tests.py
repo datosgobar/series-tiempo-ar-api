@@ -13,7 +13,7 @@ SERIES_NAME = get_series_id('month')
 class PaginationTests(TestCase):
     single_series = SERIES_NAME
 
-    limit = 1000
+    limit = 75
     start = 50
 
     @classmethod

@@ -1,6 +1,5 @@
 #! coding: utf-8
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.test import TestCase
 from iso8601 import iso8601
 
@@ -15,8 +14,8 @@ SERIES_NAME = get_series_id('month')
 class DateFilterTests(TestCase):
     single_series = SERIES_NAME
 
-    start_date = '1980-01-01'
-    end_date = '1985-01-01'
+    start_date = '2001-01-01'
+    end_date = '2005-01-01'
 
     def setUp(self):
         self.query = Query()
@@ -79,7 +78,7 @@ class DateFilterTests(TestCase):
         query.sort('asc')
         first_date = query.run()['data'][0][0]
 
-        end_date = iso8601.parse_date(first_date) + relativedelta(years=10)
+        end_date = iso8601.parse_date(first_date) + relativedelta(years=2)
         self.query.add_series(self.single_series, field, 'value')
         self.cmd.run(self.query, {'end_date': str(end_date)})
 
