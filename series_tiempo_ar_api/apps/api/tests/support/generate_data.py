@@ -2,7 +2,6 @@
 import json
 import os
 from datetime import datetime
-from random import random
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
@@ -20,7 +19,7 @@ DATA_FILE_NAME = 'data.csv'
 DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), DATA_FILE_NAME)
 
 
-class TestDataGenerator(object):
+class TestDataGenerator:
     date_format = '%Y-%m-%d'
     start_date = datetime(1910, 1, 1)
     max_data = 1000
@@ -76,7 +75,7 @@ class TestDataGenerator(object):
 
         col = pd.Series(index=index,
                         name=name,
-                        data=[100000 + random() * 10000 for _ in range(len(index))])
+                        data=[100 + i for i in range(len(index))])
 
         return operations.process_column(col, settings.TS_INDEX)
 

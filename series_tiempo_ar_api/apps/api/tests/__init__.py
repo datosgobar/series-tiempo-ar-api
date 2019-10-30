@@ -13,3 +13,8 @@ def setup():
     if not elastic.indices.exists(settings.TS_INDEX):
         generator = get_generator()
         generator.run()
+
+
+def teardown():
+    if elastic.indices.exists(settings.TS_INDEX):
+        elastic.indices.delete(settings.TS_INDEX)
