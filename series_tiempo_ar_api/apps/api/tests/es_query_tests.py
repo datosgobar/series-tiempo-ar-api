@@ -379,12 +379,11 @@ class QueryTest(TestCase):
         self.query.add_series(self.delayed_series, self.rep_mode, self.series_periodicity)
 
         self.query.sort('desc')
+        self.query.add_pagination(start=0, limit=1)
+        row = self.query.run()[0]
 
-        data = self.query.run()
-
-        for row in data:
-            self.assertIsNotNone(row[2])
-            self.assertIsNone(row[1])
+        self.assertIsNotNone(row[2])
+        self.assertIsNone(row[1])
 
     def test_same_series_rep_mode(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)

@@ -57,7 +57,7 @@ class TestDataGenerator:
             name = settings.TEST_SERIES_NAME.format(interval)
             result.extend(self.init_series(name, interval, self.start_date))
             delayed_name = settings.TEST_SERIES_NAME_DELAYED.format(interval)
-            delayed_date = self.start_date + relativedelta(years=10)
+            delayed_date = self.start_date + relativedelta(years=5)
             result.extend(self.init_series(delayed_name, interval, delayed_date))
 
         with open(DATA_FILE_PATH, 'w') as f:
