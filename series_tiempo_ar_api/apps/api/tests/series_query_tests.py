@@ -1,12 +1,13 @@
 import json
-from datetime import datetime
 
+import iso8601
 from django.test import TestCase
 
 from django_datajsonar.models import Field
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.series_query import SeriesQuery
 from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id
+from series_tiempo_ar_api.apps.management import meta_keys
 from series_tiempo_ar_api.apps.metadata.models import SeriesUnits
 
 
@@ -69,7 +70,9 @@ class SeriesQueryTests(TestCase):
         self.assertEqual(description, '')
 
     def test_get_start_date(self):
-        self.assertEqual(self.serie.start_date(), datetime(1910, 1, 1).date())
+        start_date = meta_keys.get(self.field, meta_keys.INDEX_START)
+        start_date = iso8601.parse_date(start_date)
+        self.assertEqual(self.serie.start_date(), start_date.date())
 
     def test_get_start_date_none_if_not_set(self):
         self.field.enhanced_meta.all().delete()

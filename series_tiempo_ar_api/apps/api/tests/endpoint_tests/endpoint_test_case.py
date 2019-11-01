@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id
+from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id, get_delayed_series_id
 
 
 class EndpointTestCase(TestCase):
@@ -21,12 +21,19 @@ class EndpointTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._monotonic_increasing_series()
+        self._monotonic_increasing_delayed_series()
 
     def _monotonic_increasing_series(self):
         self.increasing_day_series_id = get_series_id('day')
         self.increasing_month_series_id = get_series_id('month')
         self.increasing_quarter_series_id = get_series_id('quarter')
         self.increasing_year_series_id = get_series_id('year')
+
+    def _monotonic_increasing_delayed_series(self):
+        self.increasing_day_series_id_2004 = get_delayed_series_id('day')
+        self.increasing_month_series_id_2004 = get_delayed_series_id('month')
+        self.increasing_quarter_series_id_2004 = get_delayed_series_id('quarter')
+        self.increasing_year_series_id_2004 = get_delayed_series_id('year')
 
     def run_query(self, data):
         return self.client.get(reverse('api:series:series'), data=data).json()
