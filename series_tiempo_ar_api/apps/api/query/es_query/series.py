@@ -92,11 +92,16 @@ class Serie:
 
         elif self._has_collapse():
             self._search = self._search.filter('bool', must=[Q('match', interval=self.original_periodicity)])
+
+            interval = self.periodicity
+            if interval == 'semester':
+                interval = '6M'
+
             # Agregamos la aggregation (?) para que se ejecute en ES en runtime
             self._search.aggs.bucket('test',
                                      A('date_histogram',
                                        field='timestamp',
-                                       interval=self.periodicity,
+                                       interval=interval,
                                        format='yyyy-MM-dd').
                                      metric('test', self.collapse_agg, field=self.rep_mode))
         else:  # Ignoramos la in memory ag

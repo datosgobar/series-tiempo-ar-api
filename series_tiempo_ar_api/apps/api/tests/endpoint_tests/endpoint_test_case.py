@@ -1,10 +1,10 @@
-from django.test import TestCase
+from django.test import Client
 from django.urls import reverse
 
 from series_tiempo_ar_api.apps.api.tests.helpers import get_series_id, get_delayed_series_id
 
 
-class EndpointTestCase(TestCase):
+class EndpointTestCase:
     """
     Clase base para tests de endpoint con varios valores útiles ya seteados
 
@@ -19,7 +19,7 @@ class EndpointTestCase(TestCase):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        self.client = Client()
         self._monotonic_increasing_series()
         self._monotonic_increasing_delayed_series()
 

@@ -11,6 +11,7 @@ from elasticsearch_dsl.connections import connections
 
 from series_tiempo_ar_api.apps.api.helpers import interval_to_freq_pandas
 from series_tiempo_ar_api.apps.api.query.constants import COLLAPSE_INTERVALS
+from series_tiempo_ar_api.apps.api.tests.support.test_data_values import START_DATE, START_VALUE, END_DATE
 from series_tiempo_ar_api.libs.indexing.constants import INDEX_CREATION_BODY, \
     FORCE_MERGE_SEGMENTS
 from series_tiempo_ar_api.libs.indexing.indexer import operations
@@ -21,7 +22,6 @@ DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), DATA_FILE_NAME)
 
 class TestDataGenerator:
     date_format = '%Y-%m-%d'
-    start_date = datetime(1999, 1, 1)
 
     def __init__(self):
         self.prev_values = []
@@ -55,9 +55,9 @@ class TestDataGenerator:
         result = []
         for interval in COLLAPSE_INTERVALS:
             name = settings.TEST_SERIES_NAME.format(interval)
-            result.extend(self.init_series(name, interval, self.start_date))
+            result.extend(self.init_series(name, interval, START_DATE))
             delayed_name = settings.TEST_SERIES_NAME_DELAYED.format(interval)
-            delayed_date = self.start_date + relativedelta(years=5)
+            delayed_date = START_DATE + relativedelta(years=5)
             result.extend(self.init_series(delayed_name, interval, delayed_date))
 
         with open(DATA_FILE_PATH, 'w') as f:
@@ -67,12 +67,11 @@ class TestDataGenerator:
         """Crea varias series con periodicidad del intervalo dado"""
 
         freq = interval_to_freq_pandas(interval)
-        end_date = start_date + relativedelta(years=10)
-        index = pd.date_range(start=str(start_date), end=str(end_date), freq=freq, closed='left')
+        index = pd.date_range(start=str(start_date), end=str(END_DATE), freq=freq, closed='left')
 
         col = pd.Series(index=index,
                         name=name,
-                        data=[100 + i for i in range(len(index))])
+                        data=[START_VALUE + i for i in range(len(index))])
 
         return operations.process_column(col, settings.TS_INDEX)
 
