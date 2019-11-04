@@ -122,4 +122,4 @@ class ReportGenerator:
             errored_distributions = errored_distributions.filter(
                 dataset__catalog__identifier=node.catalog_id)
         errors = errored_distributions.values_list('error_msg', flat=True)
-        return "\n".join(errors)
+        return "\n\n".join(errors)

@@ -23,4 +23,4 @@ class DistributionValidator:
 
         errors = self.data_validator(catalog, distribution_model.identifier)
         if errors:
-            raise DistributionValidationError('\n'.join([str(e) for e in errors]))
+            raise DistributionValidationError('\n\n'.join([str(e) for e in errors]))
