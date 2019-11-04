@@ -91,6 +91,7 @@ class Serie:
             self._search = self._search.filter('bool', must=[Q('match', interval=self.periodicity)])
 
         elif self._has_collapse():
+            self._search = self._search.filter('bool', must=[Q('match', interval=self.original_periodicity)])
             # Agregamos la aggregation (?) para que se ejecute en ES en runtime
             self._search.aggs.bucket('test',
                                      A('date_histogram',
