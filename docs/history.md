@@ -1,5 +1,12 @@
 # Historial de versiones
 
+## 1.28.7 - 2019-11-05
+
+- Bump de django-datajsonar a 0.5.1 (disponibiliza URLs de descarga de catálogos, auto whitelist de datasets federables)
+- Bugfix en collapse_aggregation max/min para ciertas series tirando valores incorrectos
+- Bugfix de distribuciones con múltiples índices de tiempo cargados (uno no presente) no indexandose
+- Agregado de más newlines en reportes de errores para distinguir múltiples errores en una distribución
+
 ## 1.28.6 - 2019-10-18
 
 - Agrego corridas de test de integración a UI del admin
