@@ -75,8 +75,9 @@ class DistributionRepositoryTests(TestCase):
 
     def test_multiple_indices_returns_last_if_distribution_is_not_present(self):
         self.distribution.field_set \
-            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False)
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False, title='serie_nopresent_1')
         last = self.distribution.field_set \
-            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False)
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False, title='serie_nopresent_2')
+
         self.distribution.present = False
         self.assertEqual(DistributionRepository(self.distribution).get_time_index_series(), last)
