@@ -15,17 +15,16 @@ SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 class DistributionRepositoryTests(TestCase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self) -> None:
         url = 'http://localhost:3456/series_tiempo_ar_api/libs/datajsonar_repositories/tests/samples/test_catalog.json'
-        cls.node = Node.objects.create(catalog_id='repo_test_catalog', indexable=True,
-                                       catalog_url=url)
-        catalog = Catalog.objects.create(metadata='{}', identifier=cls.node.catalog_id)
+        self.node = Node.objects.create(catalog_id='repo_test_catalog', indexable=True,
+                                        catalog_url=url)
+        catalog = Catalog.objects.create(metadata='{}', identifier=self.node.catalog_id)
         dataset = catalog.dataset_set.create(metadata='{}')
-        cls.distribution = dataset.distribution_set.create(metadata='{}', identifier='1')
+        self.distribution = dataset.distribution_set.create(metadata='{}', identifier='1', present=True)
 
     def test_get_time_index(self):
-        time_index_field = self.distribution.field_set\
+        time_index_field = self.distribution.field_set \
             .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}))
 
         self.assertEqual(DistributionRepository(self.distribution).get_time_index_series(), time_index_field)
@@ -58,3 +57,26 @@ class DistributionRepositoryTests(TestCase):
             update(error=True, error_msg="Error!")
 
         self.assertEqual(DistributionRepository.get_all_errored().first().error_msg, "Error!")
+
+    @raises(ObjectDoesNotExist)
+    def test_non_present_time_index(self):
+        self.distribution.field_set \
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False)
+
+        DistributionRepository(self.distribution).get_time_index_series()
+
+    def test_multiple_indices_returns_present_if_distribution_is_presesnt(self):
+        self.distribution.field_set \
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False)
+        index = self.distribution.field_set \
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=True)
+
+        self.assertEqual(DistributionRepository(self.distribution).get_time_index_series(), index)
+
+    def test_multiple_indices_returns_last_if_distribution_is_not_present(self):
+        self.distribution.field_set \
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False)
+        last = self.distribution.field_set \
+            .create(metadata=json.dumps({constants.SPECIAL_TYPE: constants.TIME_INDEX}), present=False)
+        self.distribution.present = False
+        self.assertEqual(DistributionRepository(self.distribution).get_time_index_series(), last)
