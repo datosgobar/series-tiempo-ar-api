@@ -1,6 +1,6 @@
 # API de Series de Tiempo de la República Argentina
 
-**Versión**: 1.28.7
+**Versión**: 1.28.8
 
 La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
 

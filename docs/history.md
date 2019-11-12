@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.28.8 - 2019-11-12
+
+- Bugfix de `representation_mode` como `percent_change_since_beginning_of_year` para que sea considerado porcentual
+
 ## 1.28.7 - 2019-11-05
 
 - Bump de django-datajsonar a 0.5.1 (disponibiliza URLs de descarga de catálogos, auto whitelist de datasets federables)
