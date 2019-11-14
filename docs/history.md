@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.28.9 - 2019-11-14
+
+- Bump de series-tiempo-ar a 0.3.5
+
 ## 1.28.8 - 2019-11-12
 
 - Bugfix de `representation_mode` como `percent_change_since_beginning_of_year` para que sea considerado porcentual
