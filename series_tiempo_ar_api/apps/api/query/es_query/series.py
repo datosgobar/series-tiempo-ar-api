@@ -10,6 +10,7 @@ from series_tiempo_ar_api.apps.api.query.es_query.periods_between import periods
 
 
 class Serie:
+    """Patrón Builder sobre una query de Elasticsearch"""
     def __init__(self, index, series_id, rep_mode, periodicity, collapse_agg=None):
         self.index = index
         self.series_id = series_id
@@ -17,7 +18,15 @@ class Serie:
         self.original_periodicity = periodicity
         self.periodicity = periodicity
         self.collapse_agg = collapse_agg or constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]
-        self._search = self._init_search()
+
+        self._search = None
+        self.search_options = {
+            constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
+            constants.PARAM_LIMIT: constants.API_DEFAULT_VALUES[constants.PARAM_LIMIT],
+            constants.PARAM_START_DATE: None,
+            constants.PARAM_END_DATE: None,
+            constants.PARAM_SORT: settings.TS_TIME_INDEX_FIELD,  # Sort ascendiente por key
+        }
 
     def _init_search(self):
         search = Search(index=self.index)
@@ -27,24 +36,29 @@ class Serie:
         return search
 
     def add_range_filter(self, start, end):
-        _filter = {
-            'lte': end,
-            'gte': start
-        }
-        self._search = self._search.filter('range', timestamp=_filter)
+        self.search_options[constants.PARAM_START_DATE] = start
+        self.search_options[constants.PARAM_END_DATE] = end
 
     def add_collapse(self, periodicity):
         self.periodicity = periodicity
 
     def add_pagination(self, start, limit, request_start_dates=None):
-        # ☢️☢️☢️
-        es_start = self.get_es_start(request_start_dates, start)
+        self.search_options[constants.PARAM_START] = self.get_es_start(request_start_dates, start)
 
-        es_offset = start + limit
-        if self.rep_mode != constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE]:
-            es_offset += extra_offset(self.periodicity)
+        offset = start + limit
+        extra_offsets = {
+            constants.VALUE: 0,
+            constants.CHANGE: 1,
+            constants.PCT_CHANGE: 1,
+            constants.CHANGE_BEG_YEAR: 0,
+            constants.PCT_CHANGE_BEG_YEAR: 0,
+            constants.CHANGE_YEAR_AGO: extra_offset(self.periodicity),
+            constants.PCT_CHANGE_YEAR_AGO: extra_offset(self.periodicity),
+        }
+        self.search_options[constants.PARAM_START] += extra_offsets[self.rep_mode]
+        offset += extra_offsets[self.rep_mode]
 
-        self._search = self._search[es_start:es_offset]
+        self.search_options[constants.PARAM_LIMIT] = offset
 
     def get_es_start(self, request_start_dates, start):
         """Calcula el comienzo de la query para esta serie particular. El parámetro
@@ -57,12 +71,12 @@ class Serie:
         """
         min_date = min(request_start_dates.values()) if request_start_dates else None
         start_date = request_start_dates.get(self.series_id) if request_start_dates else None
-        es_start = start - self.serie_first_date_offset(start_date,
-                                                        min_date)
+        es_start = start - self._serie_first_date_offset(start_date,
+                                                         min_date)
         es_start = max(es_start, 0)
         return es_start
 
-    def serie_first_date_offset(self, series_start_date: datetime, min_start_date: datetime):
+    def _serie_first_date_offset(self, series_start_date: datetime, min_start_date: datetime):
         if series_start_date is None or min_start_date is None:
             return 0
 
@@ -70,18 +84,34 @@ class Serie:
 
     def sort(self, how):
         if how == constants.SORT_ASCENDING:
-            order = settings.TS_TIME_INDEX_FIELD
+            sort = settings.TS_TIME_INDEX_FIELD
 
         elif how == constants.SORT_DESCENDING:
-            order = '-' + settings.TS_TIME_INDEX_FIELD
+            sort = '-' + settings.TS_TIME_INDEX_FIELD
         else:
             msg = strings.INVALID_SORT_PARAMETER.format(how)
             raise ValueError(msg)
 
-        self._search = self._search.sort(order)
+        self.search_options[constants.PARAM_SORT] = sort
 
     @property
     def search(self):
+        if self._search:
+            return self._search
+
+        self._search = self._init_search()
+        start_date = self.search_options[constants.PARAM_START_DATE]
+        end_date = self.search_options[constants.PARAM_END_DATE]
+        _filter = {
+            'lte': end_date,
+            'gte': start_date,
+        }
+        self._search = self._search.filter('range', timestamp=_filter)
+
+        self._search = self._search.sort(self.search_options[constants.PARAM_SORT])
+
+        self._search = self._search[self.search_options[constants.PARAM_START]:
+                                    self.search_options[constants.PARAM_LIMIT]]
         self._add_collapse()
         self._add_collapse_agg()
         return self._search

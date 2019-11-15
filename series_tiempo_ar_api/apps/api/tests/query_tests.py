@@ -26,35 +26,36 @@ class QueryTests(TestCase):
 
     def test_index_metadata_frequency(self):
         self.query.add_series(self.single_series, self.field)
-        self.query.run()
+        meta = self.query.run()['meta']
 
-        index_frequency = self.query.get_metadata()[0]['frequency']
+        index_frequency = meta[0]['frequency']
         self.assertEqual(index_frequency, 'month')
 
     def test_index_metadata_start_end_dates(self):
         self.query.add_series(self.single_series, self.field)
-        data = self.query.run()['data']
+        res = self.query.run()
 
-        index_meta = self.query.get_metadata()[0]
-        self.assertEqual(data[0][0], index_meta['start_date'])
-        self.assertEqual(data[-1][0], index_meta['end_date'])
+        index_meta = res['meta'][0]
+        self.assertEqual(res['data'][0][0], index_meta['start_date'])
+        self.assertEqual(res['data'][-1][0], index_meta['end_date'])
 
     def test_collapse_index_metadata_frequency(self):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series, self.field)
         self.query.update_collapse(collapse=collapse_interval)
-        self.query.run()
+        meta = self.query.run()['meta']
 
-        index_frequency = self.query.get_metadata()[0]['frequency']
+        index_frequency = meta[0]['frequency']
         self.assertEqual(index_frequency, collapse_interval)
 
     def test_collapse_index_metadata_start_end_dates(self):
         collapse_interval = 'quarter'
         self.query.add_series(self.single_series, self.field)
         self.query.update_collapse(collapse=collapse_interval)
-        data = self.query.run()['data']
+        res = self.query.run()
+        data = res['data']
 
-        index_meta = self.query.get_metadata()[0]
+        index_meta = res['meta'][0]
         self.assertEqual(data[0][0], index_meta['start_date'])
         self.assertEqual(data[-1][0], index_meta['end_date'])
 
@@ -96,8 +97,8 @@ class QueryTests(TestCase):
         catalog.save()
 
         self.query.add_series(self.single_series, self.field)
-        self.query.run()
-        index_meta = self.query.get_metadata()[1]['catalog']
+        meta = self.query.run()['meta']
+        index_meta = meta[1]['catalog']
         self.assertNotIn('extra_field', index_meta)
         self.assertIn('title', index_meta)
 
@@ -107,8 +108,8 @@ class QueryTests(TestCase):
         dataset.save()
 
         self.query.add_series(self.single_series, self.field)
-        self.query.run()
-        index_meta = self.query.get_metadata()[1]['dataset']
+        meta = self.query.run()['meta']
+        index_meta = meta[1]['dataset']
         self.assertNotIn('extra_field', index_meta)
         self.assertIn('title', index_meta)
 
@@ -118,8 +119,8 @@ class QueryTests(TestCase):
         dist.save()
 
         self.query.add_series(self.single_series, self.field)
-        self.query.run()
-        index_meta = self.query.get_metadata()[1]['distribution']
+        meta = self.query.run()['meta']
+        index_meta = meta[1]['distribution']
         self.assertNotIn('extra_field', index_meta)
         self.assertIn('title', index_meta)
 
@@ -127,8 +128,8 @@ class QueryTests(TestCase):
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
 
         self.query.add_series(self.single_series, self.field)
-        self.query.run()
-        index_meta = self.query.get_metadata()[1]['field']
+        meta = self.query.run()['meta']
+        index_meta = meta[1]['field']
         self.assertNotIn('extra_field', index_meta)
         self.assertIn('id', index_meta)
 
@@ -149,14 +150,11 @@ class QueryTests(TestCase):
 
         self.query.add_series(self.single_series, self.field)
         self.query.flatten_metadata_response()
-        self.query.run()
-
-        flat_meta = self.query.get_metadata()[1]
+        flat_meta = self.query.run()['meta'][1]
 
         other_query = Query()
         other_query.add_series(self.single_series, self.field)
-        other_query.run()
-        meta = other_query.get_metadata()[1]
+        meta = other_query.run()['meta'][1]
 
         for key in meta:
             for in_key in meta[key]:
@@ -180,15 +178,12 @@ class QueryTests(TestCase):
         self.query.add_series(self.single_series, self.field)
         self.query.set_metadata_config('full')
         self.query.flatten_metadata_response()
-        self.query.run()
-
-        flat_meta = self.query.get_metadata()[1]
+        flat_meta = self.query.run()['meta'][1]
 
         other_query = Query()
         other_query.add_series(self.single_series, self.field)
         other_query.set_metadata_config('full')
-        other_query.run()
-        meta = other_query.get_metadata()[1]
+        meta = other_query.run()['meta'][1]
 
         for key in meta:
             for in_key in meta[key]:
@@ -197,7 +192,7 @@ class QueryTests(TestCase):
     def test_full_metadata_includes_enhanced_meta(self):
         self.query.add_series(self.single_series, self.field)
         self.query.set_metadata_config('full')
-        meta = self.query.get_metadata()
+        meta = self.query.run()['meta']
 
         for enhanced_meta in self.field.enhanced_meta.all():
             self.assertEqual(meta[1]['field'][enhanced_meta.key], enhanced_meta.value)
@@ -234,7 +229,7 @@ class QueryTests(TestCase):
     def test_response_rep_mode_units(self):
         self.query.add_series(self.single_series, self.field)
 
-        meta = self.query.get_metadata()
+        meta = self.query.run()['meta']
         field_meta = meta[1]['field']
         self.assertEqual(field_meta['representation_mode'], 'value')
         self.assertEqual(field_meta['representation_mode_units'], meta[1]['field'].get('units'))
@@ -243,7 +238,7 @@ class QueryTests(TestCase):
         rep_mode = constants.PCT_CHANGE
         self.query.add_series(self.single_series, self.field, rep_mode=rep_mode)
 
-        meta = self.query.get_metadata()
+        meta = self.query.run()['meta']
         field_meta = meta[1]['field']
 
         self.assertEqual(field_meta['representation_mode'], rep_mode)
@@ -253,8 +248,9 @@ class QueryTests(TestCase):
         """Esperado: Valores de la serie con y sin agregación son iguales, no
         hay valores que colapsar"""
         year_series = get_series_id('year')
-        self.query.add_series(year_series, self.field)
-        self.query.add_series(year_series, self.field, collapse_agg='end_of_period')
+        field = Field.objects.get(identifier=year_series)
+        self.query.add_series(year_series, field)
+        self.query.add_series(year_series, field, collapse_agg='end_of_period')
 
         data = self.query.run()['data']
 

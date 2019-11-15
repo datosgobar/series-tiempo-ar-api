@@ -22,12 +22,10 @@ class ESQuery:
         self.series = []
         self.data = None
         self.count = None
-        self.start_dates = None
         self.reverse_results = False
 
         # Parámetros que deben ser guardados y accedidos varias veces
         self.args = {
-            constants.PARAM_START: constants.API_DEFAULT_VALUES[constants.PARAM_START],
             constants.PARAM_LIMIT: constants.API_DEFAULT_VALUES[constants.PARAM_LIMIT],
             constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
         }
@@ -69,13 +67,10 @@ class ESQuery:
         # Aplicamos paginación luego, por ahora guardamos los parámetros
         self.args[constants.PARAM_START] = start
         self.args[constants.PARAM_LIMIT] = limit
-        self.start_dates = start_dates or {}
-
-    def setup_series_pagination(self):
         for serie in self.series:
-            serie.add_pagination(self.args[constants.PARAM_START],
-                                 self.args[constants.PARAM_LIMIT],
-                                 request_start_dates=self.start_dates)
+            serie.add_pagination(start,
+                                 limit,
+                                 start_dates or {})
 
     def add_filter(self, start=None, end=None):
         if not self.series:
@@ -83,15 +78,6 @@ class ESQuery:
 
         for serie in self.series:
             serie.add_range_filter(start, end)
-
-    def get_data_start_end_dates(self):
-        if not self.data:
-            return {}
-
-        return {
-            constants.PARAM_START_DATE: self.data[0][0],
-            constants.PARAM_END_DATE: self.data[-1][0]
-        }
 
     def execute_searches(self):
         """Ejecuta la query de todas las series agregadas, e inicializa
@@ -104,25 +90,15 @@ class ESQuery:
                                    doc_type=settings.TS_DOC_TYPE)
 
         for serie in self.series:
-            self.setup_series_pagination()
             multi_search = multi_search.add(serie.search)
 
         responses = multi_search.execute()
         formatter = ResponseFormatter(self.series, responses, self.args)
-        self.data = formatter.format_response()
 
-        self.count = max([response.hits.total for response in responses])
-
-    def get_results_data(self) -> list:
-        if self.data is None:
-            raise RuntimeError(strings.DATA_NOT_INITIALIZED)
-
-        # Devuelvo hasta LIMIT values
-        data = self.data[:self.args[constants.PARAM_LIMIT]]
-
-        if self.reverse_results:
-            data.reverse()
-        return data
+        return {
+            'data': (formatter.format_response()),
+            'count': max([response.hits.total for response in responses])
+        }
 
     def get_results_count(self) -> int:
         if self.count is None:
@@ -130,10 +106,16 @@ class ESQuery:
 
         return self.count
 
-    def run(self) -> list:
+    def run(self) -> dict:
         """Equivalente a execute_searches + get_results_data"""
-        self.execute_searches()
-        return self.get_results_data()
+        result = self.execute_searches()
+
+        # Devuelvo hasta LIMIT values
+        result['data'] = result['data'][:self.args[constants.PARAM_LIMIT]]
+
+        if self.reverse_results:
+            result['data'].reverse()
+        return result
 
     def reverse(self):
         self.reverse_results = True

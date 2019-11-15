@@ -42,7 +42,7 @@ class QueryTest(TestCase):
     def test_pagination(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(self.start, self.limit)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertEqual(len(data), self.limit - self.start)
 
@@ -50,13 +50,13 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(self.start, 15)
         self.query.sort(how='asc')
-        data = self.query.run()
+        data = self.query.run()['data']
         self.assertEqual(len(data), 15)
 
     def test_time_filter(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_filter(self.start_date, self.end_date)
-        data = self.query.run()
+        data = self.query.run()['data']
         for row in data:
             if 'T' in row[0]:
                 date = iso8601.parse_date(row[0])
@@ -71,19 +71,19 @@ class QueryTest(TestCase):
 
     def test_execute_single_series(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertTrue(data)
 
     def test_default_return_limits(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertEqual(len(data), self.default_limit)
 
     def test_add_series(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertTrue(data)
         # Expected: rows de 2 datos: timestamp, valor de la serie
@@ -94,7 +94,7 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series,
                               'percent_change',
                               periodicity=self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertTrue(data)
         # Expected: rows de 3 datos: timestamp, serie 1, serie 2
@@ -110,9 +110,9 @@ class QueryTest(TestCase):
         query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.sort('asc')
-        first_date = query.run()[0][0]
+        first_date = query.run()['data'][0][0]
         self.query.sort('asc')
-        data = self.query.run()
+        data = self.query.run()['data']
         self.assertEqual(data[0][0], first_date)
 
     def test_query_fills_nulls(self):
@@ -124,9 +124,9 @@ class QueryTest(TestCase):
         query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.sort('asc')
-        delayed_first_date = iso8601.parse_date(query.run()[0][0])
+        delayed_first_date = iso8601.parse_date(query.run()['data'][0][0])
         self.query.sort('asc')
-        data = self.query.run()
+        data = self.query.run()['data']
 
         delayed_series_index = 1  # Primera serie agregada
         for row in data:
@@ -145,9 +145,9 @@ class QueryTest(TestCase):
         query = ESQuery(index=settings.TS_INDEX)
         query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         query.sort('asc')
-        delayed_first_date = iso8601.parse_date(query.run()[0][0])
+        delayed_first_date = iso8601.parse_date(query.run()['data'][0][0])
         self.query.sort('asc')
-        data = self.query.run()
+        data = self.query.run()['data']
 
         delayed_series_index = 2  # Segunda serie agregada
         for row in data:
@@ -170,7 +170,7 @@ class QueryTest(TestCase):
         query.add_pagination(start=0, limit=1000)
         query.sort('asc')
 
-        data = self.query.run()
+        data = self.query.run()['data']
         current_date = iso8601.parse_date(data[0][0])
         for row in data[1:]:
             row_date = iso8601.parse_date(row[0])
@@ -180,7 +180,7 @@ class QueryTest(TestCase):
     def test_query_add_aggregation(self):
         avg_query = ESQuery(index=settings.TS_INDEX)
         avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
-        data = avg_query.run()
+        data = avg_query.run()['data']
 
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
 
@@ -192,7 +192,7 @@ class QueryTest(TestCase):
 
     def test_semester_query(self):
         self.query.add_series(get_series_id('semester'), self.rep_mode, 'semester')
-        data = self.query.run()
+        data = self.query.run()['data']
 
         for row in data:
             date = iso8601.parse_date(row[0])
@@ -200,20 +200,20 @@ class QueryTest(TestCase):
 
     @raises(QueryError)
     def test_execute_empty(self):
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertFalse(data)
 
     def test_execute_single(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
 
-        data = self.query.run()
+        data = self.query.run()['data']
         self.assertTrue(data)
 
     def test_start_limit(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(self.start, self.limit)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertEqual(len(data), self.limit)
 
@@ -224,7 +224,7 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_collapse(interval='year')
         self.query.sort(how='asc')
-        data = self.query.run()
+        data = self.query.run()['data']
         prev_timestamp = None
         for row in data:
             timestamp = row[0]
@@ -240,7 +240,7 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_collapse(interval='quarter')
         self.query.sort(how='asc')
-        data = self.query.run()
+        data = self.query.run()['data']
         prev_timestamp = None
         for row in data:
             timestamp = row[0]
@@ -258,7 +258,7 @@ class QueryTest(TestCase):
         self.query.add_collapse(interval='quarter')
         self.query.add_collapse(interval='year')
         self.query.sort(how='asc')
-        data = self.query.run()
+        data = self.query.run()['data']
 
         prev_timestamp = None
         for row in data:
@@ -277,7 +277,7 @@ class QueryTest(TestCase):
                               self.series_periodicity)
         self.query.sort('desc')
 
-        data = self.query.run()
+        data = self.query.run()['data']
         current_date = iso8601.parse_date(data[0][0])
         for row in data[1:]:
             row_date = iso8601.parse_date(row[0])
@@ -288,11 +288,11 @@ class QueryTest(TestCase):
         avg_query = ESQuery(index=settings.TS_INDEX)
         avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
         avg_query.add_collapse('year')
-        data = avg_query.run()
+        data = avg_query.run()['data']
 
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
         self.query.add_collapse('year')
-        sum_data = self.query.run()
+        sum_data = self.query.run()['data']
 
         for i, row in enumerate(sum_data):
             # Suma debe ser siempre mayor que el promedio
@@ -306,7 +306,7 @@ class QueryTest(TestCase):
         query.add_pagination(start=0, limit=1000)
         query.sort('asc')
         query.add_filter(start="1970")
-        orig_data = query.run()
+        orig_data = query.run()['data']
 
         self.query.add_series(self.single_series,
                               self.rep_mode,
@@ -314,7 +314,7 @@ class QueryTest(TestCase):
                               'end_of_period')
         self.query.add_filter(start="1970")
         self.query.add_collapse('year')
-        eop_data = self.query.run()
+        eop_data = self.query.run()['data']
 
         for eop_row in eop_data:
             eop_value = eop_row[1]
@@ -332,7 +332,7 @@ class QueryTest(TestCase):
                               'end_of_period')
         self.query.add_collapse('year')
         self.query.sort('asc')
-        data = self.query.run()
+        data = self.query.run()['data']
 
         orig_eop = ESQuery(index=settings.TS_INDEX)
         orig_eop.add_series(self.single_series,
@@ -341,7 +341,7 @@ class QueryTest(TestCase):
                             'end_of_period')
         orig_eop.add_collapse('year')
         orig_eop.sort('asc')
-        end_of_period = orig_eop.run()
+        end_of_period = orig_eop.run()['data']
 
         for i, row in enumerate(data):  # El primero es nulo en pct change
             value = end_of_period[i + 1][1] / end_of_period[i][1] - 1
@@ -359,7 +359,7 @@ class QueryTest(TestCase):
         self.query.add_pagination(start=0, limit=limit)
         self.query.sort('asc')
 
-        data = self.query.run()
+        data = self.query.run()['data']
         self.assertEqual(len(data), limit)
 
     def test_aggregation_on_yearly_series(self):
@@ -369,7 +369,7 @@ class QueryTest(TestCase):
         self.query.add_series(year_series, self.rep_mode, 'year')
         self.query.add_series(year_series, self.rep_mode, 'year', 'end_of_period')
 
-        data = self.query.run()
+        data = self.query.run()['data']
 
         for row in data:
             self.assertEqual(row[1], row[2])
@@ -380,7 +380,7 @@ class QueryTest(TestCase):
 
         self.query.sort('desc')
         self.query.add_pagination(start=0, limit=1)
-        row = self.query.run()[0]
+        row = self.query.run()['data'][0]
 
         self.assertIsNotNone(row[2])
         self.assertIsNone(row[1])
@@ -389,13 +389,13 @@ class QueryTest(TestCase):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
 
-        data = self.query.run()
+        data = self.query.run()['data']
 
         other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
 
-        other_data = other_query.run()
+        other_data = other_query.run()['data']
 
         # Esperado: mismos resultados, invertidos en orden de fila
         for i, row in enumerate(data):
@@ -407,14 +407,14 @@ class QueryTest(TestCase):
     def test_min_agg(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(start=0, limit=12)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='min')
         other_query.add_pagination(start=0, limit=1)
         other_query.add_collapse('year')
 
-        other_data = other_query.run()
+        other_data = other_query.run()['data']
 
         min_val = min([row[1] for row in data])
 
@@ -423,14 +423,14 @@ class QueryTest(TestCase):
     def test_max_agg(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
         self.query.add_pagination(start=0, limit=12)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
         other_query.add_pagination(start=0, limit=1)
         other_query.add_collapse('year')
 
-        other_data = other_query.run()
+        other_data = other_query.run()['data']
 
         min_val = max([row[1] for row in data])
 
@@ -438,46 +438,30 @@ class QueryTest(TestCase):
 
     def test_max_without_collapse_same_as_avg(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         other_query = ESQuery(settings.TS_INDEX)
         other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
-        other_data = other_query.run()
+        other_data = other_query.run()['data']
 
         for i, row in enumerate(data):
             self.assertEqual(tuple(row), tuple(other_data[i]))
 
     def test_rep_mode_has_no_leading_nulls(self):
         self.query.add_series(self.single_series, 'percent_change', self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertIsNotNone(data[0][1])
 
     def test_year_rep_mode_has_no_leading_nulls(self):
         self.query.add_series(self.single_series, 'percent_change_a_year_ago', self.series_periodicity)
-        data = self.query.run()
+        data = self.query.run()['data']
 
         self.assertIsNotNone(data[0][1])
 
-    @raises(RuntimeError)
-    def test_get_uninitialized_data(self):
-        self.query.get_results_data()
-
-    @raises(RuntimeError)
-    def test_get_uninitialized_count(self):
-        self.query.get_results_count()
-
-    def test_get_data_and_run_equivalence(self):
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_collapse('year')
-        self.query.run()
-
-        self.assertEqual(self.query.get_results_data(),
-                         self.query.run())
-
     def test_query_count(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.run()
+        count = self.query.run()['count']
 
         # Todas las series generadas tienen max_limit como longitud. Ver support/generate_data.py
-        self.assertEqual(self.query.get_results_count(), 12 * 10)
+        self.assertEqual(count, 12 * 10)

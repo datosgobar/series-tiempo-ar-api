@@ -95,18 +95,20 @@ class Query:
                 raise CollapseError
 
     def run(self):
-        response = OrderedDict()  # Garantiza el orden de los objetos cargados
-        self.es_query.run()
+        result = OrderedDict()
+        response = self.es_query.run()
+
         if self.metadata_config != constants.METADATA_ONLY:
-            response['data'] = self.es_query.get_results_data()
+            result['data'] = response['data']
 
         if self.metadata_config != constants.METADATA_NONE:
-            response['meta'] = self.get_metadata()
+            response['meta'] = self.get_metadata(response['data'])
 
-        response['count'] = self.es_query.get_results_count()
+        result['count'] = response['count']
+
         return response
 
-    def get_metadata(self):
+    def get_metadata(self, data):
         """Arma la respuesta de metadatos: una lista de objetos con
         un metadato por serie de tiempo pedida, más una extra para el
         índice de tiempo
@@ -119,14 +121,20 @@ class Query:
             'frequency': self._calculate_data_frequency()
         }
         # si pedimos solo metadatos no tenemos start y end dates
-        if self.metadata_config != constants.METADATA_ONLY:
-            index_meta.update(self.es_query.get_data_start_end_dates())
+        if self.metadata_config != constants.METADATA_ONLY and data:
+            index_meta.update(self._get_data_start_end_dates(data))
 
         meta.append(index_meta)
         for serie in self.series:
             meta.append(self._get_series_metadata(serie))
 
         return meta
+
+    def _get_data_start_end_dates(self, data):
+        return {
+            constants.PARAM_START_DATE: data[0][0],
+            constants.PARAM_END_DATE: data[-1][0]
+        }
 
     def _get_series_metadata(self, serie: SeriesQuery):
         """Devuelve un diccionario (data.json-like) de los metadatos
