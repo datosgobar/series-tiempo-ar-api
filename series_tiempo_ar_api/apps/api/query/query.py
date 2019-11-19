@@ -43,7 +43,7 @@ class Query:
         if how == constants.HEADER_PARAM_DESCRIPTIONS:
             return [serie.description() for serie in self.series]
 
-        return self.es_query.get_series_ids()
+        return [serie.identifier() for serie in self.series]
 
     def add_pagination(self, start, limit):
         start_dates = {serie.get_identifiers()['id']: serie.start_date() for serie in self.series}

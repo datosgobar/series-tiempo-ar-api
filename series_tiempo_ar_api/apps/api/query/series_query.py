@@ -77,3 +77,6 @@ class SeriesQuery:
             self.cache[key] = meta_keys.get(model, meta_key)
 
         return self.cache[key]
+
+    def identifier(self):
+        return self.field_model.identifier

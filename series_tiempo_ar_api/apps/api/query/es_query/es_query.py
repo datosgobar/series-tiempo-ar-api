@@ -36,10 +36,6 @@ class ESQuery:
         if constants.PARAM_PERIODICITY not in self.args:
             self.add_collapse(periodicity)
 
-    def get_series_ids(self):
-        """Devuelve una lista de series cargadas"""
-        return [serie.series_id for serie in self.series]
-
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
         for serie in self.series:
