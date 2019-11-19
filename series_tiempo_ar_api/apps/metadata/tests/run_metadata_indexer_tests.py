@@ -28,7 +28,10 @@ class RunMetadataIndexerTests(TestCase):
             indexable=True,
             catalog_url="http://test_catalog_3.com",
             catalog_id='test_catalog_3')
-        run_metadata_indexer(self.task, new_node)
+
+        self.task.node = new_node
+        self.task.save()
+        run_metadata_indexer(self.task)
 
         self.assertIn(new_node, catalog_indexer.call_args[0])
         self.assertEqual(catalog_indexer().index.call_count, Node.objects.count())  # No effect
