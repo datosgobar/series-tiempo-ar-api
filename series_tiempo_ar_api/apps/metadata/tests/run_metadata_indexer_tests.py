@@ -34,4 +34,4 @@ class RunMetadataIndexerTests(TestCase):
         run_metadata_indexer(self.task)
 
         self.assertIn(new_node, catalog_indexer.call_args[0])
-        self.assertEqual(catalog_indexer().index.call_count, Node.objects.count())  # No effect
+        self.assertEqual(catalog_indexer().index.call_count, 1)
