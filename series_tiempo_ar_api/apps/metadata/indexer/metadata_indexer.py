@@ -37,8 +37,8 @@ class MetadataIndexer:
             "actions": actions
         })
 
-    def run(self, nodes):
-        index = get_random_index_name()
+    def run(self, nodes, new_index=True):
+        index = get_random_index_name() if new_index else constants.METADATA_ALIAS
         index_created = False
         for node in nodes:
             try:
@@ -52,6 +52,9 @@ class MetadataIndexer:
                 IndexMetadataTask.info(self.task,
                                        u'Error en la lectura del catálogo {}: {}'.format(node.catalog_id, e))
 
+        if not new_index:
+            return
+
         if index_created:
             self.elastic.indices.forcemerge(index=index)
             self.update_alias(index)
@@ -62,9 +65,9 @@ class MetadataIndexer:
 
 # pylint: disable=W0613
 @job('meta_indexing', timeout=10000)
-def run_metadata_indexer(task, node=None):
-    nodes = Node.objects.filter(indexable=True)
-    MetadataIndexer(task).run(nodes)
+def run_metadata_indexer(task):
+    nodes = [task.node] if task.node else Node.objects.filter(indexable=True)
+    MetadataIndexer(task).run(nodes, new_index=not bool(task.node))
     update_units()
     task.refresh_from_db()
     task.status = task.FINISHED
@@ -73,4 +76,4 @@ def run_metadata_indexer(task, node=None):
 
 @job('meta_indexing', timeout=-1)
 def enqueue_new_index_metadata_task(node=None):
-    run_metadata_indexer(IndexMetadataTask.objects.create(), node)
+    run_metadata_indexer(IndexMetadataTask.objects.create(node=node))
