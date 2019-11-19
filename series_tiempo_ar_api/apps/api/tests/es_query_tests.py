@@ -8,6 +8,7 @@ from nose.tools import raises
 from series_tiempo_ar_api.apps.api.exceptions import QueryError
 from series_tiempo_ar_api.apps.api.query import constants
 from series_tiempo_ar_api.apps.api.query.query import ESQuery
+from series_tiempo_ar_api.apps.api.query.series_query import SeriesQuery
 from .helpers import get_series_id
 
 SERIES_NAME = get_series_id('month')
@@ -52,22 +53,6 @@ class QueryTest(TestCase):
         self.query.sort(how='asc')
         data = self.query.run()['data']
         self.assertEqual(len(data), 15)
-
-    def test_time_filter(self):
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_filter(self.start_date, self.end_date)
-        data = self.query.run()['data']
-        for row in data:
-            if 'T' in row[0]:
-                date = iso8601.parse_date(row[0])
-                start_date = iso8601.parse_date(self.start_date)
-                end_date = iso8601.parse_date(self.end_date)
-            else:
-                date = iso8601.parse_date(row[0])
-                start_date = iso8601.parse_date(self.start_date)
-                end_date = iso8601.parse_date(self.end_date)
-            self.assertGreaterEqual(date, start_date)
-            self.assertLessEqual(date, end_date)
 
     def test_execute_single_series(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
@@ -198,12 +183,6 @@ class QueryTest(TestCase):
             date = iso8601.parse_date(row[0])
             self.assertTrue(date.month in (1, 7))
 
-    @raises(QueryError)
-    def test_execute_empty(self):
-        data = self.query.run()['data']
-
-        self.assertFalse(data)
-
     def test_execute_single(self):
         self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
 
@@ -217,60 +196,6 @@ class QueryTest(TestCase):
 
         self.assertEqual(len(data), self.limit)
 
-    def test_add_collapse(self):
-        """Testea que luego de agregar un collapse default, los
-        resultados sean anuales, es decir cada uno a un año de
-        diferencia con su anterior"""
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_collapse(interval='year')
-        self.query.sort(how='asc')
-        data = self.query.run()['data']
-        prev_timestamp = None
-        for row in data:
-            timestamp = row[0]
-            parsed_timestamp = iso8601.parse_date(timestamp)
-            if not prev_timestamp:
-                prev_timestamp = parsed_timestamp
-                continue
-            delta = relativedelta(parsed_timestamp, prev_timestamp)
-            self.assertTrue(delta.years == 1, timestamp)
-            prev_timestamp = parsed_timestamp
-
-    def test_collapse_custom_params(self):
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_collapse(interval='quarter')
-        self.query.sort(how='asc')
-        data = self.query.run()['data']
-        prev_timestamp = None
-        for row in data:
-            timestamp = row[0]
-            parsed_timestamp = iso8601.parse_date(timestamp)
-            if not prev_timestamp:
-                prev_timestamp = parsed_timestamp
-                continue
-            delta = relativedelta(parsed_timestamp, prev_timestamp)
-            self.assertTrue(delta.months == 3, timestamp)
-            prev_timestamp = parsed_timestamp
-
-    def test_add_two_collapses(self):
-        """Esperado: El segundo collapse overridea el primero"""
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_collapse(interval='quarter')
-        self.query.add_collapse(interval='year')
-        self.query.sort(how='asc')
-        data = self.query.run()['data']
-
-        prev_timestamp = None
-        for row in data:
-            timestamp = row[0]
-            parsed_timestamp = iso8601.parse_date(timestamp)
-            if not prev_timestamp:
-                prev_timestamp = parsed_timestamp
-                continue
-            delta = relativedelta(parsed_timestamp, prev_timestamp)
-            self.assertTrue(delta.years == 1, timestamp)
-            prev_timestamp = parsed_timestamp
-
     def test_sort(self):
         self.query.add_series(self.delayed_series,
                               self.rep_mode,
@@ -283,70 +208,6 @@ class QueryTest(TestCase):
             row_date = iso8601.parse_date(row[0])
             self.assertGreater(current_date, row_date)
             current_date = row_date
-
-    def test_add_query_aggregation(self):
-        avg_query = ESQuery(index=settings.TS_INDEX)
-        avg_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'avg')
-        avg_query.add_collapse('year')
-        data = avg_query.run()['data']
-
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity, 'sum')
-        self.query.add_collapse('year')
-        sum_data = self.query.run()['data']
-
-        for i, row in enumerate(sum_data):
-            # Suma debe ser siempre mayor que el promedio
-            sum_value = row[1]
-            avg_value = data[i][1]
-            self.assertGreater(sum_value, avg_value)
-
-    def test_end_of_period(self):
-        query = ESQuery(index=settings.TS_INDEX)
-        query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        query.add_pagination(start=0, limit=1000)
-        query.sort('asc')
-        query.add_filter(start="1970")
-        orig_data = query.run()['data']
-
-        self.query.add_series(self.single_series,
-                              self.rep_mode,
-                              self.series_periodicity,
-                              'end_of_period')
-        self.query.add_filter(start="1970")
-        self.query.add_collapse('year')
-        eop_data = self.query.run()['data']
-
-        for eop_row in eop_data:
-            eop_value = eop_row[1]
-            year = iso8601.parse_date(eop_row[0]).year
-            for row in orig_data:
-                row_date = iso8601.parse_date(row[0])
-                if row_date.year == year and row_date.month == 12:
-                    self.assertAlmostEqual(eop_value, row[1], 5)  # EOP trae pérdida de precisión
-                    break
-
-    def test_end_of_period_with_rep_mode(self):
-        self.query.add_series(self.single_series,
-                              'percent_change',
-                              self.series_periodicity,
-                              'end_of_period')
-        self.query.add_collapse('year')
-        self.query.sort('asc')
-        data = self.query.run()['data']
-
-        orig_eop = ESQuery(index=settings.TS_INDEX)
-        orig_eop.add_series(self.single_series,
-                            self.rep_mode,
-                            self.series_periodicity,
-                            'end_of_period')
-        orig_eop.add_collapse('year')
-        orig_eop.sort('asc')
-        end_of_period = orig_eop.run()['data']
-
-        for i, row in enumerate(data):  # El primero es nulo en pct change
-            value = end_of_period[i + 1][1] / end_of_period[i][1] - 1
-
-            self.assertAlmostEqual(value, row[1])
 
     def test_multiple_series_limit(self):
         limit = 100
@@ -417,22 +278,6 @@ class QueryTest(TestCase):
         other_data = other_query.run()['data']
 
         min_val = min([row[1] for row in data])
-
-        self.assertAlmostEqual(min_val, other_data[0][1], places=5)
-
-    def test_max_agg(self):
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-        self.query.add_pagination(start=0, limit=12)
-        data = self.query.run()['data']
-
-        other_query = ESQuery(settings.TS_INDEX)
-        other_query.add_series(self.single_series, self.rep_mode, self.series_periodicity, collapse_agg='max')
-        other_query.add_pagination(start=0, limit=1)
-        other_query.add_collapse('year')
-
-        other_data = other_query.run()['data']
-
-        min_val = max([row[1] for row in data])
 
         self.assertAlmostEqual(min_val, other_data[0][1], places=5)
 

@@ -18,7 +18,7 @@ class EndpointTestCase:
         primer dato en 2004-01-01 == 100, y luego aumentando en 1 por cada período
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.client = Client()
         self._monotonic_increasing_series()
         self._monotonic_increasing_delayed_series()

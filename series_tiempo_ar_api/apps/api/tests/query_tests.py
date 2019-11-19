@@ -2,6 +2,7 @@
 import json
 
 import iso8601
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.test import TestCase
 from nose.tools import raises
@@ -340,3 +341,44 @@ class QueryTests(TestCase):
             self.assertEqual(row1[0], row2[0])
             self.assertEqual(row1[1], row2[2])
             self.assertEqual(row1[2], row2[1])
+
+    def test_add_two_collapses(self):
+        """Esperado: El segundo collapse overridea el primero"""
+        self.query.add_series(self.single_series, self.field)
+        self.query.update_collapse('quarter')
+        self.query.update_collapse('year')
+        self.query.sort(how='asc')
+        data = self.query.run()['data']
+
+        prev_timestamp = None
+        for row in data:
+            timestamp = row[0]
+            parsed_timestamp = iso8601.parse_date(timestamp)
+            if not prev_timestamp:
+                prev_timestamp = parsed_timestamp
+                continue
+            delta = relativedelta(parsed_timestamp, prev_timestamp)
+            self.assertTrue(delta.years == 1, timestamp)
+            prev_timestamp = parsed_timestamp
+
+    def test_end_of_period_with_rep_mode(self):
+        self.query.add_series(self.single_series,
+                              self.field,
+                              'percent_change',
+                              'end_of_period')
+        self.query.update_collapse('year')
+        self.query.sort('asc')
+        data = self.query.run()['data']
+
+        orig_eop = Query(index=settings.TS_INDEX)
+        orig_eop.add_series(self.single_series,
+                            self.field,
+                            collapse_agg='end_of_period')
+        orig_eop.update_collapse('year')
+        orig_eop.sort('asc')
+        end_of_period = orig_eop.run()['data']
+
+        for i, row in enumerate(data):  # El primero es nulo en pct change
+            value = end_of_period[i + 1][1] / end_of_period[i][1] - 1
+
+            self.assertAlmostEqual(value, row[1])

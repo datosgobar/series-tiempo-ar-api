@@ -55,10 +55,9 @@ class Query:
     def add_series(self, name, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
-        serie_query = SeriesQuery(field_model, rep_mode)
+        serie_query = SeriesQuery(field_model, rep_mode, collapse_agg)
         self.series.append(serie_query)
 
-        self.es_query.add_series(name, rep_mode, serie_query.periodicity(), collapse_agg)
         periodicities = self._series_periodicities()
         max_periodicity = self.get_max_periodicity(periodicities)
         self.update_collapse(collapse=max_periodicity)
@@ -96,7 +95,7 @@ class Query:
 
     def run(self):
         result = OrderedDict()
-        response = self.es_query.run()
+        response = self.es_query.run_for_series(self.series)
 
         if self.metadata_config != constants.METADATA_ONLY:
             result['data'] = response['data']

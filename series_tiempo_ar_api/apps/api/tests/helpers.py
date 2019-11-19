@@ -44,6 +44,9 @@ class DatabaseLoader:
         day = self._create_distribution('R/P1D')
         self._create_field(day, get_series_id('day'), 'random_day_0_title', start_date)
 
+        day = self._create_distribution('R/P3M')
+        self._create_field(day, get_series_id('quarter'), 'random_quarter_0_title', start_date)
+
     def _create_distribution(self, periodicity):
         count = self.dataset.distribution_set.count()
         identifier = f'{self.dataset_id}.{count + 1}'
@@ -75,6 +78,8 @@ class DatabaseLoader:
         self._create_field(month, get_delayed_series_id('month'), 'random_month_0_title_delayed', start_date)
         day = self._create_distribution('R/P1D')
         self._create_field(day, get_delayed_series_id('day'), 'random_day_0_title_delayed', start_date)
+        day = self._create_distribution('R/P3M')
+        self._create_field(day, get_delayed_series_id('quarter'), 'random_quarter_0_title_delayed', start_date)
 
 
 def get_series_id(periodicity):
