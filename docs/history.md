@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.28.10 - 2019-11-20
+
+- Fix de conflictos en borrado de datos durante indexación a Elasticsearch
+
 ## 1.28.9 - 2019-11-14
 
 - Bump de series-tiempo-ar a 0.3.5
