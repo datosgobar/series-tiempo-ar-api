@@ -25,7 +25,7 @@ class SortTests(TestCase):
         self.cmd = Sort()
 
     def test_add_asc_sort(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'sort': 'asc'})
 
         data = self.query.run()['data']
@@ -37,7 +37,7 @@ class SortTests(TestCase):
             previous = current
 
     def test_add_desc_sort(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'sort': 'desc'})
 
         data = self.query.run()['data']
@@ -49,7 +49,7 @@ class SortTests(TestCase):
             previous = current
 
     def test_sort_desc_with_collapse(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'sort': 'desc'})
         self.query.update_collapse(collapse='year')
         data = self.query.run()['data']
@@ -61,7 +61,7 @@ class SortTests(TestCase):
             previous = current
 
     def test_sort_asc_with_collapse(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'sort': 'asc'})
         self.query.update_collapse('year')
         data = self.query.run()['data']

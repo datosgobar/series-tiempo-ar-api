@@ -7,11 +7,12 @@ from series_tiempo_ar_api.apps.api.query import constants
 
 class ResponseFormatter:
 
-    def __init__(self, series, responses, args):
+    def __init__(self, series, responses, sort, periodicity):
         self.series = series
         self.responses = responses
         self.data_dict = {}
-        self.args = args
+        self.sort = sort
+        self.periodicity = periodicity
 
     def format_response(self):
         """Procesa la respuesta recibida de Elasticsearch, la guarda en
@@ -46,7 +47,7 @@ class ResponseFormatter:
                                          max(self.data_dict.keys()))
 
         for timestamp in sorted(self.data_dict.keys(),
-                                reverse=self.args[constants.PARAM_SORT] != constants.SORT_ASCENDING):
+                                reverse=self.sort != constants.SORT_ASCENDING):
             row = [timestamp]
 
             for series in self.series:
@@ -83,5 +84,5 @@ class ResponseFormatter:
         end_date = iso8601.parse_date(end_date)
 
         while current_date < end_date:
-            current_date += get_relative_delta(self.args[constants.PARAM_PERIODICITY])
+            current_date += get_relative_delta(self.periodicity)
             self.data_dict.setdefault(str(current_date.date()), {})

@@ -21,13 +21,13 @@ class DelimiterTests(TestCase):
         self.cmd = Delimiter()
 
     def test_delimiter(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'sep': '|'})
 
         self.assertFalse(self.cmd.errors)
 
     def test_multiple_delimiters(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'sep': '|;'})
 
         self.assertTrue(self.cmd.errors)
@@ -46,13 +46,13 @@ class DecimalCharTests(TestCase):
         self.cmd = DecimalChar()
 
     def test_decimal_char(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'decimal': ','})
 
         self.assertFalse(self.cmd.errors)
 
     def test_multiple_decimal_chars(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'decimal': ',;'})
 
         self.assertTrue(self.cmd.errors)

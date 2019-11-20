@@ -26,12 +26,12 @@ class PaginationTests(TestCase):
         self.cmd = Pagination()
 
     def test_start(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         params = {'ids': self.single_series, 'limit': self.limit}
 
         # Query sin offset
         other_query = Query()
-        other_query.add_series(self.single_series, self.field, 'value')
+        other_query.add_series(self.field, 'value')
         self.cmd.run(other_query, params)
         other_data = other_query.run()['data']
 
@@ -45,7 +45,7 @@ class PaginationTests(TestCase):
         self.assertEqual(data[0], other_data[self.start])
 
     def test_limit(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'limit': self.limit})
         self.query.sort(how='asc')
@@ -53,7 +53,7 @@ class PaginationTests(TestCase):
         self.assertEqual(len(data), self.limit)
 
     def test_invalid_start_parameter(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
 
         self.cmd.run(self.query, {'ids': self.single_series,
                                   'start': 'not a number'})

@@ -289,7 +289,7 @@ class IdsField(BaseOperation):
         if not field_model:
             return
 
-        query.add_series(series_id, field_model, rep_mode, collapse_agg)
+        query.add_series(field_model, rep_mode, collapse_agg)
 
     def _get_model(self, series_id):
         """Valida si el 'series_id' es válido, es decir, si la serie

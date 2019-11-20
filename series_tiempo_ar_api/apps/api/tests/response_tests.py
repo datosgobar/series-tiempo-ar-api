@@ -20,7 +20,7 @@ class ResponseTests(TestCase):
     def setUpClass(cls):
         cls.query = Query()
         field = Field.objects.get(identifier=cls.single_series)
-        cls.query.add_series(cls.single_series, field)
+        cls.query.add_series(field)
         cls.series_name = field.title
         cls.series_desc = json.loads(field.metadata)['description']
         super(ResponseTests, cls).setUpClass()
@@ -70,8 +70,8 @@ class ResponseTests(TestCase):
         query = Query()
 
         field = Field.objects.get(identifier=self.single_series)
-        query.add_series(self.single_series, field)
-        query.add_series(self.single_series, field, rep_mode='percent_change_a_year_ago')
+        query.add_series(field)
+        query.add_series(field, rep_mode='percent_change_a_year_ago')
 
         generator = ResponseFormatterGenerator('csv').get_formatter()
         response = generator.run(query, {'decimal': ','})
@@ -81,10 +81,10 @@ class ResponseTests(TestCase):
     def setupQueryWithSeriesWithDifferentRepresentationModes(self):
         query = Query()
         field = Field.objects.get(identifier=self.single_series)
-        query.add_series(self.single_series, field, rep_mode='change')
-        query.add_series(self.single_series, field, rep_mode='percent_change')
-        query.add_series(self.single_series, field, rep_mode='change_a_year_ago')
-        query.add_series(self.single_series, field, rep_mode='percent_change_a_year_ago')
+        query.add_series(field, rep_mode='change')
+        query.add_series(field, rep_mode='percent_change')
+        query.add_series(field, rep_mode='change_a_year_ago')
+        query.add_series(field, rep_mode='percent_change_a_year_ago')
 
         return query
 

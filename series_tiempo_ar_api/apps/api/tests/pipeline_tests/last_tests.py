@@ -1,6 +1,5 @@
 import iso8601
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.test import TestCase
 from django_datajsonar.models import Field
 
@@ -24,11 +23,11 @@ class LastTests(TestCase):
         super(cls, LastTests).setUpClass()
 
     def test_last_cmd(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.cmd.run(self.query, {'last': '10'})
 
         orig_query = Query()
-        orig_query.add_series(self.single_series, self.field)
+        orig_query.add_series(self.field)
         orig_query.sort('desc')
         data = orig_query.run()['data']
         data.reverse()
@@ -39,11 +38,11 @@ class LastTests(TestCase):
 
     def test_last_cmd_with_start_date(self):
         rows = 100
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.cmd.run(self.query, {'last': str(rows)})
 
         orig_query = Query()
-        orig_query.add_series(self.single_series, self.field)
+        orig_query.add_series(self.field)
         orig_query.sort('desc')
         data = orig_query.run()['data']
         last_date = iso8601.parse_date(data[-1][0])

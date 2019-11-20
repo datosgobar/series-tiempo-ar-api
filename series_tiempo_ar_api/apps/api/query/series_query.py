@@ -15,10 +15,12 @@ class SeriesQuery:
     DISTRIBUTION_PERIODICITY = 'distribution_periodicity'
     SERIE_PERIODICITY = 'serie_periodicity'
 
-    def __init__(self, field_model, rep_mode):
+    def __init__(self, field_model, rep_mode,
+                 collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         self.field_model = field_model
         self.cache = {}
         self.rep_mode = rep_mode
+        self._collapse_agg = collapse_agg
         self.metadata = json.loads(self.field_model.metadata)
 
     def periodicity(self):
@@ -77,3 +79,9 @@ class SeriesQuery:
             self.cache[key] = meta_keys.get(model, meta_key)
 
         return self.cache[key]
+
+    def identifier(self):
+        return self.field_model.identifier
+
+    def collapse_agg(self):
+        return self._collapse_agg

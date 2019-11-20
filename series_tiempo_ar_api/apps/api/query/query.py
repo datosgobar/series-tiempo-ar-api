@@ -43,41 +43,19 @@ class Query:
         if how == constants.HEADER_PARAM_DESCRIPTIONS:
             return [serie.description() for serie in self.series]
 
-        return self.es_query.get_series_ids()
+        return [serie.identifier() for serie in self.series]
 
     def add_pagination(self, start, limit):
-        start_dates = {serie.get_identifiers()['id']: serie.start_date() for serie in self.series}
-        return self.es_query.add_pagination(start, limit, start_dates=start_dates)
+        return self.es_query.add_pagination(start, limit)
 
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
 
-    def add_series(self, name, field_model,
+    def add_series(self, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
-        serie_query = SeriesQuery(field_model, rep_mode)
+        serie_query = SeriesQuery(field_model, rep_mode, collapse_agg)
         self.series.append(serie_query)
-
-        self.es_query.add_series(name, rep_mode, serie_query.periodicity(), collapse_agg)
-        periodicities = self._series_periodicities()
-        max_periodicity = self.get_max_periodicity(periodicities)
-        self.update_collapse(collapse=max_periodicity)
-
-    def _series_periodicities(self):
-        return [
-            serie.periodicity() for serie in self.series
-        ]
-
-    @staticmethod
-    def get_max_periodicity(periodicities):
-        """Devuelve la periodicity máxima en la lista periodicities"""
-        order = constants.COLLAPSE_INTERVALS
-        index = 0
-        for periodicity in periodicities:
-            field_index = order.index(periodicity)
-            index = index if index > field_index else field_index
-
-        return order[index]
 
     def update_collapse(self, collapse=None):
         self._validate_collapse(collapse)
@@ -95,18 +73,20 @@ class Query:
                 raise CollapseError
 
     def run(self):
-        response = OrderedDict()  # Garantiza el orden de los objetos cargados
-        self.es_query.run()
+        result = OrderedDict()
+        response = self.es_query.run_for_series(self.series)
+
         if self.metadata_config != constants.METADATA_ONLY:
-            response['data'] = self.es_query.get_results_data()
+            result['data'] = response['data']
 
         if self.metadata_config != constants.METADATA_NONE:
-            response['meta'] = self.get_metadata()
+            response['meta'] = self.get_metadata(response['data'])
 
-        response['count'] = self.es_query.get_results_count()
+        result['count'] = response['count']
+
         return response
 
-    def get_metadata(self):
+    def get_metadata(self, data):
         """Arma la respuesta de metadatos: una lista de objetos con
         un metadato por serie de tiempo pedida, más una extra para el
         índice de tiempo
@@ -119,14 +99,20 @@ class Query:
             'frequency': self._calculate_data_frequency()
         }
         # si pedimos solo metadatos no tenemos start y end dates
-        if self.metadata_config != constants.METADATA_ONLY:
-            index_meta.update(self.es_query.get_data_start_end_dates())
+        if self.metadata_config != constants.METADATA_ONLY and data:
+            index_meta.update(self._get_data_start_end_dates(data))
 
         meta.append(index_meta)
         for serie in self.series:
             meta.append(self._get_series_metadata(serie))
 
         return meta
+
+    def _get_data_start_end_dates(self, data):
+        return {
+            constants.PARAM_START_DATE: data[0][0],
+            constants.PARAM_END_DATE: data[-1][0]
+        }
 
     def _get_series_metadata(self, serie: SeriesQuery):
         """Devuelve un diccionario (data.json-like) de los metadatos
