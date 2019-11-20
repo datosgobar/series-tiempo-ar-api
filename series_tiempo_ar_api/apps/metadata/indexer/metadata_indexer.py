@@ -63,7 +63,6 @@ class MetadataIndexer:
             self.elastic.indices.delete(index)
 
 
-# pylint: disable=W0613
 @job('meta_indexing', timeout=10000)
 def run_metadata_indexer(task):
     single_node = bool(task.node)
