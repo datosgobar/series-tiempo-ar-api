@@ -57,26 +57,6 @@ class Query:
         serie_query = SeriesQuery(field_model, rep_mode, collapse_agg)
         self.series.append(serie_query)
 
-        periodicities = self._series_periodicities()
-        max_periodicity = self.get_max_periodicity(periodicities)
-        self.update_collapse(collapse=max_periodicity)
-
-    def _series_periodicities(self):
-        return [
-            serie.periodicity() for serie in self.series
-        ]
-
-    @staticmethod
-    def get_max_periodicity(periodicities):
-        """Devuelve la periodicity máxima en la lista periodicities"""
-        order = constants.COLLAPSE_INTERVALS
-        index = 0
-        for periodicity in periodicities:
-            field_index = order.index(periodicity)
-            index = index if index > field_index else field_index
-
-        return order[index]
-
     def update_collapse(self, collapse=None):
         self._validate_collapse(collapse)
         self.es_query.add_collapse(collapse)

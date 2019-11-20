@@ -65,7 +65,10 @@ class ESQuery:
             for serie in self.series:
                 serie.add_collapse(self.args.get(constants.PARAM_PERIODICITY))
         else:
-            self.args[constants.PARAM_PERIODICITY] = self.series[0].periodicity
+            self.args[constants.PARAM_PERIODICITY] = self.get_max_periodicity([
+                x.periodicity
+                for x in self.series
+            ])
 
         if self.args.get(constants.PARAM_START_DATE) or self.args.get(constants.PARAM_END_DATE):
             for serie in self.series:
@@ -76,6 +79,17 @@ class ESQuery:
             serie.sort(self.args[constants.PARAM_SORT])
 
         return self._run()
+
+    @staticmethod
+    def get_max_periodicity(periodicities):
+        """Devuelve la periodicity máxima en la lista periodicities"""
+        order = constants.COLLAPSE_INTERVALS
+        index = 0
+        for periodicity in periodicities:
+            field_index = order.index(periodicity)
+            index = index if index > field_index else field_index
+
+        return order[index]
 
     def _run(self) -> dict:
         result = self.execute_searches()
