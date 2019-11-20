@@ -9,7 +9,6 @@ from .api.api import *
 from .api.metadata import *
 from elasticsearch_dsl.connections import connections
 
-
 SETTINGS_DIR = environ.Path(__file__) - 1
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
 APPS_DIR = ROOT_DIR.path(dirname(dirname(dirname(__file__))))
@@ -269,7 +268,6 @@ LOGGING = {
 # EMAILS
 EMAIL_BACKEND = 'des.backends.ConfiguredEmailBackend'
 
-
 DEFAULT_REDIS_HOST = env("DEFAULT_REDIS_HOST", default="localhost")
 DEFAULT_REDIS_PORT = env("DEFAULT_REDIS_PORT", default="6379")
 DEFAULT_REDIS_DB = env("DEFAULT_REDIS_DB", default="0")
@@ -318,72 +316,124 @@ MINIO_STORAGE_USE_HTTPS = False
 MINIO_STORAGE_MEDIA_BUCKET_NAME = env('MINIO_STORAGE_BUCKET_NAME', default='tsapi.dev.media.bucket')
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 
+STAGES_TITLES = {
+    'READ_DATAJSON_COMPLETE': 'Read Datajson (corrida completa)',
+    'READ_DATAJSON_METADATA': 'Read Datajson (sólo metadatos)',
+    'API_INDEX': 'Indexación de datos (sólo actualizados)',
+    'API_INDEX_FORCE': 'Indexación de datos (forzar indexación)',
+    'DUMPS_CSV': 'Generación de dumps CSV',
+    'DUMPS_XLSX': 'Generación de dumps XLSX',
+    'DUMPS_SQL': 'Generación de dumps SQL',
+    'DUMPS_DTA': 'Generación de dumps DTA',
+    'METADATA_INDEX': 'Indexación de metadatos',
+    'INTEGRATION_TEST': 'Test de integración',
+    'INDEXATION_REPORT': 'Reporte de indexación',
+    'IMPORT_ANALYTICS': 'Importado de analytics',
+    'HITS_INDICATORS': 'Cálculo de indicadores de popularidad',
+}
+
 # Stages asincrónicos a ejecutar con el Synchronizer de Django-datajsonar
 DATAJSONAR_STAGES = {
-    'Read Datajson (corrida completa)': {
+    STAGES_TITLES['READ_DATAJSON_COMPLETE']: {
         'callable_str': 'django_datajsonar.tasks.schedule_full_read_task',
         'queue': 'indexing',
         'task': 'django_datajsonar.models.ReadDataJsonTask',
     },
-    'Read Datajson (sólo metadatos)': {
+    STAGES_TITLES['READ_DATAJSON_METADATA']: {
         'callable_str': 'django_datajsonar.tasks.schedule_metadata_read_task',
         'queue': 'indexing',
         'task': 'django_datajsonar.models.ReadDataJsonTask',
     },
-    'Indexación de datos (sólo actualizados)': {
+    STAGES_TITLES['API_INDEX']: {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_api_indexing',
         'queue': 'api_index',
         'task': 'series_tiempo_ar_api.apps.management.models.IndexDataTask',
     },
-    'Indexación de datos (forzar indexación)': {
+    STAGES_TITLES['API_INDEX_FORCE']: {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.indexation.schedule_force_api_indexing',
         'queue': 'api_index',
         'task': 'series_tiempo_ar_api.apps.management.models.IndexDataTask',
     },
-    'Generación de dumps CSV': {
+    STAGES_TITLES['DUMPS_CSV']: {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_csv_task',
         'queue': 'csv_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
-    'Generación de dumps XLSX': {
+    STAGES_TITLES['DUMPS_XLSX']: {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_xlsx_task',
         'queue': 'xlsx_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
-    'Generación de dumps SQL': {
+    STAGES_TITLES['DUMPS_SQL']: {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_sql_task',
         'queue': 'sql_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
-    'Generación de dumps DTA': {
+    STAGES_TITLES['DUMPS_DTA']: {
         'callable_str': 'series_tiempo_ar_api.apps.dump.tasks.enqueue_write_dta_task',
         'queue': 'dta_dump',
         'task': 'series_tiempo_ar_api.apps.dump.models.GenerateDumpTask',
     },
-    'Indexación de metadatos': {
+    STAGES_TITLES['METADATA_INDEX']: {
         'callable_str': 'series_tiempo_ar_api.apps.metadata.indexer.metadata_indexer.enqueue_new_index_metadata_task',
         'queue': 'meta_indexing',
         'task': 'series_tiempo_ar_api.apps.metadata.models.IndexMetadataTask',
     },
-    'Test de integración': {
+    STAGES_TITLES['INTEGRATION_TEST']: {
         'callable_str': 'series_tiempo_ar_api.apps.management.tasks.integration_test.enqueue_new_integration_test',
         'queue': 'integration_test',
         'task': 'series_tiempo_ar_api.apps.management.models.IntegrationTestTask',
     },
-    'Reporte de indexación': {
+    STAGES_TITLES['INDEXATION_REPORT']: {
         'callable_str': 'series_tiempo_ar_api.libs.indexing.tasks.send_indexation_report_email',
         'queue': 'api_report',
         'task': 'series_tiempo_ar_api.apps.management.models.IndexDataTask',
     },
-    'Importado de analytics': {
+    STAGES_TITLES['IMPORT_ANALYTICS']: {
         'callable_str': 'series_tiempo_ar_api.apps.analytics.tasks.enqueue_new_import_analytics_task',
         'queue': 'analytics',
     },
-    'Cálculo de indicadores de popularidad': {
+    STAGES_TITLES['HITS_INDICATORS']: {
         'callable_str': 'series_tiempo_ar_api.apps.analytics.tasks.enqueue_new_calculate_hits_indicators_task',
         'queue': 'hits_indicators'
     },
 }
+
+SYNCHRO_DEFAULT_CONF = [
+    {
+        'title': 'Corrida completa (lunes a viernes - 00 - forzar)',
+        'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX_FORCE'],
+                   STAGES_TITLES['METADATA_INDEX'],
+                   STAGES_TITLES['DUMPS_CSV'], STAGES_TITLES['DUMPS_XLSX'], STAGES_TITLES['DUMPS_SQL'],
+                   STAGES_TITLES['DUMPS_DTA'], STAGES_TITLES['INTEGRATION_TEST'], STAGES_TITLES['INDEXATION_REPORT']],
+        'scheduled_time': '00:00'
+    },
+    {
+        'title': 'Importado de Analytics',
+        'stages': [STAGES_TITLES['IMPORT_ANALYTICS'], STAGES_TITLES['HITS_INDICATORS']],
+        'scheduled_time': '00:30'
+    },
+    {
+        'title': 'Corrida intermedia (lunes a viernes - 08)',
+        'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
+        'scheduled_time': '08:00'
+    },
+    {
+        'title': 'Corrida intermedia (lunes a viernes - 11)',
+        'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
+        'scheduled_time': '11:00'
+    },
+    {
+        'title': 'Corrida intermedia (lunes a viernes - 14)',
+        'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
+        'scheduled_time': '14:00'
+    },
+    {
+        'title': 'Corrida intermedia (lunes a viernes - 18)',
+        'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
+        'scheduled_time': '18:00'
+    },
+]
 
 ADMIN_REORDER = (
     'auth',
@@ -399,7 +449,6 @@ ADMIN_REORDER = (
 
 LOGIN_URL = 'admin:login'
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
-
 
 ADMIN_SHORTCUTS = [
     {
