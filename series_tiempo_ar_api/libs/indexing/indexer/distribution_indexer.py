@@ -80,5 +80,5 @@ class DistributionIndexer:
         )
         for field in fields_to_delete:
             series_data = Search(using=self.elastic,
-                                 index=self.index._name).filter('term', series_id=field)
+                                 index=self.index._name).params(conflicts='proceed').filter('term', series_id=field)
             series_data.delete()
