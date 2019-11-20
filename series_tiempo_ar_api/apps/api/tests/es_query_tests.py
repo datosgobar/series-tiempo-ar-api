@@ -195,7 +195,5 @@ class QueryTest(TestCase):
         self.assertIsNotNone(data[0][1])
 
     def test_query_count(self):
-        self.query.add_series(self.single_series, self.rep_mode, self.series_periodicity)
-
         count = self.query.run_for_series([self.serie])['count']
         self.assertEqual(count, 12 * 10)

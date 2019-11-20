@@ -3,7 +3,6 @@ from django.conf import settings
 from elasticsearch_dsl import MultiSearch
 
 from series_tiempo_ar_api.apps.api.query import constants
-from series_tiempo_ar_api.apps.api.query import strings
 from series_tiempo_ar_api.apps.api.query.es_query.response_formatter import ResponseFormatter
 from series_tiempo_ar_api.apps.api.query.es_query.series import Serie
 
@@ -19,7 +18,6 @@ class ESQuery:
         """
         self.index = index
         self.series = []
-        self.count = None
         self.reverse_results = False
 
         # Parámetros que deben ser guardados y accedidos varias veces
@@ -29,25 +27,12 @@ class ESQuery:
             constants.PARAM_SORT: constants.API_DEFAULT_VALUES[constants.PARAM_SORT]
         }
 
-    def add_series(self, series_id, rep_mode, periodicity,
-                   collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
-        self._init_series(series_id, rep_mode, collapse_agg, periodicity)
-        if constants.PARAM_PERIODICITY not in self.args:
-            self.add_collapse(periodicity)
-
     def sort(self, how):
         """Ordena los resultados por ascendiente o descendiente"""
         self.args[constants.PARAM_SORT] = how
 
     def add_collapse(self, interval):
         self.args[constants.PARAM_PERIODICITY] = interval
-
-    def _init_series(self, series_id, rep_mode, collapse_agg, periodicity):
-        self.series.append(Serie(series_id=series_id,
-                                 index=self.index,
-                                 rep_mode=rep_mode,
-                                 periodicity=periodicity,
-                                 collapse_agg=collapse_agg))
 
     def add_pagination(self, start, limit):
         self.args[constants.PARAM_START] = start
@@ -56,12 +41,6 @@ class ESQuery:
     def add_filter(self, start=None, end=None):
         self.args[constants.PARAM_START_DATE] = start
         self.args[constants.PARAM_END_DATE] = end
-
-    def get_results_count(self) -> int:
-        if self.count is None:
-            raise RuntimeError(strings.DATA_NOT_INITIALIZED)
-
-        return self.count
 
     def reverse(self):
         self.reverse_results = True
@@ -99,7 +78,6 @@ class ESQuery:
         return self._run()
 
     def _run(self) -> dict:
-        """Equivalente a execute_searches + get_results_data"""
         result = self.execute_searches()
 
         # Devuelvo hasta LIMIT values
@@ -121,7 +99,9 @@ class ESQuery:
             multi_search = multi_search.add(serie.search)
 
         responses = multi_search.execute()
-        formatter = ResponseFormatter(self.series, responses, self.args)
+        formatter = ResponseFormatter(self.series, responses,
+                                      self.args[constants.PARAM_SORT],
+                                      self.args[constants.PARAM_PERIODICITY])
 
         return {
             'data': (formatter.format_response()),
