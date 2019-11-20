@@ -26,14 +26,14 @@ class QueryTests(TestCase):
         self.query = Query()
 
     def test_index_metadata_frequency(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         meta = self.query.run()['meta']
 
         index_frequency = meta[0]['frequency']
         self.assertEqual(index_frequency, 'month')
 
     def test_index_metadata_start_end_dates(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         res = self.query.run()
 
         index_meta = res['meta'][0]
@@ -42,7 +42,7 @@ class QueryTests(TestCase):
 
     def test_collapse_index_metadata_frequency(self):
         collapse_interval = 'quarter'
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.update_collapse(collapse=collapse_interval)
         meta = self.query.run()['meta']
 
@@ -51,7 +51,7 @@ class QueryTests(TestCase):
 
     def test_collapse_index_metadata_start_end_dates(self):
         collapse_interval = 'quarter'
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.update_collapse(collapse=collapse_interval)
         res = self.query.run()
         data = res['data']
@@ -63,12 +63,12 @@ class QueryTests(TestCase):
     @raises(CollapseError)
     def test_invalid_collapse(self):
         collapse_interval = 'day'  # Serie cargada es mensual
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.update_collapse(collapse=collapse_interval)
 
     def test_identifiers(self):
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         # Devuelve lista de ids, una por serie. Me quedo con la primera (única)
         ids = self.query.get_series_identifiers()[0]
         field = Field.objects.get(identifier=self.single_series)
@@ -80,7 +80,7 @@ class QueryTests(TestCase):
         day_series_name = settings.TEST_SERIES_NAME.format('day')
         field = Field.objects.get(identifier=day_series_name)
 
-        self.query.add_series(day_series_name, field)
+        self.query.add_series(field)
 
         self.query.update_collapse(collapse='week')
         self.query.sort(how='asc')
@@ -97,7 +97,7 @@ class QueryTests(TestCase):
         catalog.metadata = '{"title": "test_title", "extra_field": "extra"}'
         catalog.save()
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         meta = self.query.run()['meta']
         index_meta = meta[1]['catalog']
         self.assertNotIn('extra_field', index_meta)
@@ -108,7 +108,7 @@ class QueryTests(TestCase):
         dataset.metadata = '{"title": "test_title", "extra_field": "extra"}'
         dataset.save()
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         meta = self.query.run()['meta']
         index_meta = meta[1]['dataset']
         self.assertNotIn('extra_field', index_meta)
@@ -119,7 +119,7 @@ class QueryTests(TestCase):
         dist.metadata = '{"title": "test_title", "extra_field": "extra"}'
         dist.save()
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         meta = self.query.run()['meta']
         index_meta = meta[1]['distribution']
         self.assertNotIn('extra_field', index_meta)
@@ -128,7 +128,7 @@ class QueryTests(TestCase):
     def test_simple_metadata_remove_field(self):
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         meta = self.query.run()['meta']
         index_meta = meta[1]['field']
         self.assertNotIn('extra_field', index_meta)
@@ -149,12 +149,12 @@ class QueryTests(TestCase):
 
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.flatten_metadata_response()
         flat_meta = self.query.run()['meta'][1]
 
         other_query = Query()
-        other_query.add_series(self.single_series, self.field)
+        other_query.add_series(self.field)
         meta = other_query.run()['meta'][1]
 
         for key in meta:
@@ -176,13 +176,13 @@ class QueryTests(TestCase):
 
         self.field.metadata = '{"id": "test_title", "extra_field": "extra"}'
 
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.set_metadata_config('full')
         self.query.flatten_metadata_response()
         flat_meta = self.query.run()['meta'][1]
 
         other_query = Query()
-        other_query.add_series(self.single_series, self.field)
+        other_query.add_series(self.field)
         other_query.set_metadata_config('full')
         meta = other_query.run()['meta'][1]
 
@@ -191,7 +191,7 @@ class QueryTests(TestCase):
                 self.assertEqual(meta[key][in_key], flat_meta['{}_{}'.format(key, in_key)])
 
     def test_full_metadata_includes_enhanced_meta(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.set_metadata_config('full')
         meta = self.query.run()['meta']
 
@@ -199,7 +199,7 @@ class QueryTests(TestCase):
             self.assertEqual(meta[1]['field'][enhanced_meta.key], enhanced_meta.value)
 
     def test_full_metadata_periodicty_with_collapse(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.update_collapse('year')
         self.query.set_metadata_config('full')
 
@@ -210,7 +210,7 @@ class QueryTests(TestCase):
                          meta_keys.get(self.field, meta_keys.PERIODICITY))
 
     def test_query_count(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
 
         resp = self.query.run()
 
@@ -221,14 +221,14 @@ class QueryTests(TestCase):
         day_series_name = settings.TEST_SERIES_NAME.format('day')
         field = Field.objects.get(identifier=day_series_name)
 
-        self.query.add_series(day_series_name, field, rep_mode='percent_change_a_year_ago')
+        self.query.add_series(field, rep_mode='percent_change_a_year_ago')
         self.query.add_pagination(start=0, limit=2)
         result = self.query.run()
 
         self.assertEqual(len(result['data']), 2)
 
     def test_response_rep_mode_units(self):
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
 
         meta = self.query.run()['meta']
         field_meta = meta[1]['field']
@@ -237,7 +237,7 @@ class QueryTests(TestCase):
 
     def test_response_rep_mode_units_pct_change(self):
         rep_mode = constants.PCT_CHANGE
-        self.query.add_series(self.single_series, self.field, rep_mode=rep_mode)
+        self.query.add_series(self.field, rep_mode=rep_mode)
 
         meta = self.query.run()['meta']
         field_meta = meta[1]['field']
@@ -250,8 +250,8 @@ class QueryTests(TestCase):
         hay valores que colapsar"""
         year_series = get_series_id('year')
         field = Field.objects.get(identifier=year_series)
-        self.query.add_series(year_series, field)
-        self.query.add_series(year_series, field, collapse_agg='end_of_period')
+        self.query.add_series(field)
+        self.query.add_series(field, collapse_agg='end_of_period')
 
         data = self.query.run()['data']
 
@@ -261,9 +261,8 @@ class QueryTests(TestCase):
     def test_aggregation_on_monthly_series(self):
         """Esperado: Valores de la serie con y sin agregación son iguales, no
         hay valores que colapsar"""
-        month_series = get_series_id('month')
-        self.query.add_series(month_series, self.field)
-        self.query.add_series(month_series, self.field, collapse_agg='end_of_period')
+        self.query.add_series(self.field)
+        self.query.add_series(self.field, collapse_agg='end_of_period')
 
         data = self.query.run()['data']
 
@@ -271,9 +270,8 @@ class QueryTests(TestCase):
             self.assertEqual(row[1], row[2])
 
     def test_same_series_multiple_times_different_rep_mode(self):
-        month_series = get_series_id('month')
-        self.query.add_series(month_series, self.field)
-        self.query.add_series(month_series, self.field, rep_mode='percent_change')
+        self.query.add_series(self.field)
+        self.query.add_series(self.field, rep_mode='percent_change')
         self.query.set_metadata_config(how=constants.METADATA_ONLY)
         meta = self.query.run()['meta']
 
@@ -283,7 +281,7 @@ class QueryTests(TestCase):
     def test_is_percentage(self):
         SeriesUnits.objects.create(name=json.loads(self.field.metadata)['units'],
                                    percentage=True)
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.set_metadata_config(how=constants.METADATA_ONLY)
         meta = self.query.run()['meta']
 
@@ -292,14 +290,14 @@ class QueryTests(TestCase):
     def test_is_percentage_units_false(self):
         SeriesUnits.objects.create(name=json.loads(self.field.metadata)['units'],
                                    percentage=False)
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.set_metadata_config(how=constants.METADATA_ONLY)
         meta = self.query.run()['meta']
 
         self.assertFalse(meta[1]['field']['is_percentage'])
 
     def test_is_percentage_with_percentage_rep_mode(self):
-        self.query.add_series(self.single_series, self.field, rep_mode=constants.PCT_CHANGE)
+        self.query.add_series(self.field, rep_mode=constants.PCT_CHANGE)
         self.query.set_metadata_config(how=constants.METADATA_ONLY)
         meta = self.query.run()['meta']
 
@@ -307,15 +305,15 @@ class QueryTests(TestCase):
 
     def test_is_percentage_with_non_percentage_rep_mode(self):
 
-        self.query.add_series(self.single_series, self.field, rep_mode=constants.CHANGE)
+        self.query.add_series(self.field, rep_mode=constants.CHANGE)
         self.query.set_metadata_config(how=constants.METADATA_ONLY)
         meta = self.query.run()['meta']
 
         self.assertFalse(meta[1]['field']['is_percentage'])
 
     def test_add_query_aggregation(self):
-        self.query.add_series(self.single_series, self.field)
-        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
+        self.query.add_series(self.field)
+        self.query.add_series(self.field, collapse_agg='sum')
 
         self.query.update_collapse('year')
 
@@ -328,13 +326,13 @@ class QueryTests(TestCase):
         year_series = get_series_id('day')
         year_field = Field.objects.get(identifier=year_series)
 
-        self.query.add_series(self.single_series, self.field, collapse_agg='sum')
-        self.query.add_series(year_series, year_field)
+        self.query.add_series(self.field, collapse_agg='sum')
+        self.query.add_series(year_field)
         data = self.query.run()['data']
 
         other_query = Query()
-        other_query.add_series(year_series, year_field)
-        other_query.add_series(self.single_series, self.field, collapse_agg='sum')
+        other_query.add_series(year_field)
+        other_query.add_series(self.field, collapse_agg='sum')
         other_data = other_query.run()['data']
 
         for row1, row2 in zip(data, other_data):
@@ -344,7 +342,7 @@ class QueryTests(TestCase):
 
     def test_add_two_collapses(self):
         """Esperado: El segundo collapse overridea el primero"""
-        self.query.add_series(self.single_series, self.field)
+        self.query.add_series(self.field)
         self.query.update_collapse('quarter')
         self.query.update_collapse('year')
         self.query.sort(how='asc')
@@ -362,18 +360,18 @@ class QueryTests(TestCase):
             prev_timestamp = parsed_timestamp
 
     def test_end_of_period_with_rep_mode(self):
-        self.query.add_series(self.single_series,
-                              self.field,
-                              'percent_change',
-                              'end_of_period')
+        self.query.add_series(
+            self.field,
+            'percent_change',
+            'end_of_period')
         self.query.update_collapse('year')
         self.query.sort('asc')
         data = self.query.run()['data']
 
         orig_eop = Query(index=settings.TS_INDEX)
-        orig_eop.add_series(self.single_series,
-                            self.field,
-                            collapse_agg='end_of_period')
+        orig_eop.add_series(
+            self.field,
+            collapse_agg='end_of_period')
         orig_eop.update_collapse('year')
         orig_eop.sort('asc')
         end_of_period = orig_eop.run()['data']

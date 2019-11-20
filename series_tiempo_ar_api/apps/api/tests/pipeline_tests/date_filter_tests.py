@@ -29,7 +29,7 @@ class DateFilterTests(TestCase):
         cls.field = Field.objects.get(identifier=cls.single_series)
 
     def test_start_date(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'start_date': self.start_date})
         self.query.sort('asc')
 
@@ -39,7 +39,7 @@ class DateFilterTests(TestCase):
         self.assertEqual(self.start_date, first_timestamp)
 
     def test_end_date(self):
-        self.query.add_series(self.single_series, self.field, 'value')
+        self.query.add_series(self.field, 'value')
         self.cmd.run(self.query, {'end_date': self.end_date})
         self.query.sort('asc')
         # Me aseguro que haya suficientes resultados
@@ -74,12 +74,12 @@ class DateFilterTests(TestCase):
     def test_partial_end_date_is_inclusive(self):
         field = Field.objects.get(identifier=self.single_series)
         query = Query()
-        query.add_series(self.single_series, self.field, 'value')
+        query.add_series(self.field, 'value')
         query.sort('asc')
         first_date = query.run()['data'][0][0]
 
         end_date = iso8601.parse_date(first_date) + relativedelta(years=2)
-        self.query.add_series(self.single_series, field, 'value')
+        self.query.add_series(field, 'value')
         self.cmd.run(self.query, {'end_date': str(end_date)})
 
         # Me aseguro de traer suficientes resultados
