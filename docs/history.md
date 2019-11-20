@@ -1,5 +1,10 @@
 # Historial de versiones
 
+## 1.28.11 - 2019-11-20
+
+- Bump de django-datajsonar a 0.6.1, incluyendo funcionalidad de restaurar una configuración default de synchronizers
+- Bugfix a corrida de indexación de metadatos para un nodo individual corriendo para todos los nodos
+
 ## 1.28.10 - 2019-11-20
 
 - Fix de conflictos en borrado de datos durante indexación a Elasticsearch
