@@ -49,7 +49,7 @@ class ESQuery:
                                  periodicity=periodicity,
                                  collapse_agg=collapse_agg))
 
-    def add_pagination(self, start, limit, start_dates=None):
+    def add_pagination(self, start, limit):
         self.args[constants.PARAM_START] = start
         self.args[constants.PARAM_LIMIT] = limit
 
@@ -57,41 +57,11 @@ class ESQuery:
         self.args[constants.PARAM_START_DATE] = start
         self.args[constants.PARAM_END_DATE] = end
 
-    def execute_searches(self):
-        """Ejecuta la query de todas las series agregadas, e inicializa
-        los atributos data y count a partir de las respuestas.
-        """
-
-        multi_search = MultiSearch(index=self.index,
-                                   doc_type=settings.TS_DOC_TYPE)
-
-        for serie in self.series:
-            multi_search = multi_search.add(serie.search)
-
-        responses = multi_search.execute()
-        formatter = ResponseFormatter(self.series, responses, self.args)
-
-        return {
-            'data': (formatter.format_response()),
-            'count': max([response.hits.total for response in responses])
-        }
-
     def get_results_count(self) -> int:
         if self.count is None:
             raise RuntimeError(strings.DATA_NOT_INITIALIZED)
 
         return self.count
-
-    def run(self) -> dict:
-        """Equivalente a execute_searches + get_results_data"""
-        result = self.execute_searches()
-
-        # Devuelvo hasta LIMIT values
-        result['data'] = result['data'][:self.args[constants.PARAM_LIMIT]]
-
-        if self.reverse_results:
-            result['data'].reverse()
-        return result
 
     def reverse(self):
         self.reverse_results = True
@@ -115,6 +85,8 @@ class ESQuery:
         if self.args.get(constants.PARAM_PERIODICITY):
             for serie in self.series:
                 serie.add_collapse(self.args.get(constants.PARAM_PERIODICITY))
+        else:
+            self.args[constants.PARAM_PERIODICITY] = self.series[0].periodicity
 
         if self.args.get(constants.PARAM_START_DATE) or self.args.get(constants.PARAM_END_DATE):
             for serie in self.series:
@@ -124,4 +96,34 @@ class ESQuery:
         for serie in self.series:
             serie.sort(self.args[constants.PARAM_SORT])
 
-        return self.run()
+        return self._run()
+
+    def _run(self) -> dict:
+        """Equivalente a execute_searches + get_results_data"""
+        result = self.execute_searches()
+
+        # Devuelvo hasta LIMIT values
+        result['data'] = result['data'][:self.args[constants.PARAM_LIMIT]]
+
+        if self.reverse_results:
+            result['data'].reverse()
+        return result
+
+    def execute_searches(self):
+        """Ejecuta la query de todas las series agregadas, e inicializa
+        los atributos data y count a partir de las respuestas.
+        """
+
+        multi_search = MultiSearch(index=self.index,
+                                   doc_type=settings.TS_DOC_TYPE)
+
+        for serie in self.series:
+            multi_search = multi_search.add(serie.search)
+
+        responses = multi_search.execute()
+        formatter = ResponseFormatter(self.series, responses, self.args)
+
+        return {
+            'data': (formatter.format_response()),
+            'count': max([response.hits.total for response in responses])
+        }

@@ -109,3 +109,18 @@ class TestAggregations(EndpointTestCase):
 
     def _avg(self, values):
         return sum(values) / len(values)
+
+    def test_aggregations_on_yearly_series(self):
+        aggs = ['sum', 'avg', 'end_of_period', 'max', 'min']
+
+        for agg in aggs:
+            params = {
+                'ids': f'{self.increasing_year_series_id}:{agg},{self.increasing_year_series_id}',
+                'collapse': 'year',
+            }
+            yield self._run_comparison_test, params
+
+    def _run_comparison_test(self, params):
+        resp = self.run_query(params)
+        for row in resp['data']:
+            nose.tools.assert_equals(row[1], row[2])

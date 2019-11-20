@@ -46,13 +46,12 @@ class Query:
         return [serie.identifier() for serie in self.series]
 
     def add_pagination(self, start, limit):
-        start_dates = {serie.get_identifiers()['id']: serie.start_date() for serie in self.series}
-        return self.es_query.add_pagination(start, limit, start_dates=start_dates)
+        return self.es_query.add_pagination(start, limit)
 
     def add_filter(self, start_date, end_date):
         return self.es_query.add_filter(start_date, end_date)
 
-    def add_series(self, name, field_model,
+    def add_series(self, _name, field_model,
                    rep_mode=constants.API_DEFAULT_VALUES[constants.PARAM_REP_MODE],
                    collapse_agg=constants.API_DEFAULT_VALUES[constants.PARAM_COLLAPSE_AGG]):
         serie_query = SeriesQuery(field_model, rep_mode, collapse_agg)
