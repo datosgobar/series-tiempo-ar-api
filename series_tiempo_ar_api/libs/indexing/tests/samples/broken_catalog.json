@@ -61,8 +61,7 @@
               "title": "cod_pais"
             }
           ],
-          "accessURL": "http://portal-andino.datos.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/f7188601-b25d-44c5-9330-d07d375e4b41_0",
-          "downloadURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/b807c73e-6fe2-417b-a16a-e41b64641157/download/ingreso-de-semillas-de-algodon-a-la-industria-aceitera.csv"
+          "accessURL": "http://portal-andino.datos.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/f7188601-b25d-44c5-9330-d07d375e4b41_0"
         },
         {
           "identifier": "f7188601-b25d-44c5-9330-d07d375e4b41_1",
@@ -71,8 +70,7 @@
           "description": "Detalle mensual de la producci\u00f3n de aceite de algod\u00f3n en toneladas.",
           "issued": "2018-05-07T15:28:24.181833",
           "modified": "2018-07-02T15:00:38.303237",
-          "accessURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/archivo/fcf298eb-573b-4a85-bf88-78b36c90dd82",
-          "downloadURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/fcf298eb-573b-4a85-bf88-78b36c90dd82/download/produccion-de-aceite-de-algodon-.csv"
+          "accessURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/archivo/fcf298eb-573b-4a85-bf88-78b36c90dd82"
         },
         {
           "identifier": "f7188601-b25d-44c5-9330-d07d375e4b41_2",
@@ -81,8 +79,7 @@
           "description": "Detalle mensual de la producci\u00f3n de pellets de algod\u00f3n en toneladas.",
           "issued": "2018-05-07T15:28:57.405755",
           "modified": "2018-07-02T15:00:58.292036",
-          "accessURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/archivo/3c847576-3ffa-4f0f-9cab-ce76aeff38ae",
-          "downloadURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/3c847576-3ffa-4f0f-9cab-ce76aeff38ae/download/produccion-de-pellets-de-algodon.csv"
+          "accessURL": "https://datos.agroindustria.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/archivo/3c847576-3ffa-4f0f-9cab-ce76aeff38ae"
         },
         {
           "identifier": "e855b176-7055-436f-860a-0a4364b193e0",
@@ -724,7 +721,7 @@
             "]"
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/e855b176-7055-436f-860a-0a4364b193e0",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/e855b176-7055-436f-860a-0a4364b193e0/download/serie-produccion-algodon.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "10d8564f-d769-441d-b86f-a8a22cfd87a9",
@@ -741,7 +738,7 @@
             "]"
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/10d8564f-d769-441d-b86f-a8a22cfd87a9",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/f7188601-b25d-44c5-9330-d07d375e4b41/resource/10d8564f-d769-441d-b86f-a8a22cfd87a9/download/nuevo-serie-produccion-algodon.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         }
       ],
       "keyword": [
@@ -830,7 +827,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/98442829-840c-47b2-a1ad-052ef96493be",
-          "downloadURL": "https://www.indec.gob.ar/ftp/cuadros/economia/SH-ISAC-base2004.xls"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "6036e35a-b265-407b-8aef-9a6c16c80c4c",
@@ -865,7 +862,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/6036e35a-b265-407b-8aef-9a6c16c80c4c",
-          "downloadURL": "https://www.indec.gob.ar/ftp/cuadros/economia/ISAC-Shtrim-base2004.xls"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "25ac9066-df00-4d73-894d-1ca7018c6872",
@@ -969,7 +966,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/9cfb0675-bbc8-4860-8c3f-50fd3b1640dd",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/9cfb0675-bbc8-4860-8c3f-50fd3b1640dd/download/sh-isac-base-2004-mensual.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "2caa8bd9-6549-4c49-80fa-a51e9c60ceeb",
@@ -1019,7 +1016,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/2caa8bd9-6549-4c49-80fa-a51e9c60ceeb",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/2caa8bd9-6549-4c49-80fa-a51e9c60ceeb/download/isac-bloques-base-2004-anual.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "247fc721-c315-4569-b3d8-9b2668858b2d",
@@ -1070,7 +1067,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/247fc721-c315-4569-b3d8-9b2668858b2d",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/247fc721-c315-4569-b3d8-9b2668858b2d/download/sh-isac-base-2004-trimestral.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "79a2ccfe-f992-4131-a1c3-445d71c3ac09",
@@ -1127,7 +1124,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/79a2ccfe-f992-4131-a1c3-445d71c3ac09",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/79a2ccfe-f992-4131-a1c3-445d71c3ac09/download/isac-bloques-base-2004-anual.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         },
         {
           "identifier": "d6a772c5-de48-4e4d-a290-40e151490a24",
@@ -1185,7 +1182,7 @@
             }
           ],
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/d6a772c5-de48-4e4d-a290-40e151490a24",
-          "downloadURL": "http://portal-andino.datos.gob.ar/dataset/2fd15294-8d43-45ec-bf2a-a6994d57cdfd/resource/d6a772c5-de48-4e4d-a290-40e151490a24/download/isac-bloques-base-2004-mensual.csv"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         }
       ],
       "keyword": [
@@ -1228,7 +1225,7 @@
           "modified": "2018-06-25T13:11:23.772621",
           "license": "cc-by",
           "accessURL": "http://portal-andino.datos.gob.ar/dataset/a33f7041-0e2a-4ba3-96ad-4f5d86e0ae41/resource/3f0875e2-6aed-4993-8a20-e69e808aaf3a",
-          "downloadURL": "https://drive.google.com/open?id=1xHOlNHXVwYT-j9PB8fLhRR2ZvIjAAI8WE3ddi4mHhX8"
+          "downloadURL": "http://localhost:3456/missing_distribution_url.csv"
         }
       ],
       "keyword": [

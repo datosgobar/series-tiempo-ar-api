@@ -15,7 +15,7 @@ from series_tiempo_ar_api.libs.utils.utils import index_catalog
 SAMPLES_DIR = os.path.join(os.path.dirname(__file__), 'samples')
 
 
-@mock.patch('series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer.DistributionIndexer')
+@mock.patch('series_tiempo_ar_api.libs.indexing.tasks.DistributionIndexer')
 class ReportMailSenderTests(TestCase):
 
     @classmethod
