@@ -130,5 +130,12 @@ class ReportMailSenderTests(TestCase):
         log_body = mail.outbox[1].attachments[-1][1]
         self.assertNotIn(other_id, log_body)
 
+    def test_subject_includes_catalog_id(self, *_):
+        self.index_catalog('test_catalog', os.path.join(SAMPLES_DIR, 'one_distribution_ok_one_error.json'))
+        Node.objects.get(catalog_id='test_catalog').admins.add(User.objects.first())
+        ReportGenerator(self.task).generate()
+        subject = mail.outbox[1].subject
+        self.assertIn('test_catalog', subject)
+
     def index_catalog(self, catalog_id, catalog_path):
         index_catalog(catalog_id, catalog_path, self.mock_index)
