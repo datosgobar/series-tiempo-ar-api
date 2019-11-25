@@ -66,13 +66,19 @@ class ReportGenerator:
 
     def send_email(self, context, node=None):
         start_time = self._format_date(self.task.created)
-        subject = f'[{settings.ENV_TYPE}] API Series de Tiempo: {start_time}'
+        subject = self._subject(start_time, node)
         html_msg = render_to_string('indexing/report.html', context=context)
         admins = NodeAdmins(node) if node else GlobalAdmins()
 
         sender = ReportMailSender(admins=admins, subject=subject, body=html_msg)
         self.add_attachments(sender, node)
         sender.send()
+
+    def _subject(self, start_time, node=None):
+        if node is None:
+            return f'[{settings.ENV_TYPE}] Validación de series de tiempo: {start_time}'
+
+        return f'[{settings.ENV_TYPE}] Validación de series de tiempo {node.catalog_id}: {start_time}'
 
     def add_attachments(self, mail_sender, node):
         mail_attachments = (
