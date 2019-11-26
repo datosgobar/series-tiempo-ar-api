@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.28.12 - 2019-11-26
+
+- Bump de django-datajsonar a 0.6.3
+- Bugfix en colapsos inferidos no aplicándose
+- Agrego el nombre del nodo en reportes de indexación
+
 ## 1.28.11 - 2019-11-20
 
 - Bump de django-datajsonar a 0.6.1, incluyendo funcionalidad de restaurar una configuración default de synchronizers
