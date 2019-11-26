@@ -34,3 +34,50 @@ class TestCollapse(EndpointTestCase):
             date = iso8601.parse_date(index)
             assert current + get_relative_delta(params['collapse']) == date
             current = date
+
+    def test_auto_collapses_return_non_null_values(self):
+        cases = [
+            (self.increasing_day_series_id, self.increasing_month_series_id),
+            (self.increasing_day_series_id, self.increasing_quarter_series_id),
+            (self.increasing_day_series_id, self.increasing_year_series_id),
+            (self.increasing_month_series_id, self.increasing_quarter_series_id),
+            (self.increasing_month_series_id, self.increasing_year_series_id),
+            (self.increasing_quarter_series_id, self.increasing_year_series_id)
+        ]
+
+        def run_case(_params):
+            resp = self.run_query(_params)
+            for _, first_val, second_val in resp['data']:
+                assert first_val
+                assert second_val
+
+        for first_serie, second_serie in cases:
+            ids = f'{first_serie},{second_serie}'
+            params = {
+                'ids': ids,
+            }
+
+            yield run_case, params
+
+    def test_invalid_collapse(self):
+        cases = [
+            (self.increasing_day_series_id, self.increasing_month_series_id),
+            (self.increasing_day_series_id, self.increasing_quarter_series_id,),
+            (self.increasing_day_series_id, self.increasing_year_series_id),
+            (self.increasing_month_series_id, self.increasing_quarter_series_id),
+            (self.increasing_month_series_id, self.increasing_year_series_id),
+            (self.increasing_quarter_series_id, self.increasing_year_series_id)
+        ]
+
+        def run_case(_params):
+            resp = self.run_query(_params)
+            assert resp['errors']
+
+        for first_serie, second_serie in cases:
+            ids = f'{first_serie},{second_serie}'
+            params = {
+                'ids': ids,
+                'collapse': 'day'  # Invalido siempre
+            }
+
+            yield run_case, params
