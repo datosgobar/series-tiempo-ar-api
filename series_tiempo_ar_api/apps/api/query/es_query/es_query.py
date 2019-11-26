@@ -61,16 +61,14 @@ class ESQuery:
                                  self.args[constants.PARAM_LIMIT],
                                  start_dates or {})
 
-        if self.args.get(constants.PARAM_PERIODICITY):
-            for serie in self.series:
-                serie.add_collapse(self.args.get(constants.PARAM_PERIODICITY))
-        else:
+        if not self.args.get(constants.PARAM_PERIODICITY):
             self.args[constants.PARAM_PERIODICITY] = self.get_max_periodicity([
                 x.periodicity
                 for x in self.series
             ])
-            for serie in self.series:
-                serie.add_collapse(self.args.get(constants.PARAM_PERIODICITY))
+
+        for serie in self.series:
+            serie.add_collapse(self.args.get(constants.PARAM_PERIODICITY))
 
         if self.args.get(constants.PARAM_START_DATE) or self.args.get(constants.PARAM_END_DATE):
             for serie in self.series:
