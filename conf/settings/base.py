@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from os.path import dirname
 
 import environ
+from django_datajsonar import strings
 
 from .api.api import *
 from .api.metadata import *
@@ -406,32 +407,37 @@ SYNCHRO_DEFAULT_CONF = [
                    STAGES_TITLES['METADATA_INDEX'],
                    STAGES_TITLES['DUMPS_CSV'], STAGES_TITLES['DUMPS_XLSX'], STAGES_TITLES['DUMPS_SQL'],
                    STAGES_TITLES['DUMPS_DTA'], STAGES_TITLES['INTEGRATION_TEST'], STAGES_TITLES['INDEXATION_REPORT']],
-        'scheduled_time': '00:00'
+        'scheduled_time': '00:15',
+        'week_days': strings.WEEK_DAYS
     },
     {
         'title': 'Importado de Analytics',
         'stages': [STAGES_TITLES['IMPORT_ANALYTICS'], STAGES_TITLES['HITS_INDICATORS']],
-        'scheduled_time': '00:30'
+        'scheduled_time': '00:05'
     },
     {
         'title': 'Corrida intermedia (lunes a viernes - 08)',
         'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
-        'scheduled_time': '08:00'
+        'scheduled_time': '08:00',
+        'week_days': strings.WEEK_DAYS
     },
     {
         'title': 'Corrida intermedia (lunes a viernes - 11)',
         'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
-        'scheduled_time': '11:00'
+        'scheduled_time': '11:00',
+        'week_days': strings.WEEK_DAYS
     },
     {
         'title': 'Corrida intermedia (lunes a viernes - 14)',
         'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
-        'scheduled_time': '14:00'
+        'scheduled_time': '14:00',
+        'week_days': strings.WEEK_DAYS
     },
     {
         'title': 'Corrida intermedia (lunes a viernes - 18)',
         'stages': [STAGES_TITLES['READ_DATAJSON_COMPLETE'], STAGES_TITLES['API_INDEX'], STAGES_TITLES['METADATA_INDEX']],
-        'scheduled_time': '18:00'
+        'scheduled_time': '18:00',
+        'week_days': strings.WEEK_DAYS
     },
 ]
 
