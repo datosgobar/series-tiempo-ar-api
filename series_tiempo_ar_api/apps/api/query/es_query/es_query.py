@@ -69,6 +69,8 @@ class ESQuery:
                 x.periodicity
                 for x in self.series
             ])
+            for serie in self.series:
+                serie.add_collapse(self.args.get(constants.PARAM_PERIODICITY))
 
         if self.args.get(constants.PARAM_START_DATE) or self.args.get(constants.PARAM_END_DATE):
             for serie in self.series:
