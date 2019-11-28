@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.28.13 - 2019-11-28
+
+- Bump de series-tiempo-ar a 0.3.6
+
 ## 1.28.12 - 2019-11-26
 
 - Bump de django-datajsonar a 0.6.3
