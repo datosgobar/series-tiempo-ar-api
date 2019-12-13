@@ -503,7 +503,7 @@ ADMIN_SHORTCUTS = [
                 'icon': 'lightbulb',
             },
             {
-                'title': 'Synchronizers',
+                'title': 'Correr tareas de la API',
                 'url_name': 'admin:django_datajsonar_synchronizer_changelist',
                 'icon': 'cogs',
             },
