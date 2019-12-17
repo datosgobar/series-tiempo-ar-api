@@ -61,7 +61,7 @@ class DistributionValidatorTests(TestCase):
 
     def create_validator(self, repository):
         data_validator = Mock()
-        data_validator.return_value = []
+        data_validator.validate.return_value = []
         validator = DistributionValidator(read_local=True,
                                           distribution_repository=repository,
                                           data_validator=data_validator)
