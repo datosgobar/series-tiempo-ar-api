@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## 1.29.1 - 2019-12-18
+
+- Bump de django-datajsonar a 0.6.5
+
 ## 1.29.0 - 2019-12-18
 
 - Streamline de corrida manual de synchronizers
