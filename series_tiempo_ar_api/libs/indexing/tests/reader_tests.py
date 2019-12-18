@@ -7,7 +7,7 @@ from django_datajsonar.models import Distribution, Field, Catalog
 from django_datajsonar.models import ReadDataJsonTask, Node
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.management.models import IndexDataTask as ManagementTask
+from series_tiempo_ar_api.apps.management.models import IndexDataTask as ManagementTask, DistributionValidatorConfig
 from series_tiempo_ar_api.libs.indexing.catalog_reader import index_catalog
 from series_tiempo_ar_api.libs.indexing.tests.indexing_test_case import IndexingTestCase
 
@@ -123,3 +123,15 @@ class ReaderTests(IndexingTestCase):
 
         field = Field.objects.get(identifier='serie_inflacion')  # Sacado del data.json
         self.assertEqual(field.enhanced_meta.get(key='significant_figures').value, '4')
+
+    def test_custom_validation_options(self, *_):
+        # Fallarán todas las validaciones
+        config = DistributionValidatorConfig.get_solo()
+        config.max_field_title_len = 0
+        config.save()
+
+        read_datajson(self.task, whitelist=True)
+        index_catalog(self.node, self.mgmt_task)
+
+        distribution = Distribution.objects.get(identifier='212.1')
+        self.assertTrue(distribution.error)
