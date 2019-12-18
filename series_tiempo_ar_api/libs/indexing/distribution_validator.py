@@ -1,6 +1,6 @@
 #! coding: utf-8
 
-from series_tiempo_ar.validations import get_distribution_errors, ValidationOptions
+from series_tiempo_ar.validations import get_distribution_errors
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
