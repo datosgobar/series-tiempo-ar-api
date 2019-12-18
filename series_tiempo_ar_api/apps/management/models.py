@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db import models
@@ -27,7 +26,6 @@ class IndexDataTask(djar_models.AbstractTask):
 
 
 class Indicator(models.Model, IndicatorNamesMixin):
-
     class Meta:
         unique_together = ('type', 'node', 'task',)
 
@@ -63,3 +61,19 @@ class APIIndexingConfig(SingletonModel):
         verbose_name = 'Configuración de rutina de indexación'
 
     indexing_timeout = models.IntegerField(default=1000)
+
+
+class DistributionValidatorConfig(SingletonModel):
+    class Meta:
+        verbose_name = 'Configuración de validaciones para indexación'
+
+    minimum_values = models.IntegerField(default=2,
+                                         help_text="Cantidad de observaciones mínimas")
+    max_missing_proportion = models.FloatField(default=0.999,
+                                               help_text="Proporción de valores nulos máximos")
+    max_too_small_proportion = models.FloatField(default=0.02,
+                                                 help_text="Proporción de series demasiado pequeñas máximas dentro de una distribución")
+    max_field_title_len = models.IntegerField(default=60,
+                                              help_text="Longitud máxima del título")
+    max_null_series_proportion = models.FloatField(default=0.2,
+                                                   help_text="Proporción de valores nulos máximos")

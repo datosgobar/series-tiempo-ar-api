@@ -9,7 +9,7 @@ from scheduler.models import RepeatableJob
 from series_tiempo_ar_api.libs.singleton_admin import SingletonAdmin
 from .tasks.indexation import read_datajson
 from .tasks.integration_test import run_integration
-from .models import IndexDataTask, IntegrationTestTask, IntegrationTestConfig, APIIndexingConfig
+from .models import IndexDataTask, IntegrationTestTask, IntegrationTestConfig, APIIndexingConfig, DistributionValidatorConfig
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -58,3 +58,8 @@ admin.site.register(RepeatableJob, RepeatableJobAdmin)
 admin.site.register(APIIndexingConfig, SingletonAdmin)
 
 admin.site.login_template = 'login.html'
+
+
+@admin.register(DistributionValidatorConfig)
+class DistributionValidatorConfigAdmin(SingletonAdmin):
+    pass

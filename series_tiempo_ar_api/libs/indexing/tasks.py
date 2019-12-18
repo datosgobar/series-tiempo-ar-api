@@ -7,11 +7,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django_rq import job
 
+from series_tiempo_ar.validations.validators import get_distribution_errors, ValidationOptions
 from django_datajsonar.models import Node, Metadata, Field
 from django_datajsonar.models import Distribution
 
 from series_tiempo_ar_api.apps.management import meta_keys
-from series_tiempo_ar_api.apps.management.models import IndexDataTask
+from series_tiempo_ar_api.apps.management.models import IndexDataTask, DistributionValidatorConfig
 from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository import DistributionRepository
 from series_tiempo_ar_api.libs.indexing.indexer.data_frame import init_df, get_distribution_time_index_periodicity
 from series_tiempo_ar_api.libs.indexing.indexer.distribution_indexer import DistributionIndexer
@@ -19,7 +20,7 @@ from series_tiempo_ar_api.libs.indexing.indexer.metadata import calculate_enhanc
 from series_tiempo_ar_api.libs.indexing.indexer.utils import remove_duplicated_fields
 from series_tiempo_ar_api.libs.indexing.popularity import update_popularity_metadata
 from .report.report_generator import ReportGenerator
-from .distribution_validator import DistributionValidator
+from .distribution_validator import DistributionValidator, DataValidator
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,16 @@ def index_distribution(distribution_id, node_id, task_id,
                                                   present=True)
 
     try:
-        DistributionValidator(read_local).run(distribution_model)
+        config = DistributionValidatorConfig().get_solo()
+        options = ValidationOptions.create_with_defaults(
+            minimum_values=config.minimum_values,
+            max_missing_proportion=config.max_missing_proportion,
+            max_too_small_proportion=config.max_too_small_proportion,
+            max_field_title_len=config.max_field_title_len,
+            max_null_series_proportion=config.max_null_series_proportion,
+        )
+        validator = DataValidator(get_distribution_errors, options)
+        DistributionValidator(read_local, data_validator=validator).run(distribution_model)
 
         changed = True
         _hash = distribution_model.enhanced_meta.filter(key=meta_keys.LAST_HASH)

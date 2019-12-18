@@ -7,11 +7,21 @@ from series_tiempo_ar_api.libs.datajsonar_repositories.distribution_repository i
 from series_tiempo_ar_api.libs.indexing.errors.distribution_validator import DistributionValidationError
 
 
+class DataValidator:
+
+    def __init__(self, validator_function, options=None):
+        self.validator_function = validator_function
+        self.options = options
+
+    def validate(self, catalog, distribution_id):
+        return self.validator_function(catalog, distribution_id, options=self.options)
+
+
 class DistributionValidator:
     def __init__(self,
                  read_local=False,
                  distribution_repository=DistributionRepository,
-                 data_validator=get_distribution_errors):
+                 data_validator=DataValidator(get_distribution_errors)):
         self.read_local = read_local
         self.distribution_repository = distribution_repository
         self.data_validator = data_validator
@@ -21,6 +31,6 @@ class DistributionValidator:
 
         catalog = self.distribution_repository(distribution_model).get_data_json()
 
-        errors = self.data_validator(catalog, distribution_model.identifier)
+        errors = self.data_validator.validate(catalog, distribution_model.identifier)
         if errors:
             raise DistributionValidationError('\n\n'.join([str(e) for e in errors]))
