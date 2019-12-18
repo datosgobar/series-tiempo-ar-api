@@ -1,5 +1,11 @@
 # Historial de versiones
 
+## 1.29.0 - 2019-12-18
+
+- Streamline de corrida manual de synchronizers
+- Configuración de validación de distribuciones
+
+
 ## 1.28.13 - 2019-11-28
 
 - Bump de series-tiempo-ar a 0.3.6
