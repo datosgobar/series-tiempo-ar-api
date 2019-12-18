@@ -64,6 +64,9 @@ class APIIndexingConfig(SingletonModel):
 
 
 class DistributionValidatorConfig(SingletonModel):
+    class Meta:
+        verbose_name = 'Configuración de validaciones para indexación'
+
     minimum_values = models.IntegerField(default=2,
                                          help_text="Cantidad de observaciones mínimas")
     max_missing_proportion = models.FloatField(default=0.999,
