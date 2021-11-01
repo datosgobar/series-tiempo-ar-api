@@ -73,7 +73,7 @@ Se aclara al usuario desarrollador que todo el modelo de datos y metadatos, así
 
 Te invitamos a [crearnos un issue](https://github.com/datosgobar/series-tiempo-ar-api/issues/new?labels=pedido-comunidad) en caso de que encuentres algún bug o tengas feedback de alguna parte de `series-tiempo-ar-api` o sobre el servicio web.
 
-Para todo lo demás, podés mandarnos tu comentario o consulta a [datos@modernizacion.gob.ar](mailto:datos@modernizacion.gob.ar).
+Para todo lo demás, podés mandarnos tu comentario o consulta a [datosargentina@jefatura.gob.ar](mailto:datosargentina@jefatura.gob.ar).
 
 
 

@@ -11,7 +11,7 @@ info:
   contact:
     name: Equipo de Datos Argentina
     url: https://github.com/datosgobar
-    email: datos@modernizacion.gob.ar
+    email: datosargentina@jefatura.gob.ar
 host: apis.datos.gob.ar
 basePath: /series/api
 schemes:
