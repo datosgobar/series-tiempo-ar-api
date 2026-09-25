@@ -42,3 +42,7 @@ scripts/deploy/files.tar.gz
 site/*
 errores-series-valores.csv
 Metadatos de las series con falla.ipynb
+
+# Sitio de documentación (Astro)
+.astro/
+dist/
