@@ -372,6 +372,6 @@ Una vez publicada la distribución en el catálogo chequeá que no tenga errores
 
 ## 3. Dar aviso a Datos Argentina
 
-Una vez que documentaste un nuevo recurso de series de tiempo, escribinos a [datosargentina@jefatura.gob.ar](mailto:datosargentina@jefatura.gob.ar) para que lo federemos en la API y te ayudemos a resolver cualquier problema!
+Una vez que documentaste un nuevo recurso de series de tiempo, escribinos a [datosargentina@sicyt.gob.ar](mailto:datosargentina@sicyt.gob.ar) para que lo federemos en la API y te ayudemos a resolver cualquier problema!
 
 A partir de que se federa por primera vez, la API revisará automáticamente 4 veces por día el archivo CSV y los metadatos para reflejar cualquier cambio que hagas.
