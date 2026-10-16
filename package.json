@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint -c .eslintrc.json series_tiempo_ar_api/apps/**/*.js",
-    "jsc": "jscpd --verbose --o /dev/null --limit 1"
+    "jsc": "jscpd --verbose --o /dev/null --limit 1",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "repository": {
     "type": "git",
@@ -16,5 +19,11 @@
   "devDependencies": {
     "jscpd": "0.6.22"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@astrojs/starlight": "^0.42.3",
+    "astro": "^7.3.4",
+    "starlight-openapi": "^0.26.2"
+  },
+  "type": "module"
 }
