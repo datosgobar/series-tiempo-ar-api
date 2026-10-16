@@ -2,8 +2,6 @@
 title: "API de Series de Tiempo de la República Argentina"
 ---
 
-**Versión**: 1.29.1
-
 La API de Series de Tiempo de Argentina, permite consultar indicadores con evolución cronológica publicados en formatos abiertos por organismos de la Administración Pública Nacional.
 
 Una [serie de tiempo](https://es.wikipedia.org/wiki/Serie_temporal) es una secuencia de observaciones o valores (mínimo 2), medidos en determinados momentos del tiempo y ordenados cronológicamente.
@@ -36,6 +34,4 @@ Estos indicadores son ejemplos de series de tiempo:
 
 ---
 
-*Si sos usuario de la API de Series de Tiempo y querés estar al tanto de los  cambios y novedades, [inscribite en la base de contactos de Datos Argentina](bit.ly/contacto-datos-argentina) y elegí sobre qué temas querés que te escribamos.*
-
-*¿Tenés algo que contarnos? Nos encantaría que nos cuentes por [Twitter](https://twitter.com/datosgobar) o por [mail](mailto:datosargentina@sicyt.gob.ar) qué mejoró usar la API en tu trabajo y qué le falta para mejorar aún más.*
+*¿Tenés algo que contarnos? Escribinos a [datosargentina@sicyt.gob.ar](mailto:datosargentina@sicyt.gob.ar) y contanos qué mejoró usar la API en tu trabajo y qué le falta para mejorar aún más.*
