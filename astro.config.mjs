@@ -35,7 +35,15 @@ export default defineConfig({
 	trailingSlash: 'ignore',
 	markdown: { processor: satteri({ hastPlugins: [mkdocsSlugs] }) },
 	// El visor Swagger se reemplazó por la referencia generada.
-	redirects: { '/open_api/': `${base}/referencia/` },
+	redirects: {
+		'/open_api/': `${base}/referencia/`,
+		// Páginas que mkdocs seguía sirviendo desde docs/ aunque ya no tenían fuente.
+		'/open-api/': `${base}/referencia/`,
+		'/publish/': `${base}/publishers/quick_start/`,
+		'/publishers/publish-series-csv/': `${base}/publishers/quick_start/`,
+		'/reference/api_reference/': `${base}/reference/api-reference/`,
+		'/reference/search_reference/': `${base}/reference/search-reference/`,
+	},
 	integrations: [
 		starlight({
 			plugins: [starlightOpenAPI([{ base: 'referencia', schema: './public/openapi.json', sidebar: { label: 'Todos los endpoints', group: referencia, operations: { badges: true, labels: 'path' } } }])],
