@@ -68,10 +68,10 @@ class SQLGenerator:
             description = row[self.metadata_rows.index(constants.SERIES_DESCRIPTION)]
 
             distribution_title = row[self.metadata_rows.index(constants.DISTRIBUTION_TITLE)]
-            distribution_description = row[self.metadata_rows.index(constants.SERIES_DESCRIPTION)]
+            distribution_description = row[self.metadata_rows.index(constants.DISTRIBUTION_DESCRIPTION)]
             distribution_download_url = row[self.metadata_rows.index(constants.DISTRIBUTION_DOWNLOAD_URL)]
 
-            dataset_title = row[self.metadata_rows.index(constants.DATASET_THEME)]
+            dataset_title = row[self.metadata_rows.index(constants.DATASET_TITLE)]
             dataset_description = row[self.metadata_rows.index(constants.DATASET_DESCRIPTION)]
             dataset_source = row[self.metadata_rows.index(constants.DATASET_SOURCE)]
             dataset_publisher = row[self.metadata_rows.index(constants.DATASET_PUBLISHER)]
@@ -89,8 +89,8 @@ class SQLGenerator:
             discontinued = row[self.metadata_rows.index(constants.SERIES_DISCONTINUED)] or False
 
             hits_total = row[self.metadata_rows.index(constants.HITS_TOTAL)] or 0
-            hits_60_days = row[self.metadata_rows.index(constants.HITS_30_DAYS)] or 0
-            hits_30_days = row[self.metadata_rows.index(constants.HITS_90_DAYS)] or 0
+            hits_30_days = row[self.metadata_rows.index(constants.HITS_30_DAYS)] or 0
+            hits_90_days = row[self.metadata_rows.index(constants.HITS_90_DAYS)] or 0
             hits_180_days = row[self.metadata_rows.index(constants.HITS_180_DAYS)] or 0
 
             yield Metadatos(
@@ -121,7 +121,7 @@ class SQLGenerator:
                 serie_discontinuada=discontinued,
                 consultas_total=hits_total,
                 consultas_30_dias=hits_30_days,
-                consultas_90_dias=hits_60_days,
+                consultas_90_dias=hits_90_days,
                 consultas_180_dias=hits_180_days,
             )
 
