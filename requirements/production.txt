@@ -1,6 +1,6 @@
 -r base.txt
 
-gunicorn==19.3.0
+gunicorn==19.5.0
 psycopg2==2.7.3.2
 raven==6.3.0
 sentry-sdk
